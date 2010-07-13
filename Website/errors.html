@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+ <title>Explanations of Errors and Warnings</title> 
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+</head> 
+<body>
+<h3>Explanations of Errors and Warnings</h3>
+<table border="1">
+<tr><th>Error</th><th>Description</th></tr>
+<tr><td>padding</td><td>An odd byte length chunks exists that is not immediately followed by a NULL byte. This could cause problems in reading subsequent chunks in some systems.</td></tr>
+<tr><td>fmt_</td><td>For a PCM audio file this means that the technical data expressed in the &lt;fmt_&gt; chunk contains contradictory information.</td></tr>
+<tr><td>no WAV header</td><td>The file does not appear to be a WAV file.</td></tr>
+<tr><td>small</td><td>The declared chunk size of the RIFF chunk is smaller than the file actually is.</td></tr>
+<tr><td>no RIFF/RF64 header</td><td>The file does not initiate with a RIFF chunk.</td></tr>
+<tr><td>truncated</td><td>The actual file size is less than is stated in the file's chunk size declarations. This could indicate that the file is the result of an interrupted duplication or transfer.</td></tr>
+<tr><td>chunk is too big, it can not be loaded</td><td>The total size of the non-audio-data chunks exceed the amount of memory available.</td></tr>
+<tr><td>2 XXXX chunks</td><td>The file contains two chunks of the same chunk id (excepting padding chunks: FILR, FLLR, PAD_, JUNK, and JUNQ).</td></tr>
+</table>
+
+<h4>Other File Errors</h4>
+<table border="1">
+<tr><td>Cannot seek input file</td></tr>
+<tr><td>Cannot open input file in read/write mode</td>
+<tr><td>Cannot seek input file, file may be CORRUPTED</td></tr>
+<tr><td>Cannot write input file, file may be CORRUPTED</td></tr>
+<tr><td>Cannot create temporary file</td></tr>
+<tr><td>Cannot write temporary file</td></tr>
+<tr><td>Original file cannot be deleted</td></tr>
+<tr><td>Temporary file cannot be renamed</td></tr>
+<tr><td>WARNING, impossible to validate the resulting file, file may be CORRUPTED</td></tr>
+<tr><td>File does not exist anymore</td></tr>
+<tr><td>Old temporary file cannot be deleted</td></tr>
+<tr><td>File size would be too big</td></tr>
+<tr><td>Internal error</td></tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+ <title>BEXT Audio Metadata Information</title> 
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+</head> 
+<body> 
+<h3>BEXT Audio Metadata Information</h3>
+<table border='1' summary="This table lists the values and descriptions of the BEXT metadata fields">
+	<tr><th>Metadata Value Name</th><th>Description</th></tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			<div>
+				<h4>EBU Tech 3285 definition:</h4>
+				<ul>
+				<li>ASCII string (maximum 256 characters) containing a free description of the sequence. To help applications which only display a short description, it is recommended that a resume of the description is contained in the first 64 characters, and the last 192 characters are use for details.</li>
+				</ul>
+			</div>
+			<div>
+				<h4>FADGI recommendations:</h4>
+				<ol>
+					<li>Two capital letters which must be derived from <a href="http://www.iso.org/iso/country_codes/iso_3166_code_lists.htm">ISO 3166 Country Codes</a></li>					<li>One comma</li>
+					<li>One space</li>					<li>Acronym. The great majority of acronyms are one word in all caps but there are some acronyms that are more than one word. The resource GovSpeak: A Guide to <a href="http://members.cox.net/govdocs/govspeak.html">Government Acronyms and Abbreviations</a> is suggested as a source but not required.</li>					<li>If string entered is under 32 characters, allow free-text string of up to 32 characters. End field with a null character.</li>					<li>This string should be automatically entered into the IARL data space.</li>
+				</ol>
+				<p>COMMENT: This element is recommended as a container for identifiers for the work at hand and/or as pointers to additional, non-embedded (externally maintained) metadata. Members of the Working Group have repeatedly encountered the need to provide multiple identifiers for a given item. The resulting extent of data cannot be accommodated in the OriginatorReference element. For these reasons, the Working Group's recommendations for the Description element deviate from the EBU specification.</p><p>In some cases, the 256-character limit will prevent an agency from listing all of its identifiers; the most important or helpful should be provided.</p><p>Do not embed identifiers which could pose a possible security risk, e.g., by exposing exact pathnames.</p><p>NOTE: The Working Group perceived value in two practices but wished to leave these as optional. The first is the tagging of identifiers (see examples, typically URLs) to permit them to be properly understood.	The second is the repetition of the principal identifier (as provided without tagging) in OriginatorReference as the first identifier in Description, where labeling as to its origin or purpose can be provided. Comments from readers are welcome.</p>
+                <h4>FADGI Requirements:</h4>
+				<ul>
+					<li>Strongly recommended (if the Working Group had authority: "required")</li>
+			    </ul>
+			    <h4>FADGI Formatting:</h4>
+				<ul>
+					<li>If labeled: Identifier [comma space] type [comma space] comment [semicolon-space if more than one identifier]</li><li>If no labeling: Identifier</li>
+			    </ul>
+			    <h4>FADGI Examples:</h4>
+				<ul>
+					<li>58979818, local, principal ID original filename; 306-MUSA-9658B, local, RG-Series-Item</li>
+					<li>http://hdl.loc.gov/loc.mbrsmi/westhpp.2033, URL, principal ID handle</li>
+					<li>http://hdl.loc.gov/loc.mbrsmi/westhpp.2033</li>
+					<li>ark.cdlib.org.org/ark:/13030/tf5p30086k, URL, ARK</li>
+			    </ul>
+			</div>
+		</td>
+	</tr>
+	
+	<tr>
+		<td>Originator</td>
+		<td>
+			<div>
+				<h4>EBU Tech 3285 definition:</h4>
+				<ul>
+					<li>ASCII string (maximum 32 characters) containing the name of the originator/producer of the audio file. If the length of the string is less than 32 characters, the field is ended by a null character.</li>
+				</ul>
+				<h4>FADGI Application:</h4>
+				<ul>
+					<li><p>This element contains the entity responsible for the "archiving" (creation, maintenance, preservation) of this digital item. Entity designations should be as specific as possible including a two-character county code to avoid the potential for conflict in the archiving entity’s name.</p><p>If space permits within the 32 character limit, the archival entity should be identified at the most specific level within the institution.</p><p>Use a standard abbreviation of entity names such as those found in the Guide to Government Acronyms & Abbreviations. If an entity is not on this list, use a familiar abbreviation. Use the standard two-character ISO 3166 alpha 2 country code list.</p></li>
+				</ul>
+				<h4>FADGI Requirements:</h4>
+				<ul>
+					<li>Strongly recommended (if the Working Group had authority: "required")</li>
+			    </ul>
+			    <h4>FADGI Examples:</h4>
+				<ul>
+					<li>US, LOC/RSS</li>
+					<li>US, NARA</li>
+					<li>US, EPA</li>
+			    </ul>
+			</div>
+		</td>
+	</tr>
+	
+	<tr>
+		<td>OriginatorReference</td>
+		<td>
+			<div>
+				<h4>EBU Tech 3285 definition:</h4>
+				<ul>
+					<li>ASCII string (maximum 32 characters) containing a non ambiguous reference allocated by the originating organization. If the length of the string is less than 32 characters, the field is ended by a null character.</li>
+					<li>Note: The EBU has defined a format for the OriginatorReference field. See <a href="http://tech.ebu.ch/docs/r/r099.pdf">EBU Technical Recommendation R99-1999</a>.</li>
+				</ul>
+			</div>
+			<div>
+				<h4>FADGI recommendations:</h4>
+				<ul>
+					<li>This element contains the principal identifier or the "best" identifier which uniquely differentiates one object from another, preferably at the file level.</li><li>If the principal identifier string is less than 32 characters, enter the entire identifier string.</li><li>If the principal identifier string is longer than 32 characters, enter this text: "See Description for identifiers."</li><li>Do not embed identifiers which could pose a possible security risk, e.g., by exposing exact pathnames.</li><li>NOTE: The Working Group perceived value in the practice of repeating the principal identifier as the first identifier in the BEXT Description element (which has 256 available characters) but did not make this detail a strong recommendation. Comments from readers are welcome.</li>
+				</ul>
+				<h4>FADGI Requirements:</h4>
+				<ul>
+					<li>Strongly recommended (if the Working Group had authority: "required")</li>
+			    </ul>
+			    <h4>FADGI Examples:</h4>
+				<ul>
+					<li>US, LOC/RSS</li>
+					<li>US, NARA</li>
+					<li>US, EPA</li>
+			    </ul>
+			</div>
+		</td>
+	</tr>
+	
+	<tr>
+		<td>OriginationDate</td>
+		<td>
+			<div>
+				<h4>EBU Tech 3285 definition:</h4>
+				<ul>
+					<li>Ten ASCII characters containing the date of creation of the audio sequence. The format is YYYY-MM-DD (year-month-day).</li>					<li>Year is defined from 0000 to 9999 Month is define from 1 to 12 Day is defined from 1 to 28,29,30 or 31</li>					<li>The separator between the items can be anything but it is recommended that one of the following characters is used: hyphen, underscore, colon, space, or stop (period).</li>
+				</ul>
+			</div>
+			<div>
+				<h4>FADGI recommendations:</h4>
+				<p>This element contains the file creation date. This is understood to mean the local date in the timezone for the archival entity; the structure of the bext chunk does not permit ISO 8601 datetime indication, which unambiguously indicates date and time in terms of UTC (Coordinated Universal Time or Temps Universel Coordonné).</p>				<ul>
+					<li>Year only: YYYY (eg 1997)</li>					<li>Year and month: YYYY-MM (eg 1997-07)</li>					<li>Complete date: YYYY-MM-DD (eg 1997-07-16)<br />&nbsp;</li>					<li>Where YYYY = four-digit year</li>					<li>Where MM = two-digit month (01=January, etc.) Month is defined from 01 to 12 (use leading zeroes if less than 10); </li>					<li>Where DD = two-digit day of month (01 through 31) Day is defined from 01 to 28, 29, 30 or 31 (use leading zeroes if less than 10).<br/>&nbsp;</li>					<li>Use a hyphen as a separator between data elements.</li>
+					<li>If string entered is under 10 characters, end field with a null character.</li>
+				</ul>
+				<h4>FADGI Formatting:</h4>
+				<ul>
+					<li>ISO 8601 YYYY-MM-DD. Year is defined from 0000 to 9999; Month is defined from 01 to 12 (use leading zeroes if less than 10); Day is defined from 01 to 28, 29, 30 or 31 (use leading zeroes if less than 10). The separator between the items is a hyphen [-] with no spaces. Note: the Working Group adheres to the ISO 8601 truncation convention: the year should always be given but, if unknown, values for month and day are omitted. Thus the string length may be four, seven, or ten. If the string entered is less than ten characters, end it with a null character.</li>
+			    </ul>
+				<h4>FADGI Requirements:</h4>
+				<ul>
+					<li>Strongly recommended (if the Working Group had authority: "required")</li>
+			    </ul>
+			    <h4>FADGI Examples:</h4>
+				<ul>
+					<li>2005-11-09</li>
+			    </ul>
+			</div>
+		</td>
+	</tr>	<tr>
+		<td>TimeReference</td>
+		<td>
+			<div>
+				<h4>EBU Tech 3285 definition:</h4>
+				<ul>
+					<li>This field contains the timecode of the sequence. It is a 64-bit value which contains the first sample count since midnight. The number of samples per second depends on the sample frequency which is defined in the field &lt;nSamplesPerSec&gt; from the &lt;format chunk&gt;.</li>
+				</ul>
+			<div>
+			</div>
+				<h4>FADGI recommendations:</h4>
+				<ul>
+					<li>The Working Group believes that TimeReference can be used in a manner that supports the management of files that are parts of multitrack or multisegment works and plans to provide recommendations in the future.</li>
+				</ul>
+				<h4>FADGI Requirements:</h4>
+				<ul>
+					<li>Optional but recommended for complex recordings</li>
+			    </ul>
+			</div>
+	</td></tr>
+
+	<tr>
+		<td>OriginationTime</td>
+		<td>
+			<div>
+				<h4>EBU Tech 3285 definition:</h4>
+				<ul>
+					<li>Eight ASCII characters containing the time of creation of the audio sequence. The format is HH-MM-SS (hours-minutes-seconds).</li>					<li>Hour is defined from 0 to 23. Minute and second are defined from 0 to 59.</li>					<li>The separator between the items can be anything but it is recommended that one of the following characters is used: hyphen, underscore, colon, space, or stop (period).</li>
+				</ul>
+			</div>
+			<div>
+				<h4>FADGI recommendations:</h4>
+				<p>This element contains the file creation time. This is understood to mean the local time in the timezone for the archival entity; the structure of the bext chunk does not permit ISO 8601 datetime indication, which unambiguously indicates date and time in terms of UTC (Coordinated Universal Time or Temps Universel Coordonné).</p>
+				
+				Follow the ISO 8601 model which allows for some flexibility depending upon how much time information is available:				<ul>					<li>Hours and Minutes only: hh:mm</li>					<li>Hours, minutes and seconds: hh:mm:ss<br/></li>					<li>Where hh = two digits of hour (00 through 23) (am/pm NOT allowed) Hour is defined from 00 to 23 (use leading zeroes if less than 10).</li>					<li>Where mm = two digits of minute (00 through 59)</li>					<li>Where ss = two digits of second (00 through 59) Minute and second are defined from 00 to 59 (use leading zeroes if less than 10).</li>				</ul>
+				If string entered is under 8 characters, end field with a null character
+				<h4>FADGI Requirements:</h4>
+				<ul>
+					<li>Optional</li>
+			    </ul>
+
+			</div>
+		</td>
+	</tr>	<tr>
+		<td>CodingHistory</td>
+		<td>
+			<div>
+				<h4>EBU Tech 3285 definition:</h4>
+				<ul>
+					<li>Non-restricted ASCII characters, containing a collection of strings terminated by CR/ LF. Each string contains a description of a coding process applied to the audio data. Each new coding application is required to add a new string with the appropriate information. This information must contain the type of sound (PCM or MPEG) with its specific parameters:						<ul>
+							<li>PCM : mode (mono, stereo), size of the sample (8, 16 bits) and sample frequency:</li>							<li>MPEG : sample frequency, bit-rate, layer (I or II) and the mode (mono, stereo, joint stereo or dual channel).</li>						</ul>
+					</li>
+					<li>It is recommended that the manufacturers of the coders provide an ASCII string for use in the coding history.</li>					<li>Note: The EBU has defined a format for CodingHistory which will simplify the interpretation of the information provided in this field. See <a href="http://tech.ebu.ch/docs/r/r098.pdf">EBU Technical Recommendation R98-1999</a>.</li>
+				</ul>
+			</div>
+			<div>
+				<h4>FADGI recommendations:</h4>
+				<ul>
+					<li>This element is designed to hold data on the digitizing process including signal chain specifics, sample rate and bit depth, and other elements. It is defined as a collection of strings, each presented on a separate line, containing a history of the coding processes applied to the file. The first line documents the analog source recording, the second line contains data on the capture process, the third line of data records information on the storage of the file. A new line is added when the coding history related to the file is changed.</a></li>
+				</ul>
+				<h4>FADGI Requirements:</h4>
+				<ul>
+					<li>Optional</li>
+			    </ul>
+			</div>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

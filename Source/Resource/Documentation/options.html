@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+ <title>Preferences</title> 
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+</head> 
+<body> 
+<h3>Preferences</h3>
+
+<h4>Technical Metadata Preferences</h4>
+
+Select which technical values should appear on the 'Tech' table view of BWF MetaEdit; Others will be hidden.
+
+<h4>Core Metadata Preferences</h4>
+
+Select which metadata values should appear on the 'Core' table view of BWF MetaEdit; others will be hidden. These options affect only the displayed table and not the handling of imported or exported Core documents. Be aware that even if a column is hidden, metadata can be imported, exported and saved within these fields.
+
+<h4>Rules Preferences</h4>
+
+Select which standards and rule sets to follow during use of BWF MetaEdit. Selection of rule sets will constrain the allowed data entry and may add additional metadata requirements. See documentation on BWF MetaEdit Rules within the Help documentation.
+
+<h4>File Management Preferences</h4>
+
+<b>Reject if transformation to RF64 is requested</b>
+<br/>
+BWF MetaEdit supports traditional WAV files as well as RF64 files (an adjustment to the WAV file structure to accomodate file sizes over 4 gigabytes). In very rare circumstances, the addition of embedded metadata in a WAVE file that is close to 4GB could cause size to increase requiring the file to be rewritten as an RF64 formatted file. This option prevents the transformation of a WAV file to an RF64 file if that is not desired.
+<p></p>
+<b>Prevent overwrite of existing data</b>
+
+<br/>If enabled, this option globally prevents the overwriting of existing embedded metadata in open files. The existing core metadata can not be overwritten, but blank fields may be populated. This option blocks metadata from being overwritten both during data entry in the Core table as well as during import of a Core document.
+<p></p>
+<b>Accept if padding byte is missing</b><br/>
+
+The RIFF structure requires that any odd-byte length chunk be followed by a single NULL byte. Occasionally audio applications do not adhere to this rule. The error created by this can impede the reading of any chunk following the odd-byte length chunk. BWF MetaEdit tests each odd byte length chunk to ensure that it is followed by a single NULL byte, if it doesn't then BWF MetaEdit can continue to read the file with this option enabled. If such a file is edited BWF MetaEdit will then insert the additional 'padding byte' where necessary to correct the error.
+<p></p>
+<b>Skip non-valid files</b>
+<br/>
+Any non-valid file will not open in BWF MetaEdit. This is helpful when opening a large mixed directory in BWF MetaEdit. Non-valid files can include audio files with issues such as incorrect size declaration or truncated data. 
+<p></p>
+<b>Skip files with no .wav extension</b>
+<br/>
+No attempt will be made by BWF MetaEdit to open any files that do not end with .wav (case insensitive). This is helpful when opening a large mixed directory in BWF MetaEdit.
+<p></p>
+<b>Place new or expanded BEXT or LIST-INFO chunks at the end of the file</b>
+<br/>
+EBU R85-2004 states: "The basic chunk of the BWF format is the &lt;bext&gt; chunk. This chunk is mandatory in a BWF file. The &lt;bext&gt; chunk may occur in any order with the other BWF chunks within the same file, preferred before the audio data in the &lt;wave-data&gt; chunk."<br/><br/>
+
+When the metadata is stored at the head of the file the entire file must be rewritten after metadata is edited or added. Metadata was originally preferred at the head because it allows for readers to access the metadata first and provide useful information to the user. Very important when accessing large files over limited bandwidth networks. Metadata stored at the tail of the file allows additional and edited metadata to be saved quickly, because it does not require rewriting the whole file. However, it requires that the whole file be read before being able to access this metadata.<br/><br/>
+
+When this option is enabled any new or expanded &lt;bext&gt; or LIST-INFO chunk will be placed at the end of the audio file. By default this option is disabled in order to follow the recommendations of EBU R85-2004, which may require slower file rewrites during metadata edits.
+
+<h4>MD5 Preferences</h4>
+
+See the <a href="md5.html">Audio Data Checksum</a> help page for more information about the use of these options.
+
+<p></p>
+<b>Evaluate MD5 for audio data</b>
+
+<br/>This option will evaluate a checksum for the all valid open files. Note that checksum evaluation can be a slow process as the entire data chunk must be read. The resulting checksum will populate the 'MD5Evaluated' column and will not be stored within the file.
+
+<p></p>
+<b>Verify MD5 for audio data</b>
+
+<br/>The verification option will compare a newly evaluated checksum of the audio data to any existing checksum in the MD5 chunk. BWF MetaEdit will then report either "MD5, no existing MD5 chunk", "MD5 verified", or "MD5, failed verification".
+
+
+<p></p>
+<b>Embed MD5 for audio data</b>
+
+<br/>The Embed option will evaluate the checksum of the audio data and then embed it into an &lt;MD5 &gt; chunk at the end of the file. This option will not overwrite an existing &lt;MD5 &gt;.
+<p></p>
+
+
+<b>Embed MD5 for audio data - Allow overwriting</b>
+
+<br/>This option is the same as 'Embed MD5 for audio data' except it will overwrite the MD5 chunk if one already exists.
+
+<h4>Default View</h4>
+
+Select the default view to appear when opening files. If problematic files are opened, BWF MetaEdit will still go to the 'Error Log' first when opening files.
+
+<h4>Extra</h4>
+
+<b>Backup Directory</b>
+
+<br/>
+BWF MetaEdit stores snapshots of the Core documents during operations. These documents are used when 'File/Undo Last Save Operations' is selected to restore files to the metadata listed in earlier Core documents. By default this directory exists as a hidden directory called bwfmetaedit in your Home, but can be pointed to another selected directory.
+<p></p>
+
+
+
+<b>Default Bext version</b><br/>
+
+This is used to express whether the Bext Chunk follows the Rules of EBU Technical document 3285 as published in 1997 (version '0') or the 2001 update which created version '1'. Version '1' adds an additional field for UMID. If the UMID field is used BWF MetaEdit will force BextVersion to be '1', but if UMID is unused then this option expresses the preference for what the default version should be.
+
+</body>
+</html>

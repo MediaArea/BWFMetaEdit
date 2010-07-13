@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+ <title>XML Chunks</title> 
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+</head> 
+<body> 
+<h3>XML Chunks</h3>
+Several advanced audio tools allow for the generation or editing of metadata chunks that contain XML data. Three of these chunks are <a href="http://www.gallery.co.uk/ixml/">iXML</a>, <a href="http://www.adobe.com/products/xmp/">XMP</a>, and <a href="http://tech.ebu.ch/docs/tech/tech3285.pdf">aXML</a>.<br/><br/>
+The Technical View of BWF MetaEdit notes the existence of these metadata chunks by displaying a 'Yes' or a 'No' under the 'aXML', 'iXML', and 'XMP' columns.<br/><br/>
+Double-clicking on the 'aXML', 'iXML', or 'XMP' cell for open any audio file will open a window displaying the XML data stored in the associated chunk. The user may read, write or edit data directly in this window.<br/><br/>
+<h4>XML Exports</h4>
+<b>Export XML chunks in batches</b><br/><br/>
+Under the Export toolbar menu there are options to export the 'aXML', 'iXML', or 'XMP' chunks. These export options will generate one sidecar file for each open audio file that contains corresponding chunks.
+If a file called <i>Test_Audio_File.wav</i> contains an XMP chunk, then selecting Export/XMP from the toolbar menu will generate a file called <i>Test_Audio_File.wav.XMP.xml</i> within the same directory as a sidecar file. Be aware that exporting an XML chunk from a WAV file to a sidecar XML will overwrite any existing XML file with the same name (i.e. running Export/XMP a second time on <i>Test_Audio_File.wav</i> would create a second <i>Test_Audio_File.wav.XMP.xml</i> that would overwrite the first.
+<br/><br/>
+<b>Export XML chunks individually</b><br/><br/>
+When right-clicking (or control-clicking) on a cell that states the presence of an XML chunk, the user can select 'Export' and export the xml chunk from the audio file to a xml file as a selected destination.
+<br/><br/>
+<b>Import XML chunks individually</b><br/><br/>
+When right-clicking (or control-clicking) on a cell under the XML chunk columns for a specified audio file, an 'Import' option is provided which allows an XML file to be selected and imported into the chunk. Alternatively double-clicking on a XML chunk cell opens a text dialog box in which an XML document could be pasted or edited.<br/>
+<h4>Warning</h4>
+The current version BWF MetaEdit does not provide any verification that data entered into these chunks represents a valid XML document or valid instances of 'aXML', 'iXML', or 'XMP'. There is also no 'undo' option for data edited or written into these chunks. <i>Use this editing function at your own risk.</i><br/><br/>
+</body>
+</html>
