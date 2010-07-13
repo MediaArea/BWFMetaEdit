@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+ <title>CORE Document</title> 
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+</head> 
+<body> 
+<h3>CORE Document</h3>
+<div>The CORE Document serves the purpose of BEXT and LIST-INFO metadata exchange between BWF MetaEdit and other applications. BWF MetaEdit can import and export CORE Documents as XML or CSV. Once imported into BWF MetaEdit the CORE information can be edited and embedded into audio files. For files with existing bext and LIST-INFO metadata, BWF MetaEdit can display and export this data as a CORE document. A CORE document template can be generated within BWF MetaEdit or with another application. The CORE document lists one record per audio file.</div>
+<div>&nbsp;</div>
+<div>The CORE Document is essentially a list of filepaths associated with <a href="bext.html">BEXT</a> and <a href="listinfo.html">LIST-INFO</a> values. Please see <a href="bext.html">BEXT</a> and <a href="listinfo.html">LIST-INFO</a> for more information and <a href="validation_rules_help.html">validation documentation</a> for information on the correct use of these standards.</div>
+
+
+<h4>CORE Document CSV Format</h4>
+<div>A CSV formatted (RFC 4180) CORE Document must use the following structure and value parameters:</div>
+
+<table border="1">
+<tr><th>Column Name</th><th>Description</th></tr>
+<tr><td>FileName</td><td>required. full file path</td></tr>
+<tr><td/><td><i>For more info on LIST-INFO fields, see the BEXT help page.</i></td></tr>
+<tr><td>Description</td><td>max 256 ASCII characters</td></tr>
+<tr><td>Originator</td><td>max 32 ASCII characters</td></tr>
+<tr><td>OriginatorReference</td><td>max 32 ASCII characters</td></tr>
+<tr><td>OriginationDate</td><td>max 10 ASCII characters</td></tr>
+<tr><td>OriginationTime</td><td>max 8 ASCII characters</td></tr>
+<tr><td>TimeReference (translated)</td><td>Use to express TimeReference in HH:MM:SS.mmm form (hours:minutes:seconds.milliseconds). Example 01:59:15.250</td></tr>
+<tr><td>TimeReference</td><td>Use to express TimeReference as sample count. Example 441000</td></tr>
+<tr><td>BextVersion</td><td>Use to express whether the Bext Chunk follows the Rules of EBU Technical document 3285 as published in 1997 (version '0') or the 2001 update which created version '1'. Version '1' adds an additional field for UMID. Example '1'.</td></tr>
+<tr><td>UMID</td><td>64 byte Unique Material Identifier. Expressed as a hexadecimal string in XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX format.</td></tr>
+<tr><td>CodingHistory</td><td/></tr>
+<tr><td/><td><i>For more info on LIST-INFO fields, see the LIST-INFO help page.</i></td></tr>
+<tr><td>IARL</td><td>Archival Location</td></tr>
+<tr><td>IART</td><td>Artist</td></tr>
+<tr><td>ICMS</td><td>Commissioned</td></tr>
+<tr><td>ICMT</td><td>Comments</td></tr>
+<tr><td>ICOP</td><td>Copyright</td></tr>
+<tr><td>ICRD</td><td>Creation Date</td></tr>
+<tr><td>IENG</td><td>Engineer</td></tr>
+<tr><td>IGNR</td><td>Genre</td></tr>
+<tr><td>IKEY</td><td>Keywords</td></tr>
+<tr><td>IMED</td><td>Medium</td></tr>
+<tr><td>INAM</td><td>Name (Title)</td></tr>
+<tr><td>IPRD</td><td>Product (Album)</td></tr>
+<tr><td>ISBJ</td><td>Subject</td></tr>
+<tr><td>ISFT</td><td>Software</td></tr>
+<tr><td>ISRC</td><td>Source</td></tr>
+<tr><td>ISRF</td><td>Source Form</td></tr>
+<tr><td>ITCH</td><td>Technician</td></tr>
+</table>
+
+<h4>CORE Document XML Format</h4>
+
+<div>An XML formatted CORE Document must follow the schema below and follow the rules demonstrated by the sample data:
+Use either &lt;TimeReference_translated&gt; to express TimeReference in HH:MM:SS.mmm format or &lt;TimeReference&gt; to express TimeReference as a sample count.</div>
+<div>&nbsp;</div>
+
+<div style="font-family:'Courier'">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br/>&lt;conformance_point_document&gt;<br/>&nbsp;&lt;File name="/full/file/path/to/audio-A.wav"&gt;<br/>&nbsp;&nbsp;&lt;Core&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;Description&gt;Descriptive info here&lt;/Description&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;Originator&gt;Originator data here&lt;/Originator&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;OriginatorReference&gt;OriginatorReference data here&lt;/OriginatorReference&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;OriginationDate&gt;2010-01-05&lt;/OriginationDate&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;OriginationTime&gt;00:00:00&lt;/OriginationTime&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;TimeReference_translated&gt;00:00:00.000&lt;/TimeReference_translated&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;TimeReference&gt;0&lt;/TimeReference&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;BextVersion&gt;1&lt;/BextVersion&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;UMID&gt;FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF&lt;/UMID&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;CodingHistory&gt;A=ANALOGUE,F=48000,B=16,W=16,M=joint-stereo&lt;/CodingHistory&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IARL&gt;Archival Location data here&lt;/IARL&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IART&gt;Artist data here&lt;/IART&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ICMS&gt;Commissioned data here&lt;/ICMS&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ICMT&gt;Comment data here&lt;/ICMT&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ICOP&gt;Copyright data here&lt;/ICOP&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ICRD&gt;2010-01-07&lt;/ICRD&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IENG&gt;Engineer data here&lt;/IENG&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IGNR&gt;Genre data here&lt;/IGNR&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IKEY&gt;Keyword data here&lt;/IKEY&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IMED&gt;Medium data here&lt;/IMED&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;INAM&gt;Title data here&lt;/INAM&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IPRD&gt;Album or product data here&lt;/IPRD&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ISBJ&gt;Subject data here&lt;/ISBJ&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ISFT&gt;Source data here&lt;/ISFT&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ISRC&gt;Source data here&lt;/ISRC&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ISRF&gt;Software data here&lt;/ISRF&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ITCH&gt;Technician data here&lt;/ITCH&gt;<br/>&nbsp;&nbsp;&lt;/Core&gt;<br/>&nbsp;&lt;/File&gt;<br/>&nbsp;&lt;File name="/full/file/path/to/audio-B.wav"&gt;<br/>&nbsp;&lt;/File&gt;<br/>&lt;/conformance_point_document&gt;<br/>
+</div>
+
+</body>
+</html>

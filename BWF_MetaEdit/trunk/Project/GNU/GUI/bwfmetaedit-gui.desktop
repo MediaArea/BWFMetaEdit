@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Version=1.0
+Name=BWF MetaEdit
+GenericName=Media Analyzer
+Comment=Edit BWF files
+Icon=bwfmetaedit
+Exec=bwfmetaedit-gui %f 
+Terminal=false
+MimeType=
+Categories=AudioVideo;AudioVideoEditing;

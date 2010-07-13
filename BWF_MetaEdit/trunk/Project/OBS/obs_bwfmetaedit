@@ -1,0 +1,92 @@
+#! /bin/sh
+
+#-----------------------------------------------------------------------
+# $1=bwfmetaedit Package version,
+# $2=,
+# $3=,
+# $4=,
+# $5=,
+# $6=,
+# $7=Platform, $8=CPU, $9=CPU target
+Download_Packages()
+{
+#-----------------------------------------------------------------------
+# Downloading
+wget https://api.opensuse.org/build/home:Zenitram7573/$7/$8/bwfmetaedit/bwfmetaedit$dash$bwfmetaeditv-$1$9.$type \
+ --no-check-certificate --http-user=Zenitram7573 --http-passwd=xxxxxxxx
+mv bwfmetaedit$dash$bwfmetaeditv-$1$9.$type \
+ download/binary/bwfmetaedit/$bwfmetaeditv/bwfmetaedit$dash$bwfmetaeditv-$destversion$9.$7.$type
+
+wget https://api.opensuse.org/build/home:Zenitram7573/$7/$8/bwfmetaedit/bwfmetaedit-gui$dash$bwfmetaeditv-$1$9.$type \
+ --no-check-certificate --http-user=Zenitram7573 --http-passwd=xxxxxxxx
+mv bwfmetaedit-gui$dash$bwfmetaeditv-$1$9.$type \
+ download/binary/bwfmetaedit-gui/$bwfmetaeditv/bwfmetaedit-gui$dash$bwfmetaeditv-$destversion$9.$7.$type
+}
+
+#-----------------------------------------------------------------------
+# $1=bwfmetaedit version
+Download_Global()
+{
+#-----------------------------------------------------------------------
+# Clean up
+rm download/binary/bwfmetaedit/$bwfmetaeditv/*.rpm -f
+rm download/binary/bwfmetaedit/$bwfmetaeditv/*.deb -f
+rm download/binary/bwfmetaedit-gui/$bwfmetaeditv/*.rpm -f
+rm download/binary/bwfmetaedit-gui/$bwfmetaeditv/*.deb -f
+mkdir download/binary/bwfmetaedit/$bwfmetaeditv
+mkdir download/binary/bwfmetaedit-gui/$bwfmetaeditv
+
+#-----------------------------------------------------------------------
+# Downloading
+type="deb"
+devext="dev"
+dash="_"
+Download_Packages 1  x  x  x x x   Debian_5      i586   _i386
+Download_Packages 1  x  x  x x x   Debian_5      x86_64 _amd64
+Download_Packages 1  x  x  x x x   Ubuntu_8.04   i586   _i386
+Download_Packages 1  x  x  x x x   Ubuntu_8.04   x86_64 _amd64
+Download_Packages 1  x  x  x x x   Ubuntu_9.04   i586   _i386
+Download_Packages 1  x  x  x x x   Ubuntu_9.04   x86_64 _amd64
+Download_Packages 1  x  x  x x x   Ubuntu_9.10   i586   _i386
+Download_Packages 1  x  x  x x x   Ubuntu_9.10   x86_64 _amd64
+Download_Packages 1  x  x  x x x   Ubuntu_10.04  i586   _i386
+Download_Packages 1  x  x  x x x   Ubuntu_10.04  x86_64 _amd64
+
+type="rpm"
+devext="devel"
+dash="-"
+Download_Packages $1  x  x x x x   CentOS_5        i586   .i386
+Download_Packages $1  x  x x x x   CentOS_5        x86_64 .x86_64
+Download_Packages $1  x  x x x x   Fedora_9        i586   .i386
+Download_Packages $1  x  x x x x   Fedora_9        x86_64 .x86_64
+Download_Packages $1  x  x x x x   Fedora_10       i586   .i386
+Download_Packages $1  x  x x x x   Fedora_10       x86_64 .x86_64
+Download_Packages $1  x  x x x x   Fedora_11       i586   .i386
+Download_Packages $1  x  x x x x   Fedora_11       x86_64 .x86_64
+Download_Packages $1  x  x x x x   Fedora_12       i586   .i386
+Download_Packages $1  x  x x x x   Fedora_12       x86_64 .x86_64
+Download_Packages $1  x  x x x x   Fedora_13       i586   .i386
+Download_Packages $1  x  x x x x   Fedora_13       x86_64 .x86_64
+Download_Packages $1  x  x x x x   Mandriva_2008   i586   .i586
+Download_Packages $1  x  x x x x   Mandriva_2008   x86_64 .x86_64
+Download_Packages $1  x  x x x x   Mandriva_2009   i586   .i586
+Download_Packages $1  x  x x x x   Mandriva_2009   x86_64 .x86_64
+Download_Packages $1  x  x x x x   Mandriva_2009.1 i586   .i586
+Download_Packages $1  x  x x x x   Mandriva_2009.1 x86_64 .x86_64
+Download_Packages $1  x  x x x x   Mandriva_2010   i586   .i586
+Download_Packages $1  x  x x x x   Mandriva_2010   x86_64 .x86_64
+Download_Packages $1  x  x x x x   RHEL_5          i586   .i386
+Download_Packages $1  x  x x x x   RHEL_5          x86_64 .x86_64
+Download_Packages $1  x  x x x x   openSUSE_11.0   i586   .i586
+Download_Packages $1  x  x x x x   openSUSE_11.0   x86_64 .x86_64
+Download_Packages $1  x  x x x x   openSUSE_11.1   i586   .i586
+Download_Packages $1  x  x x x x   openSUSE_11.1   x86_64 .x86_64
+Download_Packages $1  x  x x x x   openSUSE_11.2   i586   .i586
+Download_Packages $1  x  x x x x   openSUSE_11.2   x86_64 .x86_64
+}
+
+
+bwfmetaeditv="1.1.0"
+destversion="1"
+
+Download_Global 14.1

@@ -1,0 +1,180 @@
+Notes:
+------
++ Added
+- Deleted
+x Correction
+
+Version 1.1.0, 2010-05-31
+--------------
++ conformance_point_document.xsd filled
++ #120, Preferences system
++ #112, Change licensing statement
++ #111, Change wording of headline
++ #94, Ability to close many files
++ #95, Tooltips for column headers
++ #96, Progress bar for read and write
++ #121, Preserve bext version value through edits, possibility to set bext version
++ #19, Sortable columns
++ #113, allow selection of BWF MetaEdit log directory from preferences
++ #102, add FLLR when creating bext or list at front of file for first time
++ XML chunks, Import context menu
++ New set of icons
+x #106, Spelling: Reset Field Fizes
+x #105, Fix broken links to EBU docs in the help pages
+x #109, When Core XMl is exported from BWF MetaEdit, but when it's reimported, line breaks are handled unexpectedly.
+x #108, Additional line breaks when copy/paste in xml dialog editor (Linux/Mac only)
+
+Version 1.0.0, 2010-01-23
+--------------
++ Tagging v0.3.4 as v1.0.0
++ Final license in all source files
+
+Version 0.3.4, 2010-01-22
+--------------
++ Contact page
+x Crash with some specific CodingHistory text
+x Import wasn't updating fields
+
+Version 0.3.3, 2010-01-21
+--------------
++ Documentation
+x MD5 options  glitches
+
+Version 0.3.2, 2010-01-21
+--------------
++ Windows 64 bit version
++ Qt 4.6.1 update (Mac OS X / Windows)
+x Originator modification was replacing IARL in all cases, now only if FADGI rules
+x MD5 "Verify" didn't update the current view if "Evaluate" was already checked.
+x Filler chunks are tested whatever is the case (lower case and upper case)
+x Mac OS X: the window bar was not displayed
+
+Version 0.3.1, 2010-01-19
+--------------
++ Linux packages (.deb / .rpm)
++ Qt 4.6 update (Mac OS X / Windows)
++ Mac OS X packages (.dmg)
+
+Version 0.3.0, 2010-01-17
+--------------
++ CLI code is updated
++ Code cleanup, refactoring, more maintenable
++ License text with all the third-party software licenses
++ Place expanded BEXT and LIST-INFO chunks at the end of the file
+x GUI incoherencies (delete button on some fields, options configured only before file opening...)
+x BWF UUID was wrongly saved if it contains numbers between A and F
+
+Version 0.2.5, 2010-01-08
+--------------
++ #87, Fingerprint (MD5)
+x #100, malformed output if "place new or expanded chunks at the end" is selected
+x Crash while importing CSV file without enough commas per line
+
+Version 0.2.4, 2010-01-07
+--------------
++ #91, remove ICRP
++ #97, new software description 
++ #98, update to FADGI validation rules (Originator)
+x #90, right click on ICRD, select set to creation timestamp produces unexpected results
+x #93, FADGI validation rules incorrect for OriginationTime (must accept HH)
+
+Version 0.2.3, 2010-01-06
+--------------
++ Renamed to BWF MetaEdit
++ #88, change naming of Unmanagedchunks
++ License.html is updated
+x #92, Options>Reject if existing data must be overwritten crashes
+x #89, crash when right-click on non-active white space
+x Last version could not save modified files (Windows only)
+
+Version 0.2.2, 2009-12-22
+--------------
++ #86, IDIM dropped
++ #82, some wording are changed
+x XML input: handled by tinyXml
+x XML output: carriage return encoding issue
+x XML output: special characters were not escaped
+x #85, Format column was wrong if no-Wave file (other RIFF files are now rejected)
+x #84, Problem when sofwtware must write the complete file (Mac/Linux issue)
+x #83, Cant save after UMID edit
+
+Version 0.2.1, 2009-12-17
+--------------
+x OriginationDate/Time: BWF recommendations were wrongly in BWF requirements
+x .wav extension filtering was case sensitive
+x Crash in writing (Linux/Mac only)
+x Color update forcing when rules are changed (Mac issue)
+x Date edition: was displaying current date if invalid input, display now text
+x context menu for Origination Date/Time wasn't display well formed date/time proposal (Mac issue)
+x if 2 fields of a file were modified, there was a warning "file not saved" even if the file was actually saved
+
+Version 0.2.0, 2009-12-15
+--------------
++ Improved writing support (no complete file rewrite if not needed)
++ RF64 support (read/write/RIFF to RF64)
++ Resize/Removal/Adaptation of padding chunks (all padding chunks are replaced by a single FLLR chunk)
++ XML conformance point document import
++ XML output/input: handling of carriage return
++ "Format" is renamed "CodecID", new format field ("Wave" or "Wave (RF64)")
++ Tech/bext and Tech/INFO are updated depends of modifications, and color is added
++ Tech: new "UnmanagedChunks" field for mor details about the file
+x Inconsistant behaviour for Tech XML field when reloading a file
+x Better logic for TimeReference display ("0" or empty string rules)
+x OriginationTime: value was not displayed if the value was valid and not 00:00:00
+x Reorganization of Log of Operations and errors (was a bit confused in latest version)
+
+Version 0.1.7, 2009-12-11
+--------------
++ #75, add warning to xml chunk edit window
++ #74, provide a method to close single file from list
+x #76, refreshing display after changing rules
+x #73, UMID were always invalid
+x #72, Crash when codinghistory rules are enabled and core view (Mac only)
+x #71, "skip files with no .wav extension" was not working
+
+Version 0.1.6, 2009-12-11
+--------------
++ #66, FAGDI rules
++ #63, Case of columns are normalized
++ #62, Change toolbar wording
++ #60, some INFO fields are dropped
++ #58, "New chunks at the end of the file" options
+x #69, XML names were containing invalid characters
+x #68, GUI display problem with import
+x #67, Global CSV export problem
+x #65, TimeReference problem
+x #64, Problem when more characters than possible were filled in a GUI field
+x #61, Shortcut to "Close files"
+x TimeEdit, only HH:MM was display, not seconds (Mac only)
+
+Version 0.1.5, 2009-11-18
+--------------
++ timereference display (if no bext, blank, else 0)
++ timereference data entry options
++ change "Keys" to "Core"
++ Report bext version
++ "Close" menu, "Open"/Drag n drop do not close automaticly the current files
++ Undo feature (based on CSV files)
+x Error in R99-1999 validation
+
+Version 0.1.4, 2009-11-11
+--------------
++ Log: displaying "Tech" view in case of Open error, with info per file
++ Date/Time: better handling of "Set to xxx"
++ Date/Time: combined Date/Time for context menu
++ Keys table: Added contect menu "Clear value"
++ "Fill all open files with this field value": fills history
+x bext History is renamed CodingHistory
+x History is available in all cases
+
+Version 0.1.3, 2009-11-10
+--------------
++ Log: Added "Information+Errors" view
++ Technical view: 2 columns "Information" and "Errors"
++ By default, file are displayed in tech view even if they have a problem, so errors can be viewed easily in the "Error" column of tech view
++ CSV import is fixed
++ Refactoring of some code, for better future maintenance
+
+Version 0.1.2, 2009-11-04
+--------------
++ 

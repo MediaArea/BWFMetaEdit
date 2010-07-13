@@ -1,0 +1,38 @@
+#! /bin/sh
+
+#-----------------------------------------------------------------------
+# $1=OS, $2=Platform
+Release_CLI()
+{
+#-----------------------------------------------------------------------
+# Clean up
+test -e BWF_MetaEdit_CLI_$1_$2.tar     && rm    BWF_MetaEdit_CLI_$1_$2.tar
+test -e BWF_MetaEdit_CLI_$1_$2.tar.bz2 && rm    BWF_MetaEdit_CLI_$1_$2.tar.bz2
+test -d BWF_MetaEdit_CLI_$1_$2         && rm -r BWF_MetaEdit_CLI_$1_$2
+mkdir   BWF_MetaEdit_CLI_$1_$2
+
+#-----------------------------------------------------------------------
+# Copying : Exe
+cp ../Project/GNU/CLI/bwfmetaedit BWF_MetaEdit_CLI_$1_$2/bwfmetaedit
+cd BWF_MetaEdit_CLI_$1_$2
+strip bwfmetaedit
+cd ..
+
+#-----------------------------------------------------------------------
+# Copying : Information file
+cp ../License.html BWF_MetaEdit_CLI_$1_$2/
+cp ../History_CLI.txt BWF_MetaEdit_CLI_$1_$2/History.txt
+cp ../conformance_point_document.xsd BWF_MetaEdit_CLI_$1_$2/
+cp ReadMe_CLI_$1.txt BWF_MetaEdit_CLI_$1_$2/ReadMe.txt
+
+#-----------------------------------------------------------------------
+# Compressing Archive
+tar jchf BWF_MetaEdit_CLI_$1_$2.tar.bz2 BWF_MetaEdit_CLI_$1_$2
+
+#-----------------------------------------------------------------------
+# Clean up
+#if "%1"=="SkipCleanUp" goto SkipCleanUp
+#rm -r BWF_MetaEdit_CLI_$1_$2
+#:SkipCleanUp
+}
+

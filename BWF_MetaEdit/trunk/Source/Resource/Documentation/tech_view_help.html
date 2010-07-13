@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+ <title>Technical Metadata</title> 
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+</head> 
+<body> 
+<h3>Technical Metadata</h3>The Technical Metadata view displays information about each file (in either a CSV document or a table) including the file size, metadata from the &lt;fmt &gt; chunk, the existence of key metadata chunks, and file warnings.
+<table border="1">
+<tr><th>Value Name</th><th>Description</th></tr><tr><td>FileName</td>
+<td>In order to provide a concise presentation the filepaths are displayed from the directory path where the files diverge. Thus if two files are opened from <b>/HardDrive1/audiofiles/music/audiofile.wav</b> and <b>/HardDrive1/audiofiles/spokenword/audiofileB.wav</b> then these will be displayed in the table view as <b>/music/audiofile.wav</b> and <b>/spokenword/audiofileB.wav</b> since the <b>/HardDrive1/audiofiles</b> section of the Filepath is common to the open files.<br/>The CSV version of the Technical Metadata view displays the full filepath to each file.</td></tr><tr><td>FileSize</td><td>The size of the audio file in bytes.</td></tr><tr><td>Format</td>
+<td>This value represents the type of compression utilized within the audio data. Below is a sample of compression codes:	<table border="0">		<tr><td>0000</td><td>Unknown</td></tr>		<tr><td>0001</td><td>PCM / Uncompressed</td></tr>		<tr><td>0002</td><td>Microsoft ADPCM</td></tr>		<tr><td>0006</td><td>ITU G.711 a-law</td></tr>		<tr><td>0007</td><td>ITU G.711 Aµ-law</td></tr>		<tr><td>0011</td><td>IMA ADPCM</td></tr>		<tr><td>0016</td><td>ITU G.723 ADPCM (Yamaha)</td></tr>		<tr><td>0031</td><td>GSM 6.10</td></tr>		<tr><td>0040</td><td>ITU G.721 ADPCM</td></tr>		<tr><td>0050</td><td>MPEG</td></tr>		<tr><td>FFFF</td><td>Experimental</td></tr>
+	</table></td></tr><tr><td>Channels</td>
+<td>The number of audio signals that are encoded in the audio data. A value of '1' indicates mono audio, '2' for stereo, etc.</td></tr><tr><td>SampleRate</td>
+<td>The number of audio samples per second.</td></tr><tr><td>BitRate</td>
+<td>The number of bits utilized per second of audio.</td></tr><tr><td>BitsPerSample</td>
+<td>The number of bits utilized to produce one sample of audio.</td></tr><tr><td>Duration</td>
+<td>The total playing time for the audio data, displayed in HH:MM:SS.mmm (hours, minutes, seconds, milliseconds)</td></tr><tr><td>Bext</td>
+<td>This column notes the existence of the &lt;bext&gt; chunk by either stating 'No', 'Version 0' or 'Version 1' (indicated of the version of bext chunk utilized).</td></tr><tr><td>INFO</td>
+<td>Notes the existence of the INFO chunk, either 'Yes' or 'No'.</td></tr><tr><td>XMP</td>
+<td>Notes the existence of the XMP chunk, either 'Yes' or 'No'. Right-click on this cell provides options to <i>Import</i>, <i>Export</i>, or <i>Remove</i> xml data. Doubling-clicking on the cell brings a text editor. Changes are not made until the file is saved.</td></tr><tr><td>aXML</td>
+<td>Notes the existence of the aXML chunk, either 'Yes' or 'No'. Right-click on this cell provides options to <i>Import</i>, <i>Export</i>, or <i>Remove</i> xml data. Doubling-clicking on the cell brings a text editor. Changes are not made until the file is saved.</td></tr><tr><td>iXML</td>
+<td>Notes the existence of the iXML chunk, either 'Yes' or 'No'. Right-click on this cell provides options to <i>Import</i>, <i>Export</i>, or <i>Remove</i> xml data. Doubling-clicking on the cell brings a text editor. Changes are not made until the file is saved.</td></tr>
+<tr><td>MD5</td>
+<td>If an MD5 chunk exists, this column will show the stored value. This MD5 value is a checksum of the audio data only (starting after the &lt;data&gt; chunk identifier and size) and does not include the file's metadata or any other chunk.</td></tr>
+<tr><td>MD5 evaluated</td>
+<td>If the MD5 is evaluated it will appear in this column. Any conflict between this column and the 'MD5' column indicates a change in the audio data portion of the file between the current evaluation and the stored evaluation.</td></tr><tr><td>Errors</td>
+<td>Provides statements about potential structural problems with a given audio files: for instance if the RIFF size statement conflicts with the actual file size or if the audio files does not utilize padding bytes to follow odd byte length chunks.</td></tr><tr><td>Information</td>
+<td>Used for status notes and technical information during operation.</td></tr>
+</table>
+</body>
+</html>
