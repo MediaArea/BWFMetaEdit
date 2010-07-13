@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+ <title>Validation Rules</title> 
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+</head> 
+<body> 
+<h3>Validation Rules</h3>
+
+BWF MetaEdit incorporates various set of rules which may be enforced or disabled while editing metadata. For instance data entry for BEXT Coding History may be constrained to follow <a href="http://tech.ebu.ch/docs/r/r098.pdf">EBU Technical Recommendation R98-1999</a> or, if these rules are disabled, the data entry can be performed within one large text field (as many audio applications do).<br/>BWF MetaEdit responds to rules and recommendations outlined by EBU, Microsoft, and the Federal Agencies Digitalization Guidelines Initiative in order to warn or prevent the user from entering metadata that does not comply with any validation rules. These rules may be disabled as needed but are recommended in order to facilitate the generation of standardized files. For each set of validation rules, BWF MetaEdit performs the following tests and displays any existing embedded metadata or changes in red if they do not follow the enabled rules or green if the changed value is acceptable to the selected rules.
+
+
+<h3>BWF (EBU Technical Specification 3285) Requirements and Recommendations</h3>
+
+See <a href="http://tech.ebu.ch/docs/tech/tech3285.pdf">EBU Technical Specification 3285</a>.
+
+<h4>Requirements</h4><ul><li>OriginationDate: Ten ASCII characters. The format is "yyyy-mm-dd" (year-month-day); Year is defined from 0000 to 9999; Month is define [sic] from 1 to 12; Day is defined from 1 to 28,29,30 or 31.</li></ul>
+
+The following rules may not be disabled:
+<ul>
+<li>The Description field must not exceed 256 bytes of ASCII characters.</li>
+<li>The Originator field must not exceed 32 bytes of ASCII characters.</li>
+<li>The OriginatorReference field must not exceed 32 bytes of ASCII characters.</li>
+<li>The OriginationDate field must not exceed 10 bytes of ASCII characters.</li>
+<li>The OriginationTime field must not exceed 8 bytes of ASCII characters.</li>
+<li>The TimeReference field must not exceed 8 bytes, stored as a 64 bit value.</li>
+<li>The BextVersion field must either be '0' or '1' (stored as 0x0000 or 0x0001).</li>
+<li>The UMID field must not exceed 64 bytes.</li>
+</ul>
+
+<h4>Recommendations</h4>OriginationDate: The separator between the items can be anything but it is recommended that one of the following characters is used hyphen, underscore, colon, space, or stop.
+
+<h3>BWF OriginatorReference (R99-1999) recommendations</h3>
+
+see <a href="http://tech.ebu.ch/docs/r/r099.pdf">EBU Technical Recommendation R99-1999</a>.These rules pertain specifically to the formatting of originatorReference.<ul>
+<li>OriginatorReference must be 32 characters long.</li>
+<li>Characters 0-1 (country code) must be between A and Z. See <a href="http://www.iso.org/iso/country_codes.htm">ISO 3166 Country Codes</a> [note: is there a declaration that ISO 3166 must be expressed as uppercase?]</li>
+<li>Characters 2-4 (facility code) "shall be a three-character code consisting of uppercase alphabetic or numeric characters (i.e.: A-Z, 0-9) in any acceptable combination (see page 6 of <a href="http://tech.ebu.ch/docs/tech/tech3279.pdf">EBU Technical Specification 3279</a>)</li>
+<li>Characters 5-16 (serial number) any ASCII characters</li>
+<li>Characters 17-22 (OriginationTime) should be a copy of OriginationTime without delimiters. Follow same validation rules as OriginationTime (ie 00-23 and 00-59)</li>
+<li>Characters 23-31 (random) no rules</li>
+</ul>
+
+<h3>BWF Coding History (EBU Technical Specification R98-1999) Recommendations</h3>
+
+See <a href="http://tech.ebu.ch/docs/r/r098.pdf">EBU Technical Specification R98-1999</a>.
+
+<ul>
+<li>The Coding Algorithm must be prefaced with "A=" and be either ANALOGUE, PCM, MPEG1L1, MPEG1L2, MPEG1L3, MPEG2L1, MPEG2L2, or MPEG2L3.</li>
+<li>The Sampling Frequency must be prefaced with "F=" either 11000, 22050, 24000, 32000, 44100, or 48000.</li>
+<li>The Bit Rate must be prefaced with "B=" either 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256, 320, 352, 384, 416, or 448.</li>
+<li>The Word Length must be prefaced with "W=" either 8, 12, 14, 16, 18, 20, 22, 24, or 32.</li>
+<li>The Mode must be prefaced with "M=" either mono, stereo, dual-mono, or joint-stereo.</li>
+<li>The Text (free string) must be prefaced with "T=" and contain no commas (ASCII 0x2C).</li>
+<li>Expressions of Coding Algorithm, Sampling Frequency, Bit Rate, Word Length, Mode and Text String must be separated with a single comma (ASCII 0x2C).</li>
+<li>Each row must be terminated by CR/LF.</li>
+<li>The Bit Rate value may only be utilized if the Coding Algorithm states MPEG encoding.</li>
+<li>The Coding History must not contain any characters that are not referenced by one of the other rules above.</li>
+</ul>
+
+<h3>INFO (Microsoft definition)</h3>
+
+<h4>Requirements</h4>
+
+ICMD: The ICMD field must not contain line breaks.
+
+<h4>Recommendations</h4>
+
+ICRD: The ICRD field must be in YYYY, YYYY-MM, YYYY-MM-DD format or initiate with a YYYY-MM-DD formatted string and then include additional free text.
+
+<h3>Federal Agencies Digitization Guidelines Initative recommendations</h3>
+
+<ul><li>If LIST-INFO and BEXT chunks are present then the value for IARL must equal the BEXT value for description. When the FADGI set of rules are enabled then edits to the 'Originator' field in the 'Core' table will also edit the IARL field.</li>
+<li>Description: The BEXT value for description must not be empty.</li>
+<li>Originator: The BEXT value for originator may not be empty and must be at least four characters long. The BEXT value for originator must start with two capital letters followed by a space.</li>
+<li>OriginatorReference: The BEXT value for OriginatorReference must not be empty.</li>
+<li>OriginationDate: The FADGI recommendations overrule the BWF requirements for the BEXT value for originationDate. The originationDate does not need to contain 10 characters, but may utilize YYYY, YYYY-MM, or YYYY-MM-DD format.</li>
+<li>OriginationTime: The FADGI recommendations overrule the BWF requirements for the BEXT value for originationTime. The originationTime does not need to contain 8 characters, but may utilize HH, HH-MM, or HH-MM-SS format.</li>
+<li>IARL: If the INFO-LIST chunk is used, IARL must not be empty and equal the value of the BEXT originator field.</li>
+<li>ICRD: If the INFO-LIST chunk is used, ICRD must follow ISO 8601</li>
+</ul>
+<h3>Inheritance of Rules</h3>
+
+Use of the FADGI recommendations assumes the use of BWF recommendations.
+Use of the BWF recommendations assumes the use of BWF requirements.
+Use of the Microsoft recommendations assumes the use of Microsoft requirements.
+</body>
+</html>

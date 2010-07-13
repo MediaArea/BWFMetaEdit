@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+ <title>Sample Workflows</title> 
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+</head> 
+<body> 
+<h3>Sample Workflows</h3>
+<h4>Workflow #1: Editing Existing Metadata</h4>
+Objective: Review existing embedded metadata in a set of audio files and make adjustments.
+<ol>
+<li>Under the Options toolbar menu, make sure that 'Skip files with no .wav extension' is enabled.</li>
+<li>Open a set of files in BWF MetaEdit, either through dragging each file into the BWF MetaEdit window or selecting the Open Directory option.</li>
+<li>Review the open files and the 'Log of Errors' for any technical errors that may have occurred while BWF MetaEdit read the files.</li>
+<li>Under the Rules toolbar menu enable the Validation Sets that you would like your metadata to comply with.</li>
+<li>In the Core View, review any existing metadata that does not comply with the selected validation rules. It will appear in red.</li>
+<li>Make any desired changes or additions to the embedded metadata in the Core View. For instance, inconsistencies in the use of Originator could be fixed by right-clicking on an accurate value and selecting 'Fill All Open Files with this Value'.</li>
+<li>Optionally, export the entire Core Document as a CSV file in order to open it in an external spreadsheet application for further edits. Then import the saved CSV document back into BWF MetaEdit.</li>
+<li>Under the File Menu, select 'Save Modified Files'.</li>
+<li>Review the Log of Operations and Errors for any problems that may have occurred during the save operation.</li>
+</ol>
+
+<h4>Workflow #2: Inserting Metadata From an External Source</h4>
+Objective: Take metadata from an external resource and embed that data into a set of audio files.
+<ol>
+<li>Starting with an existing spreadsheet of metadata, map each column to a BEXT or LIST-INFO value.</li>
+<li>Add a primary row to the spreadsheet that contains an allowable BEXT or LIST-INFO value that corresponds to the data in that column. For instance a column of values listing file identifiers may be header with a column title of 'OriginatorReference'.</li>
+<li>Ensure that the spreadsheet contains a column called 'FileName' that contains a full filepath to the audio file that that particular row describes.</li>
+<li>Save the spreadsheet as a CSV.</li>
+<li>Import the CSV into BWF MetaEdit.</li>
+<li>Review the open files and the 'Log of Errors' for any technical errors that may have occurred while BWF MetaEdit read the CSV.</li>
+<li>Under the Rules toolbar menu enable the Validation Sets that you would like your metadata to comply with.</li>
+<li>In the Core View, review any existing metadata that does not comply with the selected validation rules. It will appear in red.</li>
+<li>Make any desired changes or additions to the embedded metadata in the Core View. For instance, inconsistencies in the use of Originator could be fixed by right-clicking on an accurate value and selecting 'Fill All Open Files with this Value'.</li>
+<li>Under the File Menu, select 'Save Modified Files'.</li>
+<li>Review the Log of Operations and Errors for any problems that may have occurred during the save operation.</li>
+</ol>
+</body>
+</html>

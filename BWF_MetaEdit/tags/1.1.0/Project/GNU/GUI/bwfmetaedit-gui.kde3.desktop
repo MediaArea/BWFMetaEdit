@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=bwfmetaedit-gui.desktop
+Encoding=UTF-8
+ServiceTypes=video/*
+Actions=bwfmetaedit-gui
+X-KDE-Priority=TopLevel
+
+[Desktop Action bwfmetaedit-gui]
+Name=BWF MetaEdit
+GenericName=Media Editor
+Exec=bwfmetaedit-gui %u
+Icon=bwfmetaedit

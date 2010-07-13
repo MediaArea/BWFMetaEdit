@@ -1,0 +1,25 @@
+Source: bwfmetaedit
+Priority: optional
+Maintainer: Jerome Martinez <info@mediaarea.net>
+Build-Depends: debhelper (>= 5), tofrodos, libqt4-dev, pkg-config, automake, autoconf, libtool
+Standards-Version: 3.7.3
+Section: libs
+Homepage: http://mediainfo.sourceforge.net
+
+Package: bwfmetaedit
+Section: utils
+Architecture: any
+Depends: 
+Description: BWF MetaEdit provides:
+ .
+ (To be filled)
+
+Package: bwfmetaedit-gui
+Section: utils
+Architecture: any
+Depends: libqt4-gui
+Description: BWF MetaEdit provides:
+ .
+ (To be filled)
+ .
+ This package contains the graphical user interface

@@ -1,0 +1,23 @@
+This package was debianized by Jerome Martinez <info@mediaarea.net> on
+Fri, 01 Jan 2010 01:00:00 +0000.
+
+It was downloaded from <http://mediainfo.sourceforge.net>
+
+Upstream Author(s):
+
+    Library of Congress
+
+Copyright:
+
+    (c) 2010 Federal Agencies Digitization Guidelines Initiative
+
+License:
+
+    BSD
+
+The Debian packaging is (C) 2010, Federal Agencies Digitization
+Guidelines Initiative and is licensed under the BSD,
+see `/usr/share/common-licenses/BSD'.
+
+# Please also look if there are files or directories which have a
+# different copyright/license attached and list them here.

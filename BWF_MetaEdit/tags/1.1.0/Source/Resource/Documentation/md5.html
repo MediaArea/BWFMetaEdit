@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+ <title>Audio Data Checksums</title> 
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+</head> 
+<body> 
+<h3>Audio Data Checksums</h3>
+A checksum is essentially a fingerprint for a given file used for data integrity monitoring. An MD5 is one type of checksum. When an MD5 checksum is generated it produces a 32 character value which represents a unique code (or fingerprint) called a hash value, which is specific to that file. If any changes are made to that file and a checksum is generated again it will produce a different 32 character value. If nothing in a file changes and a checksum is generated again, the values will be the same. A traditional whole-file checksum would be altered every time BWF MetaEdit adds or edits metadata in the file. Therefore a whole-file checksum does not help with verifying the integrity of the audio within the file. While the metadata is expected to change, the audio data is not. For this reason BWF MetaEdit supports the generation of an audio-data-only checksum (including the entire &lt;data&gt; chunk, excluding the chunk id, size declaration, and any optional padding byte). This will create a hash value for only the audio portion of the file which helps validate the integrity of the audio but allows for alteration of the metadata.<br/><br/>
+
+BWF MetaEdit includes an Option called 'Evaluate MD5 for audio data'. When this is enabled BWF MetaEdit will generate an MD5 checksum for the audio data of any file that is opened and populate the <i>MD5Evaluated</i> column of the Technical View.<br/><br/>
+
+Another option called 'Embed MD5 for audio data' will generate an MD5 checksum for the audio data <b>and</b> then store it directly within the file in an MD5 chunk within the file using the id &lt;MD5 &gt;. The declared size of this chunk is always 16 bytes.<br/><br/>
+
+When BWF MetaEdit opens an audio file it will immediately display any checksum stored in the &lt;MD5 &gt; chunk in the <i>MD5Stored</i> column. If open audio files already include an &lt;MD5 &gt; chunk then running 'Evaluate MD5 for audio data' will re-evaluate the checksum and display the results in the <i>MD5Evaluated</i> column. This will demonstrate any conflicts between the stored checksum and the newly evaluated checksum in order to verify the integrity of the audio data. A discrepancy between the stored and evaluated checksum indicates that the audio data was somehow altered since the last checksum was embedded either through editing or error. If you wish to overwrite an existing embedded checksum value with a newly generated checksum value make sure that 'Embed MD5 for audio data' is selected.
+
+</body>
+</html>

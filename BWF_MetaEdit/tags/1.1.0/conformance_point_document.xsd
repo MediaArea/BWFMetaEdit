@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<!--
+     This schema presents the  valid structre for an XML import into BWF MetaEdit 1.1 or higher
+     http://www.digitizationguidelines.gov/audio-visual/documents/wave_metadata.html
+     Last Edited: 2010-05-28
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xsd:element name="conformance_point_document">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="unbounded" minOccurs="0" name="File">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element maxOccurs="1" minOccurs="0" name="Core">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="Description">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:maxLength value="256"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="Originator">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:maxLength value="32"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="OriginatorReference">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:maxLength value="32"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="OriginationDate">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:maxLength value="10"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="OriginationTime">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:maxLength value="8"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="TimeReference_translated" type="xsd:time"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="TimeReference" type="xsd:nonNegativeInteger"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="BextVersion">
+                    <!-- if the UMID field is used then BextVersion value is ignored and '1' is used -->
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:nonNegativeInteger">
+                          <xsd:pattern value="[0-1]"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="UMID">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:pattern value="[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="CodingHistory" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="IARL" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="IART" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ICMS" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ICMT" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ICOP" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ICRD" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="IENG" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="IGNR" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="IKEY" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="IMED" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="INAM" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="IPRD" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ISBJ" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ISFT" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ISRC" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ISRF" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ITCH" type="xsd:string"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

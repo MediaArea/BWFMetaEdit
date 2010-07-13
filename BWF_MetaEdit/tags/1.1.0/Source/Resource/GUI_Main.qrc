@@ -1,0 +1,24 @@
+ <!DOCTYPE RCC><RCC version="1.0">
+ <qresource><file>Image/Menu/File_Open_File.png</file></qresource>
+ <qresource><file>Image/Menu/File_Open_Directory.png</file></qresource>
+ <qresource><file>Image/Menu/File_Save.png</file></qresource>
+ <qresource><file>Image/Menu/View_Technical.png</file></qresource>
+ <qresource><file>Image/Menu/View_Core.png</file></qresource>
+ <qresource><file>Image/Menu/Options_Prefs.png</file></qresource>
+ <qresource><file>Image/Menu/Help.png</file></qresource>
+ <qresource><file>Image/Menu/About.png</file></qresource>
+ <qresource><file>Image/FADGI/Logo.png</file></qresource>
+ <qresource><file>Documentation/index.html</file></qresource>
+ <qresource><file>Documentation/bext.html</file></qresource>
+ <qresource><file>Documentation/core_doc_help.html</file></qresource>
+ <qresource><file>Documentation/errors.html</file></qresource>
+ <qresource><file>Documentation/listinfo.html</file></qresource>
+ <qresource><file>Documentation/md5.html</file></qresource>
+ <qresource><file>Documentation/options.html</file></qresource>
+ <qresource><file>Documentation/tech_view_help.html</file></qresource>
+ <qresource><file>Documentation/trace.html</file></qresource>
+ <qresource><file>Documentation/validation_rules_help.html</file></qresource>
+ <qresource><file>Documentation/workflows.html</file></qresource>
+ <qresource><file>Documentation/xml_chunks.html</file></qresource>
+ <qresource><file>License.html</file></qresource>
+ </RCC>
