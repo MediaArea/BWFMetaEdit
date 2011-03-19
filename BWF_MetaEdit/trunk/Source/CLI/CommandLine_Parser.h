@@ -79,7 +79,7 @@ CL_OPTION(In_iXML_XML);
 CL_OPTION(Out_iXML_XML);
 
 //---------------------------------------------------------------------------
-CL_OPTION(MD5_Evaluate);
+CL_OPTION(MD5_Generate);
 CL_OPTION(MD5_Verify);
 CL_OPTION(MD5_Embed);
 CL_OPTION(MD5_Embed_Overwrite);

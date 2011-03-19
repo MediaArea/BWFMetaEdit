@@ -268,7 +268,7 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_FileNotValid_Skip          ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_FileNotValid_Skip(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_WrongExtension_Skip        ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_WrongExtension_Skip(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_NewChunksAtTheEnd          ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_NewChunksAtTheEnd(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Evaluate                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EvaluateMD5(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Generate                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_GenerateMD5(bool)));
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Verify                      ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyMD5(bool)));
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5(bool)));
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)));
@@ -301,7 +301,6 @@ void GUI_Main::Menu_Create()
     Menu_Help->addSeparator();
     Menu_Help->addAction(Menu_Help_About);
     Menu_Help->addAction(Menu_Help_FADGI_Website);
-
 }
 
 //***************************************************************************
@@ -904,14 +903,14 @@ void GUI_Main::OnMenu_Options_NewChunksAtTheEnd(bool)
 }
 
 //---------------------------------------------------------------------------
-void GUI_Main::OnMenu_Options_EvaluateMD5(bool)
+void GUI_Main::OnMenu_Options_GenerateMD5(bool)
 {
-    if (!C->EvaluateMD5 && C->Menu_File_Open_Files_Open_Get())
+    if (!C->GenerateMD5 && C->Menu_File_Open_Files_Open_Get())
     {
         QMessageBox MessageBox;
-        MessageBox.setWindowTitle("Evaluate MD5 for audio data");
+        MessageBox.setWindowTitle("Generate MD5 for audio data");
         MessageBox.setText("Some files are already open.");
-        MessageBox.setInformativeText("Do you want to evaluate MD5 for already open files?");
+        MessageBox.setInformativeText("Do you want to generate MD5 for already open files?");
         #if (QT_VERSION >= 0x040200)
             MessageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
             #if (QT_VERSION >= 0x040300)
@@ -923,10 +922,10 @@ void GUI_Main::OnMenu_Options_EvaluateMD5(bool)
         switch (MessageBox.exec())
         {
             case QMessageBox::Yes     : // Yes was clicked
-                                        C->EvaluateMD5=true;
+                                        C->GenerateMD5=true;
                                         C->Menu_File_Options_Update();
                                         C->Menu_File_Open_Files_Finish(); //TODO: progress bar
-                                        if (C->EvaluateMD5==false)
+                                        if (C->GenerateMD5==false)
                                         {
                                             Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->setChecked(false);
                                             //OnMenu_Options_EmbedMD5();
@@ -941,25 +940,25 @@ void GUI_Main::OnMenu_Options_EvaluateMD5(bool)
                                         else
                                             View_Refresh();
                                         break;
-            case QMessageBox::No      : // Yes was clicked
-                                        C->EvaluateMD5=true;
-                                        if (C->EvaluateMD5==false)
+            case QMessageBox::No      : // No was clicked
+                                        C->GenerateMD5=true;
+                                        if (C->GenerateMD5==false)
                                         {
                                             Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->setChecked(false);
                                             //OnMenu_Options_EmbedMD5();
                                         }
                                         break;
             case QMessageBox::Cancel  : // Cancel was clicked
-                                        C->EvaluateMD5=false;
-                                        Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Evaluate]->setChecked(false);
+                                        C->GenerateMD5=false;
+                                        Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Generate]->setChecked(false);
                                         break;
             default:                    ; // Should never be reached
         } 
     }
     else
     {
-        C->EvaluateMD5=Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Evaluate]->isChecked();
-        if (C->EvaluateMD5==false)
+        C->GenerateMD5=Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Generate]->isChecked();
+        if (C->GenerateMD5==false)
         {
             Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Verify]->setChecked(false);
             //OnMenu_Options_VerifyMD5();
@@ -975,9 +974,9 @@ void GUI_Main::OnMenu_Options_VerifyMD5(bool)
     C->VerifyMD5=Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Verify]->isChecked();
     if (C->VerifyMD5==true)
     {
-        Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Evaluate]->setChecked(true);
-        //OnMenu_Options_EvaluateMD5();
-        if (!C->EvaluateMD5)
+        Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Generate]->setChecked(true);
+        //OnMenu_Options_GenerateMD5();
+        if (!C->GenerateMD5)
         {
             Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Verify]->setChecked(false);
             //OnMenu_Options_VerifyMD5();
@@ -1003,20 +1002,41 @@ void GUI_Main::OnMenu_Options_EmbedMD5(bool)
     C->EmbedMD5=Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->isChecked();
     if (C->EmbedMD5==true)
     {
-        Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Evaluate]->setChecked(true);
-        //OnMenu_Options_EvaluateMD5();
-        if (!C->EvaluateMD5)
+        Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Generate]->setChecked(true);
+        if (!C->GenerateMD5)
         {
             Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->setChecked(false);
-            //OnMenu_Options_EmbedMD5();
         }
         C->Menu_File_Options_Update();
         View_Refresh();
     }
     else
     {
+        if (Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting]->isChecked())
+        {
+            QMessageBox MessageBox;
+            MessageBox.setWindowTitle("Embed MD5 for audio data");
+            MessageBox.setText("Know what you are doing.");
+            MessageBox.setInformativeText("Manual modification of this value is NOT recommended and will cause the file to fail audio MD5 verification if the value differs from the generated value. In other words, it's not a good idea to select this option unless you have good reason to do so. Do you want to disable MD5 overwriting?");
+            #if (QT_VERSION >= 0x040200)
+                MessageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                #if (QT_VERSION >= 0x040300)
+                    MessageBox.setDefaultButton(QMessageBox::Yes);
+                #endif // (QT_VERSION >= 0x040300)
+            #endif // (QT_VERSION >= 0x040200)
+            MessageBox.setIcon(QMessageBox::Warning);
+            MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+            switch (MessageBox.exec())
+            {
+                case QMessageBox::Yes     : // Yes was clicked
+                                            break;
+                case QMessageBox::No      : // No was clicked
+                                            return;
+                default:                    ; // Should never be reached
+            } 
+        }
+
         Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting]->setChecked(false);
-        //OnMenu_Options_EmbedMD5_AuthorizeOverWritting();
     }
 }
 
@@ -1026,8 +1046,31 @@ void GUI_Main::OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)
     C->EmbedMD5_AuthorizeOverWritting=Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting]->isChecked();
     if (C->EmbedMD5_AuthorizeOverWritting==true)
     {
+        if (!Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->isChecked())
+        {
+            QMessageBox MessageBox;
+            MessageBox.setWindowTitle("Embed MD5 for audio data");
+            MessageBox.setText("Know what you are doing.");
+            MessageBox.setInformativeText("Manual modification of this value is NOT recommended and will cause the file to fail audio MD5 verification if the value differs from the generated value. In other words, it's not a good idea to select this option unless you have good reason to do so. Do you want to enable embed MD5 for audio data?");
+            #if (QT_VERSION >= 0x040200)
+                MessageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                #if (QT_VERSION >= 0x040300)
+                    MessageBox.setDefaultButton(QMessageBox::Yes);
+                #endif // (QT_VERSION >= 0x040300)
+            #endif // (QT_VERSION >= 0x040200)
+            MessageBox.setIcon(QMessageBox::Warning);
+            MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+            switch (MessageBox.exec())
+            {
+                case QMessageBox::Yes     : // Yes was clicked
+                                            break;
+                case QMessageBox::No      : // No was clicked
+                                            return;
+                default:                    ; // Should never be reached
+            } 
+        }
+
         Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->setChecked(true);
-        //OnMenu_Options_EmbedMD5();
     }
     else
     {

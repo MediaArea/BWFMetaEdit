@@ -1,0 +1,314 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E3711417-8DF9-47DE-AADE-EA3832EA6BDC}</ProjectGuid>
+    <RootNamespace>GUI_Qt</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\Intermediate\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\Intermediate\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>QtCore.lib;QtGui.lib;qtmain.lib;winmm.lib;ws2_32.lib;imm32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../Qt/lib/MSVC2010/$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>QtCore.lib;QtGui.lib;qtmain.lib;winmm.lib;ws2_32.lib;imm32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../Qt/lib/MSVC2010/$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>QtCore.lib;QtGui.lib;qtmain.lib;winmm.lib;ws2_32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../Qt/lib/MSVC2010/$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>QtCore.lib;QtGui.lib;qtmain.lib;winmm.lib;ws2_32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../Qt/lib/MSVC2010/$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\GUI\Qt\App.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_About.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Help.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Table.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Text.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Menu.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_Log.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_Trace.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Table.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Text.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_UndoDialog.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx__Common.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Bext.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CodingHistoryDialog.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_DateDialog.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TextEditDialog.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TimeReferenceDialog.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Preferences.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_About.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Help.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_Core_Table.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_Core_Text.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_Ouput_Trace.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_Output_Log.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_Technical_Table.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_Technical_Text.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_UndoDialog.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_xxxx__Common.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_Bext.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_CodingHistoryDialog.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_DateDialog.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_TextEditDialog.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_TimeReferenceDialog.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Preferences.cpp" />
+    <ClCompile Include="_Automated\qrc_GUI_Main.cpp" />
+    <ClCompile Include="..\..\..\Source\Common\Common_About.cpp" />
+    <ClCompile Include="..\..\..\Source\Common\Core.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Base.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Base_Streams.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE__PMX.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_aXML.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_bext.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_data.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_ds64.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_FLLR.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_fmt_.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_INFO.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_INFO_xxxx.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_iXML.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_MD5_.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Handler.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Conf.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\CriticalSection.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Dir.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\File.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\FileName.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\InfoMap.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\int128s.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\int128u.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\MemoryDebug.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\OS_Utils.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Thread.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Translation.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Utils.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Ztring.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\ZtringList.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\ZtringListList.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\ZtringListListF.cpp" />
+    <ClCompile Include="..\..\..\Source\md5\md5.c" />
+    <ClCompile Include="..\..\..\Source\TinyXml\tinystr.cpp" />
+    <ClCompile Include="..\..\..\Source\TinyXml\tinyxml.cpp" />
+    <ClCompile Include="..\..\..\Source\TinyXml\tinyxmlerror.cpp" />
+    <ClCompile Include="..\..\..\Source\TinyXml\tinyxmlparser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Source\GUI\Qt\App.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_About.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Help.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Table.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Text.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_Log.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_stderr.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_Trace.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Table.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Text.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_UndoDialog.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx__Common.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Bext.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CodingHistoryDialog.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_DateDialog.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TextEditDialog.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TimeReferenceDialog.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Preferences.h" />
+    <ClInclude Include="..\..\..\Source\Common\Common_About.h" />
+    <ClInclude Include="..\..\..\Source\Common\Core.h" />
+    <ClInclude Include="..\..\..\Source\Riff\Riff_Base.h" />
+    <ClInclude Include="..\..\..\Source\Riff\Riff_Chunks.h" />
+    <ClInclude Include="..\..\..\Source\Riff\Riff_Handler.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\BitStream.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\BitStream_LE.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Conf.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Conf_Internal.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\CriticalSection.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Dir.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\File.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\FileName.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\InfoMap.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\int128s.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\int128u.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\MemoryDebug.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\OS_Utils.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Thread.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Trace.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Translation.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Utils.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Ztring.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\ZtringList.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\ZtringListList.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\ZtringListListF.h" />
+    <ClInclude Include="..\..\..\Source\md5\md5.h" />
+    <ClInclude Include="..\..\..\Source\TinyXml\tinystr.h" />
+    <ClInclude Include="..\..\..\Source\TinyXml\tinyxml.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BWF_MetaEdit_GUI.rc" />
+    <ResourceCompile Include="..\..\..\Source\GUI\Qt\GUI_Main.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -4,7 +4,7 @@ RequestExecutionLevel admin
 ; Some defines
 !define PRODUCT_NAME "BWF MetaEdit"
 !define PRODUCT_PUBLISHER "FADGI"
-!define PRODUCT_VERSION "1.1.0"
+!define PRODUCT_VERSION "1.1.1"
 !define PRODUCT_VERSION4 "1.1.1.0"
 !define PRODUCT_WEB_SITE "http://www.digitizationguidelines.gov"
 !define COMPANY_REGISTRY "Software\FADGI"
@@ -78,7 +78,7 @@ Section "SectionPrincipale" SEC01
   SetOutPath "$INSTDIR"
   CreateDirectory "$SMPROGRAMS\BWF MetaEdit"
   CreateShortCut "$SMPROGRAMS\BWF MetaEdit\BWF MetaEdit.lnk" "$INSTDIR\bwfedit-gui.exe" "" "" "" "" "" "BWF MetaEdit ${PRODUCT_VERSION}"
-  File "/oname=bwfedit-gui.exe" "..\..\Project\MSVC2008\GUI\Win32\Release\BWF_MetaEdit_GUI.exe"
+  File "/oname=bwfedit-gui.exe" "..\..\Project\MSVC2010\GUI\Win32\Release\BWF_MetaEdit_GUI.exe"
   File "/oname=History.txt" "..\..\History_GUI.txt"
   File "..\..\License.html"
   File  "/oname=ReadMe.txt""..\..\Release\ReadMe_GUI_Windows.txt"

@@ -58,7 +58,7 @@ options Groups[Group_Max]=
             {"Tech_aXML", "aXML", Type_CheckBox, true},
             {"Tech_iXML", "iXML", Type_CheckBox, true},
             {"Tech_MD5Stored", "MD5Stored", Type_CheckBox, true},
-            {"Tech_MD5Evaluated", "MD5Evaluated", Type_CheckBox, true},
+            {"Tech_MD5Generated", "MD5Generated", Type_CheckBox, true},
             {"Tech_Errors", "Errors", Type_CheckBox, true},
             {"Tech_Information", "Information", Type_CheckBox, true},
         },
@@ -130,10 +130,10 @@ options Groups[Group_Max]=
         "MD5",
         Option_MD5_Max,
         {
-            {"MD5_Evaluate", "Evaluate MD5 for audio data", Type_CheckBox, false},
+            {"MD5_Generate", "Generate MD5 for audio data", Type_CheckBox, false},
             {"MD5_Verify", "Verify MD5 for audio data", Type_CheckBox, false},
             {"MD5_Embed", "Embed MD5 for audio data", Type_CheckBox, false},
-            {"MD5_Embed_AuthorizeOverWritting", "Embed MD5 for audio data - Allow overwriting", Type_CheckBox, false},
+            {"MD5_Embed_AuthorizeOverWritting", "Allow overwriting of embedded MD5 value", Type_CheckBox, false},
         },
         true,
     },
@@ -306,6 +306,15 @@ void GUI_Preferences::OnLoad()
             return; //There is a problem
     }
 
+    //Legacy
+    if (Config("MD5Generated").empty())
+    {
+        Config("MD5Generated")=Config("MD5Generated");
+        Config.erase(Config.begin()+Config.Find("MD5Generated"));
+        Config.Save();
+    }
+
+    //Setting
     for (size_t Group=0; Group<Group_Max; Group++)
         for (size_t Option=0; Option<Groups[Group].Option_Size; Option++)
         {
@@ -483,7 +492,7 @@ void GUI_Preferences::OnClicked ()
 
                                                 //Loading new config
                                                 for (size_t Option2=0; Option2<Groups[Group].Option_Size; Option2++)
-                                                    Main->Menu_Fields_CheckBoxes[Group*options::MaxCount+Option2]->setChecked(CheckBoxes[Group*options::MaxCount+Option2]->isChecked());
+                                                    CheckBoxes[Group*options::MaxCount+Option2]->setChecked(Main->Menu_Fields_CheckBoxes[Group*options::MaxCount+Option2]->isChecked());
                                             }
                                             break;
                 case Type_RadioButton   :   if (Group!=Group_DefaultView)
@@ -491,7 +500,7 @@ void GUI_Preferences::OnClicked ()
                                             if (RadioButtons[Group_DefaultView*options::MaxCount+Option]->isChecked()!=Main->Menu_View_RadioButtons[Option]->isChecked())
                                             {
                                                 //Setting Main view preferences
-                                                Main->Menu_View_RadioButtons[Option]->setChecked(RadioButtons[Group_DefaultView*options::MaxCount+Option]->isChecked());
+                                                RadioButtons[Option]->setChecked(Main->Menu_View_RadioButtons[Group_DefaultView*options::MaxCount+Option]->isChecked());
                                             }
                                             break;
                 default                 : ;

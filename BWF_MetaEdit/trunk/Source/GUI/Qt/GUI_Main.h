@@ -147,7 +147,7 @@ public slots:
     void OnMenu_Options_FileNotValid_Skip           (bool);
     void OnMenu_Options_WrongExtension_Skip         (bool);
     void OnMenu_Options_NewChunksAtTheEnd           (bool);
-    void OnMenu_Options_EvaluateMD5                 (bool);
+    void OnMenu_Options_GenerateMD5                 (bool);
     void OnMenu_Options_VerifyMD5                   (bool);
     void OnMenu_Options_EmbedMD5                    (bool);
     void OnMenu_Options_EmbedMD5_AuthorizeOverWritting (bool);

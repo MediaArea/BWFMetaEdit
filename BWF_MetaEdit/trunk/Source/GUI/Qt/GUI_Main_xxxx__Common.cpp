@@ -324,21 +324,24 @@ void GUI_Main_xxxx__Common::Fill ()
         return;
     }
 
+    //Forcing reset, else this seems to be some Qt bug in the table display
+    setRowCount(0);
+    setColumnCount(0);
 
     //Filling - HorizontalHeader
-    setRowCount(List.size()-1);
+    setRowCount((int)List.size()-1);
     size_t ColumnMissing_Count=0;
     for (size_t Option=0; Option<Main->Preferences->Group_Options_Count_Get(Fill_Group()); Option++)
         if (!Main->Menu_Fields_CheckBoxes[Fill_Group()*options::MaxCount+Option]->isChecked())
             ColumnMissing_Count++;
-    setColumnCount(List[0].size()-1-ColumnMissing_Count);
+    setColumnCount((int)(List[0].size()-1-ColumnMissing_Count));
     ColumnMissing_Count=0;
     for (size_t Data_Pos=0; Data_Pos<List[0].size(); Data_Pos++)
         if (Data_Pos==0 || Main->Menu_Fields_CheckBoxes[Fill_Group()*options::MaxCount+Data_Pos-1]->isChecked())
         {
             QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(List[0][Data_Pos].To_Local().c_str()));
             Item->setToolTip(Columns_ToolTip(List[0][Data_Pos]));
-            setHorizontalHeaderItem(Data_Pos-ColumnMissing_Count, Item);
+            setHorizontalHeaderItem((int)(Data_Pos-ColumnMissing_Count), Item);
         }
         else
             ColumnMissing_Count++;
@@ -377,7 +380,7 @@ void GUI_Main_xxxx__Common::Fill ()
                 if (!C->IsValid_Get(FileName_Before+List[File_Pos][0])
                  || (Data_Pos<List[File_Pos].size() && !Fill_Enabled(FileName_Before+List[File_Pos][0], List[0][Data_Pos], List[File_Pos][Data_Pos])))
                     Item->setFlags(Item->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
-                setItem(File_Pos-1, Data_Pos-ColumnMissing_Count, Item);
+                setItem((int)File_Pos-1, (int)(Data_Pos-ColumnMissing_Count), Item);
             }
             else
                 ColumnMissing_Count++;

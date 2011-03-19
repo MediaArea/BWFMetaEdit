@@ -102,7 +102,7 @@ public:
     bool            Overwrite_Reject;
     bool            NoPadding_Accept;
     bool            NewChunksAtTheEnd;
-    bool            EvaluateMD5;
+    bool            GenerateMD5;
     bool            VerifyMD5;
     bool            EmbedMD5;
     bool            EmbedMD5_AuthorizeOverWritting;

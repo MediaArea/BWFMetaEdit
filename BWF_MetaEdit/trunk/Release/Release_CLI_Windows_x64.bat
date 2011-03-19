@@ -6,7 +6,7 @@ rmdir BWF_MetaEdit_CLI_Windows_x64 /S /Q
 mkdir BWF_MetaEdit_CLI_Windows_x64
 
 rem --- Copying : Exe ---
-xcopy ..\Project\MSVC2008\CLI\x64\Release\bwfmetaedit.exe BWF_MetaEdit_CLI_Windows_x64\ /S
+xcopy ..\Project\MSVC2010\CLI\x64\Release\bwfmetaedit.exe BWF_MetaEdit_CLI_Windows_x64\ /S
 
 rem --- Copying : Plugins ---
 xcopy ..\Source\Ressource\Plugin\Custom\* BWF_MetaEdit_CLI_Windows_x64\Plugin\Custom\ /S

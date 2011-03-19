@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8A1AE679-131A-493C-86CA-91179B0955A4}</ProjectGuid>
+    <RootNamespace>BWF_MetaEdit</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\Intermediate\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\Intermediate\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\Intermediate\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\Intermediate\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bwfmetaedit</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bwfmetaedit</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">bwfmetaedit</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">bwfmetaedit</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../../../Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)bwfmetaedit.exe</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../../../Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)bwfmetaedit.exe</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>../../../Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)bwfmetaedit.exe</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>../../../Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)bwfmetaedit.exe</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\CLI\CLI_Help.cpp" />
+    <ClCompile Include="..\..\..\Source\CLI\CLI_Main.cpp" />
+    <ClCompile Include="..\..\..\Source\CLI\CommandLine_Parser.cpp" />
+    <ClCompile Include="..\..\..\Source\Common\Common_About.cpp" />
+    <ClCompile Include="..\..\..\Source\Common\Core.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Base.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Base_Streams.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE__PMX.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_aXML.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_bext.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_data.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_ds64.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_FLLR.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_fmt_.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_INFO.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_INFO_xxxx.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_iXML.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_MD5_.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Handler.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Conf.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\CriticalSection.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Dir.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\File.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\FileName.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\InfoMap.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\int128s.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\int128u.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\MemoryDebug.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\OS_Utils.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Thread.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Translation.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Utils.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\Ztring.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\ZtringList.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\ZtringListList.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\ZtringListListF.cpp" />
+    <ClCompile Include="..\..\..\Source\MD5\md5.c" />
+    <ClCompile Include="..\..\..\Source\TinyXml\tinystr.cpp" />
+    <ClCompile Include="..\..\..\Source\TinyXml\tinyxml.cpp" />
+    <ClCompile Include="..\..\..\Source\TinyXml\tinyxmlerror.cpp" />
+    <ClCompile Include="..\..\..\Source\TinyXml\tinyxmlparser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Source\CLI\CLI_Help.h" />
+    <ClInclude Include="..\..\..\Source\CLI\CommandLine_Parser.h" />
+    <ClInclude Include="..\..\..\Source\Common\Common_About.h" />
+    <ClInclude Include="..\..\..\Source\Common\Core.h" />
+    <ClInclude Include="..\..\..\Source\Riff\Riff_Base.h" />
+    <ClInclude Include="..\..\..\Source\Riff\Riff_Chunks.h" />
+    <ClInclude Include="..\..\..\Source\Riff\Riff_Handler.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\BitStream.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\BitStream_LE.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Conf.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Conf_Internal.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\CriticalSection.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Dir.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\File.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\FileName.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\InfoMap.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\int128s.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\int128u.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\MemoryDebug.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\OS_Utils.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Thread.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Trace.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Translation.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Utils.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\Ztring.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\ZtringList.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\ZtringListList.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\ZtringListListF.h" />
+    <ClInclude Include="..\..\..\Source\MD5\md5.h" />
+    <ClInclude Include="..\..\..\Source\TinyXml\tinystr.h" />
+    <ClInclude Include="..\..\..\Source\TinyXml\tinyxml.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BWF_MetaEdit_CLI.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

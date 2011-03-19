@@ -104,7 +104,7 @@ std::string Help()
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;
-    ToDisplay<<"--MD5-Evaluate          Evaluate MD5 for audio data"<<std::endl;
+    ToDisplay<<"--MD5-Generate          Generate MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Verify            Verify MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Embed             Embed MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Embed-Overwrite   Embed MD5 for audio data - Allow overwriting"<<std::endl;
