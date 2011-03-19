@@ -17,13 +17,13 @@
 
 //---------------------------------------------------------------------------
 const char* NameVersion_HTML() {return
-"<a href=\"http://www.digitizationguidelines.gov\">Federal Agencies Digitization Guidelines Initiative (FADGI)</a> BWF MetaEdit 1.1.0"
+"<a href=\"http://www.digitizationguidelines.gov\">Federal Agencies Digitization Guidelines Initiative (FADGI)</a> BWF MetaEdit 1.1.1"
 ;}
 
 //---------------------------------------------------------------------------
 const char* NameVersion_Text() {return
 "Federal Agencies Digitization Guidelines Initiative (FADGI)\n"
-"BWF MetaEdit 1.1.0"
+"BWF MetaEdit 1.1.1"
 ;}
 
 //***************************************************************************
@@ -136,7 +136,7 @@ column_text Columns[]=
     {"aXML", "Notes the existence of the aXML chunk"},
     {"iXML", "Notes the existence of the iXML chunk"},
     {"MD5Stored", "If an MD5 chunk exists, this column will show the stored value. This MD5 value is a checksum of the audio data only (starting after the <data> chunk identifier and size) and does not include the file's metadata or any other chunk."},
-    {"MD5Evaluated", "If the MD5 is evaluated it will appear in this column. Any conflict between this column and the 'MD5' column indicates a change in the audio data portion of the file between the current evaluation and the stored evaluation."},
+    {"MD5Generated", "If the MD5 is generated it will appear in this column. Any conflict between this column and the 'MD5' column indicates a change in the audio data portion of the file between the current evaluation and the stored evaluation."},
     {"Errors", "Provides statements about potential structural problems with a given audio files: for instance if the RIFF size statement conflicts with the actual file size or if the audio files does not utilize padding bytes to follow odd byte length chunks."},
     {"Information", "Used for status notes and technical information during operation."},
 

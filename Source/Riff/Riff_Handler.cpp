@@ -116,7 +116,7 @@ Riff_Handler::Riff_Handler ()
     Overwrite_Reject=false;
     NoPadding_Accept=false;
     NewChunksAtTheEnd=false;
-    EvaluateMD5=false;
+    GenerateMD5=false;
     VerifyMD5=false;
     EmbedMD5=false;
     EmbedMD5_AuthorizeOverWritting=false;
@@ -226,7 +226,7 @@ bool Riff_Handler::Open(const string &FileName)
                 Information<<Chunks->Global->File_Name<<": MD5, no existing MD5 chunk"<<endl;
                 PerFile_Information<<"MD5, no existing MD5 chunk"<<endl;
             }
-            else if (Chunks->Global->MD5Evaluated && Chunks->Global->MD5Evaluated->Strings["md5evaluated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
+            else if (Chunks->Global->MD5Generated && Chunks->Global->MD5Generated->Strings["md5generated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
             {
                 Errors<<Chunks->Global->File_Name<<": MD5, failed verification"<<endl;
                 PerFile_Error.str(string());
@@ -240,10 +240,10 @@ bool Riff_Handler::Open(const string &FileName)
             }
             }
         if (EmbedMD5
-         && Chunks->Global->MD5Evaluated && !Chunks->Global->MD5Evaluated->Strings["md5evaluated"].empty()
+         && Chunks->Global->MD5Generated && !Chunks->Global->MD5Generated->Strings["md5generated"].empty()
          && (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty())
           || EmbedMD5_AuthorizeOverWritting))
-                Set("MD5Stored", Chunks->Global->MD5Evaluated->Strings["md5evaluated"], rules());
+                Set("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
     }
 
     CriticalSectionLocker(Chunks->Global->CS);
@@ -333,16 +333,16 @@ bool Riff_Handler::Save()
 
     //Loading the new file (we are verifying the integraty of the generated file)
     string FileName=Chunks->Global->File_Name;
-    bool EvaluateMD5_Temp=Chunks->Global->EvaluateMD5;
-    Chunks->Global->EvaluateMD5=false;
+    bool GenerateMD5_Temp=Chunks->Global->GenerateMD5;
+    Chunks->Global->GenerateMD5=false;
     if (!Open(FileName) && Chunks==NULL) //There may be an error but file is open (eg MD5 error)
     {
         Errors<<FileName<<": WARNING, the resulting file can not be validated, file may be CORRUPTED"<<endl;
         PerFile_Error<<"WARNING, the resulting file can not be validated, file may be CORRUPTED"<<endl;
-        Chunks->Global->EvaluateMD5=EvaluateMD5_Temp;
+        Chunks->Global->GenerateMD5=GenerateMD5_Temp;
         return false;
     }
-    Chunks->Global->EvaluateMD5=EvaluateMD5_Temp;
+    Chunks->Global->GenerateMD5=GenerateMD5_Temp;
 
     CriticalSectionLocker(Chunks->Global->CS);
     Chunks->Global->Progress=1;
@@ -587,7 +587,7 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
     }
 
     //MD5Stored
-    else if (Field=="md5evaluated")
+    else if (Field=="md5generated")
     {
         //Test
         string Message;
@@ -604,7 +604,7 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
 
         //If error
         if (!Message.empty()) 
-            IsValid_Errors<<"malformed input, MD5Evaluated "<<Message;
+            IsValid_Errors<<"malformed input, MD5Generated "<<Message;
     }
 
     //Description
@@ -1139,16 +1139,16 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
     }
 
     //ICRD
-    else if (Field=="md5evaluated")
+    else if (Field=="md5generated")
     {
         //Test
         string Message;
-        if (!(Chunks->Global->MD5Evaluated && !Chunks->Global->MD5Evaluated->Strings["md5evaluated"].empty()) && !(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()) && Chunks->Global->MD5Evaluated->Strings["md5evaluated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
+        if (!(Chunks->Global->MD5Generated && !Chunks->Global->MD5Generated->Strings["md5generated"].empty()) && !(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()) && Chunks->Global->MD5Generated->Strings["md5generated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
             Message="does not equal MD5Stored";
 
         //If error
         if (!Message.empty()) 
-            IsValid_Errors<<"malformed input, MD5Evaluated "<<Message;
+            IsValid_Errors<<"malformed input, MD5Generated "<<Message;
     }
 
     else if (Field=="errors")
@@ -1243,7 +1243,7 @@ string Riff_Handler::Technical_Header()
     ToReturn<<"aXML"<<',';
     ToReturn<<"iXML"<<',';
     ToReturn<<"MD5Stored"<<',';
-    ToReturn<<"MD5Evaluated"<<',';
+    ToReturn<<"MD5Generated"<<',';
     ToReturn<<"Errors"<<',';
     ToReturn<<"Information";
 
@@ -1276,7 +1276,7 @@ string Riff_Handler::Technical_Get()
         List.push_back(Get("aXML").empty()?"No":"Yes");
         List.push_back(Get("iXML").empty()?"No":"Yes");
         List.push_back(Get("MD5Stored"));
-        List.push_back(Get("MD5Evaluated"));
+        List.push_back(Get("MD5Generated"));
     }
     else
         List.resize(17);
@@ -1594,7 +1594,7 @@ void Riff_Handler::Options_Update()
 
     Chunks->Global->NoPadding_Accept=NoPadding_Accept;
     Chunks->Global->NewChunksAtTheEnd=NewChunksAtTheEnd;
-    Chunks->Global->EvaluateMD5=EvaluateMD5;
+    Chunks->Global->GenerateMD5=GenerateMD5;
     Chunks->Global->VerifyMD5=VerifyMD5;
     Chunks->Global->EmbedMD5=EmbedMD5;
     Chunks->Global->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;
@@ -1617,7 +1617,7 @@ void Riff_Handler::Options_Update()
             Information<<Chunks->Global->File_Name<<": MD5, no existing MD5 chunk"<<endl;
             PerFile_Information<<"MD5, no existing MD5 chunk"<<endl;
         }
-        else if (Chunks->Global->MD5Evaluated && Chunks->Global->MD5Evaluated->Strings["md5evaluated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
+        else if (Chunks->Global->MD5Generated && Chunks->Global->MD5Generated->Strings["md5generated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
         {
             Errors<<Chunks->Global->File_Name<<": MD5, failed verification"<<endl;
             PerFile_Error.str(string());
@@ -1631,10 +1631,10 @@ void Riff_Handler::Options_Update()
         }
     }
     if (EmbedMD5
-     && Chunks->Global->MD5Evaluated && !Chunks->Global->MD5Evaluated->Strings["md5evaluated"].empty()
+     && Chunks->Global->MD5Generated && !Chunks->Global->MD5Generated->Strings["md5generated"].empty()
      && (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty())
       || EmbedMD5_AuthorizeOverWritting))
-            Set("MD5Stored", Chunks->Global->MD5Evaluated->Strings["md5evaluated"], rules());
+            Set("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
 }
 
 //***************************************************************************
@@ -1682,8 +1682,8 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
         return &Chunks->Global->MD5Stored;
     
     //MD5Stored
-    else if (Field_Lowered=="md5evaluated")
-        return &Chunks->Global->MD5Evaluated;
+    else if (Field_Lowered=="md5generated")
+        return &Chunks->Global->MD5Generated;
     
     //INFO
     else if (Field.size()==4)
@@ -1717,7 +1717,7 @@ string Riff_Handler::Field_Get(const string &Field)
      || Field_Lowered=="axml"
      || Field_Lowered=="ixml"
      || Field_Lowered=="md5stored"
-     || Field_Lowered=="md5evaluated")
+     || Field_Lowered=="md5generated")
         return Field_Lowered; 
 
     //Unknown 4 chars --> In INFO chunk, in uppercase
@@ -1765,8 +1765,8 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
     else if (Field_Lowered=="md5stored")
         return Elements::WAVE_MD5_; 
 
-    //MD5Evaluated
-    else if (Field_Lowered=="md5evaluated")
+    //MD5Generated
+    else if (Field_Lowered=="md5generated")
         return Elements::WAVE_MD5_; 
 
     //INFO

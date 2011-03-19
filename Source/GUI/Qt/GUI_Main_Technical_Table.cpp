@@ -68,8 +68,8 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     }
     if (Field=="MD5Stored" && Fill_Enabled(FileName, Field, C->Get(FileName, "MD5Stored")))
     {
-        if (!C->Get(FileName, "MD5Evaluated").empty() && C->Get(FileName, "MD5Stored")!=C->Get(FileName, "MD5Evaluated"))
-            Fill="Fill with MD5Evaluated"; //If you change this, change at the end of method too      
+        if (!C->Get(FileName, "MD5Generated").empty() && C->Get(FileName, "MD5Stored")!=C->Get(FileName, "MD5Generated"))
+            Fill="Fill with MD5Generated"; //If you change this, change at the end of method too      
         if (!item(Item->row(), Item->column())->text().isEmpty())
             Remove="Remove it"; //If you change this, change at the end of method too
     }
@@ -211,8 +211,8 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         C->Set(FileName, Field, ModifiedContent);
         item(Item->row(), Item->column())->setText(C->Get(FileName, Field).empty()?"No":"Yes");
     }
-    else if (Field=="MD5Stored" && ModifiedContent=="Fill with MD5Evaluated")
-        item(Item->row(), Item->column())->setText(C->Get(FileName, "MD5Evaluated").c_str());
+    else if (Field=="MD5Stored" && ModifiedContent=="Fill with MD5Generated")
+        item(Item->row(), Item->column())->setText(C->Get(FileName, "MD5Generated").c_str());
     else
     {
         Ztring NewValue(ModifiedContent);

@@ -50,7 +50,7 @@ Core::Core()
     FileNotValid_Skip=false;
     WrongExtension_Skip=false;
     NewChunksAtTheEnd=false;
-    EvaluateMD5=false;
+    GenerateMD5=false;
     VerifyMD5=false;
     EmbedMD5=false;
     EmbedMD5_AuthorizeOverWritting=false;
@@ -1589,7 +1589,7 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->Overwrite_Reject=Overwrite_Reject;
         Handler->second.Riff->NoPadding_Accept=NoPadding_Accept;
         Handler->second.Riff->NewChunksAtTheEnd=NewChunksAtTheEnd;
-        Handler->second.Riff->EvaluateMD5=EvaluateMD5;
+        Handler->second.Riff->GenerateMD5=GenerateMD5;
         Handler->second.Riff->VerifyMD5=VerifyMD5;
         Handler->second.Riff->EmbedMD5=EmbedMD5;
         Handler->second.Riff->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;

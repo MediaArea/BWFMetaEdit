@@ -66,7 +66,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="QtCore.lib QtGui.lib qtmain.lib winmm.lib ws2_32.lib imm32.lib shlwapi.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;../../../../Qt/lib/$(PlatformName)\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="&quot;../../../../Qt/lib/MSVC2008/$(PlatformName)\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -141,7 +141,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="QtCore.lib QtGui.lib qtmain.lib winmm.lib ws2_32.lib imm32.lib shlwapi.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;../../../../Qt/lib/$(PlatformName)\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="&quot;../../../../Qt/lib/MSVC2008/$(PlatformName)\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="17"
@@ -215,7 +215,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="QtCore.lib QtGui.lib qtmain.lib winmm.lib ws2_32.lib imm32.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;../../../../Qt/lib/$(PlatformName)\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="&quot;../../../../Qt/lib/MSVC2008/$(PlatformName)\$(ConfigurationName)&quot;"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -291,7 +291,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="QtCore.lib QtGui.lib qtmain.lib winmm.lib ws2_32.lib imm32.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;../../../../Qt/lib/$(PlatformName)\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="&quot;../../../../Qt/lib/MSVC2008/$(PlatformName)\$(ConfigurationName)&quot;"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -759,10 +759,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\Source\Common\Core.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\Source\Common\Help.h"
 					>
 				</File>
 			</Filter>

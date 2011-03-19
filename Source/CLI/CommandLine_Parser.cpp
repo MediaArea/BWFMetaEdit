@@ -85,7 +85,7 @@ int Parse(Core &C, string &Argument)
     OPTION("--in-ixml-xml",                                 In_iXML_XML)
     OPTION("--out-ixml-xml",                                Out_iXML_XML)
 
-    OPTION("--md5-evaluate",                                MD5_Evaluate)
+    OPTION("--md5-generate",                                MD5_Generate)
     OPTION("--md5-verify",                                  MD5_Verify)
     OPTION("--md5-embed-overwrite",                         MD5_Embed_Overwrite)
     OPTION("--md5-embed",                                   MD5_Embed)
@@ -369,9 +369,9 @@ CL_OPTION(Out_iXML_XML)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-CL_OPTION(MD5_Evaluate)
+CL_OPTION(MD5_Generate)
 {
-    C.EvaluateMD5=true;
+    C.GenerateMD5=true;
 
     return -2; //Continue
 }
@@ -379,7 +379,7 @@ CL_OPTION(MD5_Evaluate)
 //---------------------------------------------------------------------------
 CL_OPTION(MD5_Verify)
 {
-    C.EvaluateMD5=true;
+    C.GenerateMD5=true;
     C.VerifyMD5=true;
 
     return -2; //Continue
@@ -388,7 +388,7 @@ CL_OPTION(MD5_Verify)
 //---------------------------------------------------------------------------
 CL_OPTION(MD5_Embed)
 {
-    C.EvaluateMD5=true;
+    C.GenerateMD5=true;
     C.EmbedMD5=true;
 
     return -2; //Continue
@@ -397,7 +397,7 @@ CL_OPTION(MD5_Embed)
 //---------------------------------------------------------------------------
 CL_OPTION(MD5_Embed_Overwrite)
 {
-    C.EvaluateMD5=true;
+    C.GenerateMD5=true;
     C.EmbedMD5=true;
     C.EmbedMD5_AuthorizeOverWritting=true;
 

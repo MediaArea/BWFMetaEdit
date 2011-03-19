@@ -4,6 +4,13 @@ Notes:
 - Deleted
 x Correction
 
+Version 1.1.1, 2010-10-10
+--------------
++ Qt library updated to 4.7
++ #128, MD5 preference modification + wording
++ MSVC2010 project files
+x #129, Table Integrity Error in GUI
+
 Version 1.1.0, 2010-05-31
 --------------
 + conformance_point_document.xsd filled

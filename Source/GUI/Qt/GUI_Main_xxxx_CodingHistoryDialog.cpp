@@ -69,7 +69,7 @@ void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft,
                 IsEmpty=false;
         if (!IsEmpty)
         {
-            setRowCount((*List).size()+1);
+            setRowCount((int)(*List).size()+1);
             resizeRowsToContents();
         }
     }
@@ -470,7 +470,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
         List.Separator_Set(1, ", ");
     List.Write(Text);
 
-    Table->setRowCount(List.size()+1);
+    Table->setRowCount((int)List.size()+1);
     Table->setColumnCount(6);
 
     Table->setHorizontalHeaderItem(0, new QTableWidgetItem("Coding algorithm"));
@@ -515,7 +515,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
                 }
                 QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(Value.To_Local().c_str()));
             
-                Table->setItem(Line_Pos, Column, Item);
+                Table->setItem((int)Line_Pos, Column, Item);
             }
             else if (Column!=-1 || Data_Pos>5)
             {

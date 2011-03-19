@@ -20,7 +20,7 @@ BEGIN
             VALUE "CompanyName", "http://www.digitizationguidelines.gov"
             VALUE "FileDescription", "BWF MetaEdit"
             VALUE "FileVersion", "1,1,1,0"
-            VALUE "InternalName", "BWF_MetaEdit - CLI - MSVC 2008"
+            VALUE "InternalName", "BWF_MetaEdit - CLI - MSVC 2010"
             VALUE "LegalCopyright", "BSD License"
             VALUE "OriginalFilename", "BWF_MetaEdit.exe"
             VALUE "ProductName", "BWF_MetaEdit_GUI"

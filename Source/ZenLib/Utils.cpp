@@ -896,7 +896,7 @@ int32s float64_int32s (float64 F, bool Rounded)
     if (!Rounded)
         return (int32s)F;
     //Rounded
-    int64s I1=(int64s)F;
+    int32s I1=(int32s)F;
     if (F-I1>=0.5)
         return I1+1;
     else

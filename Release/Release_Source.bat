@@ -42,6 +42,8 @@ xcopy ..\Project\*.dev BWF_MetaEdit_Source\Project\ /S
 xcopy ..\Project\*.sln BWF_MetaEdit_Source\Project\ /S
 xcopy ..\Project\*.vc BWF_MetaEdit_Source\Project\ /S
 xcopy ..\Project\*.vcproj BWF_MetaEdit_Source\Project\ /S
+xcopy ..\Project\*.vcxproj BWF_MetaEdit_Source\Project\ /S
+xcopy ..\Project\*.vcxproj.filter BWF_MetaEdit_Source\Project\ /S
 xcopy ..\Project\*.ico BWF_MetaEdit_Source\Project\ /S
 xcopy ..\Project\*.workspace BWF_MetaEdit_Source\Project\ /S
 xcopy ..\Project\*.cbp BWF_MetaEdit_Source\Project\ /S
@@ -50,7 +52,8 @@ xcopy ..\Project\*.idl BWF_MetaEdit_Source\Project\ /S
 xcopy ..\Project\*.rgs BWF_MetaEdit_Source\Project\ /S
 xcopy ..\Project\*.bat BWF_MetaEdit_Source\Project\ /S
 xcopy ..\Project\BCB\BWF_MetaEdit*.res BWF_MetaEdit_Source\Project\BCB /S
-xcopy ..\Project\MSVC\*.rc BWF_MetaEdit_Source\Project\MSVC\ /S
+xcopy ..\Project\MSVC2008\*.rc BWF_MetaEdit_Source\Project\MSVC2008\ /S
+xcopy ..\Project\MSVC2010\*.rc BWF_MetaEdit_Source\Project\MSVC2010\ /S
 xcopy ..\Project\GNU\* BWF_MetaEdit_Source\Project\GNU\ /S
 
 @rem --- Copying : Release ---

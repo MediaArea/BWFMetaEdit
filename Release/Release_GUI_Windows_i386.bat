@@ -8,7 +8,7 @@ mkdir BWF_MetaEdit_GUI_Windows_i386
 
 
 @rem --- Copying : Exe ---
-copy  ..\Project\MSVC2008\GUI\Win32\Release\BWF_MetaEdit_GUI.exe BWF_MetaEdit_GUI_Windows_i386\bwfmetaedit-gui.exe
+copy  ..\Project\MSVC2010\GUI\Win32\Release\BWF_MetaEdit_GUI.exe BWF_MetaEdit_GUI_Windows_i386\bwfmetaedit-gui.exe
 
 @rem --- Copying : Information files ---
 copy ..\License.html BWF_MetaEdit_GUI_Windows_i386\

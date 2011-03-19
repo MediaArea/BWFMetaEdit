@@ -47,7 +47,7 @@ void Riff_WAVE_data::Read_Internal ()
     }
 
     //Reading
-    if (Global->EvaluateMD5)
+    if (Global->GenerateMD5)
     {
         MD5Context MD5;
         MD5Init(&MD5);
@@ -78,10 +78,10 @@ void Riff_WAVE_data::Read_Internal ()
         int8u Digest[16];
         MD5Final(Digest, &MD5);
         int128u DigestI=BigEndian2int128u(Digest);
-        Global->MD5Evaluated=new Riff_Base::global::chunk_strings;
-        Global->MD5Evaluated->Strings["md5evaluated"]=Ztring().From_Number(DigestI, 16);
-        while (Global->MD5Evaluated->Strings["md5evaluated"].size()<32)
-            Global->MD5Evaluated->Strings["md5evaluated"].insert(Global->MD5Evaluated->Strings["md5evaluated"].begin(), '0'); //Padding with 0, this must be a 32-byte string    
+        Global->MD5Generated=new Riff_Base::global::chunk_strings;
+        Global->MD5Generated->Strings["md5generated"]=Ztring().From_Number(DigestI, 16);
+        while (Global->MD5Generated->Strings["md5generated"].size()<32)
+            Global->MD5Generated->Strings["md5generated"].insert(Global->MD5Generated->Strings["md5generated"].begin(), '0'); //Padding with 0, this must be a 32-byte string    
     }
 }
 

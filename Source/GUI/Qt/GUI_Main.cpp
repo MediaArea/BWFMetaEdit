@@ -140,8 +140,11 @@ void GUI_Main::View_Refresh(view View_New)
         setCentralWidget(View);
     }
 
-    QEvent event(QEvent::User);
-    QApplication::sendEvent(View, &event);
+    if (View)
+    {
+        QEvent event(QEvent::User);
+        QApplication::sendEvent(View, &event);
+    }
     
     //Menu
     Menu_Update();

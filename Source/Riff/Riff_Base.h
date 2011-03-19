@@ -200,11 +200,11 @@ public:
         chunk_strings      *aXML;
         chunk_strings      *iXML;
         chunk_strings      *MD5Stored;
-        chunk_strings      *MD5Evaluated;
+        chunk_strings      *MD5Generated;
         bool                NoPadding_Accept;
         bool                NoPadding_IsCorrected;
         bool                NewChunksAtTheEnd;
-        bool                EvaluateMD5;
+        bool                GenerateMD5;
         bool                VerifyMD5;
         bool                EmbedMD5;
         bool                EmbedMD5_AuthorizeOverWritting;
@@ -229,11 +229,11 @@ public:
             aXML=NULL;
             iXML=NULL;
             MD5Stored=NULL;
-            MD5Evaluated=NULL;
+            MD5Generated=NULL;
             NoPadding_Accept=false;
             NoPadding_IsCorrected=false;
             NewChunksAtTheEnd=false;
-            EvaluateMD5=false;
+            GenerateMD5=false;
             VerifyMD5=false;
             EmbedMD5=false;
             EmbedMD5_AuthorizeOverWritting=false;
