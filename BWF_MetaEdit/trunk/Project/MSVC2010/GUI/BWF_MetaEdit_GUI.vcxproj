@@ -96,7 +96,7 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalDependencies>QtCore.lib;QtGui.lib;qtmain.lib;winmm.lib;ws2_32.lib;imm32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -188,6 +188,7 @@
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Table.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Text.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_UndoDialog.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx__Common.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Bext.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CodingHistoryDialog.cpp" />
@@ -205,6 +206,7 @@
     <ClCompile Include="_Automated\moc_GUI_Main_Technical_Table.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_Technical_Text.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_UndoDialog.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_Loudness.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_xxxx__Common.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_xxxx_Bext.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_xxxx_CodingHistoryDialog.cpp" />
@@ -267,6 +269,7 @@
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Table.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Text.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_UndoDialog.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx__Common.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Bext.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CodingHistoryDialog.h" />

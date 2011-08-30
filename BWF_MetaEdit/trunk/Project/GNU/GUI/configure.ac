@@ -135,6 +135,7 @@ dnl if test "$with_qt" != "no"; then
 	$MOC ../../../Source/GUI/Qt/GUI_Main_xxxx_Bext.h -o_Automated/moc_GUI_Main_xxxx_Bext.cpp
 	$MOC ../../../Source/GUI/Qt/GUI_Main_xxxx_CodingHistoryDialog.h -o_Automated/moc_GUI_Main_xxxx_CodingHistoryDialog.cpp
 	$MOC ../../../Source/GUI/Qt/GUI_Main_xxxx_DateDialog.h -o_Automated/moc_GUI_Main_xxxx_DateDialog.cpp
+	$MOC ../../../Source/GUI/Qt/GUI_Main_xxxx_Loudness.h -o_Automated/moc_GUI_Main_xxxx_Loudness.cpp
 	$MOC ../../../Source/GUI/Qt/GUI_Main_xxxx_TextEditDialog.h -o_Automated/moc_GUI_Main_xxxx_TextEditDialog.cpp
 	$MOC ../../../Source/GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.h -o_Automated/moc_GUI_Main_xxxx_TimeReferenceDialog.cpp
 	$MOC ../../../Source/GUI/Qt/GUI_Preferences.h -o_Automated/moc_GUI_Preferences.cpp

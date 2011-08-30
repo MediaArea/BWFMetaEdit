@@ -253,22 +253,24 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
     else
         ModifiedContentQ=index.model()->data(index.model()->index(index.row(), index.column(), rootIndex())).toString(); //Old value
 
-    //MD5Stored
+    //bext
     if (Field=="bext") 
     {
         if (Main->Bext_Toggle_Get())
         {
             //Retrieving data
             Ztring NewValue(C->Get(FileName, "BextVersion"));
-            if (NewValue=="1")
+            if (NewValue=="2")
                 NewValue="0";
-            else
+            else if (NewValue=="0")
                 NewValue="1";
+            else if (NewValue=="1")
+                NewValue="2";
 
             //Filling
             C->Set(FileName, "BextVersion", NewValue);
             item(index.row(), index.column())->setText(("Version "+NewValue).c_str());
-            Colors_Update(item(index.row(), index.column()), FileName, Field); //Must be forced because normal method does not handle Yes/No
+            dataChanged(indexFromItem(item(index.row(), index.column())), indexFromItem(item(index.row(), index.column())));
             return false;
         }
         else
@@ -285,7 +287,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
 
             //Updating
             item(index.row(), index.column())->setText(("Version "+NewValue).c_str());
-            Colors_Update(item(index.row(), index.column()), FileName, Field); //Must be forced because normal method does not handle Yes/No
+            dataChanged(indexFromItem(item(index.row(), index.column())), indexFromItem(item(index.row(), index.column())));
             return false;
         }
     }
@@ -314,7 +316,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
 
         //Updating
         item(index.row(), index.column())->setText(C->Get(FileName, Field).empty()?"No":"Yes");
-        Colors_Update(item(index.row(), index.column()), FileName, Field); //Must be forced because normal method does not handle Yes/No
+        dataChanged(indexFromItem(item(index.row(), index.column())), indexFromItem(item(index.row(), index.column())));
         return false;
     }
  
@@ -369,7 +371,7 @@ bool GUI_Main_Technical_Table::Fill_Enabled (const string &FileName, const strin
 
     if (Field=="bext")
     {
-        if (C->Get(FileName, "UMID").empty())
+        if (C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty())
             return !C->Overwrite_Reject && Value!="No";
         else
             return false;

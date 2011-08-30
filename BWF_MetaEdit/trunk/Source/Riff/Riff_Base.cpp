@@ -176,6 +176,8 @@ bool Riff_Base::Read_Header (chunk &NewChunk)
     if (Global->In.Read(Temp, 4)<4)
         throw exception_read();
     NewChunk.Content.Size=LittleEndian2int32u(Temp);
+    if (NewChunk.Content.Size==0xFFFFFFFF && Global->IsRF64 && Global->ds64 && NewChunk.Header.Name==Elements::WAVE_data)
+        NewChunk.Content.Size=Global->ds64->dataSize; //Setting real WAVE_data size
     if (Global->In.Position_Get()+NewChunk.Content.Size>Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size
      && !(NewChunk.Content.Size==0xFFFFFFFF && NewChunk.Header.Name==Elements::RF64)) //Not RF64
         throw exception_valid("truncated");

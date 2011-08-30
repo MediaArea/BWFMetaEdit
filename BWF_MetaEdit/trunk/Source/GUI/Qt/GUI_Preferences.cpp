@@ -25,6 +25,7 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QGroupBox>
 #include <QtGui/QDesktopServices>
+#include <QtGui/QScrollArea>
 #include "ZenLib/File.h"
 #include "ZenLib/Dir.h"
 #include "ZenLib/ZtringListListF.h"
@@ -66,7 +67,7 @@ options Groups[Group_Max]=
     },
     {
         "Core Metadata",
-        10+17,
+        15+17,
         {
             {"Core_Description", "Description", Type_CheckBox, true},
             {"Core_Originator", "Originator", Type_CheckBox, true},
@@ -77,11 +78,15 @@ options Groups[Group_Max]=
             {"Core_TimeReference", "TimeReference", Type_CheckBox, true},
             {"Core_BextVersion", "BextVersion", Type_CheckBox, true},
             {"Core_UMID", "UMID", Type_CheckBox, true},
+            {"Core_LoudnessValue", "LoudnessValue", Type_CheckBox, true},
+            {"Core_LoudnessRange", "LoudnessRange", Type_CheckBox, true},
+            {"Core_MaxTruePeakLevel", "MaxTruePeakLevel", Type_CheckBox, true},
+            {"Core_MaxMomentaryLoudness", "MaxMomentaryLoudness", Type_CheckBox, true},
+            {"Core_MaxShortTermLoudness", "MaxShortTermLoudness", Type_CheckBox, true},
             {"Core_CodingHistory", "CodingHistory", Type_CheckBox, true},
             {"Core_IARL", "IARL", Type_CheckBox, true}, //Archival Location
             {"Core_IART", "IART", Type_CheckBox, true}, //Artist
             {"Core_ICMS", "ICMS", Type_CheckBox, true}, //Commissioned
-            {"Core_ICMT", "ICMT", Type_CheckBox, true}, //Comment
             {"Core_ICMT", "ICMT", Type_CheckBox, true}, //Comment
             {"Core_ICOP", "ICOP", Type_CheckBox, true}, //Copyright
             {"Core_ICRD", "ICRD", Type_CheckBox, true}, //Date Created
@@ -180,6 +185,8 @@ GUI_Preferences::GUI_Preferences(GUI_Main* parent)
     OnLoad();
 
     Central->setCurrentIndex(Group_Rules);
+
+    resize(width(), QApplication::desktop()->screenGeometry().height()*3/4);
 }
 
 //---------------------------------------------------------------------------
@@ -495,12 +502,10 @@ void GUI_Preferences::OnClicked ()
                                                     CheckBoxes[Group*options::MaxCount+Option2]->setChecked(Main->Menu_Fields_CheckBoxes[Group*options::MaxCount+Option2]->isChecked());
                                             }
                                             break;
-                case Type_RadioButton   :   if (Group!=Group_DefaultView)
-                                                break; //Other groups are not implemented    
-                                            if (RadioButtons[Group_DefaultView*options::MaxCount+Option]->isChecked()!=Main->Menu_View_RadioButtons[Option]->isChecked())
+                case Type_RadioButton   :   if (RadioButtons[Group*options::MaxCount+Option]->isChecked()!=Main->Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked())
                                             {
                                                 //Setting Main view preferences
-                                                RadioButtons[Option]->setChecked(Main->Menu_View_RadioButtons[Group_DefaultView*options::MaxCount+Option]->isChecked());
+                                                Main->Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setChecked(RadioButtons[Group*options::MaxCount+Option]->isChecked());
                                             }
                                             break;
                 default                 : ;
@@ -564,7 +569,9 @@ void GUI_Preferences::Create()
         QWidget* Columns_Widget=new QWidget();
         Columns->addStretch();
         Columns_Widget->setLayout(Columns);
-        Central->addTab(Columns_Widget, tr(Groups[Kind].Name));
+        QScrollArea* ScrollArea=new QScrollArea();
+        ScrollArea->setWidget(Columns_Widget);
+        Central->addTab(ScrollArea, tr(Groups[Kind].Name));
     }
 
     //Extra - BackupDirectory

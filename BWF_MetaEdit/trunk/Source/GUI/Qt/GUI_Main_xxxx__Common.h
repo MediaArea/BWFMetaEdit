@@ -46,6 +46,13 @@ protected:
     //Helpers
     void                    Colors_Update       ();
     void                    Colors_Update       (QTableWidgetItem* Item, const string &FileName, const string &Field);
+    void                    SetEnabled          (int Row, const QString &Field);
+    void                    SetEnabled          (const QModelIndex &Index, const QString &Field)       {SetEnabled(Index.row(), Field);}
+    void                    SetEnabled          (const QTableWidgetItem &Index, const QString &Field)  {SetEnabled(Index.row(), Field);}
+    void                    SetText             (int Row, const QString &Field);
+    void                    SetText             (const QModelIndex &Index, const QString &Field)       {SetText(Index.row(), Field);}
+    void                    SetText             (const QTableWidgetItem &Index, const QString &Field)  {SetText(Index.row(), Field);}
+
     void                    Fill                ();
     virtual const string   &Fill_Content        ()=0;
     virtual group           Fill_Group          ()=0;

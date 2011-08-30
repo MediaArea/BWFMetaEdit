@@ -59,7 +59,7 @@ public:
     QMenu*          Menu_Fields_Main;
     QMenu**         Menu_Fields_Menus;
     QAction**       Menu_Fields_CheckBoxes;
-    QAction**       Menu_View_RadioButtons;
+    QAction**       Menu_Fields_RadioButtons;
 
 private:
     //Menu - List

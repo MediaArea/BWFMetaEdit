@@ -101,7 +101,7 @@ enum type
 
 struct options
 {
-    static const size_t MaxCount=32;
+    static const size_t MaxCount=64;
 
     struct option
     {
