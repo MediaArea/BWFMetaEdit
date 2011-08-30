@@ -268,6 +268,43 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
 }
 
 //---------------------------------------------------------------------------
+void GUI_Main_xxxx__Common::SetEnabled (int Row, const QString &Field) 
+{
+    for (int Column=0; Column<columnCount(); Column++)
+    {
+        QString Field_Current=horizontalHeaderItem(Column)->text();
+        if (Field_Current==Field)
+        {
+            string FileName=FileName_Before+item(Row, 0)->text().toLocal8Bit().data();
+            if (Fill_Enabled(FileName, "BextVersion", C->Get(FileName, "BextVersion")))
+                item(Row, Column)->setFlags(item(Row, Column)->flags()|Qt::ItemIsEnabled);
+            else
+                item(Row, Column)->setFlags(item(Row, Column)->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
+            dataChanged(indexFromItem(item(Row, Column)), indexFromItem(item(Row, Column)));
+            //Colors_Update(item(Row, Column), FileName, Field.toLocal8Bit().data());
+            return;
+        }
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main_xxxx__Common::SetText (int Row, const QString &Field) 
+{
+    for (int Column=0; Column<columnCount(); Column++)
+    {
+        QString Field_Current=horizontalHeaderItem(Column)->text();
+        if (Field_Current==Field)
+        {
+            string FileName=FileName_Before+item(Row, 0)->text().toLocal8Bit().data();
+            item(Row, Column)->setText(C->Get(FileName, Field.toLocal8Bit().data()).c_str());
+            dataChanged(indexFromItem(item(Row, Column)), indexFromItem(item(Row, Column)));
+            //Colors_Update(item(Row, Column), FileName, Field.toLocal8Bit().data());
+            return;
+        }
+    }
+}
+
+//---------------------------------------------------------------------------
 void GUI_Main_xxxx__Common::Fill () 
 {
     //Preparing
@@ -334,7 +371,7 @@ void GUI_Main_xxxx__Common::Fill ()
     for (size_t Option=0; Option<Main->Preferences->Group_Options_Count_Get(Fill_Group()); Option++)
         if (!Main->Menu_Fields_CheckBoxes[Fill_Group()*options::MaxCount+Option]->isChecked())
             ColumnMissing_Count++;
-    setColumnCount((int)(List[0].size()-1-ColumnMissing_Count));
+    setColumnCount((int)(List[0].size()-ColumnMissing_Count));
     ColumnMissing_Count=0;
     for (size_t Data_Pos=0; Data_Pos<List[0].size(); Data_Pos++)
         if (Data_Pos==0 || Main->Menu_Fields_CheckBoxes[Fill_Group()*options::MaxCount+Data_Pos-1]->isChecked())

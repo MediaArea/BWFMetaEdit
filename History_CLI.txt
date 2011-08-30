@@ -4,6 +4,11 @@ Notes:
 - Deleted
 x Correction
 
+Version 1.2.0
+-------------
++ Tech 3285 v2 support (Loudness)
+x Crash with some RF64 files
+
 Version 1.1.1, 2010-10-10
 --------------
 + #128, MD5 wording (in order to be in sync with GUI)

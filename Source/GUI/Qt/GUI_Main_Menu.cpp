@@ -80,30 +80,30 @@ void GUI_Main::Menu_Create()
     Menu_File->addAction(Menu_File_Quit);
 
     //Menu Views
-    Menu_View_RadioButtons=new QAction*[Preferences->Group_Options_Count_Get(Group_DefaultView)*options::MaxCount];
-    Menu_View_RadioButtons[Option_DefaultView_Tech_Table] = new QAction(QIcon(":/Image/Menu/View_Technical.png"), tr("Technical Metadata (table)"), this);
-    Menu_View_RadioButtons[Option_DefaultView_Tech_Table]->setShortcut(tr(""));
-    Menu_View_RadioButtons[Option_DefaultView_Tech_Table]->setCheckable(true);
-    Menu_View_RadioButtons[Option_DefaultView_Tech_Table]->setStatusTip(tr(""));
-    connect(Menu_View_RadioButtons[Option_DefaultView_Tech_Table], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_Technical_Table(bool)));
+    Menu_Fields_RadioButtons=new QAction*[Preferences->Groups_Count_Get()*options::MaxCount];
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table] = new QAction(QIcon(":/Image/Menu/View_Technical.png"), tr("Technical Metadata (table)"), this);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]->setShortcut(tr(""));
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]->setCheckable(true);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]->setStatusTip(tr(""));
+    connect(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_Technical_Table(bool)));
 
-    Menu_View_RadioButtons[Option_DefaultView_Tech_Text] = new QAction(tr("Technical Metadata (text)"), this);
-    Menu_View_RadioButtons[Option_DefaultView_Tech_Text]->setShortcut(tr(""));
-    Menu_View_RadioButtons[Option_DefaultView_Tech_Text]->setCheckable(true);
-    Menu_View_RadioButtons[Option_DefaultView_Tech_Text]->setStatusTip(tr(""));
-    connect(Menu_View_RadioButtons[Option_DefaultView_Tech_Text], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_Technical_Text(bool)));
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text] = new QAction(tr("Technical Metadata (text)"), this);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text]->setShortcut(tr(""));
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text]->setCheckable(true);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text]->setStatusTip(tr(""));
+    connect(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_Technical_Text(bool)));
 
-    Menu_View_RadioButtons[Option_DefaultView_Core_Table] = new QAction(QIcon(":/Image/Menu/View_Core.png"), tr("Core Metadata (table)"), this);
-    Menu_View_RadioButtons[Option_DefaultView_Core_Table]->setShortcut(tr(""));
-    Menu_View_RadioButtons[Option_DefaultView_Core_Table]->setCheckable(true);
-    Menu_View_RadioButtons[Option_DefaultView_Core_Table]->setStatusTip(tr(""));
-    connect(Menu_View_RadioButtons[Option_DefaultView_Core_Table], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_Core_Table(bool)));
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table] = new QAction(QIcon(":/Image/Menu/View_Core.png"), tr("Core Metadata (table)"), this);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]->setShortcut(tr(""));
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]->setCheckable(true);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]->setStatusTip(tr(""));
+    connect(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_Core_Table(bool)));
 
-    Menu_View_RadioButtons[Option_DefaultView_Core_Text] = new QAction(tr("Core Metadata (text)"), this);
-    Menu_View_RadioButtons[Option_DefaultView_Core_Text]->setShortcut(tr(""));
-    Menu_View_RadioButtons[Option_DefaultView_Core_Text]->setCheckable(true);
-    Menu_View_RadioButtons[Option_DefaultView_Core_Text]->setStatusTip(tr(""));
-    connect(Menu_View_RadioButtons[Option_DefaultView_Core_Text], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_Core_Text(bool)));
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Text] = new QAction(tr("Core Metadata (text)"), this);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Text]->setShortcut(tr(""));
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Text]->setCheckable(true);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Text]->setStatusTip(tr(""));
+    connect(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Text], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_Core_Text(bool)));
 
     Menu_View_Output_stdall = new QAction(tr("Log of operations and errors"), this);
     Menu_View_Output_stdall->setShortcut(tr(""));
@@ -130,20 +130,20 @@ void GUI_Main::Menu_Create()
     connect(Menu_View_Output_Trace, SIGNAL(triggered()), this, SLOT(OnMenu_View_Output_Trace()));
 
     Menu_View_Group = new QActionGroup(this);
-    Menu_View_Group->addAction(Menu_View_RadioButtons[Option_DefaultView_Tech_Table]);
-    Menu_View_Group->addAction(Menu_View_RadioButtons[Option_DefaultView_Tech_Text]);
-    Menu_View_Group->addAction(Menu_View_RadioButtons[Option_DefaultView_Core_Table]);
-    Menu_View_Group->addAction(Menu_View_RadioButtons[Option_DefaultView_Core_Text]);
+    Menu_View_Group->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]);
+    Menu_View_Group->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text]);
+    Menu_View_Group->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]);
+    Menu_View_Group->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Text]);
     Menu_View_Group->addAction(Menu_View_Output_stdall);
     Menu_View_Group->addAction(Menu_View_Output_stdout);
     Menu_View_Group->addAction(Menu_View_Output_stderr);
     Menu_View_Group->addAction(Menu_View_Output_Trace);
     Menu_View = menuBar()->addMenu(tr("&View"));
-    Menu_View->addAction(Menu_View_RadioButtons[Option_DefaultView_Tech_Table]);
-    Menu_View->addAction(Menu_View_RadioButtons[Option_DefaultView_Tech_Text]);
+    Menu_View->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]);
+    Menu_View->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text]);
     Menu_View->addSeparator();
-    Menu_View->addAction(Menu_View_RadioButtons[Option_DefaultView_Core_Table]);
-    Menu_View->addAction(Menu_View_RadioButtons[Option_DefaultView_Core_Text]);
+    Menu_View->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]);
+    Menu_View->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Text]);
     Menu_View->addSeparator();
     Menu_View->addAction(Menu_View_Output_stdall);
     Menu_View->addAction(Menu_View_Output_stdout);
@@ -1171,8 +1171,8 @@ void GUI_Main::ToolBar_Create()
     ToolBar->addSeparator();
     ToolBar->addAction(Menu_File_Save_All);
     ToolBar->addSeparator();
-    ToolBar->addAction(Menu_View_RadioButtons[Option_DefaultView_Tech_Table]);
-    ToolBar->addAction(Menu_View_RadioButtons[Option_DefaultView_Core_Table]);
+    ToolBar->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]);
+    ToolBar->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]);
     ToolBar->addSeparator();
     ToolBar->addAction(Menu_Options_Preferences);
     ToolBar->addSeparator();

@@ -13,6 +13,7 @@
 #include "GUI/Qt/GUI_Main_xxxx_Bext.h"
 #include "GUI/Qt/GUI_Main_xxxx_CodingHistoryDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_DateDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_Loudness.h"
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.h"
 #include "Common/Core.h"
@@ -131,17 +132,11 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
             dataChanged(indexFromItem(item(Row, Item->column())), indexFromItem(item(Row, Item->column())));
 
             //Special cases
-            if (Field=="UMID")
+            if (Field=="UMID" || Field=="LoudnessValue" || Field=="LoudnessRange" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
             {
                 //Changing BextVersion Enabled value
-                string FileNameTemp=FileName_Before+item(Row, 0)->text().toLocal8Bit().data();
-                item(Row, 8)->setText(C->Get(FileNameTemp, "BextVersion").c_str());
-                dataChanged(indexFromItem(item(Row, 8)), indexFromItem(item(Row, 8)));
-                bool Enabled=Fill_Enabled(FileName, "BextVersion", C->Get(FileNameTemp, "BextVersion"));
-                if (Enabled)
-                    item(Row, 8)->setFlags(item(Row, 8)->flags()|Qt::ItemIsEnabled);
-                else
-                    item(Row, 8)->setFlags(item(Row, 8)->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
+                SetText   (*Item, "BextVersion");
+                SetEnabled(*Item, "BextVersion");
             }
         }
         return;
@@ -182,34 +177,16 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
 
         //Special case
         if (Field=="TimeReference")
-        {
-            item(Item->row(), Item->column()-1)->setText(C->Get(FileName, "TimeReference (translated)").c_str());
-            dataChanged(indexFromItem(item(Item->row(), Item->column()-1)), indexFromItem(item(Item->row(), Item->column()-1)));
-        }
+            SetText(*Item, "TimeReference (translated)");
         if (Field=="TimeReference (translated)")
-        {
-            item(Item->row(), Item->column()+1)->setText(C->Get(FileName, "TimeReference").c_str());
-            dataChanged(indexFromItem(item(Item->row(), Item->column()+1)), indexFromItem(item(Item->row(), Item->column()+1)));
-        }
-        if (Field=="UMID")
+            SetText(*Item, "TimeReference");
+        if (Field=="UMID" || Field=="LoudnessValue" || Field=="LoudnessRange" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
         {
             //Changing BextVersion Enabled value
-            item(Item->row(), 8)->setText(C->Get(FileName, "BextVersion").c_str());
-            dataChanged(indexFromItem(item(Item->row(), 8)), indexFromItem(item(Item->row(), 8)));
-            bool Enabled=Fill_Enabled(FileName, "BextVersion", C->Get(FileName, "BextVersion"));
-            if (Enabled)
-                item(Item->row(), 8)->setFlags(item(Item->row(), 8)->flags()|Qt::ItemIsEnabled);
-            else
-                item(Item->row(), 8)->setFlags(item(Item->row(), 8)->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
+            SetText   (*Item, "BextVersion");
+            SetEnabled(*Item, "BextVersion");
         }
     }
-
-    item(Item->row(), 6)->setText(C->Get(FileName, "TimeReference (translated)").c_str());
-    Colors_Update(item(Item->row(), 6), FileName, "TimeReference (translated)");
-    item(Item->row(), 7)->setText(C->Get(FileName, "TimeReference").c_str());
-    Colors_Update(item(Item->row(), 7), FileName, "TimeReference");
-    item(Item->row(), 8)->setText(C->Get(FileName, "BextVersion").c_str());
-    Colors_Update(item(Item->row(), 8), FileName, "BextVersion");
 
     //Menu
     Main->Menu_Update();
@@ -265,20 +242,13 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
         item(index.row(), index.column())->setText(NewValue.c_str());
-        item(index.row(), 6)->setText(C->Get(FileName, "TimeReference (translated)").c_str());
-        item(index.row(), 7)->setText(C->Get(FileName, "TimeReference").c_str());
-        item(index.row(), 8)->setText(C->Get(FileName, "BextVersion").c_str());
         if (Field=="UMID")
         {
             //Changing BextVersion Enabled value
-            bool Enabled=Fill_Enabled(FileName, "BextVersion", C->Get(FileName, "BextVersion"));
-            if (Enabled)
-                item(index.row(), 8)->setFlags(item(index.row(), 8)->flags()|Qt::ItemIsEnabled);
-            else
-                item(index.row(), 8)->setFlags(item(index.row(), 8)->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
+            SetText   (index, "BextVersion");
         }
         if (Field=="Originator")
-            item(index.row(), 11)->setText(C->Get(FileName, "IARL").c_str()); //IARL is sometimes updated if Originator is modified
+            SetText(index, "IARL"); //IARL is sometimes updated if Originator is modified
         return false;
     }
 
@@ -289,10 +259,17 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         {
             //Retrieving data
             Ztring NewValue(C->Get(FileName, "BextVersion"));
-            if (NewValue=="1")
-                NewValue="0";
-            else
+            if (NewValue=="2")
+            {
+                if (C->Get(FileName, "UMID").empty())
+                    NewValue="0";
+                else
+                    NewValue="1";
+            }
+            else if (NewValue=="0")
                 NewValue="1";
+            else if (NewValue=="1")
+                NewValue="2";
 
             //Filling
             C->Set(FileName, "BextVersion", NewValue);
@@ -335,9 +312,6 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
         item(index.row(), index.column())->setText(NewValue.c_str());
-        item(index.row(), 6)->setText(C->Get(FileName, "TimeReference (translated)").c_str());
-        item(index.row(), 7)->setText(C->Get(FileName, "TimeReference").c_str());
-        item(index.row(), 8)->setText(C->Get(FileName, "BextVersion").c_str());
         return false;
     }
 
@@ -354,9 +328,8 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Updating
-        item(index.row(), 6)->setText(C->Get(FileName, "TimeReference (translated)").c_str());
-        item(index.row(), 7)->setText(C->Get(FileName, "TimeReference").c_str());
-        item(index.row(), 8)->setText(C->Get(FileName, "BextVersion").c_str());
+        SetText(index, "TimeReference");
+        SetText(index, "TimeReference (translated)");
         return false;
     }
 
@@ -376,9 +349,30 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
         item(index.row(), index.column())->setText(NewValue.c_str());
-        item(index.row(), 6)->setText(C->Get(FileName, "TimeReference (translated)").c_str());
-        item(index.row(), 7)->setText(C->Get(FileName, "TimeReference").c_str());
-        item(index.row(), 8)->setText(C->Get(FileName, "BextVersion").c_str());
+
+        return false;
+    }
+
+    //f
+    if (Field=="LoudnessValue" || Field=="LoudnessRange" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness") 
+    {
+        //User interaction
+        GUI_Main_xxxx_Loudness* Edit=new GUI_Main_xxxx_Loudness(C, FileName, Field, ModifiedContentQ, C->Rules.Tech3285_Req);
+        if (Edit->exec()!=QDialog::Accepted)
+        {
+            delete Edit; //Edit=NULL;
+            return false; //No change
+        }
+        delete Edit; //Edit=NULL;
+
+        //Changing BextVersion Enabled value
+        SetText   (index, "BextVersion");
+        SetEnabled(index, "BextVersion");
+
+        //Updating
+        Ztring NewValue(C->Get(FileName, Field));
+        NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
+        item(index.row(), index.column())->setText(NewValue.c_str());
         return false;
     }
 
@@ -409,7 +403,7 @@ bool GUI_Main_Core_Table::Fill_Enabled (const string &FileName, const string &Fi
 
     if (Field=="BextVersion")
     {
-        if (C->Get(FileName, "UMID").empty())
+        if (C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty())
             return true;
         else
             return false;

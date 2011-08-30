@@ -52,10 +52,9 @@
                     <xsd:element maxOccurs="1" minOccurs="0" name="TimeReference_translated" type="xsd:time"/>
                     <xsd:element maxOccurs="1" minOccurs="0" name="TimeReference" type="xsd:nonNegativeInteger"/>
                     <xsd:element maxOccurs="1" minOccurs="0" name="BextVersion">
-                    <!-- if the UMID field is used then BextVersion value is ignored and '1' is used -->
                       <xsd:simpleType>
                         <xsd:restriction base="xsd:nonNegativeInteger">
-                          <xsd:pattern value="[0-1]"/>
+                          <xsd:pattern value="[0-2]"/>
                         </xsd:restriction>
                       </xsd:simpleType>
                     </xsd:element>
@@ -63,6 +62,13 @@
                       <xsd:simpleType>
                         <xsd:restriction base="xsd:string">
                           <xsd:pattern value="[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="LoudnessValue">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:pattern value=""/><!-- TODO -->
                         </xsd:restriction>
                       </xsd:simpleType>
                     </xsd:element>

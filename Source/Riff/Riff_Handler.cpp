@@ -38,7 +38,7 @@ enum xxxx_Fields
 size_t xxxx_Strings_Size[]=
 {
     4,  //Tech
-    10,  //Bext
+    15,  //Bext
     17, //Info
 };
 
@@ -73,12 +73,12 @@ const char* xxxx_Strings[][17]=
         "TimeReference",
         "BextVersion",
         "UMID",
+        "LoudnessValue",
+        "LoudnessRange",
+        "MaxTruePeakLevel",
+        "MaxMomentaryLoudness",
+        "MaxShortTermLoudness",
         "CodingHistory",
-        "",
-        "",
-        "",
-        "",
-        "",
         "",
         "",
     },
@@ -893,8 +893,8 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
     {
         //Test
         string Message;
-        if (!Value.empty() && Value!="0" && Value!="1")
-            Message="must be empty, 0 or 1";
+        if (!Value.empty() && Value!="0" && Value!="1" && Value!="2")
+            Message="must be empty, 0, 1 or 2";
 
         //If error
         if (!Message.empty()) 
@@ -917,12 +917,81 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
     {
         //Test
         string Message;
-        if (!Value.empty() && Value!="0" && Value!="1")
-            Message="must be empty, 0 or 1";
+        if (!Value.empty() && Value!="0" && Value!="1" && Value!="2")
+            Message="must be empty, 0, 1 or 2";
 
         //If error
         if (!Message.empty()) 
             IsValid_Errors<<"malformed input, bext version "<<Message;
+    }
+
+    else if (Field=="loudnessvalue" || Field=="loudnessrange" || Field=="maxtruepeaklevel" || Field=="maxmomentaryloudness" || Field=="maxshorttermloudness")
+    {
+        //Test
+        string Message;
+        size_t Minus=(!Value.empty() && Value[0]=='-')?1:0;
+        size_t Decimal=Value.find('.');
+        if (Value.empty())
+            ;
+        else if (Rules.Tech3285_Req)
+        {
+            if (Value.size()>=Minus+1 && (Value[Minus]<'0' || Value[Minus]>'9'))
+                Message="must be XX.XX or -XX.XX";
+            if (Value.size()>=Minus+2 && Decimal!=Minus+2 && (Value[Minus+1]<'0' && Value[Minus+1]>'9'))
+                Message="must be XX.XX or -XX.XX";
+            if (Value.size()>=Minus+3 && Decimal!=Minus+3 && (Value[Minus+2]<'0' && Value[Minus+2]>'9'))
+                Message="must be XX.XX or -XX.XX";
+            if (Value.size()>=Minus+4 && (Value[Minus+3]<'0' && Value[Minus+3]>'9'))
+                Message="must be XX.XX or -XX.XX";
+            if (Value.size()>=Minus+5 && (Value[Minus+4]<'0' && Value[Minus+4]>'9'))
+                Message="must be XX.XX or -XX.XX";
+            if (Value.size()>=Minus+6)
+                Message="must be XX.XX or -XX.XX";
+            if (Field=="loudnessrange" && Minus)
+                Message="must be XX.XX or -XX.XX";
+        }
+        else
+        {
+            if (Value.size()>=Minus+1 && (Value[Minus]<'0' || Value[Minus]>'9'))
+                Message="must be XXX.XX or -XXX.XX";
+            if (Value.size()>=Minus+2 && Decimal!=Minus+2 && (Value[Minus+1]<'0' && Value[Minus+1]>'9'))
+                Message="must be XXX.XX or -XXX.XX";
+            if (Value.size()>=Minus+3 && Decimal!=Minus+3 && (Value[Minus+2]<'0' && Value[Minus+2]>'9'))
+                Message="must be XXX.XX or -XXX.XX";
+            if (Value.size()>=Minus+4 && Decimal!=Minus+4 && (Value[Minus+3]<'0' && Value[Minus+3]>'9'))
+                Message="must be XXX.XX or -XXX.XX";
+            if (Value.size()>=Minus+5 && (Value[Minus+4]<'0' && Value[Minus+4]>'9'))
+                Message="must be XXX.XX or -XXX.XX";
+            if (Value.size()>=Minus+6 && (Value[Minus+5]<'0' && Value[Minus+5]>'9'))
+                Message="must be XXX.XX or -XXX.XX";
+            if (Value.size()>=Minus+7)
+                Message="must be XXX.XX or -XXX.XX";
+            if (Field=="loudnessrange" && Minus)
+                Message="must be positive value";
+            if (Message.empty())
+            {
+                float32 Float=Ztring(Value).To_float32();
+                if (Float<=-327.68 || Float>=327.69)
+                {
+                    if (Field=="loudnessrange")
+                        Message="must be between 0 and 327.68";
+                    else
+                        Message="must be between -655.35 and 327.68";
+                }
+                int16s SavedValue=(int16u)float32_int32s(Float*100);
+                if (SavedValue<-32767 || SavedValue>32768)
+                {
+                    if (Field=="loudnessrange")
+                        Message="must be 0 or 327.68";
+                    else
+                        Message="must be -327.67 or 327.68";
+                }
+            }
+        }
+
+        //If error
+        if (!Message.empty()) 
+            IsValid_Errors<<"malformed input, "<<Field<<" "<<Message;
     }
 
     else if (Field=="codinghistory")
@@ -1398,6 +1467,11 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
          && Chunk_Strings->Strings["originationtime"].empty()   
          && Chunk_Strings->Strings["timereference"].empty()   
          && Chunk_Strings->Strings["umid"].empty()   
+         && Chunk_Strings->Strings["loudnessvalue"].empty()
+         && Chunk_Strings->Strings["loudnessrange"].empty()
+         && Chunk_Strings->Strings["maxtruepeaklevel"].empty()
+         && Chunk_Strings->Strings["maxmomentaryloudness"].empty()
+         && Chunk_Strings->Strings["maxshorttermloudness"].empty()
          && Chunk_Strings->Strings["codinghistory"].empty())
             timereference_Display=false;
         ZtringList List;
@@ -1411,6 +1485,11 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         List.push_back(Chunk_Strings->Strings["timereference"].empty()?(timereference_Display?Ztring("0"):Ztring()):Chunk_Strings->Strings["timereference"]);
         List.push_back(timereference_Display?Chunk_Strings->Strings["bextversion"]:Ztring());
         List.push_back(Chunk_Strings->Strings["umid"]);
+        List.push_back(Chunk_Strings->Strings["loudnessvalue"]);
+        List.push_back(Chunk_Strings->Strings["loudnessrange"]);
+        List.push_back(Chunk_Strings->Strings["maxtruepeaklevel"]);
+        List.push_back(Chunk_Strings->Strings["maxmomentaryloudness"]);
+        List.push_back(Chunk_Strings->Strings["maxshorttermloudness"]);
         List.push_back(Chunk_Strings->Strings["codinghistory"]);
         return List.Read();
     }
@@ -1478,8 +1557,10 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
         Chunk_Strings=new Riff_Base::global::chunk_strings();
     if (&Chunk_Strings==&Chunks->Global->bext && Field!="bextversion")
     {
-        if (Field=="umid" && !Value.empty())
+        if (Field=="umid" && !Value.empty() && Ztring(Get("bextversion")).To_int16u()<1)
             Set("bextversion", "1", Chunk_Strings, Chunk_Name2, Chunk_Name3);
+        if ((Field=="loudnessvalue" || Field=="loudnessrange" || Field=="maxtruepeaklevel" || Field=="maxmomentaryloudness" || Field=="maxshorttermloudness") && !Value.empty() && Ztring(Get("bextversion")).To_int16u()<2)
+            Set("bextversion", "2", Chunk_Strings, Chunk_Name2, Chunk_Name3);
         if (!Value.empty() && Chunk_Strings->Strings["bextversion"].empty())
             Set("bextversion", Ztring::ToZtring(Bext_DefaultVersion), Chunk_Strings, Chunk_Name2, Chunk_Name3);
     }
@@ -1662,6 +1743,11 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
      || Field_Lowered=="timereference"
      || Field_Lowered=="bextversion"
      || Field_Lowered=="umid"
+     || Field_Lowered=="loudnessvalue"
+     || Field_Lowered=="loudnessrange"
+     || Field_Lowered=="maxtruepeaklevel"
+     || Field_Lowered=="maxmomentaryloudness"
+     || Field_Lowered=="maxshorttermloudness"
      || Field_Lowered=="codinghistory")
         return &Chunks->Global->bext;
 
@@ -1712,6 +1798,11 @@ string Riff_Handler::Field_Get(const string &Field)
      || Field_Lowered=="timereference"
      || Field_Lowered=="bextversion"
      || Field_Lowered=="umid"
+     || Field_Lowered=="loudnessvalue"
+     || Field_Lowered=="loudnessrange"
+     || Field_Lowered=="maxtruepeaklevel"
+     || Field_Lowered=="maxmomentaryloudness"
+     || Field_Lowered=="maxshorttermloudness"
      || Field_Lowered=="codinghistory"
      || Field_Lowered=="xmp"
      || Field_Lowered=="axml"
@@ -1746,6 +1837,11 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
      || Field_Lowered=="timereference"
      || Field_Lowered=="bextversion"
      || Field_Lowered=="umid"
+     || Field_Lowered=="loudnessvalue"
+     || Field_Lowered=="loudnessrange"
+     || Field_Lowered=="maxtruepeaklevel"
+     || Field_Lowered=="maxmomentaryloudness"
+     || Field_Lowered=="maxshorttermloudness"
      || Field_Lowered=="codinghistory")
         return Elements::WAVE_bext; 
 

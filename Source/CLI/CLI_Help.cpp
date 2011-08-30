@@ -71,6 +71,11 @@ std::string Help()
     ToDisplay<<"--OriginationTime=      specified bext origination time"<<std::endl;
     ToDisplay<<"--Timereference=        specified bext time reference"<<std::endl;
     ToDisplay<<"--UMID=                 specified bext umid"<<std::endl;
+    ToDisplay<<"--LoudnessValue=        specified bext loundness value"<<std::endl;
+    ToDisplay<<"--LoudnessRange=        specified bext loundness range"<<std::endl;
+    ToDisplay<<"--MaxTruePeakLevel=     specified bext max true peak level"<<std::endl;
+    ToDisplay<<"--MaxMomentaryLoudness= specified bext max mnomentary loundness"<<std::endl;
+    ToDisplay<<"--MaxShortTermLoudness= specified bext maw short term loundness"<<std::endl;
     ToDisplay<<"--History=              specified bext history"<<std::endl;
     ToDisplay<<"--IARL=                 specified INFO IARL"<<std::endl;
     ToDisplay<<"--ISFT=                 specified INFO ISFT"<<std::endl;

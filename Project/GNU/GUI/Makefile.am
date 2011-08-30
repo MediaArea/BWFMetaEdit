@@ -21,6 +21,7 @@ bwfmetaedit_gui_SOURCES = \
     ../../../Source/GUI/Qt/GUI_Main_xxxx_Bext.cpp \
     ../../../Source/GUI/Qt/GUI_Main_xxxx_CodingHistoryDialog.cpp \
     ../../../Source/GUI/Qt/GUI_Main_xxxx_DateDialog.cpp \
+    ../../../Source/GUI/Qt/GUI_Main_xxxx_Loudness.cpp \
     ../../../Source/GUI/Qt/GUI_Main_xxxx_TextEditDialog.cpp \
     ../../../Source/GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.cpp \
     ../../../Source/GUI/Qt/GUI_Preferences.cpp \
@@ -77,6 +78,7 @@ bwfmetaedit_gui_SOURCES = \
     _Automated/moc_GUI_Main_xxxx_CodingHistoryDialog.cpp \
     _Automated/moc_GUI_Main_xxxx_Bext.cpp \
     _Automated/moc_GUI_Main_xxxx_DateDialog.cpp \
+    _Automated/moc_GUI_Main_xxxx_Loudness.cpp \
     _Automated/moc_GUI_Main_xxxx_TextEditDialog.cpp \
     _Automated/moc_GUI_Main_xxxx_TimeReferenceDialog.cpp \
     _Automated/moc_GUI_Preferences.cpp \

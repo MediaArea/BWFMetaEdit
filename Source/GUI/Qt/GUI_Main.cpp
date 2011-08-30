@@ -80,10 +80,10 @@ GUI_Main::GUI_Main(Core* _C)
         if (Preferences->Group_Option_Checked_Get(Group_DefaultView, Option))
             switch (Option)
             {
-                case Option_DefaultView_Tech_Table  : Menu_View_RadioButtons[Option_DefaultView_Tech_Table]->setChecked(true); break;
-                case Option_DefaultView_Tech_Text   : Menu_View_RadioButtons[Option_DefaultView_Tech_Text ]->setChecked(true); break;
-                case Option_DefaultView_Core_Table  : Menu_View_RadioButtons[Option_DefaultView_Core_Table]->setChecked(true); break;
-                case Option_DefaultView_Core_Text   : Menu_View_RadioButtons[Option_DefaultView_Core_Text ]->setChecked(true); break;
+                case Option_DefaultView_Tech_Table  : Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]->setChecked(true); break;
+                case Option_DefaultView_Tech_Text   : Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text ]->setChecked(true); break;
+                case Option_DefaultView_Core_Table  : Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]->setChecked(true); break;
+                case Option_DefaultView_Core_Text   : Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Text ]->setChecked(true); break;
                 default                             : ;
             }
     }

@@ -285,6 +285,12 @@
     <ClCompile Include="..\..\..\Source\TinyXml\tinyxmlparser.cpp">
       <Filter>Source Files\TinyXml</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_Loudness.cpp">
+      <Filter>Source Files\GUI\Automated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\GUI\Qt\App.h">
@@ -430,6 +436,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\TinyXml\tinyxml.h">
       <Filter>Header Files\TinyXml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

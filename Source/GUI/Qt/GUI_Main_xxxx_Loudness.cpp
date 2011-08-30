@@ -8,19 +8,20 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------
-#include "GUI/Qt/GUI_Main_xxxx_Bext.h"
+#include "GUI/Qt/GUI_Main_xxxx_Loudness.h"
 #include "Riff/Riff_Handler.h"
 #include "Common/Core.h"
 #include "ZenLib/Ztring.h"
 #include "ZenLib/File.h"
 #include <QtGui/QLabel>
 #include <QtCore/QEvent>
-#include <QtGui/QComboBox>
+#include <QtGui/QDoubleSpinBox>
 #include <QtGui/QGridLayout>
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
+#include <QtGui/QIcon>
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -28,16 +29,17 @@
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, QWidget* parent)
+GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &FileName_, const std::string &Field_, const QString &Value, bool Rules_Requirements_, QWidget* parent)
 : QDialog(parent)
 {
     //Internal
     C=_C;
     FileName=FileName_;
+    Field=Field_;
 
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
-    setWindowTitle("bext version");
+    setWindowTitle(Field.c_str());
     setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
 
     //Buttons
@@ -46,24 +48,35 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, Q
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
     
     //Extra - Bext
-    Extra_Bext_DefaultVersion=new QComboBox();
-    bool HasV0=C->Get(FileName, "UMID").empty();
-    if (HasV0)
-        Extra_Bext_DefaultVersion->addItem("0");
-    Extra_Bext_DefaultVersion->addItem("1");
-    Extra_Bext_DefaultVersion->addItem("2");
-    QLabel* Extra_Bext_DefaultVersion_Label=new QLabel("bext version:");
+    Loudness=new QDoubleSpinBox();
+    Loudness->setDecimals(2);
+    if (Rules_Requirements_)
+    {
+        if (Field=="LoudnessValue" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
+            Loudness->setRange(-99.99, 99.99);
+        if (Field=="LoudnessRange")
+            Loudness->setRange(0, 99.99);
+    }
+    else
+        Loudness->setRange(-655.35, 655.36);
+    if (Field=="LoudnessValue" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
+        Loudness->setSuffix(" LUFS");
+    if (Field=="LoudnessRange")
+        Loudness->setSuffix(" LU");
+    if (Field=="MaxTruePeakLevel")
+        Loudness->setSuffix(" dBTP");
+    QLabel* Loudness_Label=new QLabel(QString(Field.c_str())+" value:");
 
     QGridLayout* L=new QGridLayout();
-    L->addWidget(Extra_Bext_DefaultVersion_Label, 0, 0);
-    L->addWidget(Extra_Bext_DefaultVersion, 0, 1);
+    L->addWidget(Loudness_Label, 0, 0);
+    L->addWidget(Loudness, 0, 1);
     L->addWidget(Dialog, 1, 0, 1, 2);
 
     setLayout(L);
-    Extra_Bext_DefaultVersion->setFocus();
+    Loudness->setFocus();
 
     //Default settings
-    Extra_Bext_DefaultVersion->setCurrentIndex(Ztring(C->Get(FileName, "BextVersion")).To_int8u()-(HasV0?0:1));
+    Loudness->setValue(Ztring(C->Get(FileName, Field)).To_float32());
 }
 
 //***************************************************************************
@@ -71,10 +84,10 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, Q
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx_Bext::OnAccept ()
+void GUI_Main_xxxx_Loudness::OnAccept ()
 {
-    std::string Value=Extra_Bext_DefaultVersion->currentText().toLocal8Bit().data();
-    if (!C->IsValid(FileName, "BextVersion", Value))
+    std::string Value=Ztring().From_Number(Loudness->value(), 2).To_UTF8();
+    if (!C->IsValid(FileName, Field, Value))
     {
         QMessageBox MessageBox;
         MessageBox.setWindowTitle("BWF MetaEdit");
@@ -88,7 +101,12 @@ void GUI_Main_xxxx_Bext::OnAccept ()
         return;
     }
 
-    C->Set(FileName, "BextVersion", Value);
+    if (Loudness->value())
+        C->Set(FileName, Field, Value);
+    else
+        C->Set(FileName, Field, ""); //Clear the value instead of 0.00
 
     accept();
 }
+
+

@@ -4,6 +4,14 @@ Notes:
 - Deleted
 x Correction
 
+Version 1.2.0
+-------------
++ Tech 3285 v2 support (Loudness)
+x Crash with some RF64 files
+x #7, Crash after edit if too many field are hidden
+x #6, Crash during preferences setting with Core view as default view
+x #5, last column was missing in table views
+
 Version 1.1.1, 2010-10-10
 --------------
 + Qt library updated to 4.7

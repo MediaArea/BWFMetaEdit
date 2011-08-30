@@ -13,6 +13,7 @@ mkdir _Automated
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Bext.h -o_Automated\moc_GUI_Main_xxxx_Bext.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CodingHistoryDialog.h -o_Automated\moc_GUI_Main_xxxx_CodingHistoryDialog.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_xxxx_DateDialog.h -o_Automated\moc_GUI_Main_xxxx_DateDialog.cpp
+..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.h -o_Automated\moc_GUI_Main_xxxx_Loudness.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TextEditDialog.h -o_Automated\moc_GUI_Main_xxxx_TextEditDialog.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TimeReferenceDialog.h -o_Automated\moc_GUI_Main_xxxx_TimeReferenceDialog.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Preferences.h -o_Automated\moc_GUI_Preferences.cpp
