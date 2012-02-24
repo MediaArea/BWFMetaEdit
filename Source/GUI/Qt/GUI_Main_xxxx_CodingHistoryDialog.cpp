@@ -440,13 +440,9 @@ void GUI_Main_xxxx_CodingHistoryDialog::List2Text ()
         while (!ToReturn.empty() && (*(ToReturn.end()-1))==',')
             ToReturn.erase(ToReturn.end()-1);
             
-        if (Line!=List.size())
-            ToReturn+='\n';
+        ToReturn+='\n';
     }
     
-    while (!ToReturn.empty() && (*(ToReturn.end()-1))=='\n')
-        ToReturn.erase(ToReturn.end()-1);
-            
     if (!ToReturn.empty())
         TextEdit->setPlainText(ToReturn.To_Local().c_str());
 }

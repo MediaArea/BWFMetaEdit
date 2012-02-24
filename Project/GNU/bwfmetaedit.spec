@@ -4,7 +4,7 @@
 
 # norootforbuild
 
-%define bwfmetaedit_version		1.1.1
+%define bwfmetaedit_version		1.2.0
 
 Name:			bwfmetaedit
 Version:		%bwfmetaedit_version
@@ -151,6 +151,6 @@ popd
 %{_datadir}/kde4/services/ServiceMenus/*.desktop
 
 %changelog
-* Tue Jan 01 2010 Jerome Martinez <info@mediaarea.net> - 1.1.1-0
+* Tue Jan 01 2010 Jerome Martinez <info@mediaarea.net> - 1.2.0-0
 - See History.txt for more info and real dates
 

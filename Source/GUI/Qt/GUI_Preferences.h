@@ -23,7 +23,7 @@ class QUrl;
 class QCheckBox;
 class QRadioButton;
 class QLineEdit;
-class QComboBox;
+class QDoubleSpinBox;
 class QDialogButtonBox;
 class QAbstractButton;
 //---------------------------------------------------------------------------
@@ -164,7 +164,8 @@ private:
     QRadioButton*   Extra_LogFile_Deactivated;
     QRadioButton*   Extra_LogFile_Activated_Radio;
     QLineEdit*      Extra_LogFile_Activated;
-    QComboBox*      Extra_Bext_DefaultVersion;
+    QDoubleSpinBox* Extra_Bext_DefaultVersion;
+    QDoubleSpinBox* Extra_Bext_MaxVersion;
     QCheckBox*      Extra_Bext_Toggle;
 };
 

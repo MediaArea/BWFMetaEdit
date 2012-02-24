@@ -58,7 +58,7 @@ GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &File
             Loudness->setRange(0, 99.99);
     }
     else
-        Loudness->setRange(-655.35, 655.36);
+        Loudness->setRange(-655.36, 655.35);
     if (Field=="LoudnessValue" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
         Loudness->setSuffix(" LUFS");
     if (Field=="LoudnessRange")

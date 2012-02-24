@@ -259,24 +259,31 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         if (Main->Bext_Toggle_Get())
         {
             //Retrieving data
-            Ztring NewValue(C->Get(FileName, "BextVersion"));
-            if (NewValue=="2")
-                NewValue="0";
-            else if (NewValue=="0")
-                NewValue="1";
-            else if (NewValue=="1")
-                NewValue="2";
+            int8u NewValue=Ztring().From_Local(C->Get(FileName, "BextVersion").c_str()).To_int8u();
+            if (NewValue>=Main->Bext_MaxVersion_Get())
+            {
+                bool HasV1=C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty();
+                bool HasV0=HasV1 && C->Get(FileName, "UMID").empty();
+                if (HasV0)
+                    NewValue=0;
+                else if (HasV1)
+                    NewValue=1;
+                else
+                    NewValue=2;
+            }
+            else 
+                NewValue++;
 
             //Filling
-            C->Set(FileName, "BextVersion", NewValue);
-            item(index.row(), index.column())->setText(("Version "+NewValue).c_str());
+            C->Set(FileName, "BextVersion", Ztring::ToZtring(NewValue).To_Local());
+            item(index.row(), index.column())->setText(Ztring(_T("Version ")+Ztring::ToZtring(NewValue)).To_Local().c_str());
             dataChanged(indexFromItem(item(index.row(), index.column())), indexFromItem(item(index.row(), index.column())));
             return false;
         }
         else
         {
             //User interaction
-            GUI_Main_xxxx_Bext* Edit=new GUI_Main_xxxx_Bext(C, FileName);
+            GUI_Main_xxxx_Bext* Edit=new GUI_Main_xxxx_Bext(C, FileName, Main->Bext_MaxVersion_Get());
             if (Edit->exec()!=QDialog::Accepted)
             {
                 delete Edit; //Edit=NULL;
@@ -371,7 +378,7 @@ bool GUI_Main_Technical_Table::Fill_Enabled (const string &FileName, const strin
 
     if (Field=="bext")
     {
-        if (C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty())
+        if (Main->Bext_MaxVersion_Get()>2 || Ztring(C->Get(FileName, "BextVersion")).To_int16u()>Main->Bext_MaxVersion_Get() || (C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty()))
             return !C->Overwrite_Reject && Value!="No";
         else
             return false;

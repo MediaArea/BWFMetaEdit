@@ -100,10 +100,10 @@ if test "$enable_universal_binary" = "yes"; then
 	enable_arch_ppc=yes
 	enable_arch_i386=yes
 	if test "$with_macosx_sdk" = no ; then
-		with_macosx_sdk="/Developer/SDKs/MacOSX10.4u.sdk"
+		with_macosx_sdk="/Developer/SDKs/MacOSX10.5.sdk"
 	fi
 	if test "$with_macosx_version_min" = no ; then
-		with_macosx_version_min="10.4"
+		with_macosx_version_min="10.5"
 	fi
 fi
 if test "$enable_arch_ppc" = "yes"; then
@@ -117,9 +117,9 @@ if test "$enable_arch_i386" = "yes"; then
 	LDFLAGS="$LDFLAGS -arch i386"
 fi
 if test "$with_macosx_sdk" = "yes" ; then
-	CXXFLAGS="-isysroot /Developer/SDKs/MacOSX10.4u.sdk $CXXFLAGS"
-	CFLAGS="-isysroot /Developer/SDKs/MacOSX10.4u.sdk $CFLAGS"
-	LDFLAGS="-isysroot /Developer/SDKs/MacOSX10.4u.sdk $LDFLAGS"
+	CXXFLAGS="-isysroot /Developer/SDKs/MacOSX10.5.sdk $CXXFLAGS"
+	CFLAGS="-isysroot /Developer/SDKs/MacOSX10.5.sdk $CFLAGS"
+	LDFLAGS="-isysroot /Developer/SDKs/MacOSX10.5.sdk $LDFLAGS"
 elif test "x$with_macosx_sdk" != xno ; then
 	CXXFLAGS="-isysroot $with_macosx_sdk $CXXFLAGS"
 	CFLAGS="-isysroot $with_macosx_sdk $CFLAGS"

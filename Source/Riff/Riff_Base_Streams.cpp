@@ -46,6 +46,108 @@ using namespace ZenLib;
 //***************************************************************************
 
 //---------------------------------------------------------------------------
+void Riff_Base::Get_B1 (int8u &Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(1);
+    Value=BigEndian2int8u(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset);
+    Chunk.Content.Buffer_Offset+=1;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Put_B1 (int8u Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(1);
+    int8u2BigEndian(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset, Value);
+    Chunk.Content.Buffer_Offset+=1;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Get_B2 (int16u &Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(2);
+    Value=BigEndian2int16u(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset);
+    Chunk.Content.Buffer_Offset+=2;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Put_B2 (int16u Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(2);
+    int16u2BigEndian(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset, Value);
+    Chunk.Content.Buffer_Offset+=2;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Get_B3 (int32u &Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(3);
+    Value=BigEndian2int24u(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset);
+    Chunk.Content.Buffer_Offset+=3;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Put_B3 (int32u Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(3);
+    int24u2BigEndian(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset, Value);
+    Chunk.Content.Buffer_Offset+=3;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Get_B4 (int32u &Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(4);
+    Value=BigEndian2int32u(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset);
+    Chunk.Content.Buffer_Offset+=4;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Put_B4 (int32u Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(4);
+    int32u2BigEndian(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset, Value);
+    Chunk.Content.Buffer_Offset+=4;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Get_B8 (int64u &Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(8);
+    Value=BigEndian2int64u(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset);
+    Chunk.Content.Buffer_Offset+=8;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Put_B8 (int64u Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(8);
+    int64u2BigEndian(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset, Value);
+    Chunk.Content.Buffer_Offset+=8;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Get_B16(int128u &Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(16);
+    Value.lo=BigEndian2int64u(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset);
+    Value.hi=BigEndian2int64u(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset+8);
+    Chunk.Content.Buffer_Offset+=16;
+}
+
+//---------------------------------------------------------------------------
+void Riff_Base::Put_B16(int128u Value)
+{
+    INTEGRITY_SIZE_ATLEAST_INT(16);
+    int64u2BigEndian(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset, Value.lo);
+    int64u2BigEndian(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset+8, Value.hi);
+    Chunk.Content.Buffer_Offset+=16;
+}
+
+//***************************************************************************
+// Chunk.Content.Buffer handling - Little endian values
+//***************************************************************************
+
+//---------------------------------------------------------------------------
 void Riff_Base::Get_L1 (int8u &Value)
 {
     INTEGRITY_SIZE_ATLEAST_INT(1);

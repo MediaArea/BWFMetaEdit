@@ -1,5 +1,5 @@
 // ZenLib::Utils - Very small utilities
-// Copyright (C) 2002-2010 MediaArea.net SARL, Info@MediaArea.net
+// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -62,6 +62,7 @@ int64s LittleEndian2int64s (const char* List);
 int64u LittleEndian2int64u (const char* List);
 int128u LittleEndian2int128u (const char* List);
 #endif
+float32 LittleEndian2float16 (const char* List);
 float32 LittleEndian2float32 (const char* List);
 float64 LittleEndian2float64 (const char* List);
 float80 LittleEndian2float80 (const char* List);
@@ -85,6 +86,7 @@ void   int64s2LittleEndian    (char* List, int64s Value);
 void   int64u2LittleEndian    (char* List, int64u Value);
 void   int128u2LittleEndian   (char* List, int128u Value);
 #endif
+void   float162LittleEndian   (char* List, float32 Value);
 void   float322LittleEndian   (char* List, float32 Value);
 void   float642LittleEndian   (char* List, float64 Value);
 void   float802LittleEndian   (char* List, float80 Value);
@@ -109,6 +111,7 @@ inline int64s LittleEndian2int64s (const int8u* List) {return LittleEndian2int64
 inline int64u LittleEndian2int64u (const int8u* List) {return LittleEndian2int64u ((const char*)List);}
 inline int128u LittleEndian2int128u (const int8u* List) {return LittleEndian2int64u ((const char*)List);}
 #endif
+inline float32 LittleEndian2float16 (const int8u* List) {return LittleEndian2float16 ((const char*)List);}
 inline float32 LittleEndian2float32 (const int8u* List) {return LittleEndian2float32 ((const char*)List);}
 inline float64 LittleEndian2float64 (const int8u* List) {return LittleEndian2float64 ((const char*)List);}
 inline float80 LittleEndian2float80 (const int8u* List) {return LittleEndian2float80 ((const char*)List);}
@@ -132,6 +135,7 @@ inline void   int64s2LittleEndian    (int8u* List, int64s Value) {return int64s2
 inline void   int64u2LittleEndian    (int8u* List, int64u Value) {return int64u2LittleEndian   ((char*)List, Value);}
 inline void   int128u2LittleEndian   (int8u* List, int128u Value) {return int128u2LittleEndian ((char*)List, Value);}
 #endif
+inline void   float162LittleEndian   (int8u* List, float32 Value) {return float162LittleEndian ((char*)List, Value);}
 inline void   float322LittleEndian   (int8u* List, float32 Value) {return float322LittleEndian ((char*)List, Value);}
 inline void   float642LittleEndian   (int8u* List, float64 Value) {return float642LittleEndian ((char*)List, Value);}
 inline void   float802LittleEndian   (int8u* List, float80 Value) {return float802LittleEndian ((char*)List, Value);}
@@ -158,6 +162,7 @@ int64s BigEndian2int64s    (const char* List);
 int64u BigEndian2int64u    (const char* List);
 int128u BigEndian2int128u  (const char* List);
 #endif
+float32 BigEndian2float16  (const char* List);
 float32 BigEndian2float32  (const char* List);
 float64 BigEndian2float64  (const char* List);
 float80 BigEndian2float80  (const char* List);
@@ -181,6 +186,7 @@ void   int64s2BigEndian    (char* List, int64s Value);
 void   int64u2BigEndian    (char* List, int64u Value);
 void   int128u2BigEndian   (char* List, int128u Value);
 #endif
+void   float162BigEndian   (char* List, float32 Value);
 void   float322BigEndian   (char* List, float32 Value);
 void   float642BigEndian   (char* List, float64 Value);
 void   float802BigEndian   (char* List, float80 Value);
@@ -205,6 +211,7 @@ inline int64s BigEndian2int64s    (const int8u* List) {return BigEndian2int64s  
 inline int64u BigEndian2int64u    (const int8u* List) {return BigEndian2int64u    ((const char*)List);}
 inline int128u BigEndian2int128u  (const int8u* List) {return BigEndian2int128u   ((const char*)List);}
 #endif
+inline float32 BigEndian2float16  (const int8u* List) {return BigEndian2float16   ((const char*)List);}
 inline float32 BigEndian2float32  (const int8u* List) {return BigEndian2float32   ((const char*)List);}
 inline float64 BigEndian2float64  (const int8u* List) {return BigEndian2float64   ((const char*)List);}
 inline float80 BigEndian2float80  (const int8u* List) {return BigEndian2float80   ((const char*)List);}
@@ -228,6 +235,7 @@ inline void   int64s2BigEndian    (int8u* List, int64s Value) {return int64s2Big
 inline void   int64u2BigEndian    (int8u* List, int64u Value) {return int64u2BigEndian   ((char*)List, Value);}
 inline void   int128u2BigEndian   (int8u* List, int128u Value) {return int128u2BigEndian ((char*)List, Value);}
 #endif
+inline void   float162BigEndian   (int8u* List, float32 Value) {return float162BigEndian ((char*)List, Value);}
 inline void   float322BigEndian   (int8u* List, float32 Value) {return float322BigEndian ((char*)List, Value);}
 inline void   float642BigEndian   (int8u* List, float64 Value) {return float642BigEndian ((char*)List, Value);}
 inline void   float802BigEndian   (int8u* List, float80 Value) {return float802BigEndian ((char*)List, Value);}
@@ -254,14 +262,8 @@ int64s float64_int64s  (float64 F, bool Rounded=true);
     inline float32 int64u_float32 (int64u v) {return static_cast<float32>(static_cast<int64s>(v>>1))*2.0f + static_cast<float32>(static_cast<int64s>(v & 1));}
     inline float64 int64u_float64 (int64u v) {return static_cast<float64>(static_cast<int64s>(v>>1))*2.0f + static_cast<float32>(static_cast<int64s>(v & 1));}
 #else
-    #if defined(_MSC_VER)
-       #pragma warning( disable : 4244 )
-    #endif
-    inline float32 int64u_float32 (int64u v) {return v;}
-    inline float64 int64u_float64 (int64u v) {return v;}
-    #if defined(_MSC_VER)
-        #pragma warning( default : 4244 )
-    #endif
+    inline float32 int64u_float32 (int64u v) {return (float32)v;}
+    inline float64 int64u_float64 (int64u v) {return (float64)v;}
 #endif // defined(_MSC_VER) && _MSC_VER<=1200
 
 //---------------------------------------------------------------------------

@@ -78,6 +78,7 @@ public :
     size_t Read  (int8u* Buffer, size_t Buffer_Size);
     size_t Write (const int8u* Buffer, size_t Buffer_Size);
     size_t Write (const Ztring &ToWrite);
+    bool   Truncate (int64u Offset=(int64u)-1);
 
     //Moving
     bool GoTo (int64s Position, move_t MoveMethod=FromBegin);

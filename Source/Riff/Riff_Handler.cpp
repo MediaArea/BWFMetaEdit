@@ -121,6 +121,7 @@ Riff_Handler::Riff_Handler ()
     EmbedMD5=false;
     EmbedMD5_AuthorizeOverWritting=false;
     Bext_DefaultVersion=0;
+    Bext_MaxVersion=2;
 
     //Internal
     Chunks=NULL;
@@ -633,9 +634,9 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
         {
             if (Value.empty())
                 Message="must not be empty (FADGI recommandations)";
-            else if (Value.size()>0 && Value[0] < 'A' || Value[0] > 'Z')
+            else if (Value.size()>0 && (Value[0] < 'A' || Value[0] > 'Z'))
                 Message="1st character must be between 'A' and 'Z' (FADGI recommandations)";
-            else if (Value.size()>1 && Value[1] < 'A' || Value[1] > 'Z')
+            else if (Value.size()>1 && (Value[1] < 'A' || Value[1] > 'Z'))
                 Message="2nd character must be between 'A' and 'Z' (FADGI recommandations)";
             else if (Value.size()>2 && Value[2] !=',')
                 Message="3rd character must be a comma (FADGI recommandations)";
@@ -805,17 +806,17 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
                          if (Value[2]!=':') //Separator
                         Message="3rd character must be ':' (FADGI recommandations)";
                     else if (Value[3]< '0' || Value[3]> '5') //Minutes
-                        Message="4th and 5th characters (Minutes) must be between '01' and '59' (FADGI recommandations)";
+                        Message="4th and 5th characters (Minutes) must be between '00' and '59' (FADGI recommandations)";
                     else if (Value[4]< '0' || Value[4]> '9' ) //Minutes
-                        Message="4th and 5th characters (Minutes) must be between '01' and '59' (FADGI recommandations)";
+                        Message="4th and 5th characters (Minutes) must be between '00' and '59' (FADGI recommandations)";
                     else if (Value.size()==8) //HH:MM:SS
                     {
                              if (Value[5]!=':') //Separator
                             Message="6th character must be ':' (FADGI recommandations)";
                         else if (Value[6]< '0' || Value[6]> '5') //Seconds
-                            Message="7th and 8th characters (Seconds) must be between '01' and '59' (FADGI recommandations)";
+                            Message="7th and 8th characters (Seconds) must be between '00' and '59' (FADGI recommandations)";
                         else if (Value[7]< '0' || Value[7]> '9' ) //Seconds
-                            Message="7th and 8th characters (Seconds) must be between '01' and '59' (FADGI recommandations)";
+                            Message="7th and 8th characters (Seconds) must be between '00' and '59' (FADGI recommandations)";
                     }
                 }
             }
@@ -831,15 +832,15 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
             else if (Rules.Tech3285_Rec && Value[2]!='-' && Value[2]!='_' && Value[2]!=':' && Value[2]!=' ' && Value[2]!='.') //Separator 
                 Message="3rd character must be '-', '_', ':', ' ', or '.' (BWF recommendations)";
             else if (Value[3]< '0' || Value[3]> '5') //Minutes
-                Message="4th and 5th characters (Minutes) must be between '01' and '59'";
+                Message="4th and 5th characters (Minutes) must be between '00' and '59'";
             else if (Value[4]< '0' || Value[4]> '9' ) //Minutes
-                Message="4th and 5th characters (Minutes) must be between '01' and '59'";
+                Message="4th and 5th characters (Minutes) must be between '00' and '59'";
             else if (Rules.Tech3285_Rec && Value[5]!='-' && Value[5]!='_' && Value[5]!=':' && Value[5]!=' ' && Value[5]!='.') //Separator 
                 Message="6th character must be '-', '_', ':', ' ', or '.' (BWF recommendations)";
             else if (Value[6]< '0' || Value[6]> '5') //Seconds
-                Message="7th and 8th characters (Seconds) must be between '01' and '59'";
+                Message="7th and 8th characters (Seconds) must be between '00' and '59'";
             else if (Value[7]< '0' || Value[7]> '9' ) //Seconds
-                Message="7th and 8th characters (Seconds) must be between '01' and '59'";
+                Message="7th and 8th characters (Seconds) must be between '00' and '59'";
         }
 
         //If error
@@ -905,8 +906,31 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
     {
         //Test
         string Message;
-        if (!Value.empty() && Ztring(Value).To_UUID()==0 && Value!="00000000-0000-0000-0000-000000000000")
-            Message="must be XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX";
+        /* Old method disabled
+        if (Value.find('-')!=string::npos)
+        {
+            //Old method
+            if (!Value.empty() && Ztring(Value).To_UUID()==0 && Value!="00000000-0000-0000-0000-000000000000")
+                Message="must be XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and it must contain only 0-9 and A-F (legacy method)";
+        }
+        else */
+        {
+            if (!Value.empty() && Value.size()!=64 && Value.size()!=128)
+                Message="must be 0-, 32- or 64-byte long";
+            else
+            {
+                for (size_t Pos=0; Pos<Value.size(); Pos++)
+                    if (!((Value[Pos]>='0' && Value[Pos]<='9') || (Value[Pos]>='a' && Value[Pos]<='f') || (Value[Pos]>='A' && Value[Pos]<='F')))
+                    {
+                        Message="must contain only 0-9 and A-F (hexadecimal)";
+                        break;
+                    }
+                if (Message.empty()) 
+                {
+                    
+                }
+            }
+        }
 
         //If error
         if (!Message.empty()) 
@@ -978,7 +1002,7 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
                     else
                         Message="must be between -655.35 and 327.68";
                 }
-                int16s SavedValue=(int16u)float32_int32s(Float*100);
+                int32s SavedValue=float32_int32s(Float*100);
                 if (SavedValue<-32767 || SavedValue>32768)
                 {
                     if (Field=="loudnessrange")
@@ -1119,10 +1143,9 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
             }
             
             if (Wrong)
-            {
                 Message="does not respect rules ";
-                return false;
-            }
+            else if (!Value.empty() && (Value.size()<2 || Value[Value.size()-2]!=_T('\r') || Value[Value.size()-1]!=_T('\n')))
+                Message="does not terminate with \\r\\n";
         }
 
         //If error
@@ -1151,11 +1174,11 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
             IsValid_Errors<<"malformed input (IARL "<<Message<<")";
     }
 
-    else if (Field=="ICMD" && Rules.INFO_Req)
+    else if (Field=="ICMT" && Rules.INFO_Req)
     {
-        if (Value.find_first_of("\r\n"))
+        if (Value.find_first_of("\r\n")!=string::npos)
         {
-            Errors<<(Chunks?Chunks->Global->File_Name:"")<<": malformed input (ICMD="<<Value<<", carriage return are not acceptable)"<<endl;
+            Errors<<(Chunks?Chunks->Global->File_Name:"")<<": malformed input (ICMT="<<Value<<", carriage return are not acceptable)"<<endl;
             return false;
         }
     }
@@ -1450,7 +1473,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         return PerFile_Error.str();
     if (Field=="information")
         return PerFile_Information.str();
-    if (Field=="sample rate")
+    if (Field=="sample rate" ||Field=="samplerate")
         return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      )));
 
     if (!File_IsValid)
@@ -1517,7 +1540,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
     {
         bool bextversion_Display=false;
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Bext]; Pos++)
-             if (!Chunk_Strings->Strings[Field_Get(xxxx_Strings[Fields_Bext][Pos])].empty() && Ztring(xxxx_Strings[Fields_Bext][Pos])!="BextVersion")
+             if (!Chunk_Strings->Strings[Field_Get(xxxx_Strings[Fields_Bext][Pos])].empty())
                 bextversion_Display=true;
         return bextversion_Display?Chunk_Strings->Strings["bextversion"]:Ztring();
     }
@@ -1851,7 +1874,7 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
 
     //aXML
     else if (Field_Lowered=="axml")
-        return Elements::WAVE_aXML; 
+        return Elements::WAVE_axml; 
 
     //iXML
     else if (Field_Lowered=="ixml")

@@ -48,7 +48,9 @@ public:
 
     //Actions
     void Menu_Update();
-    void Bext_DefaultVersion_Set(unsigned char Version);
+    void Bext_DefaultVersion_Set(unsigned short Version);
+    void Bext_MaxVersion_Set(unsigned short Version);
+    unsigned short Bext_MaxVersion_Get();
     bool Bext_Toggle_Get();
     void Bext_Toggle_Set(bool Version);
     void BackupDirectory_Set(const string &Value);
@@ -170,8 +172,8 @@ private:
     Core* C;
 
     //Options
-    bool    Bext_Toggle;
-    string  LogFile;
+    bool        Bext_Toggle;
+    string      LogFile;
 
     //GUI
     QWidget* View;

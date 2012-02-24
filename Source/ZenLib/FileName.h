@@ -1,5 +1,5 @@
 // ZenLib::FileName - FileName functions
-// Copyright (C) 2007-2010 MediaArea.net SARL, Info@MediaArea.net
+// Copyright (C) 2007-2011 MediaArea.net SARL, Info@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -46,11 +46,11 @@ class FileName : public ZenLib::Ztring
 public :
     //Constructor/Destructor
     FileName ()                                                                 : Ztring(){};
-    FileName (const tstring& S, size_type Pos=0, size_type n=npos)              : Ztring(S, Pos, n){};
-    FileName (const tstring* S, size_type Pos=0, size_type n=npos)              : Ztring(S, Pos, n){};
-    FileName (const Char *S)                                                    : Ztring(S){};
-    FileName (const Char *S, size_type n)                                       : Ztring(S, n){};
-    FileName (size_type n, const Char S)                                        : Ztring(n, S){};
+    FileName (const tstring& str)                                               : Ztring(str){};
+    FileName (const tstring& str, size_type pos, size_type n=npos)              : Ztring(str, pos, n){};
+    FileName (const Char* s, size_type n)                                       : Ztring(s, n){};
+    FileName (const Char* s)                                                    : Ztring(s){};
+    FileName (size_type n, char c)                                              : Ztring(n, c){};
 
     //Read/Write
     ZenLib::Ztring  Path_Get             () const;

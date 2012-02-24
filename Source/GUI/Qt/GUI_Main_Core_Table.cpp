@@ -16,6 +16,7 @@
 #include "GUI/Qt/GUI_Main_xxxx_Loudness.h"
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_UmidDialog.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
 #include <QtGui/QLabel>
@@ -131,13 +132,9 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
             item(Row, Item->column())->setText(QString().fromUtf8(Ztring(C->Get(FileName, Field)).To_Local().c_str()));
             dataChanged(indexFromItem(item(Row, Item->column())), indexFromItem(item(Row, Item->column())));
 
-            //Special cases
-            if (Field=="UMID" || Field=="LoudnessValue" || Field=="LoudnessRange" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
-            {
-                //Changing BextVersion Enabled value
-                SetText   (*Item, "BextVersion");
-                SetEnabled(*Item, "BextVersion");
-            }
+            //Changing BextVersion Enabled value
+            SetText   (*Item, "BextVersion");
+            SetEnabled(*Item, "BextVersion");
         }
         return;
     }
@@ -180,12 +177,10 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
             SetText(*Item, "TimeReference (translated)");
         if (Field=="TimeReference (translated)")
             SetText(*Item, "TimeReference");
-        if (Field=="UMID" || Field=="LoudnessValue" || Field=="LoudnessRange" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
-        {
-            //Changing BextVersion Enabled value
-            SetText   (*Item, "BextVersion");
-            SetEnabled(*Item, "BextVersion");
-        }
+
+        //Changing BextVersion Enabled value
+        SetText   (*Item, "BextVersion");
+        SetEnabled(*Item, "BextVersion");
     }
 
     //Menu
@@ -227,7 +222,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         ModifiedContentQ=index.model()->data(index.model()->index(index.row(), index.column(), rootIndex())).toString(); //Old value
 
     //Description / Originator / OriginatorReference
-    if (Field=="Description" || Field=="Originator" || Field=="OriginatorReference" || Field=="IARL" || Field=="UMID") 
+    if (Field=="Description" || Field=="Originator" || Field=="OriginatorReference" || Field=="IARL") 
     {
         //User interaction
         GUI_Main_xxxx_TextEditDialog* Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName, Field, ModifiedContentQ);
@@ -242,13 +237,37 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
         item(index.row(), index.column())->setText(NewValue.c_str());
-        if (Field=="UMID")
-        {
-            //Changing BextVersion Enabled value
-            SetText   (index, "BextVersion");
-        }
         if (Field=="Originator")
             SetText(index, "IARL"); //IARL is sometimes updated if Originator is modified
+
+        //Changing BextVersion Enabled value
+        SetText   (index, "BextVersion");
+        SetEnabled(index, "BextVersion");
+
+        return false;
+    }
+
+    //Description / Originator / OriginatorReference
+    if (Field=="UMID") 
+    {
+        //User interaction
+        GUI_Main_xxxx_UmidDialog* Edit=new GUI_Main_xxxx_UmidDialog(C, FileName, Field, ModifiedContentQ, this);
+        if (Edit->exec()!=QDialog::Accepted)
+        {
+            delete Edit; //Edit=NULL;
+            return false; //No change
+        }
+        delete Edit; //Edit=NULL;
+
+        //Filling
+        Ztring NewValue(C->Get(FileName, Field));
+        NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
+        item(index.row(), index.column())->setText(NewValue.c_str());
+
+        //Changing BextVersion Enabled value
+        SetText   (index, "BextVersion");
+        SetEnabled(index, "BextVersion");
+
         return false;
     }
 
@@ -258,29 +277,31 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         if (Main->Bext_Toggle_Get())
         {
             //Retrieving data
-            Ztring NewValue(C->Get(FileName, "BextVersion"));
-            if (NewValue=="2")
+            int8u NewValue=Ztring().From_Local(C->Get(FileName, "BextVersion").c_str()).To_int8u();
+            if (NewValue>=Main->Bext_MaxVersion_Get())
             {
-                if (C->Get(FileName, "UMID").empty())
-                    NewValue="0";
+                bool HasV1=C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty();
+                bool HasV0=HasV1 && C->Get(FileName, "UMID").empty();
+                if (HasV0)
+                    NewValue=0;
+                else if (HasV1)
+                    NewValue=1;
                 else
-                    NewValue="1";
+                    NewValue=2;
             }
-            else if (NewValue=="0")
-                NewValue="1";
-            else if (NewValue=="1")
-                NewValue="2";
+            else 
+                NewValue++;
 
             //Filling
-            C->Set(FileName, "BextVersion", NewValue);
-            item(index.row(), index.column())->setText(NewValue.c_str());
+            C->Set(FileName, "BextVersion", Ztring::ToZtring(NewValue).To_Local());
+            item(index.row(), index.column())->setText(Ztring::ToZtring(NewValue).To_Local().c_str());
             Colors_Update(item(index.row(), index.column()), FileName, Field); //Must be forced because normal method does not handle Yes/No
             return false;
         }
         else
         {
             //User interaction
-            GUI_Main_xxxx_Bext* Edit=new GUI_Main_xxxx_Bext(C, FileName);
+            GUI_Main_xxxx_Bext* Edit=new GUI_Main_xxxx_Bext(C, FileName, Main->Bext_MaxVersion_Get());
             if (Edit->exec()!=QDialog::Accepted)
             {
                 delete Edit; //Edit=NULL;
@@ -312,6 +333,11 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
         item(index.row(), index.column())->setText(NewValue.c_str());
+
+        //Changing BextVersion Enabled value
+        SetText   (index, "BextVersion");
+        SetEnabled(index, "BextVersion");
+
         return false;
     }
 
@@ -330,6 +356,11 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         //Updating
         SetText(index, "TimeReference");
         SetText(index, "TimeReference (translated)");
+
+        //Changing BextVersion Enabled value
+        SetText   (index, "BextVersion");
+        SetEnabled(index, "BextVersion");
+
         return false;
     }
 
@@ -350,6 +381,10 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
         item(index.row(), index.column())->setText(NewValue.c_str());
 
+        //Changing BextVersion Enabled value
+        SetText   (index, "BextVersion");
+        SetEnabled(index, "BextVersion");
+
         return false;
     }
 
@@ -365,14 +400,15 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         }
         delete Edit; //Edit=NULL;
 
-        //Changing BextVersion Enabled value
-        SetText   (index, "BextVersion");
-        SetEnabled(index, "BextVersion");
-
         //Updating
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
         item(index.row(), index.column())->setText(NewValue.c_str());
+
+        //Changing BextVersion Enabled value
+        SetText   (index, "BextVersion");
+        SetEnabled(index, "BextVersion");
+
         return false;
     }
 
@@ -403,7 +439,7 @@ bool GUI_Main_Core_Table::Fill_Enabled (const string &FileName, const string &Fi
 
     if (Field=="BextVersion")
     {
-        if (C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty())
+        if (Main->Bext_MaxVersion_Get()>2 || Ztring(C->Get(FileName, "BextVersion")).To_int16u()>Main->Bext_MaxVersion_Get() || (C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty()))
             return true;
         else
             return false;

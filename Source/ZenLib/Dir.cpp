@@ -1,5 +1,5 @@
 // ZenLib::Dir - Directories functions
-// Copyright (C) 2007-2010 MediaArea.net SARL, Info@MediaArea.net
+// Copyright (C) 2007-2011 MediaArea.net SARL, Info@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -21,11 +21,16 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------
-#include "ZenLib/Conf_Internal.h"
+#include "ZenLib/PreComp.h"
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
 //---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+#include "ZenLib/Conf_Internal.h"
+//---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------
 #ifdef ZENLIB_USEWX
     #include <wx/file.h>
@@ -88,13 +93,13 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
         else if (FullPath.DirExists())
         {
             FullPath.Normalize();
-            wxDir::GetAllFiles(FullPath.GetFullPath(), &Liste, _T(""), Flags);
+            wxDir::GetAllFiles(FullPath.GetFullPath(), &Liste, Ztring(), Flags);
         }
         //-WildCards
         else
         {
             wxString FileName=FullPath.GetFullName();
-            FullPath.SetFullName(_T("")); //Supress filename
+            FullPath.SetFullName(Ztring()); //Supress filename
             FullPath.Normalize();
             if (FullPath.DirExists())
                 wxDir::GetAllFiles(FullPath.GetPath(), &Liste, FileName, Flags);
@@ -193,26 +198,40 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
             FindClose(hFind);
         #else //WINDOWS
             //A file?
-            if (Exists(Dir_Name))
+            if (File::Exists(Dir_Name))
             {
-                Dir_Name+=PathSeparator;
-                Dir_Name+=_T('*');
+               ToReturn.push_back(Dir_Name); //TODO
+               return ToReturn;
             }
 
             //A dir?
-            Ztring Path=FileName::Path_Get(Dir_Name);
-            if (!Dir::Exists(Path))
+            if (!Dir::Exists(Dir_Name))
                 return ToReturn; //Does not exist
 
             //open
-            glob_t globbuf;
-            if (glob(Dir_Name.To_Local().c_str(), GLOB_NOSORT, NULL, &globbuf)==0)
-                for (int Pos=0; Pos<globbuf.gl_pathc; Pos++)
+            #ifdef UNICODE
+                DIR* Dir=opendir(Dir_Name.To_Local().c_str());
+            #else
+                DIR* Dir=opendir(Dir_Name.c_str());
+            #endif //UNICODE
+            if (Dir)
+            {
+                //This is a dir
+                //Normalizing dir (the / at the end)
+                size_t Dir_Pos=Dir_Name.rfind(FileName_PathSeparator);
+                if (Dir_Pos==std::string::npos)
+                    Dir_Name+=FileName_PathSeparator;
+                else if (Dir_Pos+Ztring(FileName_PathSeparator).size()!=Dir_Name.size())
+                    Dir_Name+=FileName_PathSeparator;
+
+                struct dirent *DirEnt;
+                while((DirEnt=readdir(Dir))!=NULL)
                 {
-                    Ztring File_Name=Ztring().From_Local(globbuf.gl_pathv[Pos]);
+                    //A file
+                    Ztring File_Name(DirEnt->d_name);
                     if (File_Name!=_T(".") && File_Name!=_T("..")) //Avoid . an ..
                     {
-                        Ztring File_Name_Complete=File_Name;
+                        Ztring File_Name_Complete=Dir_Name+File_Name;
                         if (Exists(File_Name_Complete))
                         {
                             if (Options&Parse_SubDirs)
@@ -222,6 +241,19 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                             ToReturn.push_back(File_Name_Complete); //A file
                     }
                 }
+
+                //Close it
+                closedir(Dir);
+            }
+            else
+            {
+                glob_t globbuf;
+                if (glob(Dir_Name.To_Local().c_str(), GLOB_NOSORT, NULL, &globbuf)==0)
+                {
+                    for (int Pos=0; Pos<globbuf.gl_pathc; Pos++)
+                        ToReturn.push_back(Ztring().From_Local(globbuf.gl_pathv[Pos]));
+                }
+            }
         #endif
     #endif //ZENLIB_USEWX
 

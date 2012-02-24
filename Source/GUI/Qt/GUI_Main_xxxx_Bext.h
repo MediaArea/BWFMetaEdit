@@ -16,7 +16,7 @@
 class Core;
 #include <QtGui/QDialog>
 class QDialogButtonBox;
-class QComboBox;
+class QDoubleSpinBox;
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -29,10 +29,10 @@ class GUI_Main_xxxx_Bext : public QDialog
 
 public:   
     //Constructor/Destructor
-    GUI_Main_xxxx_Bext(Core* C, const std::string &FileName_, QWidget* parent=NULL);
+    GUI_Main_xxxx_Bext(Core* C, const std::string &FileName_, int Maximum, QWidget* parent=NULL);
 
     //Widgets
-    QComboBox*          Extra_Bext_DefaultVersion;
+    QDoubleSpinBox*     Version;
     QDialogButtonBox*   Dialog;
 
 private slots:

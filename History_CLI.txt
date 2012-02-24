@@ -4,10 +4,18 @@ Notes:
 - Deleted
 x Correction
 
-Version 1.2.0
+Version 1.2.0, 2012-02-24
 -------------
 + Tech 3285 v2 support (Loudness)
++ SMPTE ST330-2000 support for UMID edition
++ --specialchars option for being able to put carriage return (\r\n) in the input
+x axml chunk ID error (was "aXML" instead of "axml")
+x CodingHistory was not finishing with \r\n (and no error was reported)
 x Crash with some RF64 files
+x ICMT field validity was not tested
+x #7, Crash after edit if too many field are hidden
+x #6, Crash during preferences setting with Core view as default view
+x #5, last column was missing in table views
 
 Version 1.1.1, 2010-10-10
 --------------

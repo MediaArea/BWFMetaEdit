@@ -107,7 +107,7 @@ void GUI_Main_xxxx_TextEditDialog::OnTextChanged ()
     if (Field=="XMP")
         Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for XMP.<br />Edit at your own risk. For more information see the <a href=\"http://www.adobe.com/products/xmp/\">Adobe XMP website</a><br />Edits to this chunk can not be undone</body></html>");
     else if (Field=="aXML")
-        Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for aXML.<br />Edit at your own risk. For more information see the <a href=\"http://www.ebu.ch/CMSimages/en/tec_doc_t3285_s5_tcm6-10485.pdf\">BWF aXML chunk specification</a><br />Edits to this chunk can not be undone</body></html>");
+        Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for aXML.<br />Edit at your own risk. For more information see the <a href=\"http://tech.ebu.ch/docs/tech/tech3285s5.pdf\">BWF aXML chunk specification</a><br />Edits to this chunk can not be undone</body></html>");
     else if (Field=="iXML")
         Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for iXML.<br />Edit at your own risk. For more information see the <a href=\"http://www.gallery.co.uk/ixml/\">iXML Specification</a><br />Edits to this chunk can not be undone</body></html>");
     else if (!C->IsValid(FileName, Field, Value))

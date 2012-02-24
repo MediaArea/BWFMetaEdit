@@ -33,7 +33,7 @@ void Riff_WAVE::Read_Internal ()
         SUB_ELEMENT(WAVE_ds64);
         SUB_ELEMENT(WAVE_INFO);
         SUB_ELEMENT(WAVE__PMX);
-        SUB_ELEMENT(WAVE_aXML);
+        SUB_ELEMENT(WAVE_axml);
         SUB_ELEMENT(WAVE_iXML);
         SUB_ELEMENT(WAVE_MD5_);
     SUBS_END();
@@ -70,7 +70,7 @@ size_t Riff_WAVE::Insert_Internal (int32u Chunk_Name_Insert)
         case Elements::WAVE_ds64 :  NewChunk=new Riff_WAVE_ds64(Global); break;
         case Elements::WAVE_INFO :  NewChunk=new Riff_WAVE_INFO(Global); break;
         case Elements::WAVE__PMX :  NewChunk=new Riff_WAVE__PMX(Global); break;
-        case Elements::WAVE_aXML :  NewChunk=new Riff_WAVE_aXML(Global); break;
+        case Elements::WAVE_axml :  NewChunk=new Riff_WAVE_axml(Global); break;
         case Elements::WAVE_iXML :  NewChunk=new Riff_WAVE_iXML(Global); break;
         case Elements::WAVE_MD5_ :  NewChunk=new Riff_WAVE_MD5_(Global); break;
         default                  :  return Subs.size();
@@ -83,7 +83,7 @@ size_t Riff_WAVE::Insert_Internal (int32u Chunk_Name_Insert)
         case Elements::WAVE_ds64 :  Subs_Pos=0                                                                     ; break;
         case Elements::WAVE_INFO :  Subs_Pos=Global->NewChunksAtTheEnd?(size_t)-1:Subs_Pos_Get(Elements::WAVE_fmt_); break;
         case Elements::WAVE__PMX :  Subs_Pos=(size_t)-1                                                            ; break;
-        case Elements::WAVE_aXML :  Subs_Pos=(size_t)-1                                                            ; break;
+        case Elements::WAVE_axml :  Subs_Pos=(size_t)-1                                                            ; break;
         case Elements::WAVE_iXML :  Subs_Pos=(size_t)-1                                                            ; break;
         case Elements::WAVE_MD5_ :  Subs_Pos=(size_t)-1                                                            ; break;
         default                  :  return Subs.size();

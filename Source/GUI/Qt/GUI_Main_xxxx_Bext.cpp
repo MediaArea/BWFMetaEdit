@@ -15,7 +15,8 @@
 #include "ZenLib/File.h"
 #include <QtGui/QLabel>
 #include <QtCore/QEvent>
-#include <QtGui/QComboBox>
+#include <QtGui/QIcon>
+#include <QtGui/QDoubleSpinBox>
 #include <QtGui/QGridLayout>
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QDesktopWidget>
@@ -28,12 +29,13 @@
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, QWidget* parent)
+GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, int Maximum, QWidget* parent)
 : QDialog(parent)
 {
     //Internal
     C=_C;
     FileName=FileName_;
+    int8u BextVersion=Ztring().From_Local(C->Get(FileName, "BextVersion")).To_int8u();
 
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
@@ -46,24 +48,29 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, Q
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
     
     //Extra - Bext
-    Extra_Bext_DefaultVersion=new QComboBox();
-    bool HasV0=C->Get(FileName, "UMID").empty();
+    Version=new QDoubleSpinBox(this);
+    Version->setMaximum(Maximum);
+    Version->setDecimals(0);
+    bool HasV1=C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty();
+    bool HasV0=HasV1 && C->Get(FileName, "UMID").empty();
     if (HasV0)
-        Extra_Bext_DefaultVersion->addItem("0");
-    Extra_Bext_DefaultVersion->addItem("1");
-    Extra_Bext_DefaultVersion->addItem("2");
-    QLabel* Extra_Bext_DefaultVersion_Label=new QLabel("bext version:");
+        Version->setMinimum(0);
+    else if (HasV1)
+        Version->setMinimum(1);
+    else
+        Version->setMinimum(2);
+    QLabel* Version_Label=new QLabel("bext version:");
 
     QGridLayout* L=new QGridLayout();
-    L->addWidget(Extra_Bext_DefaultVersion_Label, 0, 0);
-    L->addWidget(Extra_Bext_DefaultVersion, 0, 1);
+    L->addWidget(Version_Label, 0, 0);
+    L->addWidget(Version, 0, 1);
     L->addWidget(Dialog, 1, 0, 1, 2);
 
     setLayout(L);
-    Extra_Bext_DefaultVersion->setFocus();
+    Version->setFocus();
 
     //Default settings
-    Extra_Bext_DefaultVersion->setCurrentIndex(Ztring(C->Get(FileName, "BextVersion")).To_int8u()-(HasV0?0:1));
+    Version->setValue(BextVersion);
 }
 
 //***************************************************************************
@@ -73,7 +80,7 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, Q
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_Bext::OnAccept ()
 {
-    std::string Value=Extra_Bext_DefaultVersion->currentText().toLocal8Bit().data();
+    std::string Value=Ztring::ToZtring(Version->value(), 0).To_Local();
     if (!C->IsValid(FileName, "BextVersion", Value))
     {
         QMessageBox MessageBox;

@@ -24,6 +24,7 @@ bwfmetaedit_gui_SOURCES = \
     ../../../Source/GUI/Qt/GUI_Main_xxxx_Loudness.cpp \
     ../../../Source/GUI/Qt/GUI_Main_xxxx_TextEditDialog.cpp \
     ../../../Source/GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.cpp \
+    ../../../Source/GUI/Qt/GUI_Main_xxxx_UmidDialog.cpp \
     ../../../Source/GUI/Qt/GUI_Preferences.cpp \
     ../../../Source/MD5/md5.c \
     ../../../Source/Riff/Riff_Base.cpp \
@@ -81,6 +82,7 @@ bwfmetaedit_gui_SOURCES = \
     _Automated/moc_GUI_Main_xxxx_Loudness.cpp \
     _Automated/moc_GUI_Main_xxxx_TextEditDialog.cpp \
     _Automated/moc_GUI_Main_xxxx_TimeReferenceDialog.cpp \
+    _Automated/moc_GUI_Main_xxxx_UmidDialog.cpp \
     _Automated/moc_GUI_Preferences.cpp \
     _Automated/qrc_GUI_Main.cpp
 

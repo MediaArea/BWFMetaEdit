@@ -1,5 +1,5 @@
 // ZenLib::ZtringList - More methods for vector<std::(w)string>
-// Copyright (C) 2002-2010 MediaArea.net SARL, Info@MediaArea.net
+// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -21,11 +21,16 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------
-#include "ZenLib/Conf_Internal.h"
+#include "ZenLib/PreComp.h"
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
 //---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+#include "ZenLib/Conf_Internal.h"
+//---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------
 #include <algorithm>
 #include <functional>
@@ -146,7 +151,7 @@ ZtringList &ZtringList::operator= (const ZtringList &Source)
 Ztring &ZtringList::operator() (size_type Pos)
 {
     if (Pos>=size())
-        Write(_T(""), Pos);
+        Write(Ztring(), Pos);
 
     return operator[](Pos);
 }
@@ -161,7 +166,7 @@ Ztring ZtringList::Read () const
 {
     //Integrity
     if (size()==0)
-        return _T("");
+        return Ztring();
 
     Ztring Retour;
     Ztring ToFind=Separator[0]+Quote[0]+_T("\r\n");
@@ -188,7 +193,8 @@ Ztring ZtringList::Read () const
     }
 
     //delete all useless separators at the end
-    while (Retour.find(Separator[0].c_str(), Retour.size()-Separator[0].size())!=std::string::npos)
+    //while (Retour.find(Separator[0].c_str(), Retour.size()-Separator[0].size())!=std::string::npos)
+    if (Retour.find(Separator[0].c_str(), Retour.size()-Separator[0].size())!=std::string::npos)
         Retour.resize(Retour.size()-Separator[0].size());
 
     return Retour;
@@ -296,7 +302,7 @@ void ZtringList::Swap (size_type Pos0_A, size_type Pos0_B)
     else
         Pos_Max=Pos0_A;
     if (Pos_Max>=size())
-        Write(_T(""), Pos_Max);
+        Write(Ztring(), Pos_Max);
 
     operator [] (Pos0_A).swap(operator [] (Pos0_B));
 }

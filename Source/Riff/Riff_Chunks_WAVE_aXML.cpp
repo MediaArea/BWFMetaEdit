@@ -16,7 +16,7 @@
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void Riff_WAVE_aXML::Read_Internal ()
+void Riff_WAVE_axml::Read_Internal ()
 {
     //Integrity
     if (Global->aXML)
@@ -35,7 +35,7 @@ void Riff_WAVE_aXML::Read_Internal ()
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void Riff_WAVE_aXML::Modify_Internal ()
+void Riff_WAVE_axml::Modify_Internal ()
 {
     if (Global->aXML==NULL
      || Global->aXML->Strings["axml"].empty())
@@ -65,7 +65,7 @@ void Riff_WAVE_aXML::Modify_Internal ()
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void Riff_WAVE_aXML::Write_Internal ()
+void Riff_WAVE_axml::Write_Internal ()
 {
     Riff_Base::Write_Internal(Chunk.Content.Buffer, (size_t)Chunk.Content.Size);
 }

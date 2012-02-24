@@ -14,7 +14,7 @@
 #include "ZenLib/File.h"
 #include <QtGui/QTimeEdit>
 #include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
+#include <QtGui/QSpinBox>
 #include <QtCore/QEvent>
 #include <QtGui/QGridLayout>
 #include <QtGui/QDialogButtonBox>
@@ -54,8 +54,11 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
     TimeEdit_Label->setText(tr("(HH:MM:SS.mmm)"));
     Label=new QLabel(this);
     Label->setText(tr("or"));
-    LineEdit=new QLineEdit(this);
-    connect(LineEdit, SIGNAL(textEdited (const QString &)), this, SLOT(OnValueEdited (const QString &)));
+    LineEdit=new QDoubleSpinBox(this);
+    LineEdit->setMinimum(0);
+    LineEdit->setMaximum(0xFFFFFFFF);
+    LineEdit->setDecimals(0);
+    connect(LineEdit, SIGNAL(valueChanged (const QString &)), this, SLOT(OnValueEdited (const QString &)));
     LimeEdit_Label=new QLabel(this);
     LimeEdit_Label->setText(tr("(in samples)"));
         
@@ -74,9 +77,7 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
     Ztring TimeReference=C->Get(FileName, "TimeReference");
     Ztring TimeReferenceS=C->Get(FileName, "TimeReference (translated)");
     TimeEdit->setTime(QTime::fromString(QString().fromUtf8(TimeReferenceS.To_Local().c_str()), Qt::ISODate));
-    LineEdit->setText(QString().fromUtf8(TimeReference.To_Local().c_str()));
-    if (LineEdit->text().isEmpty())
-        LineEdit->setText("0");
+    LineEdit->setValue(TimeReference.To_int32u());
     IsChanging=false;
 }
 
@@ -113,37 +114,16 @@ void GUI_Main_xxxx_TimeReferenceDialog::OnTimeChanged (const QTime &Time)
     if (IsChanging || SampleRate==0)
         return;
 
-    LineEdit->setText(Ztring::ToZtring((((int64u)QTime().msecsTo(Time))*SampleRate/1000)).c_str());
+    LineEdit->setValue(((double)QTime().msecsTo(Time))*SampleRate/1000);
 }
 
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_TimeReferenceDialog::OnValueEdited (const QString &Value)
 {
-    QString Text=LineEdit->text();
-    if (Text.size()>18)
-        Text.resize(18);
-    for (int Pos=0; Pos<Text.size(); Pos++)
-    {
-        if (Pos==0 && Text[0]=='0')
-        {
-            Text.remove(0, 1);
-            Pos--;
-        }
-        else if (Text[Pos]<'0' || Text[Pos]>'9')
-        {
-            Text.remove(Pos, 1);
-            Pos--;
-        }
-    }
-    if (Text.isEmpty())
-        Text="0";
-    if (Text!=LineEdit->text())
-        LineEdit->setText(Text);
-    
     if (IsChanging || SampleRate==0)
         return;
 
-    int64u TimeReference=Ztring(LineEdit->text().toLocal8Bit().data()).To_int64u();
+    int64u TimeReference=(int64u)LineEdit->value();
     TimeReference=(int64u)(((float64)TimeReference)/(((float64)SampleRate)/1000));
     IsChanging=true;
     if (TimeReference>23*60*60*1000+59*60*1000+59*1000+999)

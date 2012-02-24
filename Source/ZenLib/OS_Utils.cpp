@@ -1,5 +1,5 @@
 // ZenLib::OS_Utils - Cross platform OS utils
-// Copyright (C) 2002-2010 MediaArea.net SARL, Info@MediaArea.net
+// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -21,11 +21,16 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------
-#include "ZenLib/Conf_Internal.h"
+#include "ZenLib/PreComp.h"
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
 //---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+#include "ZenLib/Conf_Internal.h"
+//---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------
 #ifdef ZENLIB_USEWX
 #else //ZENLIB_USEWX
@@ -33,10 +38,7 @@
         #undef __TEXT
         #include <windows.h>
         #include <shlobj.h>
-    #else //Windows
-        #include <sys/time.h>
-        #include <pthread.h>
-    #endif //Windows
+    #endif
 #endif //ZENLIB_USEWX
 #include "ZenLib/OS_Utils.h"
 //---------------------------------------------------------------------------
@@ -227,40 +229,5 @@ Ztring Directory_Select_Caption;
         }
     #endif //UNICODE
 #endif //WINDOWS
-
-//***************************************************************************
-// Sleep
-//***************************************************************************
-
-void Sleep(int32u Miliseconds)
-{
-    #ifdef ZENLIB_USEWX
-    #else //ZENLIB_USEWX
-        #ifdef WINDOWS
-            ::Sleep(Miliseconds);
-        #else
-            //behavior and availability of usleep()/nanosleep() aren't reliable enough
-            struct timeval TimeVal;
-            gettimeofday(&TimeVal, 0);
-
-            struct timespec TimeSpec;
-            TimeSpec.tv_nsec =(TimeVal.tv_usec+(Miliseconds%1000)*1000)*1000;
-            TimeSpec.tv_sec  =TimeVal.tv_sec+(Miliseconds/1000)+(TimeSpec.tv_nsec/1000000000);
-            TimeSpec.tv_nsec%=1000000000;
-
-            pthread_cond_t Condition;
-            pthread_cond_init(&Condition, 0);
-
-            pthread_mutex_t Mutex;
-            pthread_mutex_init(&Mutex, 0);
-            pthread_mutex_lock(&Mutex);
-            (void)pthread_cond_timedwait(&Condition, &Mutex, &TimeSpec);
-            pthread_mutex_unlock(&Mutex);
-
-            pthread_cond_destroy(&Condition);
-            pthread_mutex_destroy(&Mutex);
-        #endif
-    #endif //ZENLIB_USEWX
-}
 
 } //namespace ZenLib

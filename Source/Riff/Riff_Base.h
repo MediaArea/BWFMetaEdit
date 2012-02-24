@@ -357,6 +357,21 @@ protected :
     //***************************************************************************
 
     //---------------------------------------------------------------------------
+    //Buffer handling - Big endian values
+    void Get_B1     (int8u  &Value);
+    void Put_B1     (int8u   Value);
+    void Get_B2     (int16u &Value);
+    void Put_B2     (int16u  Value);
+    void Get_B3     (int32u &Value);
+    void Put_B3     (int32u  Value);
+    void Get_B4     (int32u &Value);
+    void Put_B4     (int32u  Value);
+    void Get_B8     (int64u &Value);
+    void Put_B8     (int64u  Value);
+    void Get_B16    (int128u &Value);
+    void Put_B16    (int128u  Value);
+
+    //---------------------------------------------------------------------------
     //Buffer handling - Little endian values
     void Get_L1     (int8u  &Value);
     void Put_L1     (int8u   Value);

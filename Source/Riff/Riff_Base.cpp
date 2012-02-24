@@ -169,6 +169,8 @@ bool Riff_Base::Read_Header (chunk &NewChunk)
         throw exception_valid("no RIFF/RF64 header");
     if (NewChunk.Header.Name==Elements::RF64)
         Global->IsRF64=true;
+    if (NewChunk.Header.Name==Elements::WAVE_aXML)
+        NewChunk.Header.Name=Elements::WAVE_axml; //Bug in previous versions, case was not the right one
 
     //Chunk size
     if (Global->In.Position_Get()+4>Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size)

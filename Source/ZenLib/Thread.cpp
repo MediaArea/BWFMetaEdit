@@ -112,7 +112,7 @@ bool Thread::IsRunning()
 // Communicating
 //***************************************************************************
 
-void Thread::Sleep(size_t Millisecond)
+void Thread::Sleep(std::size_t Millisecond)
 {
     ((ThreadEntry*)ThreadPointer)->Sleep((unsigned long)Millisecond);
 }
@@ -378,7 +378,7 @@ void Thread::Entry()
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void Thread::Sleep(size_t Millisecond)
+void Thread::Sleep(std::size_t Millisecond)
 {
     ::Sleep((DWORD)Millisecond);
 }
@@ -599,7 +599,7 @@ bool Thread::IsExited()
 // Communicating
 //***************************************************************************
 
-void Thread::Sleep(size_t)
+void Thread::Sleep(std::size_t)
 {
 }
 
