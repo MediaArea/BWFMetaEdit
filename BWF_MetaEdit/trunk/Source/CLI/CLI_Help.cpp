@@ -52,6 +52,8 @@ std::string Help()
     ToDisplay<<""<<std::endl;
     ToDisplay<<"--simulate, -s          Simulate only (no write)"<<std::endl;
     ToDisplay<<""<<std::endl;
+    ToDisplay<<"--specialchars          \\ is considered as an escape char (e.g. \\r and \\n)"<<std::endl;
+    ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"                        Extract Technical Metadata to:"<<std::endl;

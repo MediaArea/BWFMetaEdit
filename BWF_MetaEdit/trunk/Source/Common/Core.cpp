@@ -55,7 +55,9 @@ Core::Core()
     EmbedMD5=false;
     EmbedMD5_AuthorizeOverWritting=false;
     Bext_DefaultVersion=0;
+    Bext_MaxVersion=0;
     Simulation_Enabled=false;
+    SpecialChars_Enabled=false;
 
     Out_Tech_cout=false;
     Out_Tech_XML=false;
@@ -97,7 +99,6 @@ Core::Core()
 
 Core::~Core()
 {
-    Menu_File_Open_Files_Begin();
 }
 
 //***************************************************************************
@@ -195,6 +196,9 @@ bool Core::Menu_File_Open_Files_Finish_Start()
 //---------------------------------------------------------------------------
 float Core::Menu_File_Open_Files_Finish_Middle ()
 {
+    if (Handlers.empty())
+        return 1.0; //No file
+
     try
     {
         if (Handler->second.Riff)
@@ -225,26 +229,40 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
             Handler->second.In_iXML_FileName=In_iXML_FileName;
             
             //Settings - Adding default Core values if the Core value does not exist yet (from --xxx=)
-            for (map<string, string>::iterator In_Core_Item=Handler_Default.In_Core.begin(); In_Core_Item!=Handler_Default.In_Core.end(); In_Core_Item++)
+            for (map<string, Ztring>::iterator In_Core_Item=Handler_Default.In_Core.begin(); In_Core_Item!=Handler_Default.In_Core.end(); In_Core_Item++)
             {
-                map<string, string>::iterator Handler_in_Core_Item=Handler->second.In_Core.find(Ztring(In_Core_Item->first).MakeLowerCase());
+                map<string, Ztring>::iterator Handler_in_Core_Item=Handler->second.In_Core.find(Ztring(In_Core_Item->first).MakeLowerCase());
                 if (Handler_in_Core_Item==Handler->second.In_Core.end())
                     Handler->second.In_Core[Ztring(In_Core_Item->first).MakeLowerCase()]=In_Core_Item->second;
+            }
+            
+            //Special Characters
+            if (SpecialChars_Enabled)
+            {
+                for (map<string, Ztring>::iterator Field=Handler->second.In_Core.begin(); Field!=Handler->second.In_Core.end(); Field++)
+                {
+                    Field->second.FindAndReplace("\\\\", "|SC1|", 0, Ztring_Recursive);
+                    Field->second.FindAndReplace("\\r", "\r", 0, Ztring_Recursive);
+                    Field->second.FindAndReplace("\\n", "\n", 0, Ztring_Recursive);
+                    Field->second.FindAndReplace("\\t", "\t", 0, Ztring_Recursive);
+                    Field->second.FindAndReplace("\\0", "\0", 0, Ztring_Recursive);
+                    Field->second.FindAndReplace("|SC1|", "\\", 0, Ztring_Recursive);
+                }
             }
 
             //Reading
             if (!Handler->second.Riff->Open(Handler->first))
             {
                 StdAll(Handler);
-                if (!Errors_Continue && Text_stderr_Updated)
-                    throw ""; //Error during the parsing, exiting
+                if ((FileNotValid_Skip && !Handler->second.Riff->IsValid_Get()) ||(!Errors_Continue && Text_stderr_Updated))
+                    throw string(); //Error during the parsing, exiting
             }
             if (Handler->second.Riff->Canceled_Get())
             {
                 delete Handler->second.Riff, Handler->second.Riff=NULL;
                 CriticalSectionLocker CSL(CS);
                 Canceled=true;
-                throw ""; //Canceling
+                throw string(); //Canceling
             }
 
             if (Handler->second.Riff->IsModified_Get())
@@ -259,7 +277,7 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
         //Modifying file with --xxx values
         if (!Handler->second.In_Core.empty())
         {
-            for (map<string, string>::iterator In_Core_Item=Handler->second.In_Core.begin(); In_Core_Item!=Handler->second.In_Core.end(); In_Core_Item++)
+            for (map<string, Ztring>::iterator In_Core_Item=Handler->second.In_Core.begin(); In_Core_Item!=Handler->second.In_Core.end(); In_Core_Item++)
             {
                 Handler->second.Riff->Set(In_Core_Item->first, In_Core_Item->second, Rules);
                 StdAll(Handler);
@@ -323,7 +341,7 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
         }
 
         if (!Errors_Continue && Text_stderr_Updated)
-            throw ""; //Error during the parsing, exiting
+            throw string(); //Error during the parsing, exiting
 
         //Batch - Activate
         if (Batch_Enabled)
@@ -363,19 +381,22 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
     }
 
     CriticalSectionLocker CSL(CS);
-    Menu_File_Open_Files_File_Pos++;
-    if (Menu_File_Open_Files_File_Total==0)
-        return 1.0;
 
     if (Canceled)
         return 1.0;
 
+    Menu_File_Open_Files_File_Pos++;
+    if (Menu_File_Open_Files_File_Total==0)
+        return 1.0;
     return ((float)Menu_File_Open_Files_File_Pos)/Menu_File_Open_Files_File_Total;
 }
 
 //---------------------------------------------------------------------------
 size_t Core::Menu_File_Open_Files_Finish_End()
 {
+    if (Handlers.empty())
+        return 0; //No file
+
     if (Menu_File_Open_State()!=1)
     {
         CS.Enter();
@@ -446,6 +467,8 @@ bool Core::Menu_File_Open_Files_BackToLastSave()
 float Core::Menu_File_Open_State ()
 {
     CriticalSectionLocker CSL(CS);
+    if (Menu_File_Open_Files_File_Total==0)
+        return 1.0; //No file
     float ToReturn=(float)Menu_File_Open_Files_File_Pos;
     if (Handler!=Handlers.end() && Handler->second.Riff)
         ToReturn+=Handler->second.Riff->Progress_Get();
@@ -1037,6 +1060,7 @@ bool Core::Set (const string &FileName, const string &Field, const string &Value
         StdClear(Handler);
         bool IsModified_Old=IsModified_Get(FileName);
         Handler->second.Riff->Bext_DefaultVersion=Bext_DefaultVersion;
+        Handler->second.Riff->Bext_MaxVersion=Bext_MaxVersion;
         if (!Handler->second.Riff->Set(Field, Value, Rules))
             return false;
         bool IsModified_New=IsModified_Get(FileName);
@@ -1594,6 +1618,7 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->EmbedMD5=EmbedMD5;
         Handler->second.Riff->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;
         Handler->second.Riff->Bext_DefaultVersion=Bext_DefaultVersion;
+        Handler->second.Riff->Bext_MaxVersion=Bext_MaxVersion;
 
         bool IsModified_Old=Handler->second.Riff->IsModified_Get();
 
@@ -1702,4 +1727,3 @@ bool Core::Text_stderr_Updated_Get()
     
     return Temp;
 }
-

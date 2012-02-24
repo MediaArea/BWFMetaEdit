@@ -341,9 +341,21 @@ void GUI_Main::Menu_Update()
 }
 
 //---------------------------------------------------------------------------
-void GUI_Main::Bext_DefaultVersion_Set(unsigned char Version)
+void GUI_Main::Bext_DefaultVersion_Set(unsigned short Version)
 {
     C->Bext_DefaultVersion=Version;
+}
+
+//---------------------------------------------------------------------------
+unsigned short GUI_Main::Bext_MaxVersion_Get()
+{
+    return C->Bext_MaxVersion;
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::Bext_MaxVersion_Set(unsigned short Max)
+{
+    C->Bext_MaxVersion=Max;
 }
 
 //---------------------------------------------------------------------------

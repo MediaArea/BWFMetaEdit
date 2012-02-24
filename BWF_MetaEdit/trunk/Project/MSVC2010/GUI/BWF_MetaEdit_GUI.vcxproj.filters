@@ -186,9 +186,6 @@
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE__PMX.cpp">
       <Filter>Source Files\Riff</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_aXML.cpp">
-      <Filter>Source Files\Riff</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_bext.cpp">
       <Filter>Source Files\Riff</Filter>
     </ClCompile>
@@ -290,6 +287,15 @@
     </ClCompile>
     <ClCompile Include="_Automated\moc_GUI_Main_xxxx_Loudness.cpp">
       <Filter>Source Files\GUI\Automated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_UmidDialog.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_UmidDialog.cpp">
+      <Filter>Source Files\GUI\Automated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_aXML.cpp">
+      <Filter>Source Files\Riff</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -438,6 +444,9 @@
       <Filter>Header Files\TinyXml</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_UmidDialog.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>

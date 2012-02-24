@@ -60,6 +60,8 @@ int Parse(Core &C, string &Argument)
     OPTION("--simulate",                                    Simulate)
     OPTION("-s",                                            Simulate)
 
+    OPTION("--specialchars",                                SpecialChars)
+
     OPTION("--out-tech=",                                   Out_Tech_File)
     OPTION("--out-tech",                                    Out_Tech_cout)
 
@@ -166,6 +168,14 @@ CL_OPTION(Append)
 CL_OPTION(Simulate)
 {
     C.Simulation_Enabled=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(SpecialChars)
+{
+    C.SpecialChars_Enabled=true;
 
     return -2; //Continue
 }

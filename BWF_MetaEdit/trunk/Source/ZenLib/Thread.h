@@ -80,7 +80,7 @@ public :
 protected :
 
     //Communicating
-    void    Sleep(size_t Millisecond);
+    void    Sleep(std::size_t Millisecond);
     void    Yield();
 
 private :

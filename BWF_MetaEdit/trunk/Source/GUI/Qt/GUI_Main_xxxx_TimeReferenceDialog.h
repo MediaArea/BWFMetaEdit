@@ -19,7 +19,7 @@ class Core;
 #include <ZenLib/Conf.h>
 class QTimeEdit;
 class QLabel;
-class QLineEdit;
+class QDoubleSpinBox;
 class QTime;
 class QEvent;
 //---------------------------------------------------------------------------
@@ -40,7 +40,7 @@ public:
     QTimeEdit*          TimeEdit;
     QLabel*             TimeEdit_Label;
     QLabel*             Label;
-    QLineEdit*          LineEdit;
+    QDoubleSpinBox*     LineEdit;
     QLabel*             LimeEdit_Label;
     QPushButton*        Cancel;
     QPushButton*        Valid;

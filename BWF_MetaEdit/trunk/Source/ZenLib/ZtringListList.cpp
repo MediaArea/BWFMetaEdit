@@ -1,5 +1,5 @@
 // ZenLib::ZtringListList - More methods for std::vector<std::vector<std::(w)string>>
-// Copyright (C) 2002-2010 MediaArea.net SARL, Info@MediaArea.net
+// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -20,11 +20,16 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------
-#include "ZenLib/Conf_Internal.h"
+#include "ZenLib/PreComp.h"
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
 //---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+#include "ZenLib/Conf_Internal.h"
+//---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------
 #include <algorithm>
 #include "ZenLib/ZtringListList.h"
@@ -73,7 +78,7 @@ ZtringListList::ZtringListList(const ZtringListList &Source)
 
 ZtringListList::ZtringListList(const Ztring &Source)
 {
-    Separator[0]=_T("\r\n");
+    Separator[0]=EOL;
     Separator[1]=_T(";");
     Quote=_T("\"");
     Max[0]=Error;
@@ -83,7 +88,7 @@ ZtringListList::ZtringListList(const Ztring &Source)
 
 ZtringListList::ZtringListList(const Char *Source)
 {
-    Separator[0]=_T("\r\n");
+    Separator[0]=EOL;
     Separator[1]=_T(";");
     Quote=_T("\"");
     Max[0]=Error;
@@ -94,7 +99,7 @@ ZtringListList::ZtringListList(const Char *Source)
 #ifdef _UNICODE
 ZtringListList::ZtringListList (const char* S)
 {
-    Separator[0]=_T("\r\n");
+    Separator[0]=EOL;
     Separator[1]=_T(";");
     Quote=_T("\"");
     Max[0]=Error;
@@ -161,7 +166,7 @@ ZtringList &ZtringListList::operator() (size_type Pos0)
 {
     //Integrity
     if (Pos0>=size())
-        Write(_T(""), Pos0);
+        Write(Ztring(), Pos0);
 
     return operator[](Pos0);
 }
@@ -170,7 +175,7 @@ Ztring &ZtringListList::operator() (size_type Pos0, size_type Pos1)
 {
     //Integrity
     if (Pos0>=size())
-        Write(_T(""), Pos0);
+        Write(Ztring(), Pos0);
 
     return operator[](Pos0).operator()(Pos1);
 }
@@ -203,7 +208,7 @@ Ztring ZtringListList::Read () const
 {
     //Integrity
     if (size()==0)
-        return _T("");
+        return Ztring();
 
     Ztring ToReturn;
     size_type Size=size()-1;
@@ -212,9 +217,9 @@ Ztring ZtringListList::Read () const
     ToReturn+=Read(Size);
 
     //Delete all useless separators at the end
-    if(ToReturn.size()>0 && Separator[0].size() && ToReturn(ToReturn.size()-1)==Separator[0][Separator[0].size()-1]) //Optimize speed
-        while (ToReturn.find(Separator[0].c_str(), ToReturn.size()-Separator[0].size())!=std::string::npos)
-            ToReturn.resize(ToReturn.size()-Separator[0].size());
+    //if(ToReturn.size()>0 && Separator[0].size() && ToReturn(ToReturn.size()-1)==Separator[0][Separator[0].size()-1]) //Optimize speed
+    //    while (ToReturn.find(Separator[0].c_str(), ToReturn.size()-Separator[0].size())!=std::string::npos)
+    //        ToReturn.resize(ToReturn.size()-Separator[0].size());
 
     return ToReturn;
 }
@@ -306,11 +311,34 @@ void ZtringListList::Write(const Ztring &ToWrite)
     ZL1.Quote_Set(Quote);
     ZL1.Max_Set(0, Max[1]);
 
+    //Detecting carriage return format
+    Ztring WriteSeparator;
+    if (Separator[0]==EOL)
+    {
+        size_t CarriageReturn_Pos=ToWrite.find_first_of(_T("\r\n"));
+        if (CarriageReturn_Pos!=string::npos)
+        {
+            if (ToWrite[CarriageReturn_Pos]==_T('\r'))
+            {
+                if (CarriageReturn_Pos+1<ToWrite.size() && ToWrite[CarriageReturn_Pos+1]==_T('\n'))
+                    WriteSeparator=_T("\r\n");
+                else
+                    WriteSeparator=_T("\r");
+            }
+            else
+                WriteSeparator=_T("\n");
+        }
+        else
+            WriteSeparator=Separator[0];
+    }
+    else
+        WriteSeparator=Separator[0];
+
     do
     {
         //Searching end of line, but it must not be in quotes
         bool InQuotes=false;
-        Ztring CharsToFind=Separator[0]+Quote;
+        Ztring CharsToFind=WriteSeparator+Quote;
         size_t Pos_End=PosC;
         while (Pos_End<ToWrite.size())
         {
@@ -327,7 +355,7 @@ void ZtringListList::Write(const Ztring &ToWrite)
                     }*/
                 }
 
-                if (!InQuotes && Pos_End+Separator[0].size()<=ToWrite.size() && ToWrite[Pos_End]==Separator[0][0])
+                if (!InQuotes && Pos_End+WriteSeparator.size()<=ToWrite.size() && ToWrite[Pos_End]==WriteSeparator[0])
                 {
                     C1=ToWrite.substr(PosC, Pos_End-PosC); 
                     break;
@@ -344,7 +372,7 @@ void ZtringListList::Write(const Ztring &ToWrite)
 
         ZL1.Write(C1);
         push_back(ZL1);
-        PosC+=C1.size()+Separator[0].size();
+        PosC+=C1.size()+WriteSeparator.size();
         if (PosC>=ToWrite.size())
             Fini=true;
     }
@@ -367,7 +395,7 @@ void ZtringListList::Write(const ZtringList &ToWrite, size_type Pos)
             reserve(capacity()*2);
 
         while (Pos>size())
-            push_back (_T(""));
+            push_back (Ztring());
         push_back(ToWrite);
     }
     else
@@ -377,7 +405,7 @@ void ZtringListList::Write(const ZtringList &ToWrite, size_type Pos)
 void ZtringListList::Write(const Ztring &ToWrite, size_type Pos0, size_type Pos1)
 {
     if (Pos0>=size())
-        Write(_T(""), Pos0);
+        Write(Ztring(), Pos0);
 
     operator[](Pos0).Write(ToWrite, Pos1);
 }
@@ -438,7 +466,7 @@ void ZtringListList::Swap (size_type Pos0_A, size_type Pos0_B)
     else
         Pos_Max=Pos0_A;
     if (Pos_Max>=size())
-        Write(_T(""), Pos_Max);
+        Write(Ztring(), Pos_Max);
 
     operator [] (Pos0_A).swap(operator [] (Pos0_B));
 }
@@ -500,7 +528,7 @@ Ztring ZtringListList::FindValue (const Ztring &ToFind, size_type Pos1Value, siz
 {
     size_type Pos0=Find(ToFind, Pos1, Pos0Begin, Comparator);
     if (Pos0==Error)
-        return _T("");
+        return Ztring();
 
     return Read(Pos0, Pos1Value);
 }

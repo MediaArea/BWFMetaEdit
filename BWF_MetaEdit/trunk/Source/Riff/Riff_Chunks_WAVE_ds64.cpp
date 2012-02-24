@@ -20,7 +20,7 @@
 void Riff_WAVE_ds64::Read_Internal ()
 {
     //Integrity
-    if (Global->aXML)
+    if (Global->ds64)
         throw exception_valid("2 ds64 chunks");
 
     //Reading

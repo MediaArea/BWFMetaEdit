@@ -45,6 +45,7 @@ namespace Elements
     const int32u WAVE=0x57415645;
     const int32u WAVE__PMX=0x5F504D58;
     const int32u WAVE_aXML=0x61584D4C;
+    const int32u WAVE_axml=0x61786D6C;
     const int32u WAVE_bext=0x62657874;
     const int32u WAVE_data=0x64617461;
     const int32u WAVE_ds64=0x64733634;
@@ -107,7 +108,7 @@ protected: \
 
 CHUNK_I(1, WAVE);
 CHUNK_W(2, WAVE__PMX);
-CHUNK_W(2, WAVE_aXML);
+CHUNK_W(2, WAVE_axml);
 CHUNK_W(2, WAVE_bext);
 CHUNK_W(2, WAVE_data);
 CHUNK_W(2, WAVE_ds64);

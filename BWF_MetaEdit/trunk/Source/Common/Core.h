@@ -101,7 +101,9 @@ public:
     bool                                EmbedMD5;
     bool                                EmbedMD5_AuthorizeOverWritting;
     int8u                               Bext_DefaultVersion;
+    int8u                               Bext_MaxVersion;
     bool                                Simulation_Enabled;
+    bool                                SpecialChars_Enabled;
     bool                                Out_Tech_cout;
     string                              Out_Tech_CSV_FileName;
     bool                                Out_Tech_XML;
@@ -143,7 +145,7 @@ protected:
     struct handler
     {
         Riff_Handler       *Riff;
-        map<string, string> In_Core;
+        map<string, Ztring> In_Core;
         bool                In_Core_Remove;
         bool                In__PMX_Remove;
         bool                In__PMX_XML;

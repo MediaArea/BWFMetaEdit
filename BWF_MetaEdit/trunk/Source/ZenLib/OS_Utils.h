@@ -1,5 +1,5 @@
 // ZenLib::OS_Utils - Cross platform OS utils
-// Copyright (C) 2002-2010 MediaArea.net SARL, Info@MediaArea.net
+// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -47,16 +47,10 @@ bool IsWin9X ();
 void Shell_Execute(const Ztring &ToExecute);
 
 //***************************************************************************
-// Directories
+// Directorues
 //***************************************************************************
 
 Ztring OpenFolder_Show(void* Handle, const Ztring &Title, const Ztring &Caption);
-
-//***************************************************************************
-// Sleep
-//***************************************************************************
-
-void Sleep (int32u Miliseconds);
 
 } //namespace ZenLib
 #endif

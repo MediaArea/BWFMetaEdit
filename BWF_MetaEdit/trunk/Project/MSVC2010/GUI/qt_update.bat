@@ -16,5 +16,6 @@ mkdir _Automated
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.h -o_Automated\moc_GUI_Main_xxxx_Loudness.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TextEditDialog.h -o_Automated\moc_GUI_Main_xxxx_TextEditDialog.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TimeReferenceDialog.h -o_Automated\moc_GUI_Main_xxxx_TimeReferenceDialog.cpp
+..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_xxxx_UmidDialog.h -o_Automated\moc_GUI_Main_xxxx_UmidDialog.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Preferences.h -o_Automated\moc_GUI_Preferences.cpp
 ..\..\..\..\Qt\bin\rcc ..\..\..\Source\Resource\GUI_Main.qrc -o _Automated\qrc_GUI_Main.cpp

@@ -397,18 +397,7 @@ void GUI_Main_xxxx__Common::Fill ()
                 {
                     ZenLib::Ztring Value=List[File_Pos][Data_Pos];
                     Value.FindAndReplace(EOL, "\n", 0, Ztring_Recursive);
-                    if (List[0][Data_Pos]=="FileSize"
-                     || List[0][Data_Pos]=="Channels"
-                     || List[0][Data_Pos]=="SampleRate"
-                     || List[0][Data_Pos]=="BitRate"
-                     || List[0][Data_Pos]=="TimeReference"
-                     || List[0][Data_Pos]=="BitsPerSample")
-                    {
-                        Item=new QTableWidgetItem();
-                        Item->setData(Qt::DisplayRole, Value.To_int64u());
-                    }
-                    else
-                        Item=new QTableWidgetItem(QString().fromUtf8(Value.To_Local().c_str()));
+                    Item=new QTableWidgetItem(QString().fromUtf8(Value.To_Local().c_str()));
                     Item->setToolTip(Columns_ToolTip(List[0][Data_Pos]));
                 }
                 else

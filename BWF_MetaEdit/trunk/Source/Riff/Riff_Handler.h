@@ -106,7 +106,8 @@ public:
     bool            VerifyMD5;
     bool            EmbedMD5;
     bool            EmbedMD5_AuthorizeOverWritting;
-    unsigned char   Bext_DefaultVersion;
+    unsigned short  Bext_DefaultVersion;
+    unsigned short  Bext_MaxVersion;
     void            Options_Update();
 
     //---------------------------------------------------------------------------

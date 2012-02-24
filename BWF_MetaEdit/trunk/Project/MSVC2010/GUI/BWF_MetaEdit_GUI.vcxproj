@@ -99,8 +99,8 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>QtCore.lib;QtGui.lib;qtmain.lib;winmm.lib;ws2_32.lib;imm32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../../Qt/lib/MSVC2010/$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>QtCored.lib;QtGuid.lib;qtmaind.lib;winmm.lib;ws2_32.lib;imm32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../Qt/lib/MSVC2010/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -144,7 +144,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>QtCore.lib;QtGui.lib;qtmain.lib;winmm.lib;ws2_32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../../Qt/lib/MSVC2010/$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../../../Qt/lib/MSVC2010/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -168,7 +168,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>QtCore.lib;QtGui.lib;qtmain.lib;winmm.lib;ws2_32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../../Qt/lib/MSVC2010/$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../../../Qt/lib/MSVC2010/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -189,6 +189,7 @@
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Text.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_UndoDialog.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_UmidDialog.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx__Common.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Bext.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CodingHistoryDialog.cpp" />
@@ -196,6 +197,7 @@
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TextEditDialog.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TimeReferenceDialog.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Preferences.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_aXML.cpp" />
     <ClCompile Include="_Automated\moc_GUI_About.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Help.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main.cpp" />
@@ -207,6 +209,7 @@
     <ClCompile Include="_Automated\moc_GUI_Main_Technical_Text.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_UndoDialog.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_xxxx_Loudness.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_UmidDialog.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_xxxx__Common.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_xxxx_Bext.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_xxxx_CodingHistoryDialog.cpp" />
@@ -222,7 +225,6 @@
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE__PMX.cpp" />
-    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_aXML.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_bext.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_data.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_ds64.cpp" />
@@ -270,6 +272,7 @@
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Text.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_UndoDialog.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_UmidDialog.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx__Common.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Bext.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CodingHistoryDialog.h" />

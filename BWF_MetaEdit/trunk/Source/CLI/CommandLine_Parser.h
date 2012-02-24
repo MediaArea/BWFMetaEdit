@@ -47,6 +47,7 @@ CL_OPTION(Errors_Continue);
 CL_OPTION(Append);
 CL_OPTION(Log_cout);
 CL_OPTION(Simulate);
+CL_OPTION(SpecialChars);
 
 //---------------------------------------------------------------------------
 CL_OPTION(Out_Tech_cout);

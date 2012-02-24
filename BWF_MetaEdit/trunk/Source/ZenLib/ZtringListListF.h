@@ -1,5 +1,5 @@
 // ZenLib::ZtringListListF - ZtringListList with files
-// Copyright (C) 2002-2010 MediaArea.net SARL, Info@MediaArea.net
+// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -52,8 +52,8 @@ public :
     #endif
 
     //File management
-    bool   Load   (const Ztring &FileName=_T(""));
-    bool   Save   (const Ztring &FileName=_T(""));
+    bool   Load   (const Ztring &FileName=Ztring());
+    bool   Save   (const Ztring &FileName=Ztring());
     bool   Cancel ();
 
     //Configuration

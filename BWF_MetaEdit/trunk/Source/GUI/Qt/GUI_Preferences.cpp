@@ -22,7 +22,7 @@
 #include <QtGui/QRadioButton>
 #include <QtGui/QLineEdit>
 #include <QtGui/QLabel>
-#include <QtGui/QComboBox>
+#include <QtGui/QDoubleSpinBox>
 #include <QtGui/QGroupBox>
 #include <QtGui/QDesktopServices>
 #include <QtGui/QScrollArea>
@@ -125,7 +125,7 @@ options Groups[Group_Max]=
             {"File_Riff2Rf64_Reject", "Reject file if transformation to RF64 is requested", Type_CheckBox, false},
             {"File_Overwrite_Reject", "Prevent overwrite of existing data", Type_CheckBox, false},
             {"File_NoPadding_Accept", "Accept file if padding byte is missing", Type_CheckBox, false},
-            {"File_FileNotValid_Skip ", "Skip non-valid files", Type_CheckBox, false},
+            {"File_FileNotValid_Skip", "Skip non-valid files", Type_CheckBox, false},
             {"File_WrongExtension_Skip", "Skip files with no .wav extension", Type_CheckBox, true},
             {"File_NewChunksAtTheEnd", "Place new or expanded BEXT and LIST-INFO chunks at the end of the file", Type_CheckBox, true},
         },
@@ -364,18 +364,32 @@ void GUI_Preferences::OnLoad()
     Main->LogFile_Set(Extra_LogFile_Activated->text().toLocal8Bit().data());
     if (Config("Extra_Bext_DefaultVersion").empty())
     {
-        Extra_Bext_DefaultVersion->setCurrentIndex(0);
+        Extra_Bext_DefaultVersion->setValue(0);
     }
     else
     {
-        int8u DefaultVersion=Config("Extra_Bext_DefaultVersion").To_int8u();
-        if (DefaultVersion<=1)
-            Extra_Bext_DefaultVersion->setCurrentIndex(DefaultVersion);
+        int64u DefaultVersion=Config("Extra_Bext_DefaultVersion").To_int64u();
+        if (DefaultVersion<=0xFFFF)
+            Extra_Bext_DefaultVersion->setValue((int8u)DefaultVersion);
         else
-            Extra_Bext_DefaultVersion->setCurrentIndex(0);
+            Extra_Bext_DefaultVersion->setValue(0);
     }
-    Main->Bext_DefaultVersion_Set(Extra_Bext_DefaultVersion->currentIndex());
-    Extra_Bext_Toggle->setChecked(Config("Extra_Bext_Toggle").To_int8u()?true:false);
+    Main->Bext_DefaultVersion_Set(Extra_Bext_DefaultVersion->value());
+    if (Config("Extra_Bext_MaxVersion").empty())
+    {
+        Extra_Bext_MaxVersion->setValue(2);
+    }
+    else
+    {
+        int64u MaxVersion=Config("Extra_Bext_MaxVersion").To_int64u();
+        if (MaxVersion<=0xFFFF)
+            Extra_Bext_MaxVersion->setValue((int16u)MaxVersion);
+        else
+            Extra_Bext_MaxVersion->setValue(2);
+    }
+    Main->Bext_MaxVersion_Set(Extra_Bext_MaxVersion->value());
+    Extra_Bext_Toggle->setChecked(Config("Extra_Bext_Toggle").To_int64u()?true:false);
+    Main->Bext_Toggle_Set(Extra_Bext_Toggle->isChecked());
 
     close();
 }
@@ -437,11 +451,21 @@ void GUI_Preferences::OnSave()
         Ztring Content;
         Content+="Extra_Bext_DefaultVersion";
         Content+=" = ";
-        Ztring Data=Ztring().From_Local(Extra_Bext_DefaultVersion->currentText().toLocal8Bit().data());
+        Ztring Data=Ztring().From_Number(Extra_Bext_DefaultVersion->value());
         Content+=Data;
         Content+=EOL;
         Prefs.Write(Content);
         Main->Bext_DefaultVersion_Set(Data.To_int8u());
+    }
+    {
+        Ztring Content;
+        Content+="Extra_Bext_MaxVersion";
+        Content+=" = ";
+        Ztring Data=Ztring().From_Number(Extra_Bext_MaxVersion->value());
+        Content+=Data;
+        Content+=EOL;
+        Prefs.Write(Content);
+        Main->Bext_MaxVersion_Set(Data.To_int8u());
     }
     {
         Ztring Content;
@@ -603,10 +627,17 @@ void GUI_Preferences::Create()
     Extra_LogFile->setLayout(Extra_LogFile_Layout);
 
     //Extra - Bext
-    Extra_Bext_DefaultVersion=new QComboBox();
-    Extra_Bext_DefaultVersion->addItem("0");
-    Extra_Bext_DefaultVersion->addItem("1");
+    Extra_Bext_DefaultVersion=new QDoubleSpinBox();
+    Extra_Bext_DefaultVersion->setMinimum(0);
+    Extra_Bext_DefaultVersion->setMaximum(0xFFFF);
+    Extra_Bext_DefaultVersion->setDecimals(0);
     QLabel* Extra_Bext_DefaultVersion_Label=new QLabel("Default bext version:");
+
+    Extra_Bext_MaxVersion=new QDoubleSpinBox();
+    Extra_Bext_MaxVersion->setMinimum(2);
+    Extra_Bext_MaxVersion->setMaximum(0xFFFF);
+    Extra_Bext_MaxVersion->setDecimals(0);
+    QLabel* Extra_Bext_MaxVersion_Label=new QLabel("Max bext version:");
 
     Extra_Bext_Toggle=new QCheckBox();
     Extra_Bext_Toggle->setText("Use a toggle instead of a question window");
@@ -614,7 +645,9 @@ void GUI_Preferences::Create()
     QGridLayout* Extra_Bext_Layout=new QGridLayout();
     Extra_Bext_Layout->addWidget(Extra_Bext_DefaultVersion_Label, 0, 0);
     Extra_Bext_Layout->addWidget(Extra_Bext_DefaultVersion, 0, 1);
-    Extra_Bext_Layout->addWidget(Extra_Bext_Toggle, 1, 0, 1, 2);
+    Extra_Bext_Layout->addWidget(Extra_Bext_MaxVersion_Label, 1, 0);
+    Extra_Bext_Layout->addWidget(Extra_Bext_MaxVersion, 1, 1);
+    Extra_Bext_Layout->addWidget(Extra_Bext_Toggle, 2, 0, 1, 2);
 
     QGroupBox* Extra_Bext=new QGroupBox("bext");
     Extra_Bext->setLayout(Extra_Bext_Layout);
