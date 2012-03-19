@@ -17,8 +17,8 @@ mv bwfmetaedit$dash$bwfmetaeditv-$1$9.$type \
  download/binary/bwfmetaedit/$bwfmetaeditv/bwfmetaedit$dash$bwfmetaeditv-$destversion$9.$7.$type
 
 wget "http://download.opensuse.org/repositories/home:/MediaArea_net/$7/$8/bwfmetaedit-gui$dash$bwfmetaeditv-$1$9.$type"
-mv mediainfo-gui$dash$mediainfov-$1$9.$type \
- download/binary/mediainfo-gui/$mediainfov/mediainfo-gui$dash$mediainfov-$destversion$9.$7.$type
+mv bwfmetaedit-gui$dash$bwfmetaeditv-$1$9.$type \
+ download/binary/bwfmetaedit-gui/$bwfmetaeditv/bwfmetaedit-gui$dash$bwfmetaeditv-$destversion$9.$7.$type
 }
 
 #-----------------------------------------------------------------------
@@ -93,4 +93,4 @@ Download_Packages $1  x  x x x x   openSUSE_12.1   x86_64 .x86_64
 bwfmetaeditv="1.2.0"
 destversion="1"
 
-Download_Global 27.1
+Download_Global 30.1
