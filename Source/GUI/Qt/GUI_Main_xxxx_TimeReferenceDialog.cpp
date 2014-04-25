@@ -12,14 +12,14 @@
 #include "Common/Core.h"
 #include "ZenLib/Ztring.h"
 #include "ZenLib/File.h"
-#include <QtGui/QTimeEdit>
-#include <QtGui/QLabel>
-#include <QtGui/QSpinBox>
-#include <QtCore/QEvent>
-#include <QtGui/QGridLayout>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QIcon>
-#include <QtGui/QMessageBox>
+#include <QTimeEdit>
+#include <QLabel>
+#include <QSpinBox>
+#include <QEvent>
+#include <QGridLayout>
+#include <QDialogButtonBox>
+#include <QIcon>
+#include <QMessageBox>
 #include <ZenLib/Ztring.h>
 using namespace ZenLib;
 //---------------------------------------------------------------------------
@@ -114,7 +114,7 @@ void GUI_Main_xxxx_TimeReferenceDialog::OnTimeChanged (const QTime &Time)
     if (IsChanging || SampleRate==0)
         return;
 
-    LineEdit->setValue(((double)QTime().msecsTo(Time))*SampleRate/1000);
+    LineEdit->setValue(((double)QTime(0, 0, 0, 0).msecsTo(Time))*SampleRate/1000);
 }
 
 //---------------------------------------------------------------------------

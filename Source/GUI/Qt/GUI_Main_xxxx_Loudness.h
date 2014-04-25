@@ -14,7 +14,7 @@
 
 //---------------------------------------------------------------------------
 class Core;
-#include <QtGui/QDialog>
+#include <QDialog>
 class QDoubleSpinBox;
 class QDialogButtonBox;
 //---------------------------------------------------------------------------
@@ -35,7 +35,7 @@ public:
     QDoubleSpinBox*     Loudness;
     QDialogButtonBox*   Dialog;
 
-private slots:
+private Q_SLOTS:
     //Actions
     void OnAccept                   ();
 

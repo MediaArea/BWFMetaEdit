@@ -11,7 +11,7 @@
 #include "GUI/Qt/GUI_Main_Core_Text.h"
 #include "Common/Core.h"
 #include "ZenLib/Ztring.h"
-#include <QtCore/QEvent>
+#include <QEvent>
 //---------------------------------------------------------------------------
 
 //***************************************************************************

@@ -14,8 +14,8 @@
 
 //---------------------------------------------------------------------------
 #include "GUI/Qt/GUI_Main.h"
-#include <QtGui/QDialog>
-#include <QtGui/QDialog>
+#include <QDialog>
+#include <QDialog>
 #include <string>
 class QTabWidget;
 class QPushButton;
@@ -138,7 +138,7 @@ private:
     QCheckBox**     CheckBoxes;
     QRadioButton**  RadioButtons;
 
- private slots:
+ private Q_SLOTS:
     void OnLoad();
     void OnSave();
     void OnRejected();
@@ -153,7 +153,7 @@ private:
     std::string ConfigDirectory_Get();
     std::string ConfigFileName_Get();
 
-    void showEvent(QShowEvent* event);
+    void showEvent(QShowEvent* Event);
 
     GUI_Main* Main;
     QDialogButtonBox* Dialog;

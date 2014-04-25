@@ -19,18 +19,18 @@
 #include "GUI/Qt/GUI_Main_xxxx_UmidDialog.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
-#include <QtGui/QLabel>
-#include <QtCore/QEvent>
-#include <QtGui/QFont>
-#include <QtGui/QTextEdit>
-#include <QtGui/QDateEdit>
-#include <QtGui/QSpinBox>
-#include <QtGui/QItemDelegate>
-#include <QtGui/QStandardItemModel>
-#include <QtCore/QDate>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
+#include <QLabel>
+#include <QEvent>
+#include <QFont>
+#include <QTextEdit>
+#include <QDateEdit>
+#include <QSpinBox>
+#include <QItemDelegate>
+#include <QStandardItemModel>
+#include <QDate>
+#include <QContextMenuEvent>
+#include <QAction>
+#include <QMenu>
 using namespace ZenLib;
 using namespace std;
 //---------------------------------------------------------------------------
@@ -53,134 +53,198 @@ GUI_Main_Core_Table::GUI_Main_Core_Table(Core* _C, GUI_Main* parent)
 void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
 {
     //Retrieving data
-    QTableWidgetItem* Item=itemAt(Event->pos());
-    if (Item==NULL)
-        return;
-    string FileName=FileName_Before+item(Item->row(), 0)->text().toLocal8Bit().data();
-    string Field=horizontalHeaderItem(Item->column())->text().toLocal8Bit().data();
-    ZtringList History; History.Write(C->History(FileName, Field));
-    Ztring Date;
-    if (Field=="OriginationDate" || Field=="OriginationTime" || Field=="ICRD")
+    QList<QTableWidgetItem*> Items=selectedItems();
+    if (Items.size()==1)
     {
-        Date=C->FileDate_Get(FileName);
-        if (Date.size()>=10+1+8)
+        QTableWidgetItem* Item=itemAt(Event->pos());
+        if (Item==NULL)
+            return;
+        string FileName=FileName_Before+item(Item->row(), 0)->text().toLocal8Bit().data();
+        string Field=horizontalHeaderItem(Item->column())->text().toLocal8Bit().data();
+        ZtringList History; History.Write(C->History(FileName, Field));
+        Ztring Date;
+        if (Field=="OriginationDate" || Field=="OriginationTime" || Field=="ICRD")
         {
+            Date=C->FileDate_Get(FileName);
             if (Date.size()>=10+1+8)
-                Date.resize(10+1+8);
-            if (Field=="ICRD")
-                Date.insert(0, "&Set ICRD to file creation timestamp ("); //If you change this, change at the end of method too
-            else
-                Date.insert(0, "&Set originationDate and Time to file creation timestamp ("); //If you change this, change at the end of method too
-            Date.append(")");
-        }
-        else
-            Date.clear();
-    }
-
-    //Creating menu
-    QMenu menu(this);
-
-    //Handling AllFiles display
-    {
-        menu.addAction(new QAction("Fill all open files with this field value", this)); //If you change this, change the test text too
-        menu.addSeparator();
-    }
-
-    //Handling Clear display
-    if (!item(Item->row(), Item->column())->text().isEmpty() && C->IsValid(FileName, Field, string()))
-    {
-        menu.addAction(new QAction("Clear this value", this)); //If you change this, change the test text too
-        menu.addSeparator();
-    }
-
-    //Handling date display
-    if (!Date.empty())
-    {
-        menu.addAction(new QAction(QString().fromUtf8(Date.To_Local().c_str()), this));
-        menu.addSeparator();
-    }
-
-    //Handling history display
-    size_t Pos=History.size();
-    if (!History.empty())
-        do
-        {
-            Pos--;
-
-            QString Text=QString().fromUtf8(History[Pos].To_Local().c_str());
-            if (!Text.isEmpty())
             {
-                QAction* Action=new QAction(Text, this);
-                menu.addAction(Action);
+                if (Date.size()>=10+1+8)
+                    Date.resize(10+1+8);
+                if (Field=="ICRD")
+                    Date.insert(0, "&Set ICRD to file creation timestamp ("); //If you change this, change at the end of method too
+                else
+                    Date.insert(0, "&Set originationDate and Time to file creation timestamp ("); //If you change this, change at the end of method too
+                Date.append(")");
+            }
+            else
+                Date.clear();
+        }
+
+        //Creating menu
+        QMenu menu(this);
+
+        //Handling AllFiles display
+        {
+            menu.addAction(new QAction("Fill all open files with this field value", this)); //If you change this, change the test text too
+            menu.addSeparator();
+        }
+
+        //Handling Clear display
+        if (!item(Item->row(), Item->column())->text().isEmpty() && C->IsValid(FileName, Field, string()) && Field!="BextVersion")
+        {
+            menu.addAction(new QAction("Clear this value", this)); //If you change this, change the test text too
+            menu.addSeparator();
+        }
+
+        //Handling date display
+        if (!Date.empty())
+        {
+            menu.addAction(new QAction(QString().fromUtf8(Date.To_Local().c_str()), this));
+            menu.addSeparator();
+        }
+
+        //Handling history display
+        size_t Pos=History.size();
+        if (!History.empty())
+            do
+            {
+                Pos--;
+
+                QString Text=QString().fromUtf8(History[Pos].To_Local().c_str());
+                if (!Text.isEmpty())
+                {
+                    QAction* Action=new QAction(Text, this);
+                    menu.addAction(Action);
+                }
+            }
+            while (Pos>0);
+    
+        //Displaying
+        QAction* Action=menu.exec(Event->globalPos());
+        if (Action==NULL)
+            return;
+
+        //Retrieving data
+        QString Text=Action->text();
+
+        //Special cases
+        if (Text=="Fill all open files with this field value") //If you change this, change the creation text too
+        {
+            for (int Row=0; Row<rowCount(); Row++)
+            {
+                item(Row, Item->column())->setText(QString().fromUtf8(Ztring(C->Get(FileName, Field)).To_Local().c_str()));
+                dataChanged(indexFromItem(item(Row, Item->column())), indexFromItem(item(Row, Item->column())));
+
+                //Changing BextVersion Enabled value
+                SetText   (*Item, "BextVersion");
+                SetEnabled(*Item, "BextVersion");
+            }
+            return;
+        }
+        if (Text=="Clear this value") //If you change this, change the creation text too
+            Text.clear();
+
+        //Filling
+        if (Text.contains("&Set ")) //If you change this, change the creation text too
+        {
+            Text=Text.remove("&Set ICRD to file creation timestamp ("); //If you change this, change the creation text too
+            Text=Text.remove("&Set originationDate and Time to file creation timestamp ("); //If you change this, change the creation text too
+            Text=Text.remove(")"); //If you change this, change the creation text too
+            if (horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("ICRD"))
+            {
+                item(Item->row(), Item->column())->setText(Text);
+                dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
+            }
+            else
+            {
+                QString Date=Text;
+                Date.remove(10, 1+12);
+                QString Time=Text;
+                Time.remove(0, 10+1);
+                Time.remove(8, 4);
+                int Date_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("OriginationDate")?0:-1);
+                int Time_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("OriginationTime")?0:1);
+                item(Item->row(), Date_Pos)->setText(Date);
+                dataChanged(indexFromItem(item(Item->row(), Date_Pos)), indexFromItem(item(Item->row(), Date_Pos)));
+                item(Item->row(), Time_Pos)->setText(Time);
+                dataChanged(indexFromItem(item(Item->row(), Time_Pos)), indexFromItem(item(Item->row(), Time_Pos)));
             }
         }
-        while (Pos>0);
-    
-    //Displaying
-    QAction* Action=menu.exec(Event->globalPos());
-    if (Action==NULL)
-        return;
-
-    //Retrieving data
-    QString Text=Action->text();
-
-    //Special cases
-    if (Text=="Fill all open files with this field value") //If you change this, change the creation text too
-    {
-        for (int Row=0; Row<rowCount(); Row++)
+        else
         {
-            item(Row, Item->column())->setText(QString().fromUtf8(Ztring(C->Get(FileName, Field)).To_Local().c_str()));
-            dataChanged(indexFromItem(item(Row, Item->column())), indexFromItem(item(Row, Item->column())));
+            item(Item->row(), Item->column())->setText(Text);
+            dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
+
+            //Special case
+            if (Field=="TimeReference")
+                SetText(*Item, "TimeReference (translated)");
+            if (Field=="TimeReference (translated)")
+                SetText(*Item, "TimeReference");
 
             //Changing BextVersion Enabled value
             SetText   (*Item, "BextVersion");
             SetEnabled(*Item, "BextVersion");
         }
-        return;
-    }
-    if (Text=="Clear this value") //If you change this, change the creation text too
-        Text.clear();
-
-    //Filling
-    if (Text.contains("&Set ")) //If you change this, change the creation text too
-    {
-        Text=Text.remove("&Set ICRD to file creation timestamp ("); //If you change this, change the creation text too
-        Text=Text.remove("&Set originationDate and Time to file creation timestamp ("); //If you change this, change the creation text too
-        Text=Text.remove(")"); //If you change this, change the creation text too
-        if (horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("ICRD"))
-        {
-            item(Item->row(), Item->column())->setText(Text);
-            dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
-        }
-        else
-        {
-            QString Date=Text;
-            Date.remove(10, 1+12);
-            QString Time=Text;
-            Time.remove(0, 10+1);
-            Time.remove(8, 4);
-            int Date_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("OriginationDate")?0:-1);
-            int Time_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("OriginationTime")?0:1);
-            item(Item->row(), Date_Pos)->setText(Date);
-            dataChanged(indexFromItem(item(Item->row(), Date_Pos)), indexFromItem(item(Item->row(), Date_Pos)));
-            item(Item->row(), Time_Pos)->setText(Time);
-            dataChanged(indexFromItem(item(Item->row(), Time_Pos)), indexFromItem(item(Item->row(), Time_Pos)));
-        }
     }
     else
     {
-        item(Item->row(), Item->column())->setText(Text);
-        dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
+        //Creating menu
+        QMenu menu(this);
 
-        //Special case
-        if (Field=="TimeReference")
-            SetText(*Item, "TimeReference (translated)");
-        if (Field=="TimeReference (translated)")
-            SetText(*Item, "TimeReference");
+        //Handling Clear display
+        bool ShowClear=false;
+        for (int Pos=0; Pos<Items.size(); Pos++)
+        {
+            QTableWidgetItem* Item=Items[Pos];
+            if (Item)
+            {
+                string FileName=FileName_Before+item(Item->row(), 0)->text().toLocal8Bit().data();
+                string Field=horizontalHeaderItem(Item->column())->text().toLocal8Bit().data();
+                if (!item(Item->row(), Item->column())->text().isEmpty() && C->IsValid(FileName, Field, string()) && Field!="BextVersion")
+                {
+                    ShowClear=true;
+                    break;
+                }
+            }
+        }
+        if (ShowClear)
+        {
+            menu.addAction(new QAction("Clear these values", this)); //If you change this, change the test text too
+            menu.addSeparator();
+        }
+    
+        //Displaying
+        QAction* Action=menu.exec(Event->globalPos());
+        if (Action==NULL)
+            return;
 
-        //Changing BextVersion Enabled value
-        SetText   (*Item, "BextVersion");
-        SetEnabled(*Item, "BextVersion");
+        //Retrieving data
+        QString Text=Action->text();
+
+        //Special cases
+        if (Text=="Clear these values") //If you change this, change the creation text too
+        {
+            for (int Pos=0; Pos<Items.size(); Pos++)
+            {
+                QTableWidgetItem* Item=Items[Pos];
+                if (Item)
+                {
+                    string Field=horizontalHeaderItem(Item->column())->text().toLocal8Bit().data();
+
+                    if (Field!="BextVersion")
+                    {
+                        item(Item->row(), Item->column())->setText(QString());
+                        dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
+
+                        //Special case
+                        if (Field=="TimeReference")
+                            SetText(*Item, "TimeReference (translated)");
+                        if (Field=="TimeReference (translated)")
+                            SetText(*Item, "TimeReference");
+                    }
+                }
+            }
+        }
     }
 
     //Menu
@@ -188,11 +252,11 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
 }
 
 //---------------------------------------------------------------------------
-bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, QEvent *event) 
+bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, QEvent *Event) 
 {
     //Must we edit or not
     if (!index.isValid())
-        return QTableWidget::edit(index, trigger, event); //Normal editing
+        return QTableWidget::edit(index, trigger, Event); //Normal editing
 
     //Init
     string FileName=FileName_Before+item(index.row(), 0)->text().toLocal8Bit().data();
@@ -208,13 +272,13 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
 
     //Should we handle edition manualy?
     if (trigger!=DoubleClicked && trigger!=AnyKeyPressed)
-        return QTableWidget::edit(index, trigger, event); //Normal editing 
+        return QTableWidget::edit(index, trigger, Event); //Normal editing 
 
     //Retrieving data
     QString ModifiedContentQ;
     if (trigger==AnyKeyPressed)
     {
-        ModifiedContentQ=((QKeyEvent*)event)->text(); //What the user has pressed
+        ModifiedContentQ=((QKeyEvent*)Event)->text(); //What the user has pressed
         if (!ModifiedContentQ.isEmpty() && ModifiedContentQ[0]==127)
             ModifiedContentQ.clear();
     }
@@ -412,7 +476,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         return false;
     }
 
-    return QTableWidget::edit(index, trigger, event); //Normal editing 
+    return QTableWidget::edit(index, trigger, Event); //Normal editing 
 }
 
 //***************************************************************************

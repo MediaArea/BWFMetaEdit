@@ -13,6 +13,7 @@
 #include <string>
 #include <map>
 #include <vector>
+//#include <tchar.h>
 #include "Riff/Riff_Handler.h"
 #include "ZenLib/ZtringList.h"
 #include "ZenLib/File.h"

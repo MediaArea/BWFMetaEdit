@@ -18,18 +18,18 @@
 #include "Common/Core.h"
 #include "Common/Common_About.h"
 #include "ZenLib/ZtringListList.h"
-#include <QtGui/QLabel>
-#include <QtCore/QEvent>
-#include <QtGui/QFont>
-#include <QtGui/QTextEdit>
-#include <QtGui/QDateEdit>
-#include <QtGui/QSpinBox>
-#include <QtGui/QItemDelegate>
-#include <QtGui/QStandardItemModel>
-#include <QtCore/QDate>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
+#include <QLabel>
+#include <QEvent>
+#include <QFont>
+#include <QTextEdit>
+#include <QDateEdit>
+#include <QSpinBox>
+#include <QItemDelegate>
+#include <QStandardItemModel>
+#include <QDate>
+#include <QContextMenuEvent>
+#include <QAction>
+#include <QMenu>
 using namespace ZenLib;
 using namespace std;
 //---------------------------------------------------------------------------
@@ -200,7 +200,7 @@ bool GUI_Main_xxxx__Common::event (QEvent* Event)
 }
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight ) 
+void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) 
 {
     //Preparing
     if (Updating)
@@ -250,9 +250,9 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
 {
     if (!C->IsValid(FileName, Field, C->Get(FileName, Field)))
     {
-        Item->setToolTip(C->IsValid_LastError(FileName).c_str());
-        Item->setBackgroundColor(Qt::red);
-    }
+			Item->setToolTip(C->IsValid_LastError(FileName).c_str());
+			Item->setBackgroundColor(Qt::red);
+	}
     else if (C->IsModified(FileName, Field))
     {
         if (Item->backgroundColor()==Qt::red)
@@ -396,7 +396,6 @@ void GUI_Main_xxxx__Common::Fill ()
                 if (Data_Pos<List[File_Pos].size())
                 {
                     ZenLib::Ztring Value=List[File_Pos][Data_Pos];
-                    Value.FindAndReplace(EOL, "\n", 0, Ztring_Recursive);
                     Item=new QTableWidgetItem(QString().fromUtf8(Value.To_Local().c_str()));
                     Item->setToolTip(Columns_ToolTip(List[0][Data_Pos]));
                 }

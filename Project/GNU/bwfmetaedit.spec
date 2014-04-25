@@ -4,7 +4,7 @@
 
 # norootforbuild
 
-%define bwfmetaedit_version		1.2.0
+%define bwfmetaedit_version		1.3.1
 
 Name:			bwfmetaedit
 Version:		%bwfmetaedit_version
@@ -22,6 +22,8 @@ BuildRequires:	pkgconfig
 %if 0%{?suse_version}
 BuildRequires:	update-desktop-files
 %endif
+BuildRequires:  automake
+BuildRequires:  autoconf
 
 %description
 bwfmetaedit CLI (Command Line Interface)

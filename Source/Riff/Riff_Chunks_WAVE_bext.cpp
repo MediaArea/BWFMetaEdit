@@ -322,8 +322,8 @@ void Riff_WAVE_bext::Modify_Internal ()
     
     if (Chunk.Content.Buffer_Offset<858)
     {
-        memset(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset, 0x00, 858-Chunk.Content.Buffer_Offset);
-        Chunk.Content.Size=858; //We free the no more needed space
+//        memset(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset, 0x00, 858-Chunk.Content.Buffer_Offset);
+//        Chunk.Content.Size=858; //We free the no more needed space
     }
 
     Chunk.Content.IsModified=true;

@@ -374,7 +374,6 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
             Handler++;
             Handlers.erase(Handler_ToDelete);
 
-            CriticalSectionLocker CSL(CS);
             Menu_File_Open_Files_File_Pos--;
             Menu_File_Open_Files_File_Total--;
         }

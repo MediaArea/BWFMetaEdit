@@ -14,7 +14,7 @@
 
 //---------------------------------------------------------------------------
 class Core;
-#include <QtGui/QDialog>
+#include <QDialog>
 class QDialogButtonBox;
 class QDoubleSpinBox;
 //---------------------------------------------------------------------------
@@ -35,7 +35,7 @@ public:
     QDoubleSpinBox*     Version;
     QDialogButtonBox*   Dialog;
 
-private slots:
+private Q_SLOTS:
     //Actions
     void OnAccept                   ();
 

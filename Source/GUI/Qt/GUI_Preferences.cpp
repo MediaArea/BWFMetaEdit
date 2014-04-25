@@ -10,22 +10,22 @@
 //---------------------------------------------------------------------------
 #include "GUI/Qt/GUI_Preferences.h"
 #include "Common/Core.h"
-#include <QtGui/QTextBrowser>
-#include <QtGui/QGridLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QTabWidget>
-#include <QtGui/QCheckBox>
-#include <QtGui/QRadioButton>
-#include <QtGui/QLineEdit>
-#include <QtGui/QLabel>
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QGroupBox>
-#include <QtGui/QDesktopServices>
-#include <QtGui/QScrollArea>
+#include <QTextBrowser>
+#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QDialogButtonBox>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QTabWidget>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QLineEdit>
+#include <QLabel>
+#include <QDoubleSpinBox>
+#include <QGroupBox>
+#include <QDesktopServices>
+#include <QScrollArea>
 #include "ZenLib/File.h"
 #include "ZenLib/Dir.h"
 #include "ZenLib/ZtringListListF.h"
@@ -190,7 +190,7 @@ GUI_Preferences::GUI_Preferences(GUI_Main* parent)
 }
 
 //---------------------------------------------------------------------------
-void GUI_Preferences::showEvent(QShowEvent* event)
+void GUI_Preferences::showEvent(QShowEvent* Event)
 {
     move((QApplication::desktop()->screenGeometry().width()-780)/2, 80);
     resize(780, height());

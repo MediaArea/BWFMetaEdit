@@ -12,20 +12,20 @@
 #include "Common/Core.h"
 #include "ZenLib/Ztring.h"
 #include "ZenLib/File.h"
-#include <QtGui/QLabel>
-#include <QtCore/QEvent>
-#include <QtGui/QFont>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QTableWidget>
-#include <QtGui/QFileDialog>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QComboBox>
-#include <QtGui/QTextEdit>
-#include <QtGui/QMessageBox>
-#include <QtGui/QDesktopWidget>
+#include <QLabel>
+#include <QEvent>
+#include <QFont>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QDialogButtonBox>
+#include <QTableWidget>
+#include <QFileDialog>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QComboBox>
+#include <QTextEdit>
+#include <QMessageBox>
+#include <QDesktopWidget>
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -41,7 +41,7 @@ CodingHistoryDialog_TableWidget::CodingHistoryDialog_TableWidget (ZtringListList
 }
 
 //---------------------------------------------------------------------------
-void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight ) 
+void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) 
 {
     if (Updating)
         return;
@@ -452,19 +452,23 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
 {
     //Preparing
     Table->Updating=true;
-    
+	Table->clearContents();
     //Warning display
     bool Ununderstable=false;
     bool Modified=false;
 
     //Loading
     string Text=TextEdit->toPlainText().toLocal8Bit().data();
+//	if(Text.empty())
+//		return;
+	List.clear();
     List.Separator_Set(0, "\n");
     if (Text.find(", ")==string::npos)
         List.Separator_Set(1, ",");
     else
         List.Separator_Set(1, ", ");
     List.Write(Text);
+	int size = List.size();
 
     Table->setRowCount((int)List.size()+1);
     Table->setColumnCount(6);
