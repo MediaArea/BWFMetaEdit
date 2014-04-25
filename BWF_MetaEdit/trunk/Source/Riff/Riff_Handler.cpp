@@ -718,11 +718,11 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
             Message="length is maximum 10 characters (format limitation)";
         else if (Rules.FADGI_Rec)
         {
-                 if (Value.empty())
+            if (Value.empty())
                 Message="must not be empty (FADGI recommandations)";
             else if (Value.size()!=4 && Value.size()!=7 && Value.size()!=10)
                 Message="must be YYYY, YYYY-MM, or YYYY-MM-DD (FADGI recommandations)";
-            else
+			else
             {
                      if (Value[0]< '0' || Value[0]> '9') //Year
                     Message="1st to 4th characters (Year) must be between '0000' and '9999' (BWF requirements)";
@@ -789,11 +789,11 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
         string Message;
         if (Value.size()>8)
             Message="length is maximum 8 characters (format limitation)";
-        else if (Rules.FADGI_Rec)
+		else if (Rules.FADGI_Rec && !Value.empty())
         {
-                 if (Value.empty())
-                Message="must not be empty (FADGI recommandations)";
-            else if (Value.size()!=2 && Value.size()!=5 && Value.size()!=8)
+        //    if (Value.empty())
+        //        Message="must not be empty (FADGI recommandations)";
+            if (Value.size()!=2 && Value.size()!=5 && Value.size()!=8)
                 Message="must be HH, HH:MM, or HH:MM:SS (FADGI recommandations)";
             else
             {
@@ -1144,7 +1144,7 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
             
             if (Wrong)
                 Message="does not respect rules ";
-            else if (!Value.empty() && (Value.size()<2 || Value[Value.size()-2]!=_T('\r') || Value[Value.size()-1]!=_T('\n')))
+            else if (!Value.empty() && (Value.size()<2 || Value[Value.size()-2]!=_T('\r') || Value[Value.size()-1]!=_T('\n') ))
                 Message="does not terminate with \\r\\n";
         }
 
@@ -1452,6 +1452,9 @@ bool Riff_Handler::IsModified_Get()
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
             if (IsModified(xxxx_Strings[Fields_Pos][Pos]))
                 ToReturn=true;
+
+    if (!ToReturn && Chunks)
+        ToReturn=Chunks->IsModified();
 
     return ToReturn;
 }

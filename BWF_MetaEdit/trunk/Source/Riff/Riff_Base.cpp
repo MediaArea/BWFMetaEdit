@@ -141,10 +141,13 @@ void Riff_Base::Read (chunk &Chunk_In)
 
             Chunk.Content.IsModified=true;
             Chunk.Content.Size_IsModified=true;
-            Chunk_In.Content.IsModified=true;
-            Chunk_In.Content.Size_IsModified=true;
         }
     }
+
+    if (Chunk.Content.IsModified)
+        Chunk_In.Content.IsModified=true;
+    if (Chunk.Content.Size_IsModified)
+        Chunk_In.Content.Size_IsModified=true;
 
     //Positioning
     Global->In.GoTo(Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size+(File_in_Chunk_Content_HasPadding?1:0));
@@ -178,6 +181,12 @@ bool Riff_Base::Read_Header (chunk &NewChunk)
     if (Global->In.Read(Temp, 4)<4)
         throw exception_read();
     NewChunk.Content.Size=LittleEndian2int32u(Temp);
+    if (Global->IsRF64 && Global->ds64 && NewChunk.Header.Level==2 && NewChunk.Header.Name==Elements::WAVE_data && NewChunk.Content.Size==Global->ds64->dataSize%0x100000000LL)
+    {
+        NewChunk.Content.Size=0xFFFFFFFF; //Bug in previous versions, chunk size was not the right one
+        NewChunk.Content.IsModified=true; //Forcing write of the write file
+        NewChunk.Content.Size_IsModified=true; //Forcing write of the write file
+    }
     if (NewChunk.Content.Size==0xFFFFFFFF && Global->IsRF64 && Global->ds64 && NewChunk.Header.Name==Elements::WAVE_data)
         NewChunk.Content.Size=Global->ds64->dataSize; //Setting real WAVE_data size
     if (Global->In.Position_Get()+NewChunk.Content.Size>Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size
@@ -347,7 +356,12 @@ void Riff_Base::Write ()
         {
             int8u Header[8];
             int32u2BigEndian(Header, Chunk.Header.Name);
-            int32u2LittleEndian(Header+4, (int32u)(Chunk.Content.Size));
+            if (Chunk.Content.Size<=RIFF_Size_Limit)
+                int32u2LittleEndian(Header+4, (int32u)(Chunk.Content.Size));
+            else if (Chunk.Header.Level==2 && Chunk.Header.Name==Elements::WAVE_data)
+                int32u2LittleEndian(Header+4, 0xFFFFFFFF);
+            else
+                throw exception_write("Block size is too big");
             Write_Internal(Header, 8);
         }
     }

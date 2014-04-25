@@ -14,7 +14,7 @@
 
 //---------------------------------------------------------------------------
 class Core;
-#include <QtGui/QDialog>
+#include <QDialog>
 class QTabWidget;
 class QCalendarWidget;
 class QTextEdit;
@@ -50,7 +50,7 @@ public:
     QDialogButtonBox*   Dialog;
     QPushButton*        Date;
 
-private slots:
+private Q_SLOTS:
     //Actions
     void OnAccept                   ();
     void OnCalendar_Changed         ();

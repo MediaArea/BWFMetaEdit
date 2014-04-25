@@ -14,10 +14,10 @@
 
 //---------------------------------------------------------------------------
 class Core;
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "ZenLib/ZtringListList.h"
-#include <QtGui/QItemDelegate>
-#include <QtGui/QTableWidget>
+#include <QItemDelegate>
+#include <QTableWidget>
 class QEvent;
 class QComboBox;
 class QTextEdit;
@@ -40,7 +40,7 @@ public:
 
 private:
     //Events
-    void dataChanged (const QModelIndex &topLeft, const QModelIndex &bottomRight);
+    void dataChanged (const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> & roles = QVector<int> ());
 
     //Internal;
     ZtringListList* List;
@@ -67,7 +67,7 @@ public:
     QPushButton*                        Load;
     QPushButton*                        Save;
 
-private slots:
+private Q_SLOTS:
     //Actions
     void OnAccept                   ();
     void OnMenu_Load                ();
@@ -78,7 +78,7 @@ private slots:
 
 protected:
     //Events
-    void hideEvent (QHideEvent* event);
+    void hideEvent (QHideEvent* Event);
     
 private:
     //Internal

@@ -11,9 +11,9 @@
 #include "GUI/Qt/GUI_Main_Output_Log.h"
 #include "Common/Core.h"
 #include "ZenLib/Ztring.h"
-#include <QtGui/QLabel>
-#include <QtCore/QEvent>
-#include <QtGui/QFont>
+#include <QLabel>
+#include <QEvent>
+#include <QFont>
 //---------------------------------------------------------------------------
 
 //***************************************************************************

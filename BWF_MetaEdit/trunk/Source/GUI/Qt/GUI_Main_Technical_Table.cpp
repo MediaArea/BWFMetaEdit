@@ -14,16 +14,16 @@
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
-#include <QtGui/QLabel>
-#include <QtCore/QEvent>
-#include <QtGui/QFont>
-#include <QtGui/QTextEdit>
-#include <QtGui/QHeaderView>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QLabel>
+#include <QEvent>
+#include <QFont>
+#include <QTextEdit>
+#include <QHeaderView>
+#include <QContextMenuEvent>
+#include <QAction>
+#include <QMenu>
+#include <QFileDialog>
+#include <QMessageBox>
 using namespace ZenLib;
 //---------------------------------------------------------------------------
 
@@ -35,6 +35,7 @@ using namespace ZenLib;
 GUI_Main_Technical_Table::GUI_Main_Technical_Table(Core* _C, GUI_Main* parent)
 : GUI_Main_xxxx__Common(_C, parent)
 {
+    setSelectionMode(SingleSelection);
 }
 
 //***************************************************************************
@@ -228,11 +229,11 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
 }
 
 //---------------------------------------------------------------------------
-bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigger, QEvent *event) 
+bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigger, QEvent *Event) 
 {
     //Must we edit or not
     if (!index.isValid())
-        return QTableWidget::edit(index, trigger, event); //Normal editing
+        return QTableWidget::edit(index, trigger, Event); //Normal editing
 
     //Init
     string FileName=FileName_Before+item(index.row(), 0)->text().toLocal8Bit().data();
@@ -240,13 +241,13 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
 
     //Should we handle edition manualy?
     if (trigger!=DoubleClicked && trigger!=AnyKeyPressed)
-        return QTableWidget::edit(index, trigger, event); //Normal editing 
+        return QTableWidget::edit(index, trigger, Event); //Normal editing 
 
     //Retrieving data
     QString ModifiedContentQ;
     if (trigger==AnyKeyPressed)
     {
-        ModifiedContentQ=((QKeyEvent*)event)->text(); //What the user has pressed
+        ModifiedContentQ=((QKeyEvent*)Event)->text(); //What the user has pressed
         if (!ModifiedContentQ.isEmpty() && ModifiedContentQ[0]==127)
             ModifiedContentQ.clear();
     }

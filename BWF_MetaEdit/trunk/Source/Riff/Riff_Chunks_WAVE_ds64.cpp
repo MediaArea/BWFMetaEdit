@@ -44,6 +44,7 @@ void Riff_WAVE_ds64::Read_Internal ()
     Global->ds64=new Riff_Base::global::chunk_ds64;
     Global->ds64->riffSize=riffSize;
     Global->ds64->dataSize=dataSize;
+    Global->ds64->sampleCount=sampleCount;
 }
 
 //***************************************************************************
@@ -53,6 +54,10 @@ void Riff_WAVE_ds64::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_ds64::Modify_Internal ()
 {
+    //Some files are corrupted by bad software (including BWF MetaEdit prior to v1.3.1), recreating sampleCount
+    if (Global->ds64->sampleCount==0 && Global->fmt_ && Global->fmt_->blockAlignment)
+        Global->ds64->sampleCount=Global->ds64->dataSize/Global->fmt_->blockAlignment;
+
     //Creating buffer
     Chunk.Content.Buffer_Offset=0;
     Chunk.Content.Size=28;
@@ -62,7 +67,7 @@ void Riff_WAVE_ds64::Modify_Internal ()
 
     Put_L8(Global->ds64->riffSize);
     Put_L8(Global->ds64->dataSize);
-    Put_L8(0);
+    Put_L8(Global->ds64->sampleCount);
     Put_L4(0); //tableLength
 
     Chunk.Content.IsModified=true;

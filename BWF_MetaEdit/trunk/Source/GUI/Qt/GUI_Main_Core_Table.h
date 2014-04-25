@@ -14,8 +14,8 @@
 
 //---------------------------------------------------------------------------
 #include "GUI/Qt/GUI_Main_xxxx__Common.h"
-#include <QtGui/QTableWidget>
-#include <QtGui/QItemDelegate>
+#include <QTableWidget>
+#include <QItemDelegate>
 #include <string>
 class QEvent;
 class GUI_Main;
@@ -37,8 +37,8 @@ public:
 
 protected:
     //Events
-    void contextMenuEvent   (QContextMenuEvent* event);
-    bool edit               (const QModelIndex &index, EditTrigger trigger, QEvent *event); 
+    void contextMenuEvent   (QContextMenuEvent* Event);
+    bool edit               (const QModelIndex &index, EditTrigger trigger, QEvent *Event); 
 
     //Helpers
     const string           &Fill_Content        ();

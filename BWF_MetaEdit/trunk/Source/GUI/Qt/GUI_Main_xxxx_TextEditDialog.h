@@ -14,7 +14,7 @@
 
 //---------------------------------------------------------------------------
 class Core;
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <string>
 class QTextEdit;
 class QLabel;
@@ -41,7 +41,7 @@ public:
     QPushButton*        Load;
     QPushButton*        Save;
 
-private slots:
+private Q_SLOTS:
     //Actions
     void OnAccept                   ();
     void OnTextChanged              ();

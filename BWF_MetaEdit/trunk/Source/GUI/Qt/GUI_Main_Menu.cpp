@@ -11,17 +11,17 @@
 #include "GUI/Qt/GUI_Main.h"
 #include "GUI/Qt/GUI_Main_UndoDialog.h"
 #include "Common/Core.h"
-#include <QtGui/QMenuBar>
-#include <QtGui/QToolBar>
-#include <QtGui/QFileDialog>
-#include <QtGui/QDesktopServices>
-#include <QtGui/QMessageBox>
-#include <QtGui/QProgressDialog>
-#include <QtGui/QApplication>
-#include <QtGui/QListWidget>
-#include <QtCore/QThread>
-#include <QtCore/QUrl>
-#include <QtCore/QEvent>
+#include <QMenuBar>
+#include <QToolBar>
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QMessageBox>
+#include <QProgressDialog>
+#include <QApplication>
+#include <QListWidget>
+#include <QThread>
+#include <QUrl>
+#include <QEvent>
 #include "GUI/Qt/GUI_Preferences.h"
 #include "GUI/Qt/GUI_Help.h"
 #include "GUI/Qt/GUI_About.h"
@@ -734,8 +734,8 @@ void GUI_Main::OnMenu_Rules_Tech3285_Req(bool)
 
     if (View==NULL)
         return;
-    QEvent event((QEvent::Type)(QEvent::User+2));
-    QApplication::sendEvent(View, &event);
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
 }
 
 //---------------------------------------------------------------------------
@@ -752,8 +752,8 @@ void GUI_Main::OnMenu_Rules_Tech3285_Rec(bool)
 
     if (View==NULL)
         return;
-    QEvent event((QEvent::Type)(QEvent::User+2));
-    QApplication::sendEvent(View, &event);
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
 }
 
 //---------------------------------------------------------------------------
@@ -763,8 +763,8 @@ void GUI_Main::OnMenu_Rules_CodingHistory_Rec(bool)
 
     if (View==NULL)
         return;
-    QEvent event((QEvent::Type)(QEvent::User+2));
-    QApplication::sendEvent(View, &event);
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
 }
 
 //---------------------------------------------------------------------------
@@ -774,8 +774,8 @@ void GUI_Main::OnMenu_Rules_OriginatorReference_Rec(bool)
 
     if (View==NULL)
         return;
-    QEvent event((QEvent::Type)(QEvent::User+2));
-    QApplication::sendEvent(View, &event);
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
 }
 
 //---------------------------------------------------------------------------
@@ -785,8 +785,8 @@ void GUI_Main::OnMenu_Rules_INFO_Req(bool)
 
     if (View==NULL)
         return;
-    QEvent event((QEvent::Type)(QEvent::User+2));
-    QApplication::sendEvent(View, &event);
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
 }
 
 //---------------------------------------------------------------------------
@@ -803,8 +803,8 @@ void GUI_Main::OnMenu_Rules_INFO_Rec(bool)
 
     if (View==NULL)
         return;
-    QEvent event((QEvent::Type)(QEvent::User+2));
-    QApplication::sendEvent(View, &event);
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
 }
 
 //---------------------------------------------------------------------------
@@ -814,8 +814,8 @@ void GUI_Main::OnMenu_Rules_FADGI_Rec(bool)
 
     if (View==NULL)
         return;
-    QEvent event((QEvent::Type)(QEvent::User+2));
-    QApplication::sendEvent(View, &event);
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
 }
 
 //---------------------------------------------------------------------------
@@ -823,8 +823,8 @@ void GUI_Main::OnMenu_Options_TechCore(bool)
 {
     if (View==NULL)
         return;
-    QEvent event((QEvent::Type)(QEvent::User+3));
-    QApplication::sendEvent(View, &event);
+    QEvent Event((QEvent::Type)(QEvent::User+3));
+    QApplication::sendEvent(View, &Event);
 }
 
 //---------------------------------------------------------------------------
@@ -1083,8 +1083,8 @@ void GUI_Main::OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)
 //---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Options_ResetFieldSizes()
 {
-    QEvent event((QEvent::Type)(QEvent::User+1));
-    QApplication::sendEvent(View, &event);
+    QEvent Event((QEvent::Type)(QEvent::User+1));
+    QApplication::sendEvent(View, &Event);
 }
 
 //---------------------------------------------------------------------------

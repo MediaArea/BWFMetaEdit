@@ -13,15 +13,15 @@
 #include "Common/Core.h"
 #include "ZenLib/Ztring.h"
 #include "ZenLib/File.h"
-#include <QtGui/QLabel>
-#include <QtCore/QEvent>
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QGridLayout>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
-#include <QtGui/QIcon>
+#include <QLabel>
+#include <QEvent>
+#include <QDoubleSpinBox>
+#include <QGridLayout>
+#include <QDialogButtonBox>
+#include <QDesktopWidget>
+#include <QApplication>
+#include <QMessageBox>
+#include <QIcon>
 //---------------------------------------------------------------------------
 
 //***************************************************************************

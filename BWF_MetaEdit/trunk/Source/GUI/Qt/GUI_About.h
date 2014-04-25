@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#include <QtGui/QDialog>
+#include <QDialog>
 class QTextBrowser;
 //---------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ public:
     GUI_About (QWidget * parent);
     ~GUI_About ();
 
-private slots:
+private Q_SLOTS:
     //Menu - Actions
     void OnDescription                  ();
     void OnAuthorLicense                ();
@@ -45,8 +45,8 @@ private:
     QPushButton*  Button_Contact;
     QPushButton*  Close;
 
-    void showEvent(QShowEvent* event);
-    void resizeEvent(QResizeEvent* event);
+    void showEvent(QShowEvent* Event);
+    void resizeEvent(QResizeEvent* Event);
 };
 
 #endif

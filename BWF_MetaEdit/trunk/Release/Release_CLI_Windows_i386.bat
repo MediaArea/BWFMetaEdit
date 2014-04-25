@@ -9,7 +9,7 @@ rem --- Copying : Exe ---
 xcopy ..\Project\MSVC2010\CLI\Win32\Release\bwfmetaedit.exe BWF_MetaEdit_CLI_Windows_i386\ /S
 
 rem --- Copying : Plugins ---
-xcopy ..\Source\Ressource\Plugin\Custom\* BWF_MetaEdit_CLI_Windows_i386\Plugin\Custom\ /S
+xcopy ..\Source\Resource\Plugin\Custom\* BWF_MetaEdit_CLI_Windows_i386\Plugin\Custom\ /S
 
 rem --- Copying : Information files ---
 copy ..\License.html BWF_MetaEdit_CLI_Windows_i386\
@@ -22,8 +22,8 @@ cd BWF_MetaEdit_CLI_Windows_i386\
 ..\..\..\Shared\Binary\Windows_i386\7-Zip\7z a -r -tzip ..\BWF_MetaEdit_CLI_Windows_i386.zip *
 cd ..
 
-
 rem --- Clean up ---
 if "%1"=="SkipCleanUp" goto SkipCleanUp
 rmdir BWF_MetaEdit_CLI_Windows_i386\ /S /Q
 :SkipCleanUp
+

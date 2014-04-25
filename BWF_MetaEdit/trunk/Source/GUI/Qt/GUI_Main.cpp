@@ -12,27 +12,26 @@
 #include "Common/Core.h"
 #include <vector>
 #include <algorithm>
-#include <QtGui/QStatusBar>
-#include <QtGui/QTextEdit>
+#include <QStatusBar>
+#include <QTextEdit>
 #include "GUI/Qt/GUI_Main_Technical_Table.h"
 #include "GUI/Qt/GUI_Main_Technical_Text.h"
 #include "GUI/Qt/GUI_Main_Core_Table.h"
 #include "GUI/Qt/GUI_Main_Core_Text.h"
 #include "GUI/Qt/GUI_Main_Output_Log.h"
-#include "GUI/Qt/GUI_Main_Output_stderr.h"
 #include "GUI/Qt/GUI_Main_Output_Trace.h"
 #include "GUI/Qt/GUI_Preferences.h"
-#include <QtCore/QEvent>
-#include <QtCore/QMimeData>
-#include <QtCore/QUrl>
-#include <QtGui/QApplication>
-#include <QtGui/QDropEvent>
-#include <QtGui/QDragEnterEvent>
-#include <QtGui/QMessageBox>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QProgressDialog>
-#include <QtCore/QThread>
-#include <QtCore/QTimer>
+#include <QEvent>
+#include <QMimeData>
+#include <QUrl>
+#include <QApplication>
+#include <QDropEvent>
+#include <QDragEnterEvent>
+#include <QMessageBox>
+#include <QDesktopWidget>
+#include <QProgressDialog>
+#include <QThread>
+#include <QTimer>
 #include "ZenLib/Ztring.h"
 using namespace std;
 //---------------------------------------------------------------------------
@@ -102,6 +101,7 @@ GUI_Main::GUI_Main(Core* _C)
     //GUI
     setWindowTitle("BWF MetaEdit - Audio-Visual Working Group of the Federal Agencies Digitization Guidelines Initiative");
     setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
+    setUnifiedTitleAndToolBarOnMac(true);
 }
 
 //---------------------------------------------------------------------------
@@ -142,8 +142,8 @@ void GUI_Main::View_Refresh(view View_New)
 
     if (View)
     {
-        QEvent event(QEvent::User);
-        QApplication::sendEvent(View, &event);
+        QEvent Event(QEvent::User);
+        QApplication::sendEvent(View, &Event);
     }
     
     //Menu
@@ -162,22 +162,24 @@ void GUI_Main::View_Refresh(view View_New)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void GUI_Main::dragEnterEvent(QDragEnterEvent *event)
+void GUI_Main::dragEnterEvent(QDragEnterEvent *Event)
 {
-    event->acceptProposedAction();
+    Event->acceptProposedAction();
 }
  
-void GUI_Main::dropEvent(QDropEvent *event)
+void GUI_Main::dropEvent(QDropEvent *Event)
 {
     //Configuring
     C->StdOut("Opening files...");
     C->Menu_File_Open_Files_Begin();
-    const QMimeData* Data=event->mimeData ();
-    if (event->mimeData()->hasUrls())
+    const QMimeData* Data=Event->mimeData ();
+    if (Event->mimeData()->hasUrls())
     {
-        foreach (QUrl url, event->mimeData()->urls())
+        //foreach (QUrl url, Event->mimeData()->urls())
+        QList<QUrl> urls=Event->mimeData()->urls();
+        for (int Pos=0; Pos<urls.size(); Pos++)
         {
-            Ztring File; File.From_UTF8(url.toLocalFile().toUtf8().data());
+            Ztring File; File.From_UTF8(urls[Pos].toLocalFile().toUtf8().data());
             #ifdef __WINDOWS__
                 File.FindAndReplace("/", "\\", 0, Ztring_Recursive);
             #endif // __WINDOWS__
@@ -192,12 +194,12 @@ void GUI_Main::dropEvent(QDropEvent *event)
 }
 
 //---------------------------------------------------------------------------
-void GUI_Main::closeEvent(QCloseEvent *event)
+void GUI_Main::closeEvent(QCloseEvent *Event)
 {
     if (Close())
-        event->accept();
+        Event->accept();
     else
-        event->ignore();
+        Event->ignore();
 }
 
 //***************************************************************************

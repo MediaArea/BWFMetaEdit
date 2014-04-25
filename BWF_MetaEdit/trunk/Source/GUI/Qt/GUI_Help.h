@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#include <QtGui/QDialog>
+#include <QDialog>
 class QTabWidget;
 class QPushButton;
 class QUrl;
@@ -35,7 +35,7 @@ private:
     QTabWidget*     Central;
     QPushButton*    Close;
 
- private slots:
+ private Q_SLOTS:
     void OnAnchorClicked(const QUrl &link);
 };
 

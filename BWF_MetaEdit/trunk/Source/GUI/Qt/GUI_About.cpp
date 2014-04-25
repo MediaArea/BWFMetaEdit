@@ -10,16 +10,16 @@
 //---------------------------------------------------------------------------
 #include "GUI/Qt/GUI_About.h"
 #include "Common/Core.h"
-#include <QtGui/QTextEdit>
-#include <QtGui/QTextBrowser>
-#include <QtGui/QGridLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QAbstractTextDocumentLayout>
-#include <QtGui/QScrollBar>
-#include <QtGui/QImage>
-#include <QtGui/QLabel>
-#include <QtGui/QDialogButtonBox>
+#include <QTextEdit>
+#include <QTextBrowser>
+#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QAbstractTextDocumentLayout>
+#include <QScrollBar>
+#include <QImage>
+#include <QLabel>
+#include <QDialogButtonBox>
 #include "Common/Common_About.h"
 //---------------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ GUI_About::GUI_About(QWidget * parent)
     #ifdef __WINDOWS__
         resize(640, 440);
     #else
-        resize(790, 540);
+        resize(840, 540);
     #endif
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
     setWindowTitle("About BWF MetaEdit");
@@ -117,13 +117,13 @@ void GUI_About::OnContact()
     Button_Contact->setEnabled(false);
 }
 
-void GUI_About::showEvent(QShowEvent* event)
+void GUI_About::showEvent(QShowEvent* Event)
 {
     NameVersion->setBackgroundRole(QPalette::Window);
     resizeEvent(NULL);
 }
 
-void GUI_About::resizeEvent(QResizeEvent* event)
+void GUI_About::resizeEvent(QResizeEvent* Event)
 {
     NameVersion->setMaximumHeight((int)NameVersion->document()->documentLayout()->documentSize().height()+6);
 }

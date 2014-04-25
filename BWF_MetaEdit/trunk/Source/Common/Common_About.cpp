@@ -17,13 +17,13 @@
 
 //---------------------------------------------------------------------------
 const char* NameVersion_HTML() {return
-"<a href=\"http://www.digitizationguidelines.gov\">Federal Agencies Digitization Guidelines Initiative (FADGI)</a> BWF MetaEdit 1.2.0"
+"<a href=\"http://www.digitizationguidelines.gov\">Federal Agencies Digitization Guidelines Initiative (FADGI)</a> BWF MetaEdit 1.3.1"
 ;}
 
 //---------------------------------------------------------------------------
 const char* NameVersion_Text() {return
 "Federal Agencies Digitization Guidelines Initiative (FADGI)\n"
-"BWF MetaEdit 1.2.0"
+"BWF MetaEdit 1.3.1"
 ;}
 
 //***************************************************************************

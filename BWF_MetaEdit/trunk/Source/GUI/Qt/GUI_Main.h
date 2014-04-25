@@ -13,11 +13,11 @@
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#include <QtGui/QMainWindow>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
-#include <QtGui/QActionGroup>
-#include <QtGui/QToolBar>
+#include <QMainWindow>
+#include <QMenu>
+#include <QAction>
+#include <QActionGroup>
+#include <QToolBar>
 #include <string>
 using namespace std;
 //---------------------------------------------------------------------------
@@ -106,7 +106,7 @@ private:
     QAction*        Menu_Help_FADGI_Website;
 
 
-public slots:
+public Q_SLOTS:
     //Menu - Actions
     void OnMenu_File_Open_Files                     ();
     void OnMenu_File_Open_Directory                 ();
@@ -192,9 +192,9 @@ private:
     view View_Current;
     bool MustCreate;
 
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-    void closeEvent(QCloseEvent *event);
+    void dragEnterEvent(QDragEnterEvent *Event);
+    void dropEvent(QDropEvent *Event);
+    void closeEvent(QCloseEvent *Event);
     QProgressDialog* ProgressDialog;
     QTimer* Timer;
 

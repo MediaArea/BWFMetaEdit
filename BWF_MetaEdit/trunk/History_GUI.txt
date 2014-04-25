@@ -4,6 +4,24 @@ Notes:
 - Deleted
 x Correction
 
+Version 1.3.1, 2014-04-14
+-------------
++ Refresh of the UI (upgrading Qt, the UI toolkit, to version 5.2)
++ Added "Clear these values" option in Core view in case of multiple selections
++ The program is signed (no more need to deactivate Gate Keeper)
+x RF64 writing was buggy (data chunk size was wrong, sample count was always set to 0)
+x TimeReference in the HH:MM:SS.mmm format was not always working
+x Skip non-valid files in preferences caused the program to freeze when attempting to open a file with missing padding
+x Duplicated line breaks during import in some cases
+x Disabled multiple selections in Tech view (not supported)
+
+Version 1.3.0, 2013-04-29
+-------------
+x Application crash against WaveLab files.
+x Incorrect time offset, GPS co-ordinates and labels in UMID dialog.
+x Origination time field was set as mandatory (instead of optional) while FADGI rules were selected.
+x In "Coding History" dialog, one table entry always existed even after removing all entries in text mode.
+
 Version 1.2.0, 2012-02-24
 -------------
 + Tech 3285 v2 support (Loudness)

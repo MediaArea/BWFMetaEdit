@@ -13,22 +13,22 @@
 #include "Common/Core.h"
 #include "ZenLib/Ztring.h"
 #include "ZenLib/File.h"
-#include <QtGui/QLabel>
-#include <QtCore/QEvent>
-#include <QtGui/QFont>
-#include <QtGui/QGridLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QTextEdit>
-#include <QtGui/QFileDialog>
-#include <QtGui/QCalendarWidget>
-#include <QtGui/QTimeEdit>
-#include <QtGui/QLabel>
-#include <QtGui/QCheckBox>
-#include <QtGui/QTabWidget>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
+#include <QLabel>
+#include <QEvent>
+#include <QFont>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QDialogButtonBox>
+#include <QTextEdit>
+#include <QFileDialog>
+#include <QCalendarWidget>
+#include <QTimeEdit>
+#include <QLabel>
+#include <QCheckBox>
+#include <QTabWidget>
+#include <QDesktopWidget>
+#include <QApplication>
+#include <QMessageBox>
 //---------------------------------------------------------------------------
 
 //***************************************************************************

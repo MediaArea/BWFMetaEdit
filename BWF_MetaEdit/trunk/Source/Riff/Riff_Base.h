@@ -134,11 +134,13 @@ public:
         {
             int64u          riffSize;
             int64u          dataSize;
+            int64u          sampleCount;
 
             chunk_ds64()
             {
                 riffSize=(int64u)-1;
                 dataSize=(int64u)-1;
+                sampleCount=(int64u)-1;
             }
         };
         struct chunk_fmt_
@@ -445,6 +447,7 @@ protected :
     while (Global->In.Position_Get()<Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size) \
     { \
         chunk NewChunk; \
+        NewChunk.Header.Level=Chunk.Header.Level+1; \
         if (!Read_Header(NewChunk)) \
             return; \
         \
