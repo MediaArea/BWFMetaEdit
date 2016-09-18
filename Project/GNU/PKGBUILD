@@ -1,0 +1,64 @@
+# $Id$
+# Maintainer: MediaArea.net SARL <info@mediaarea.net>
+
+pkgname=('bwfmetaedit' 'bwfmetaedit-gui')
+pkgver=1.3.1
+pkgrel=1
+pkgdesc="Supplies technical and tag information about a video or audio file"
+url="http://mediaarea.net"
+license=('GPL')
+source=(${pkgname}_${pkgver}-1.tar.gz)
+md5sums=('00000000000000000000000000000000')
+arch=('i686' 'x86_64')
+makedepends=('qt4' 'qtchooser' 'ca-certificates')
+
+prepare() {
+    export QT_SELECT=4
+    
+    cd "${srcdir}"/bwfmetaedit/Project/GNU/CLI
+    sh ./autogen
+    ./configure --prefix=/usr
+
+    cd "${srcdir}"/bwfmetaedit/Project/GNU/GUI
+    sh ./autogen
+    ./configure --prefix=/usr
+}
+
+build() {
+    cd "${srcdir}"/bwfmetaedit/Project/GNU/CLI
+    make
+
+    cd "${srcdir}"/bwfmetaedit/Project/GNU/GUI
+    make
+}
+
+package_bwfmetaedit() {
+    pkgdesc="${pkgdesc} (CLI)"
+
+    cd "${srcdir}"/bwfmetaedit/Project/GNU/CLI
+    make DESTDIR="${pkgdir}" install
+
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/License.html "${pkgdir}"/usr/share/licenses/${pkgname}/License.html
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/History_CLI.txt "${pkgdir}"/usr/share/doc/${pkgname}/History.txt
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/Release/ReadMe_CLI_Linux.txt "${pkgdir}"/usr/share/doc/${pkgname}/ReadMe.txt
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/conformance_point_document.xsd "${pkgdir}"/usr/share/doc/${pkgname}/conformance_point_document.xsd
+}
+
+package_bwfmetaedit-gui() {
+    pkgdesc="${pkgdesc} (GUI)"
+    depends=('qt4')
+    
+    cd "${srcdir}"/bwfmetaedit/Project/GNU/GUI
+    make DESTDIR="${pkgdir}" install
+
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/License.html "${pkgdir}"/usr/share/licenses/${pkgname}/License.html
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/History_GUI.txt "${pkgdir}"/usr/share/doc/${pkgname}/History.txt
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/Release/ReadMe_GUI_Linux.txt "${pkgdir}"/usr/share/doc/${pkgname}/ReadMe.txt
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/conformance_point_document.xsd "${pkgdir}"/usr/share/doc/${pkgname}/conformance_point_document.xsd
+
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/Source/Resource/Image/FADGI/Logo128.png "${pkgdir}"/usr/share/icons/hicolor/128x128/apps/bwfmetaedit-gui.png
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/Source/Resource/Image/FADGI/Logo128.png "${pkgdir}"/usr/share/pixmaps/bwfmetaedit-gui.png
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/Project/GNU/GUI/bwfmetaedit-gui.desktop "${pkgdir}"/usr/share/applications/bwfmetaedit-gui.desktop
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/Project/GNU/GUI/bwfmetaedit-gui.kde3.desktop "${pkgdir}"/usr/share/apps/konqueror/servicemenus/bwfmetaedit-gui.desktop
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/Project/GNU/GUI/bwfmetaedit-gui.kde4.desktop "${pkgdir}"/usr/share/kde4/services/ServiceMenus/bwfmetaedit-gui.desktop
+}
