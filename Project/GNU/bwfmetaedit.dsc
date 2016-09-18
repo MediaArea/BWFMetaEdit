@@ -1,6 +1,6 @@
 Format: 1.0
 Source: bwfmetaedit
-Binary: bwfmetaedit, bwfmetaedit-gui
+Binary: bwfmetaedit, bwfmetaedit--dbg, bwfmetaedit-gui, bwfmetaedit-gui-dbg
 Architecture: any
 Version: 1.3.1-1
 Maintainer: Jerome Martinez <info@mediaarea.net>
