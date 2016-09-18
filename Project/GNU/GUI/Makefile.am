@@ -1,4 +1,4 @@
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 bin_PROGRAMS = bwfmetaedit-gui
 bwfmetaedit_gui_SOURCES = \
@@ -88,4 +88,4 @@ bwfmetaedit_gui_SOURCES = \
 
 #bwfmetaedit_gui_LDFLAGS     = -no-undefined -version-info 0:0:0
 
-INCLUDES = -I../../../Source
+AM_CPPFLAGS = -I../../../Source

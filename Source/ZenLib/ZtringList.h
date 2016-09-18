@@ -1,22 +1,9 @@
-// ZenLib::ZtringList - More methods for vector<std::(w)string>
-// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
-//
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-// 3. This notice may not be removed or altered from any source distribution.
-//
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a zlib-style license that can
+ *  be found in the License.txt file in the root of the source tree.
+ */
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //
 // More methods for std::vector<std::(w)string>
@@ -78,7 +65,7 @@ public :
 
     //Information
     /// @brief Find the position of the string in the vector
-    size_type Find (const Ztring &ToFind, size_type PosBegin=0, const Ztring &Comparator=_T("=="), ztring_t Options=Ztring_Nothing) const;
+    size_type Find (const Ztring &ToFind, size_type PosBegin=0, const Ztring &Comparator=__T("=="), ztring_t Options=Ztring_Nothing) const;
     /// @brief Return the length of the longest string in the list.
     size_type MaxStringLength_Get ();
 
@@ -100,4 +87,3 @@ protected :
 
 } //namespace
 #endif
-

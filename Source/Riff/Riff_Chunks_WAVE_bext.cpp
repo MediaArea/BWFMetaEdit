@@ -93,19 +93,19 @@ struct umid
             int8u Char1=Buffer[Buffer_Pos]>>4;
             int8u Char2=Buffer[Buffer_Pos]&0xF;
             if (Char1<10)
-                Value.push_back(_T('0')+Char1);
+                Value.push_back(__T('0')+Char1);
             else
-                Value.push_back(_T('A')+Char1-10);
+                Value.push_back(__T('A')+Char1-10);
             if (Char2<10)
-                Value.push_back(_T('0')+Char2);
+                Value.push_back(__T('0')+Char2);
             else
-                Value.push_back(_T('A')+Char2-10);
+                Value.push_back(__T('A')+Char2-10);
         }
 
         bool Is128=false;
         bool Is64=false;
         for (size_t Pos=0; Pos<Value.size(); Pos++)
-            if (Value[Pos]!=_T('0'))
+            if (Value[Pos]!=__T('0'))
             {
                 Is64=true;
                 if (Pos>=64)
@@ -288,7 +288,7 @@ void Riff_WAVE_bext::Modify_Internal ()
     Put_String(  8, Global->bext->Strings["originationtime"]);
     Put_L8    (     TimeReference);
     Put_L2    (     BextVersion);
-    if (Global->bext->Strings["umid"].find(_T('-'))!=string::npos)
+    if (Global->bext->Strings["umid"].find(__T('-'))!=string::npos)
     {
         int128u UIMD; UIMD.hi=0x060A2B3401010101LL; UIMD.lo=0x0101021013000000LL;
         Put_UUID(UIMD);

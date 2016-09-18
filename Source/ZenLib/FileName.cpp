@@ -1,24 +1,8 @@
-// ZenLib::FileName - File name functions
-// Copyright (C) 2007-2011 MediaArea.net SARL, Info@MediaArea.net
-//
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-// 3. This notice may not be removed or altered from any source distribution.
-//
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a zlib-style license that can
+ *  be found in the License.txt file in the root of the source tree.
+ */
 
 //---------------------------------------------------------------------------
 #include "ZenLib/PreComp.h"
@@ -80,10 +64,10 @@ Ztring& FileName::Path_Set(const Ztring &Path)
     #else //ZENLIB_USEWX
         #ifdef WINDOWS
             //Path limit
-            size_t Pos_Path=rfind(_T('\\'));
+            size_t Pos_Path=rfind(__T('\\'));
             if (Pos_Path==Ztring::npos)
             {
-                insert(0, 1, _T('\\')); //Not found
+                insert(0, 1, __T('\\')); //Not found
                 Pos_Path=0;
             }
             replace(0, Pos_Path, Path, 0, Ztring::npos);
@@ -109,7 +93,7 @@ Ztring FileName::Name_Get() const
         else
             Pos_Path+=Ztring(FileName_PathSeparator).size(); //Path separator size
         //Extension limit
-        size_t Pos_Ext=rfind(_T('.'));
+        size_t Pos_Ext=rfind(__T('.'));
         if (Pos_Ext==Ztring::npos || Pos_Ext<Pos_Path)
             Pos_Ext=size(); //Not found
         return Ztring(*this, Pos_Path, Pos_Ext-Pos_Path);
@@ -128,11 +112,11 @@ Ztring& FileName::Name_Set(const Ztring &Name)
     #else //ZENLIB_USEWX
         #ifdef WINDOWS
             //Path limit
-            size_t Pos_Path=rfind(_T('\\'));
+            size_t Pos_Path=rfind(__T('\\'));
             if (Pos_Path==Ztring::npos)
                 Pos_Path=0; //Not found
             //Extension limit
-            size_t Pos_Ext=rfind(_T('.'));
+            size_t Pos_Ext=rfind(__T('.'));
             if (Pos_Ext==Ztring::npos || Pos_Ext<Pos_Path)
                 Pos_Ext=size(); //Not found
             replace(Pos_Path+1, Pos_Ext-Pos_Path-1, Name, 0, Ztring::npos);
@@ -155,7 +139,7 @@ Ztring FileName::Extension_Get() const
         if (Pos_Path==Ztring::npos)
             Pos_Path=0; //Not found
         //Extension limit
-        size_t Pos_Ext=rfind(_T('.'));
+        size_t Pos_Ext=rfind(__T('.'));
         if (Pos_Ext==Ztring::npos || Pos_Ext<Pos_Path)
             return Ztring(); //Not found
         else
@@ -173,14 +157,14 @@ Ztring& FileName::Extension_Set(const Ztring &Extension)
     #else //ZENLIB_USEWX
         #ifdef WINDOWS
             //Path limit
-            size_t Pos_Path=rfind(_T('\\'));
+            size_t Pos_Path=rfind(__T('\\'));
             if (Pos_Path==Ztring::npos)
                 Pos_Path=0; //Not found
             //Extension limit
-            size_t Pos_Ext=rfind(_T('.'));
+            size_t Pos_Ext=rfind(__T('.'));
             if (Pos_Ext==Ztring::npos || Pos_Ext<Pos_Path)
             {
-                append(1, _T('.')); //Not found
+                append(1, __T('.')); //Not found
                 Pos_Ext=size()-1;
             }
             replace(Pos_Ext+1, size()-Pos_Ext-1, Extension, 0, Ztring::npos);
@@ -212,7 +196,7 @@ Ztring FileName::TempFileName_Create(const Ztring &Prefix)
 
             return Ztring(FileName);
         #else
-            return _T("C:\\xxx.txt");
+            return __T("C:\\xxx.txt");
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -223,17 +207,10 @@ Ztring FileName::TempFileName_Create(const Ztring &Prefix)
 
 //End of line
 #ifdef __WINDOWS__
-    const Char* FileName_PathSeparator=_T("\\");
+    const Char* FileName_PathSeparator=__T("\\");
 #endif
-#ifdef UNIX
-    const Char* FileName_PathSeparator=_T("/");
-#endif
-#ifdef MACOS
-    const Char* FileName_PathSeparator=_T("/");
-#endif
-#ifdef MACOSX
-    const Char* FileName_PathSeparator=_T("/");
+#if defined(UNIX) || defined(MACOS) || defined(MACOSX)
+    const Char* FileName_PathSeparator=__T("/");
 #endif
 
 } //namespace
-

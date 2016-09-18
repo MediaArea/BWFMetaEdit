@@ -277,7 +277,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
 
             //Filling
             C->Set(FileName, "BextVersion", Ztring::ToZtring(NewValue).To_Local());
-            item(index.row(), index.column())->setText(Ztring(_T("Version ")+Ztring::ToZtring(NewValue)).To_Local().c_str());
+            item(index.row(), index.column())->setText(Ztring(__T("Version ")+Ztring::ToZtring(NewValue)).To_Local().c_str());
             dataChanged(indexFromItem(item(index.row(), index.column())), indexFromItem(item(index.row(), index.column())));
             return false;
         }

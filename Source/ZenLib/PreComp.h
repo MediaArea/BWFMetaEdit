@@ -6,44 +6,29 @@
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //
-// Basic HTTP client
+// Helpers for compilers (precompilation)
 //
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------
-#ifndef ZenLib_HTTPClientH
-#define ZenLib_HTTPClientH
+#ifndef ZenLib_PreCompH
+#define ZenLib_PreCompH
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#include "ZenLib/Ztring.h"
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+    #include <cstring>
+    #include <cstdio>
+    #include <cstdlib>
+    #include <ctime>
+    #include <algorithm>
+    #include <map>
+    #include <sstream>
+    #include <iomanip>
+    #include <cmath>
+    #include "ZenLib/Conf.h"
+    #include "ZenLib/Conf_Internal.h"
+#endif //defined(_MSC_VER) || defined(__BORLANDC__)
 //---------------------------------------------------------------------------
-
-namespace ZenLib
-{
-
-//***************************************************************************
-/// @brief Basic HTTP client
-//***************************************************************************
-
-class HTTP_Client
-{
-public :
-    //Constructor/Destructor
-    HTTP_Client  ();
-    ~HTTP_Client ();
-
-    //Open/Close
-    int  Open  (Ztring URL);
-    void Close ();
-
-    //Read
-    Ztring Read();
-
-private :
-    int32u Handle;
-};
-
-} //NameSpace
 
 #endif

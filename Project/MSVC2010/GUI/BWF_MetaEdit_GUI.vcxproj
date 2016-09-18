@@ -245,6 +245,7 @@
     <ClCompile Include="..\..\..\Source\ZenLib\int128u.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\MemoryDebug.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\OS_Utils.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\PreComp.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\Thread.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\Translation.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\Utils.cpp" />
@@ -286,6 +287,7 @@
     <ClInclude Include="..\..\..\Source\Riff\Riff_Chunks.h" />
     <ClInclude Include="..\..\..\Source\Riff\Riff_Handler.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\BitStream.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\BitStream_Fast.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\BitStream_LE.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Conf.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Conf_Internal.h" />
@@ -297,7 +299,9 @@
     <ClInclude Include="..\..\..\Source\ZenLib\int128s.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\int128u.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\MemoryDebug.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\MemoryUtils.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\OS_Utils.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\PreComp.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Thread.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Trace.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Translation.h" />

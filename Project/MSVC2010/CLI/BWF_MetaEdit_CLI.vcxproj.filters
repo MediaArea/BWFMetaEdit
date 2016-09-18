@@ -144,6 +144,9 @@
     <ClCompile Include="..\..\..\Source\ZenLib\OS_Utils.cpp">
       <Filter>Source Files\ZenLib</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZenLib\PreComp.cpp">
+      <Filter>Source Files\ZenLib</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\Source\ZenLib\Thread.cpp">
       <Filter>Source Files\ZenLib</Filter>
     </ClCompile>
@@ -206,6 +209,9 @@
     <ClInclude Include="..\..\..\Source\ZenLib\BitStream.h">
       <Filter>Header Files\ZenLib</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Source\ZenLib\BitStream_Fast.h">
+      <Filter>Header Files\ZenLib</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\Source\ZenLib\BitStream_LE.h">
       <Filter>Header Files\ZenLib</Filter>
     </ClInclude>
@@ -239,7 +245,13 @@
     <ClInclude Include="..\..\..\Source\ZenLib\MemoryDebug.h">
       <Filter>Header Files\ZenLib</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Source\ZenLib\MemoryUtils.h">
+      <Filter>Header Files\ZenLib</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\Source\ZenLib\OS_Utils.h">
+      <Filter>Header Files\ZenLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\ZenLib\PreComp.h">
       <Filter>Header Files\ZenLib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\ZenLib\Thread.h">

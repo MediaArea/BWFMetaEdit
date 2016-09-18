@@ -32,7 +32,7 @@ ZtringList In_Core_File_List;
 //---------------------------------------------------------------------------
 //Parse Command Line
 #define OPTION(_TEXT, _TOLAUNCH) \
-    else if (Argument.find(_T(_TEXT))==0)        return CL_##_TOLAUNCH(C, Argument); \
+    else if (Argument.find(__T(_TEXT))==0)        return CL_##_TOLAUNCH(C, Argument); \
 //---------------------------------------------------------------------------
 
 //***************************************************************************

@@ -1,23 +1,9 @@
-// ZenLib::Ztring - More methods for std::(w)string
-// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
-//
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-// 3. This notice may not be removed or altered from any source distribution.
-//
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a zlib-style license that can
+ *  be found in the License.txt file in the root of the source tree.
+ */
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //
 // More methods for std::(w)string
@@ -30,9 +16,7 @@
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#include "ZenLib/Conf.h"
 #include "ZenLib/Utils.h"
-#include "ZenLib/int128u.h"
 #include <string>
 #include <sstream>
 //---------------------------------------------------------------------------
@@ -49,11 +33,11 @@ typedef std::basic_string<Char, std::char_traits<Char>, std::allocator<Char> > t
 enum ztring_t
 {
     Ztring_Nothing,
-    Ztring_Rounded              = 1,            ///< if >.5, upper, else lower
-    Ztring_CaseSensitive        = 2,            ///< Case sensitive ("A" and "a" are different)
-    Ztring_AddLastItem          = 4,            ///< if Begin is found and End is not found, return between Begin and end of string
-    Ztring_Recursive            = 8,            ///< Do all strings
-    Ztring_NoZero               =16             ///> Doesn't keep Zero in the float number
+    Ztring_Rounded              =  1,           ///< if >.5, upper, else lower
+    Ztring_CaseSensitive        =  2,           ///< Case sensitive ("A" and "a" are different)
+    Ztring_AddLastItem          =  4,           ///< if Begin is found and End is not found, return between Begin and end of string
+    Ztring_Recursive            =  8,           ///< Do all strings
+    Ztring_NoZero               = 16            ///> Doesn't keep Zero in the float number
 };
 
 //---------------------------------------------------------------------------
@@ -89,6 +73,8 @@ public :
         /// @brief convert an Unicode encoded string into Ztring
     Ztring& From_Unicode (const std::wstring &S)                                {return From_Unicode(S.c_str());};
     #endif //WSTRING_MISSING
+        /// @brief convert an Unicode encoded wchar_t into Ztring
+    Ztring& From_Unicode (const wchar_t S);
         /// @brief convert an Unicode encoded string into Ztring
     Ztring& From_Unicode (const wchar_t *S);
         /// @brief convert an Unicode encoded string into Ztring
@@ -196,10 +182,10 @@ public :
     Ztring& From_Number  (const float64,  int8u AfterComma=3, ztring_t Options=Ztring_Nothing);
         /// @brief convert number into Ztring
     Ztring& From_Number  (const float80,  int8u AfterComma=3, ztring_t Options=Ztring_Nothing);
-    #ifdef NEED_SIZET
+    #ifdef SIZE_T_IS_LONG
         /// @brief convert number into Ztring
     Ztring& From_Number  (const size_t,   int8u Radix=10);
-    #endif //NEED_SIZET
+    #endif //SIZE_T_IS_LONG
         /// @brief convert number (BCD coded) into Ztring
     Ztring& From_BCD     (const int8u);
         /// @brief convert count of milliseconds into a readable and sortable string
@@ -210,10 +196,22 @@ public :
     Ztring& Date_From_Milliseconds_1601 (const int64u Milliseconds);
         /// @brief convert count of seconds since 1601 into a readable and sortable string
     Ztring& Date_From_Seconds_1601 (const int64u Seconds);
-        /// @brief convert count of seconds since 1970 into a readable and sortable string
+        /// @brief convert count of seconds since 1900 into a readable and sortable string
+    Ztring& Date_From_Seconds_1900 (const int32u Seconds);
+        /// @brief convert count of seconds since 1900 into a readable and sortable string
+    Ztring& Date_From_Seconds_1900 (const int64s Seconds);
+        /// @brief convert count of seconds since 1904 into a readable and sortable string
+    Ztring& Date_From_Seconds_1904 (const int32u Seconds);
+        /// @brief convert count of seconds since 1904 into a readable and sortable string
     Ztring& Date_From_Seconds_1904 (const int64u Seconds);
+        /// @brief convert count of seconds since 1904 into a readable and sortable string
+    Ztring& Date_From_Seconds_1904 (const int64s Seconds);
         /// @brief convert count of seconds since 1970 into a readable and sortable string
     Ztring& Date_From_Seconds_1970 (const int32u Seconds);
+        /// @brief convert count of seconds since 1970 into a readable and sortable string
+    Ztring& Date_From_Seconds_1970 (const int32s Seconds);
+        /// @brief convert count of seconds since 1970 into a readable and sortable string
+    Ztring& Date_From_Seconds_1970 (const int64s Seconds);
         /// @brief convert count of seconds since 1970 into a readable and sortable string (in local time)
     Ztring& Date_From_Seconds_1970_Local (const int32u Seconds);
         /// @brief convert a free formated string into a readable and sortable string
@@ -314,9 +312,9 @@ public :
     static Ztring ToZtring  (const float32  F, int8u AfterComma=3)               {return Ztring().From_Number(F, AfterComma);};
     static Ztring ToZtring  (const float64  F, int8u AfterComma=3)               {return Ztring().From_Number(F, AfterComma);};
     static Ztring ToZtring  (const float80  F, int8u AfterComma=3)               {return Ztring().From_Number(F, AfterComma);};
-    #ifdef NEED_SIZET
+    #ifdef SIZE_T_IS_LONG
     static Ztring ToZtring  (const size_t   I,  int8u Radix=10)                  {return Ztring().From_Number(I, Radix);};
-    #endif //NEED_SIZET
+    #endif //SIZE_T_IS_LONG
 
     //Edition
         /// @brief test if it is a number
@@ -326,13 +324,13 @@ public :
         /// @brief convert into uppercase
     Ztring &MakeUpperCase();
         /// @brief Remove leading whitespaces from a string
-    Ztring &TrimLeft(Char ToTrim=_T(' '));
+    Ztring &TrimLeft(Char ToTrim=__T(' '));
         /// @brief Remove trailing whitespaces from a string
-    Ztring &TrimRight(Char ToTrim=_T(' '));
+    Ztring &TrimRight(Char ToTrim=__T(' '));
         /// @brief Remove leading and trailing whitespaces from a string
-    Ztring &Trim(Char ToTrim=_T(' '));
+    Ztring &Trim(Char ToTrim=__T(' '));
         /// @brief Quotes a string
-    Ztring &Quote(Char ToTrim=_T('\"'));
+    Ztring &Quote(Char ToTrim=__T('\"'));
         /// @brief return a string between two strings
         /// @param Begin First string
         /// @param End Second string
@@ -363,10 +361,9 @@ public :
         /// @param Options Options for comaparing \n
         ///                Available : Ztring_CaseSensitive
         /// @return The result of comparasion
-    bool Compare (const Ztring &ToCompare, const Ztring &Comparator=_T("=="), ztring_t Options=Ztring_Nothing) const;
+    bool Compare (const Ztring &ToCompare, const Ztring &Comparator=__T("=="), ztring_t Options=Ztring_Nothing) const;
 };
 
 } //NameSpace
 
 #endif
-
