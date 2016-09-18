@@ -24,6 +24,10 @@ BuildRequires:	update-desktop-files
 %endif
 BuildRequires:  automake
 BuildRequires:  autoconf
+%if 0%{?mageia}
+BuildRequires:  sane-backends-iscan
+BuildRequires:  libuuid-devel
+%endif
 
 %description
 bwfmetaedit CLI (Command Line Interface)
@@ -35,16 +39,13 @@ BWF MetaEdit provides this service:
 %package gui
 Summary:	Supplies technical and tag information about a video or audio file (GUI)
 Group:		Productivity/Multimedia/Other
+
+%if 0%{?fedora_version} >= 23
+BuildRequires:	qt-devel
+%else
 BuildRequires:	libqt4-devel
-%if 0%{?suse_version}
-BuildRequires:	update-desktop-files
 %endif
-%if 0%{?centos_version} ||  0%{?rhel_version} || 0%{?fedora_version}
-Requires:	qt4 >= 4.0.0
-%endif
-%if 0%{?mandriva}
-Requires:	libqtgui4 >= 4.0.0
-%endif
+
 %if 0%{?suse_version} ||  0%{?opensuse_version}
 Requires:	libqt4 >= 4.0.0
 Requires:	libqt4-x11 >= 4.0.0
@@ -60,7 +61,7 @@ BWF MetaEdit provides this service:
 This package contains the graphical user interface
 
 %prep
-%setup -q -n BWF_MetaEdit
+%setup -q -n bwfmetaedit
 dos2unix     *.txt Release/*.txt
 %__chmod 644 *.html *.txt Release/*.txt
 
@@ -88,11 +89,11 @@ popd
 
 %install
 pushd Project/GNU/CLI
-	%__make install-strip DESTDIR=%{buildroot}
+	%__make install DESTDIR=%{buildroot}
 popd
 
 pushd Project/GNU/GUI
-	%__make install-strip DESTDIR=%{buildroot}
+	%__make install DESTDIR=%{buildroot}
 popd
 
 # icon
@@ -155,4 +156,3 @@ popd
 %changelog
 * Tue Jan 01 2010 Jerome Martinez <info@mediaarea.net> - 1.2.0-0
 - See History.txt for more info and real dates
-
