@@ -38,6 +38,7 @@ AC_ARG_ENABLE(gprof,        AC_HELP_STRING([--enable-gprof],        [Enable gpro
 AC_ARG_ENABLE(universal_binary, AC_HELP_STRING([--enable-universal_binary], [Create Mac PPC/i386 Universal binary]),      , enable_universal_binary=no)
 AC_ARG_ENABLE(arch-ppc,         AC_HELP_STRING([--with-arch-ppc],           [Create Mac PPC Universal binary]),           , enable_arch_ppc=no)
 AC_ARG_ENABLE(arch-i386,        AC_HELP_STRING([--with-arch-i386],          [Create Mac i386 Universal binary]),          , enable_arch_i386=no)
+AC_ARG_ENABLE(arch-x86_64,      AC_HELP_STRING([--enable-arch-x86_64],      [Create Mac x86_64 architecture]),            , enable_arch_x86_64=no)
 
 dnl -------------------------------------------------------------------------
 dnl Arguments - With
@@ -115,6 +116,11 @@ if test "$enable_arch_i386" = "yes"; then
 	CXXFLAGS="$CXXFLAGS -arch i386"
 	CFLAGS="$CFLAGS -arch i386"
 	LDFLAGS="$LDFLAGS -arch i386"
+fi
+if test "$enable_arch_x86_64" = "yes"; then
+	CXXFLAGS="$CXXFLAGS -arch x86_64"
+	CFLAGS="$CFLAGS -arch x86_64"
+	LDFLAGS="$LDFLAGS -arch x86_64"
 fi
 if test "$with_macosx_sdk" = "yes" ; then
 	CXXFLAGS="-isysroot /Developer/SDKs/MacOSX10.5.sdk $CXXFLAGS"
