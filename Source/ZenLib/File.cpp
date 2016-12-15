@@ -1,24 +1,8 @@
-// ZenLib::File - File functions
-// Copyright (C) 2002-2010 MediaArea.net SARL, Info@MediaArea.net
-//
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-// 3. This notice may not be removed or altered from any source distribution.
-//
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a zlib-style license that can
+ *  be found in the License.txt file in the root of the source tree.
+ */
 
 //---------------------------------------------------------------------------
 #include "ZenLib/PreComp.h"
@@ -66,6 +50,97 @@
 
 namespace ZenLib
 {
+
+//---------------------------------------------------------------------------
+// Debug
+#ifdef ZENLIB_DEBUG
+    #include <stdio.h>
+    #include <windows.h>
+    namespace ZenLib_File_Debug
+    {
+        FILE* F;
+        std::string Debug;
+        SYSTEMTIME st_In;
+
+        void Debug_Open(bool Out)
+        {
+            F=fopen("C:\\Temp\\ZenLib_Debug.txt", "a+t");
+            Debug.clear();
+            SYSTEMTIME st;
+            GetLocalTime( &st );
+
+            char Duration[100];
+            if (Out)
+            {
+                FILETIME ft_In;
+                if (SystemTimeToFileTime(&st_In, &ft_In))
+                {
+                    FILETIME ft_Out;
+                    if (SystemTimeToFileTime(&st, &ft_Out))
+                    {
+                        ULARGE_INTEGER UI_In;
+                        UI_In.HighPart=ft_In.dwHighDateTime;
+                        UI_In.LowPart=ft_In.dwLowDateTime;
+
+                        ULARGE_INTEGER UI_Out;
+                        UI_Out.HighPart=ft_Out.dwHighDateTime;
+                        UI_Out.LowPart=ft_Out.dwLowDateTime;
+
+                        ULARGE_INTEGER UI_Diff;
+                        UI_Diff.QuadPart=UI_Out.QuadPart-UI_In.QuadPart;
+
+                        FILETIME ft_Diff;
+                        ft_Diff.dwHighDateTime=UI_Diff.HighPart;
+                        ft_Diff.dwLowDateTime=UI_Diff.LowPart;
+
+                        SYSTEMTIME st_Diff;
+                        if (FileTimeToSystemTime(&ft_Diff, &st_Diff))
+                        {
+                            sprintf(Duration, "%02hd:%02hd:%02hd.%03hd", st_Diff.wHour, st_Diff.wMinute, st_Diff.wSecond, st_Diff.wMilliseconds);
+                        }
+                        else
+                            strcpy(Duration, "            ");
+                    }
+                    else
+                        strcpy(Duration, "            ");
+
+                }
+                else
+                    strcpy(Duration, "            ");
+            }
+            else
+            {
+                st_In=st;
+                strcpy(Duration, "            ");
+            }
+
+            fprintf(F,"                                       %02hd:%02hd:%02hd.%03hd %s", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, Duration);
+        }
+
+        void Debug_Close()
+        {
+            Debug += "\r\n";
+            fwrite(Debug.c_str(), Debug.size(), 1, F); \
+            fclose(F);
+        }
+    }
+    using namespace ZenLib_File_Debug;
+
+    #define ZENLIB_DEBUG1(_NAME,_TOAPPEND) \
+        Debug_Open(false); \
+        Debug+=", ";Debug+=_NAME; \
+        _TOAPPEND; \
+        Debug_Close();
+
+    #define ZENLIB_DEBUG2(_NAME,_TOAPPEND) \
+        Debug_Open(true); \
+        Debug+=", ";Debug+=_NAME; \
+        _TOAPPEND; \
+        Debug_Close();
+#else // ZENLIB_DEBUG
+    #define ZENLIB_DEBUG1(_NAME,_TOAPPEND)
+    #define ZENLIB_DEBUG2(_NAME,_TOAPPEND)
+#endif // ZENLIB_DEBUG
 
 //***************************************************************************
 // Constructor/Destructor
@@ -118,6 +193,9 @@ bool File::Open (const tstring &File_Name_, access_t Access)
 {
     Close();
 
+    ZENLIB_DEBUG1(      "File Open",
+                        Debug+=", File_Name="; Debug +=Ztring(File_Name_).To_UTF8();)
+
     File_Name=File_Name_;
 
     #ifdef ZENLIB_USEWX
@@ -154,7 +232,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
             switch (Access)
             {
                 case Access_Read         : mode=ios_base::binary|ios_base::in; break;
-                case Access_Write        : mode=ios_base::binary|ios_base::out; break;
+                case Access_Write        : mode=ios_base::binary|ios_base::in|ios_base::out; break;
                 case Access_Read_Write   : mode=ios_base::binary|ios_base::in|ios_base::out; break;
                 case Access_Write_Append : if (!Exists(File_Name))
                                                 mode=ios_base::binary|ios_base::out;
@@ -178,24 +256,22 @@ bool File::Open (const tstring &File_Name_, access_t Access)
             DWORD dwDesiredAccess, dwShareMode, dwCreationDisposition;
             switch (Access)
             {
-                case Access_Read         : dwDesiredAccess=IsWin9X()?GENERIC_READ:FILE_READ_DATA; dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE; dwCreationDisposition=OPEN_EXISTING; break;
+                case Access_Read         : dwDesiredAccess=FILE_READ_DATA; dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE; dwCreationDisposition=OPEN_EXISTING;   break;
                 case Access_Write        : dwDesiredAccess=GENERIC_WRITE;   dwShareMode=0;                                 dwCreationDisposition=OPEN_ALWAYS;   break;
-                case Access_Read_Write   : dwDesiredAccess=(IsWin9X()?GENERIC_READ:FILE_READ_DATA)|GENERIC_WRITE;   dwShareMode=0; dwCreationDisposition=OPEN_ALWAYS;   break;
-                case Access_Write_Append : dwDesiredAccess=GENERIC_WRITE;   dwShareMode=0;                                 dwCreationDisposition=OPEN_ALWAYS;   break;
+                case Access_Read_Write   : dwDesiredAccess=FILE_READ_DATA|GENERIC_WRITE;   dwShareMode=0; dwCreationDisposition=OPEN_ALWAYS;                    break;
+                case Access_Write_Append : dwDesiredAccess = FILE_APPEND_DATA; dwShareMode = FILE_SHARE_READ | FILE_SHARE_WRITE; dwCreationDisposition = OPEN_ALWAYS; break;
                 default                  : dwDesiredAccess=0;               dwShareMode=0;                                 dwCreationDisposition=0;             break;
             }
 
             #ifdef UNICODE
-                if (IsWin9X())
-                    File_Handle=CreateFileA(File_Name.To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                else
-                    File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
+                File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
             #else
                 File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
             #endif //UNICODE
+            #if 0 //Disabled
             if (File_Handle==INVALID_HANDLE_VALUE)
             {
-                //Sometime the file is locked for few milliseconds, we try again later
+                //Sometimes the file is locked for few milliseconds, we try again later
                 DWORD dw = GetLastError();
                 if (dw!=ERROR_FILE_NOT_FOUND)
                 {
@@ -211,22 +287,24 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                     */
                     Sleep(1000);
                     #ifdef UNICODE
-                        if (IsWin9X())
-                            File_Handle=CreateFileA(Ztring(File_Name).To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                        else
-                            File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
+                        File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                     #else
                         File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                     #endif //UNICODE
                 }
             }
+            #endif //0
             if (File_Handle==INVALID_HANDLE_VALUE)
+            {
+                ZENLIB_DEBUG2(      "File Open",
+                                    Debug+=", returns 0";)
+
                 //File is not openable
                 return false;
+            }
 
-            //Append
-            if (Access==Access_Write_Append)
-                GoTo(0, FromEnd);
+            ZENLIB_DEBUG2(      "File Open",
+                                Debug+=", returns 1";)
 
             return true;
         #endif
@@ -237,6 +315,9 @@ bool File::Open (const tstring &File_Name_, access_t Access)
 bool File::Create (const Ztring &File_Name_, bool OverWrite)
 {
     Close();
+
+    ZENLIB_DEBUG1(      "File Create",
+                        Debug+=", File_Name="; Debug +=Ztring(File_Name_).To_UTF8();)
 
     File_Name=File_Name_;
 
@@ -275,12 +356,12 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
                 default                  : mode=0                            ; break;
             }*/
             ios_base::openmode access;
-            switch (OverWrite)
-            {
-                case false        : if (Exists(File_Name))
-                                        return false;
-                default           : access=ios_base::binary|ios_base::in|ios_base::out|ios_base::trunc; break;
-            }
+
+            if (!OverWrite && Exists(File_Name))
+                return false;
+
+            access=ios_base::binary|ios_base::in|ios_base::out|ios_base::trunc;
+
             #ifdef UNICODE
                 File_Handle=new fstream(File_Name.To_Local().c_str(), access);
             #else
@@ -289,36 +370,44 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
             return ((fstream*)File_Handle)->is_open();
         #elif defined WINDOWS
             DWORD dwDesiredAccess, dwShareMode, dwCreationDisposition;
-            switch (OverWrite)
-            {
-                case false        : dwDesiredAccess=GENERIC_WRITE; dwShareMode=0;                dwCreationDisposition=CREATE_NEW;    break;
-                default           : dwDesiredAccess=GENERIC_WRITE; dwShareMode=0;                dwCreationDisposition=CREATE_ALWAYS; break;
+            if (OverWrite) {
+                dwDesiredAccess=GENERIC_WRITE;
+                dwCreationDisposition=CREATE_ALWAYS;
+            } else {
+                dwDesiredAccess=GENERIC_WRITE;
+                dwCreationDisposition=CREATE_NEW;
             }
+            dwShareMode=0;
 
             #ifdef UNICODE
-                if (IsWin9X())
-                    File_Handle=CreateFileA(File_Name.To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                else
-                    File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
+                File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
             #else
                 File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
             #endif //UNICODE
+            #if 0 //Disabled
             if (File_Handle==INVALID_HANDLE_VALUE)
             {
                 //Sometime the file is locked for few milliseconds, we try again later
                 Sleep(3000);
                 #ifdef UNICODE
-                    if (IsWin9X())
-                        File_Handle=CreateFileA(File_Name.To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                    else
-                        File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
+                    File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 #else
                     File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 #endif //UNICODE
             }
+            #endif //0
             if (File_Handle==INVALID_HANDLE_VALUE)
+            {
+                ZENLIB_DEBUG2(      "File Create",
+                                    Debug+=", returns 0";)
+
                 //File is not openable
                 return false;
+            }
+
+            ZENLIB_DEBUG2(      "File Create",
+                                Debug+=", returns 1";)
+
             return true;
         #endif
     #endif //ZENLIB_USEWX
@@ -327,6 +416,24 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
 //---------------------------------------------------------------------------
 void File::Close ()
 {
+    #ifdef ZENLIB_DEBUG
+        bool isOpen=false;
+        #ifdef ZENLIB_USEWX
+            if (File_Handle!=NULL)
+        #else //ZENLIB_USEWX
+            #ifdef ZENLIB_STANDARD
+                if (File_Handle!=NULL)
+            #elif defined WINDOWS
+                if (File_Handle!=INVALID_HANDLE_VALUE)
+            #endif
+        #endif //ZENLIB_USEWX
+            {
+                ZENLIB_DEBUG1(      "File Close",
+                                    Debug+=", File_Name="; Debug+=Ztring(File_Name).To_UTF8();)
+                isOpen=true;
+            }
+    #endif
+
     #ifdef ZENLIB_USEWX
         delete (wxFile*)File_Handle; File_Handle=NULL;
     #else //ZENLIB_USEWX
@@ -339,6 +446,14 @@ void File::Close ()
     #endif //ZENLIB_USEWX
     Position=(int64u)-1;
     Size=(int64u)-1;
+
+    #ifdef ZENLIB_DEBUG
+        if (isOpen)
+        {
+            ZENLIB_DEBUG2(      "File Close",
+                                )
+        }
+    #endif
 }
 
 //***************************************************************************
@@ -348,6 +463,9 @@ void File::Close ()
 //---------------------------------------------------------------------------
 size_t File::Read (int8u* Buffer, size_t Buffer_Size_Max)
 {
+    ZENLIB_DEBUG1(      "File Read",
+                        Debug+=", File_Name="; Debug+=Ztring(File_Name).To_UTF8(); Debug+=", MaxSize="; Debug +=Ztring::ToZtring(Buffer_Size_Max).To_UTF8())
+
     #ifdef ZENLIB_USEWX
         if (File_Handle==NULL)
     #else //ZENLIB_USEWX
@@ -381,10 +499,18 @@ size_t File::Read (int8u* Buffer, size_t Buffer_Size_Max)
             if (ReadFile(File_Handle, Buffer, (DWORD)Buffer_Size_Max, &Buffer_Size, NULL))
             {
                 Position+=Buffer_Size;
+
+                ZENLIB_DEBUG2(      "File Read",
+                                    Debug+=", new position ";Debug+=Ztring::ToZtring(Position).To_UTF8();;Debug+=", returns ";Debug+=Ztring::ToZtring((int64u)Buffer_Size).To_UTF8();)
+
                 return Buffer_Size;
             }
             else
+            {
+                ZENLIB_DEBUG2(      "File Read",
+                                    Debug+=", returns 0";)
                 return 0;
+            }
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -417,7 +543,7 @@ size_t File::Write (const int8u* Buffer, size_t Buffer_Size)
             else
             {
                 if (Position!=(int64u)-1)
-                    Position+=Buffer_Size;    
+                    Position+=Buffer_Size;
                 return Buffer_Size;
             }
         #elif defined WINDOWS
@@ -425,7 +551,7 @@ size_t File::Write (const int8u* Buffer, size_t Buffer_Size)
             if (WriteFile(File_Handle, Buffer, (DWORD)Buffer_Size, &Buffer_Size_Written, NULL))
             {
                 if (Position!=(int64u)-1)
-                    Position+=Buffer_Size_Written;    
+                    Position+=Buffer_Size_Written;
                 return Buffer_Size_Written;
             }
             else
@@ -444,11 +570,11 @@ bool File::Truncate (int64u Offset)
         return false;
 
     #ifdef ZENLIB_USEWX
-        return false; Not supported
+        return false; //Not supported
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             #if defined(WINDOWS)
-                return false; //No supported
+                return false; //Not supported
             #else //defined(WINDOWS)
                 //Need to close the file, use truncate, reopen it
                 if (Offset==(int64u)-1)
@@ -485,6 +611,9 @@ size_t File::Write (const Ztring &ToWrite)
 //---------------------------------------------------------------------------
 bool File::GoTo (int64s Position_ToMove, move_t MoveMethod)
 {
+    ZENLIB_DEBUG1(      "File GoTo",
+                        Debug+=", File_Name="; Debug+=Ztring(File_Name).To_UTF8(); Debug+="File GoTo: "; Debug +=Ztring(File_Name).To_UTF8(); Debug+=", MoveMethod="; Debug +=Ztring::ToZtring(MoveMethod).To_UTF8(); Debug+=", MaxSize="; Debug +=Ztring::ToZtring(Position_ToMove).To_UTF8())
+
     #ifdef ZENLIB_USEWX
         if (File_Handle==NULL)
     #else //ZENLIB_USEWX
@@ -523,13 +652,18 @@ bool File::GoTo (int64s Position_ToMove, move_t MoveMethod)
             ((fstream*)File_Handle)->seekg((streamoff)Position_ToMove, dir);
             return !((fstream*)File_Handle)->fail();
         #elif defined WINDOWS
-            LARGE_INTEGER GoTo; GoTo.QuadPart=Position_ToMove;
-            //return SetFilePointerEx(File_Handle, GoTo, NULL, MoveMethod)!=0; //Not on win9X
-            GoTo.LowPart=SetFilePointer(File_Handle, GoTo.LowPart, &GoTo.HighPart, MoveMethod);
-            if (GoTo.LowPart==INVALID_SET_FILE_POINTER && GetLastError()!=NO_ERROR)
-                return false;
-            else
-                return true;
+            LARGE_INTEGER GoTo;
+            GoTo.QuadPart=Position_ToMove;
+            BOOL i=SetFilePointerEx(File_Handle, GoTo, NULL, MoveMethod);
+
+            #ifdef ZENLIB_DEBUG
+                LARGE_INTEGER Temp; Temp.QuadPart=0;
+                SetFilePointerEx(File_Handle, Temp, &Temp, FILE_CURRENT);
+                ZENLIB_DEBUG2(      "File GoTo",
+                                    Debug+=", new position ";Debug+=Ztring::ToZtring(Temp.QuadPart).To_UTF8();Debug+=", returns ";Debug+=i?'1':'0';)
+            #endif //ZENLIB_DEBUG
+
+            return i?true:false;
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -539,6 +673,9 @@ int64u File::Position_Get ()
 {
     if (Position!=(int64u)-1)
         return Position;
+
+    ZENLIB_DEBUG1(      "File Position_Get",
+                        Debug+=", File_Name="; Debug+=Ztring(File_Name).To_UTF8())
 
     #ifdef ZENLIB_USEWX
         if (File_Handle==NULL)
@@ -561,6 +698,10 @@ int64u File::Position_Get ()
             LARGE_INTEGER GoTo; GoTo.QuadPart=0;
             GoTo.LowPart=SetFilePointer(File_Handle, GoTo.LowPart, &GoTo.HighPart, FILE_CURRENT);
             Position=GoTo.QuadPart;
+
+            ZENLIB_DEBUG2(      "File GoTo",
+                                Debug+=", new position ";Debug+=Ztring::ToZtring(GoTo.QuadPart).To_UTF8();Debug+=", returns 1";)
+
             return Position;
         #endif
     #endif //ZENLIB_USEWX
@@ -594,23 +735,23 @@ int64u File::Size_Get()
             File_Size=lseek(File_Handle, 0, SEEK_END);
             lseek(File_Handle, CurrentPos, SEEK_SET);
             */
-            streampos CurrentPos=((fstream*)File_Handle)->tellg();
-            if (CurrentPos!=(streampos)-1)
+            fstream::pos_type CurrentPos=((fstream*)File_Handle)->tellg();
+            if (CurrentPos!=(fstream::pos_type)-1)
             {
                 ((fstream*)File_Handle)->seekg(0, ios_base::end);
                 Size=((fstream*)File_Handle)->tellg();
-                ((fstream*)File_Handle)->seekg(CurrentPos, ios_base::beg);
+                ((fstream*)File_Handle)->seekg(CurrentPos);
             }
             else
                 Size=(int64u)-1;
-            return Size;
         #elif defined WINDOWS
-            DWORD High;DWORD Low=GetFileSize(File_Handle, &High);
-            if (Low==INVALID_FILE_SIZE && GetLastError()!=NO_ERROR)
-                return (int64u)-1;    
-            Size=0x100000000ULL*High+Low;
-            return Size;
+                LARGE_INTEGER x = {0};
+                BOOL bRet = ::GetFileSizeEx(File_Handle, &x);
+                if (bRet == FALSE)
+                    return (int64u)-1;
+                Size=x.QuadPart;
         #endif
+        return Size;
     #endif //ZENLIB_USEWX
 }
 
@@ -629,10 +770,10 @@ Ztring File::Created_Get()
         return Ztring();
 
     #ifdef ZENLIB_USEWX
-        return _T(""); //Not implemented
+        return __T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return _T(""); //Not implemented
+            return __T(""); //Not implemented
         #elif defined WINDOWS
             FILETIME TimeFT;
             if (GetFileTime(File_Handle, &TimeFT, NULL, NULL))
@@ -642,7 +783,7 @@ Ztring File::Created_Get()
                 return Time;
             }
             else
-                return _T(""); //There was a problem
+                return __T(""); //There was a problem
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -662,10 +803,10 @@ Ztring File::Created_Local_Get()
         return Ztring();
 
     #ifdef ZENLIB_USEWX
-        return _T(""); //Not implemented
+        return __T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return _T(""); //Not implemented
+            return __T(""); //Not implemented
         #elif defined WINDOWS
             FILETIME TimeFT;
             if (GetFileTime(File_Handle, &TimeFT, NULL, NULL))
@@ -682,11 +823,11 @@ Ztring File::Created_Local_Get()
                         Time64-=((int64s)Info.StandardBias)*60*1000*1000*10;
                 }
                 Ztring Time; Time.Date_From_Milliseconds_1601(Time64/10000);
-                Time.FindAndReplace(_T("UTC "), _T(""));
+                Time.FindAndReplace(__T("UTC "), __T(""));
                 return Time;
             }
             else
-                return _T(""); //There was a problem
+                return __T(""); //There was a problem
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -706,14 +847,14 @@ Ztring File::Modified_Get()
         return Ztring();
 
     #ifdef ZENLIB_USEWX
-        return _T(""); //Not implemented
+        return __T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             struct stat Stat;
             int Result=stat(File_Name.To_Local().c_str(), &Stat);
             if (Result<0)
-                return _T(""); //Error
-            Ztring Time; Time.Date_From_Seconds_1970(Stat.st_mtime);
+                return __T(""); //Error
+            Ztring Time; Time.Date_From_Seconds_1970((int64s)Stat.st_mtime);
             return Time;
         #elif defined WINDOWS
             FILETIME TimeFT;
@@ -724,7 +865,7 @@ Ztring File::Modified_Get()
                 return Time;
             }
             else
-                return _T(""); //There was a problem
+                return __T(""); //There was a problem
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -744,13 +885,13 @@ Ztring File::Modified_Local_Get()
         return Ztring();
 
     #ifdef ZENLIB_USEWX
-        return _T(""); //Not implemented
+        return __T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             struct stat Stat;
             int Result=stat(File_Name.To_Local().c_str(), &Stat);
             if (Result<0)
-                return _T(""); //Error
+                return __T(""); //Error
             Ztring Time; Time.Date_From_Seconds_1970_Local(Stat.st_mtime);
             return Time;
         #elif defined WINDOWS
@@ -769,11 +910,11 @@ Ztring File::Modified_Local_Get()
                         Time64-=((int64s)Info.StandardBias)*60*1000*1000*10;
                 }
                 Ztring Time; Time.Date_From_Milliseconds_1601(Time64/10000);
-                Time.FindAndReplace(_T("UTC "), _T(""));
+                Time.FindAndReplace(__T("UTC "), __T(""));
                 return Time;
             }
             else
-                return _T(""); //There was a problem
+                return __T(""); //There was a problem
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -821,14 +962,18 @@ Ztring File::Modified_Get(const Ztring &File_Name)
 //---------------------------------------------------------------------------
 bool File::Exists(const Ztring &File_Name)
 {
-    if (File_Name.find(_T('*'))!=std::string::npos || File_Name.find(_T('?'))!=std::string::npos)
-        return false;
+    ZENLIB_DEBUG1(      "File Exists",
+                        Debug+=", File_Name="; Debug+=Ztring(File_Name).To_UTF8())
 
     #ifdef ZENLIB_USEWX
         wxFileName FN(File_Name.c_str());
         return FN.FileExists();
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
+            #if defined WINDOWS
+                if (File_Name.find(__T('*'))!=std::string::npos || (File_Name.find(__T("\\\\?\\"))!=0 && File_Name.find(__T('?'))!=std::string::npos) || (File_Name.find(__T("\\\\?\\"))==0 && File_Name.find(__T('?'), 4)!=std::string::npos))
+                    return false;
+            #endif //defined WINDOWS
             struct stat buffer;
             int         status;
             #ifdef UNICODE
@@ -838,15 +983,17 @@ bool File::Exists(const Ztring &File_Name)
             #endif //UNICODE
             return status==0 && S_ISREG(buffer.st_mode);
         #elif defined WINDOWS
+            if (File_Name.find(__T('*'))!=std::string::npos || (File_Name.find(__T("\\\\?\\"))!=0 && File_Name.find(__T('?'))!=std::string::npos) || (File_Name.find(__T("\\\\?\\"))==0 && File_Name.find(__T('?'), 4)!=std::string::npos))
+                return false;
             #ifdef UNICODE
-                DWORD FileAttributes;
-                if (IsWin9X())
-                    FileAttributes=GetFileAttributesA(File_Name.To_Local().c_str());
-                else
-                    FileAttributes=GetFileAttributesW(File_Name.c_str());
+                DWORD FileAttributes=GetFileAttributesW(File_Name.c_str());
             #else
                 DWORD FileAttributes=GetFileAttributes(File_Name.c_str());
             #endif //UNICODE
+
+            ZENLIB_DEBUG2(      "File Exists",
+                                Debug+=", File_Name="; Debug+=Ztring::ToZtring(((FileAttributes!=INVALID_FILE_ATTRIBUTES) && !(FileAttributes&FILE_ATTRIBUTE_DIRECTORY))?1:0).To_UTF8())
+
             return ((FileAttributes!=INVALID_FILE_ATTRIBUTES) && !(FileAttributes&FILE_ATTRIBUTE_DIRECTORY));
         #endif
     #endif //ZENLIB_USEWX
@@ -862,10 +1009,7 @@ bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
             return false;
         #elif defined WINDOWS
             #ifdef UNICODE
-                if (IsWin9X())
-                    return CopyFileA(Source.To_Local().c_str(), Destination.To_Local().c_str(), !OverWrite)!=0;
-                else
-                    return CopyFileW(Source.c_str(), Destination.c_str(), !OverWrite)!=0;
+                return CopyFileW(Source.c_str(), Destination.c_str(), !OverWrite)!=0;
             #else
                 return CopyFile(Source.c_str(), Destination.c_str(), !OverWrite)!=0;
             #endif //UNICODE
@@ -887,10 +1031,7 @@ bool File::Move(const Ztring &Source, const Ztring &Destination, bool OverWrite)
             return !std::rename(Source.To_Local().c_str(), Destination.To_Local().c_str());
         #elif defined WINDOWS
             #ifdef UNICODE
-                if (IsWin9X())
-                    return MoveFileA(Source.To_Local().c_str(), Destination.To_Local().c_str())!=0;
-                else
-                    return MoveFileW(Source.c_str(), Destination.c_str())!=0;
+                return MoveFileW(Source.c_str(), Destination.c_str())!=0;
             #else
                 return MoveFile(Source.c_str(), Destination.c_str())!=0;
             #endif //UNICODE
@@ -912,10 +1053,7 @@ bool File::Delete(const Ztring &File_Name)
             #endif //UNICODE
         #elif defined WINDOWS
             #ifdef UNICODE
-                if (IsWin9X())
-                    return DeleteFileA(File_Name.To_Local().c_str())!=0;
-                else
-                    return DeleteFileW(File_Name.c_str())!=0;
+                return DeleteFileW(File_Name.c_str())!=0;
             #else
                 return DeleteFile(File_Name.c_str())!=0;
             #endif //UNICODE
@@ -928,4 +1066,3 @@ bool File::Delete(const Ztring &File_Name)
 //***************************************************************************
 
 } //namespace
-

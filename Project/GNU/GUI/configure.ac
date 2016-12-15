@@ -44,6 +44,7 @@ AC_ARG_ENABLE(gprof,            AC_HELP_STRING([--enable-gprof],            [Ena
 AC_ARG_ENABLE(universal_binary, AC_HELP_STRING([--enable-universal_binary], [Create Mac PPC/i386 Universal binary]),      , enable_universal_binary=no)
 AC_ARG_ENABLE(arch-ppc,         AC_HELP_STRING([--with-arch-ppc],           [Create Mac PPC Universal binary]),           , enable_arch_ppc=no)
 AC_ARG_ENABLE(arch-i386,        AC_HELP_STRING([--with-arch-i386],          [Create Mac i386 Universal binary]),          , enable_arch_i386=no)
+AC_ARG_ENABLE(arch-x86_64,      AC_HELP_STRING([--enable-arch-x86_64],      [Create Mac x86_64 architecture]),            , enable_arch_x86_64=no)
 
 dnl -------------------------------------------------------------------------
 dnl Arguments - With
@@ -63,59 +64,60 @@ dnl -------------------------------------------------------------------------
 dnl Use Qt (v2)
 dnl
 dnl if test "$with_qt" != "no"; then
-	if test -d ../../../../qt/include; then
-		CFLAGS="$CFLAGS -I../../../../qt/include"
-		CXXFLAGS="$CXXFLAGS -I../../../../qt/include"
-		LIBS="$LIBS -L../../../../qt/lib $LIBS -lQtCore -lQtGui -lz"
-		if test -x ../../../../qt/bin/moc; then
-			MOC="../../../../qt/bin/moc"
-		else
-			AC_MSG_ERROR([
-			Qt MOC is not found on your qt directory
-			Have you compiled Qt?
-			])
-		fi
-		if test -x ../../../../qt/bin/rcc; then
-			RCC="../../../../qt/bin/rcc"
-		else
-			AC_MSG_ERROR([
-			Qt RCC is not found on your qt directory
-			Have you compiled Qt?
-			])
-		fi
+	if test -d ../../../qt/include; then
+		CFLAGS="$CFLAGS -I../../../qt/include"
+		CXXFLAGS="$CXXFLAGS -I../../../qt/include"
+
+		MOC="../../../qt/bin/moc"
+		RCC="../../../qt/bin/rcc"
 
 		case "${build}" in
-		   *-*-darwin* )
-			LIBS="$LIBS -framework Carbon -framework AppKit -framework ApplicationServices"
-		  ;;
+			*-*-darwin* )
+				# Qt5 Don't support pkgconfig on MacOS
+				CFLAGS="$CFLAGS -I../../../qt/lib/QtCore.framework/Headers -I../../../qt/lib/QtGui.framework/Headers -I../../../qt/lib/QtWidgets.framework/Headers -F../../../qt/lib"
+				CXXFLAGS="$CXXFLAGS -I../../../qt/lib/QtCore.framework/Headers -I../../../qt/lib/QtGui.framework/Headers -I../../../qt/lib/QtWidgets.framework/Headers -F../../../qt/lib"
+				LIBS="$LIBS -framework Carbon -framework AppKit -framework ApplicationServices -framework QtCore -framework QtGui -framework QtWidgets"
+				break
+			;;
+			*)
+				LIBS="$LIBS -L../../../qt/lib $LIBS -lQtCore -lQtGui -lQtWidgets -lz"
+			;;
 		esac
-
 		with_qt="builtin"
+
+	elif pkg-config --exists Qt5Widgets; then
+		CFLAGS="$CFLAGS $(pkg-config Qt5Widgets --cflags)"
+		CXXFLAGS="$CXXFLAGS $(pkg-config Qt5Widgets --cflags)"
+		LIBS="$LIBS $(pkg-config Qt5Widgets --libs)"
+
+		MOC="$(pkg-config Qt5Gui --variable=prefix)/bin/moc"
+		RCC="$(pkg-config Qt5Gui --variable=prefix)/bin/rcc"
+
+		with_qt="system (qt5)"
+	elif pkg-config --exists QtGui; then
+		CFLAGS="$CFLAGS $(pkg-config QtGui --cflags)"
+		CXXFLAGS="$CXXFLAGS $(pkg-config QtGui --cflags)"
+		LIBS="$LIBS $(pkg-config QtGui --libs)"
+
+		MOC="$(pkg-config QtGui --variable=prefix)/bin/moc"
+		RCC="$(pkg-config QtGui --variable=prefix)/bin/rcc"
+
+		with_qt="system (qt4)"
 	else
-		if pkg-config --exists QtGui; then
-			CFLAGS="$CFLAGS $(pkg-config QtGui --cflags)"
-			CXXFLAGS="$CXXFLAGS $(pkg-config QtGui --cflags)"
-			LIBS="$LIBS $(pkg-config QtGui --libs)"
-			if test -x $(pkg-config QtGui --variable=prefix)/bin/moc; then
-			 MOC="$(pkg-config QtGui --variable=prefix)/bin/moc"
-			else
-				AC_MSG_ERROR([
-				Qt MOC is not found on your system
-				Please report the location of moc to the developper
-				])
-			fi
-			if test -x $(pkg-config QtGui --variable=prefix)/bin/rcc; then
-			 RCC="$(pkg-config QtGui --variable=prefix)/bin/rcc"
-			else
-				AC_MSG_ERROR([
-				Qt RCC is not found on your system
-				Please report the location of rcc to the developper
-				])
-			fi
-			with_qt="system"
-		else
-			AC_MSG_ERROR([Qt4 configuration is not found])
-		fi
+		AC_MSG_ERROR([Qt configuration is not found])
+	fi
+
+	if test ! -x $MOC ; then
+		AC_MSG_ERROR([
+		Qt MOC is not found on your qt directory
+		Have you compiled Qt?
+		])
+	fi
+	if test ! -x $RCC; then
+		AC_MSG_ERROR([
+		Qt RCC is not found on your qt directory
+		Have you compiled Qt?
+		])
 	fi
 
 	test -e _Automated || mkdir _Automated
@@ -211,6 +213,11 @@ if test "$enable_arch_i386" = "yes"; then
 	CXXFLAGS="$CXXFLAGS -arch i386"
 	CFLAGS="$CFLAGS -arch i386"
 	LDFLAGS="$LDFLAGS -arch i386"
+fi
+if test "$enable_arch_x86_64" = "yes"; then
+	CXXFLAGS="$CXXFLAGS -arch x86_64"
+	CFLAGS="$CFLAGS -arch x86_64"
+	LDFLAGS="$LDFLAGS -arch x86_64"
 fi
 if test "$with_macosx_sdk" = "yes" ; then
 	CXXFLAGS="-isysroot /Developer/SDKs/MacOSX10.5.sdk $CXXFLAGS"

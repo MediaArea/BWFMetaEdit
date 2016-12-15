@@ -14,6 +14,17 @@ Description: BWF MetaEdit provides:
  .
  (To be filled)
 
+Package: bwfmetaedit-dbg
+Section: debug
+Architecture: any
+Priority: extra
+Depends: bwfmetaedit (= ${binary:Version})
+Description: BWF MetaEdit provides:
+ .
+ (To be filled)
+ .
+ This package contains the debugging symbols.
+
 Package: bwfmetaedit-gui
 Section: utils
 Architecture: any
@@ -23,3 +34,14 @@ Description: BWF MetaEdit provides:
  (To be filled)
  .
  This package contains the graphical user interface
+
+Package: bwfmetaedit-gui-dbg
+Section: debug
+Architecture: any
+Priority: extra
+Depends: bwfmetaedit-gui (= ${binary:Version})
+Description: BWF MetaEdit provides:
+ .
+ (To be filled)
+ .
+ This package contains the debugging symbols of the graphical user interface.

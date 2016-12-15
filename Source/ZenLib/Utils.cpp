@@ -1,24 +1,8 @@
-// ZenLib::Utils - Very small utilities
-// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
-//
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-// 3. This notice may not be removed or altered from any source distribution.
-//
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a zlib-style license that can
+ *  be found in the License.txt file in the root of the source tree.
+ */
 
 //---------------------------------------------------------------------------
 #include "ZenLib/PreComp.h"
@@ -311,8 +295,8 @@ float80 LittleEndian2float80(const char* Liste)
     //significand  63 bit
 
     //Retrieving data
-    int16u Integer1=BigEndian2int16u(Liste);
-    int64u Integer2=BigEndian2int64u(Liste+2);
+    int16u Integer1=LittleEndian2int16u(Liste);
+    int64u Integer2=LittleEndian2int64u(Liste+2);
 
     //Retrieving elements
     bool   Sign    =(Integer1&0x8000)?true:false;
@@ -682,7 +666,7 @@ float32 BigEndian2float16(const char* Liste)
     //significand  10 bit
 
     //Retrieving data
-    int32u Integer=BigEndian2int32u(Liste);
+    int16u Integer=BigEndian2int16u(Liste);
 
     //Retrieving elements
     bool   Sign    =(Integer&0x8000)?true:false;
@@ -692,7 +676,7 @@ float32 BigEndian2float16(const char* Liste)
     //Some computing
     if (Exponent==0 || Exponent==0xFF)
         return 0; //These are denormalised numbers, NANs, and other horrible things
-    Exponent-=0x7F; //Bias
+    Exponent-=0x0F; //Bias
     float64 Answer=(((float64)Mantissa)/8388608+1.0)*std::pow((float64)2, (int)Exponent); //(1+Mantissa) * 2^Exponent
     if (Sign)
         Answer=-Answer;
@@ -952,32 +936,32 @@ void int128u2BigEndian(char* List, int128u Value)
 
 //---------------------------------------------------------------------------
 // int32 - int64
-int64s int32s_int64s (                int32s  High, int32u  Low)
+int64s int32s_int64s (int32s High, int32u Low)
 {
     return ((((int64s)High)<<32) | Low);
 }
 
-int64u int32u_int64u (                int32u  High, int32u  Low)
+int64u int32u_int64u (int32u High, int32u Low)
 {
     return ((((int64s)High)<<32) | Low);
 }
 
-void   int32s_int64s (int64s &BigInt, int32s  High, int32u  Low)
+void   int32s_int64s (int64s &BigInt, int32s High, int32u Low)
 {
     BigInt= ((((int64s)High)<<32) | Low);
 }
-void   int32u_int64u (int64s &BigInt, int32u  High, int32u  Low)
+void   int32u_int64u (int64s &BigInt, int32u High, int32u Low)
 {
     BigInt= ((((int64s)High)<<32) | Low);
 }
 
-void   int64s_int32s (int64s  BigInt, int32s &High, int32u &Low)
+void   int64s_int32s (int64s BigInt, int32s &High, int32u &Low)
 {
     High = (int32s) ((BigInt & 0xFFFFFFFF00000000LL)>>32);
     Low  = (int32u) ( BigInt & 0x00000000FFFFFFFF);
 }
 
-void   int64u_int32u (int64u  BigInt, int32u &High, int32u &Low)
+void   int64u_int32u (int64u BigInt, int32u &High, int32u &Low)
 {
     High = (int32u) ((BigInt & 0xFFFFFFFF00000000LL)>>32);
     Low  = (int32u) ( BigInt & 0x00000000FFFFFFFF);
@@ -1038,5 +1022,3 @@ int64s float64_int64s (float64 F, bool Rounded)
 }
 
 } //namespace ZenLib
-
-

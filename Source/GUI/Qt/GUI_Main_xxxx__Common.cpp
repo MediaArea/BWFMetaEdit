@@ -313,7 +313,7 @@ void GUI_Main_xxxx__Common::Fill ()
     //Showing
     ZtringListList List;
     List.Separator_Set(0, EOL);
-    List.Separator_Set(1, _T(","));
+    List.Separator_Set(1, __T(","));
     List.Write(Fill_Content());
 
     //Elminating unuseful info from filenames

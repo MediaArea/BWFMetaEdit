@@ -100,7 +100,8 @@ binary-arch: build install
 #	dh_installinfo
 	dh_installman
 	dh_link
-	dh_strip
+	dh_strip -p bwfmetaedit --dbg-package=bwfmetaedit-dbg
+	dh_strip -p bwfmetaedit-gui --dbg-package=bwfmetaedit-gui-dbg
 	dh_compress
 	dh_fixperms
 #	dh_perl

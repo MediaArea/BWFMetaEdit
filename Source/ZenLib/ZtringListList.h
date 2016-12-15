@@ -1,22 +1,9 @@
-// ZenLib::ZtringListList - More methods for std::vector<std::vector<std::(w)string>>
-// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
-//
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-// 3. This notice may not be removed or altered from any source distribution.
-//
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a zlib-style license that can
+ *  be found in the License.txt file in the root of the source tree.
+ */
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //
 // More methods for std::vector<std::vector<std::(w)string>>
@@ -101,7 +88,7 @@ public :
     /// @brief Delete a vector of string at position Pos0
     void Delete (size_type Pos0)                                                   {erase(begin()+Pos0);};
     /// @brief Delete all vectors of string, with [xxx][Pos1] == ToFind
-    void Delete (const Ztring &ToFind, size_type Pos1=0, const Ztring &Comparator=_T("=="), ztring_t Options=Ztring_Nothing);
+    void Delete (const Ztring &ToFind, size_type Pos1=0, const Ztring &Comparator=__T("=="), ztring_t Options=Ztring_Nothing);
     /// @brief Delete a string at all positions Pos1
     void Delete1 (size_type Pos1);
 
@@ -121,9 +108,9 @@ public :
     /// @brief Find the first position of the string in the vector of vector, in a specific column
     size_type Find (const Ztring &ToFind, size_type Pos1, size_type Pos0Begin, const Ztring &Comparator, ztring_t Options=Ztring_Nothing) const;
     /// @brief Return [xxx][Pos1Value] when founded the first position of the string in the vector of vector, in a specific column
-    Ztring FindValue (const Ztring &ToFind, size_type Pos1Value=1, size_type Pos1=0, size_type Pos0Begin=0, const Ztring &Comparator=_T("=="), ztring_t Options=Ztring_Nothing) const;
+    Ztring FindValue (const Ztring &ToFind, size_type Pos1Value=1, size_type Pos1=0, size_type Pos0Begin=0, const Ztring &Comparator=__T("=="), ztring_t Options=Ztring_Nothing) const;
     /// @brief Return a subsheet, with all lines with position of the string in the vector of vector, in a specific column
-    ZtringListList SubSheet (const Ztring &ToFind, size_type Pos1=0, size_type Pos0Begin=0, const Ztring &Comparator=_T("=="), ztring_t Options=Ztring_Nothing) const;
+    ZtringListList SubSheet (const Ztring &ToFind, size_type Pos1=0, size_type Pos0Begin=0, const Ztring &Comparator=__T("=="), ztring_t Options=Ztring_Nothing) const;
 
     //Configuration
     /// @brief Set the Separator character
@@ -143,4 +130,3 @@ protected :
 
 } //namespace
 #endif
-

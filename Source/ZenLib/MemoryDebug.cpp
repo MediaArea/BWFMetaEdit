@@ -1,23 +1,8 @@
-// ZenLib::MemoryDebug - To debug memory leaks
-// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
-//
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-// 3. This notice may not be removed or altered from any source distribution.
-//
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a zlib-style license that can
+ *  be found in the License.txt file in the root of the source tree.
+ */
 
 //---------------------------------------------------------------------------
 #include "ZenLib/PreComp.h"
@@ -96,20 +81,20 @@ void MemoryDebug::ReportLeaks()
                << " | "   << std::setw(7) << std::setfill(' ') << static_cast<int>(i->second.Size) << " bytes"
                << " | "   << i->second.File.c_str() << " (" << i->second.Line << ")" << std::endl;
         */
-        m_File.append(_T("-> 0x"));
+        m_File.append(__T("-> 0x"));
         m_File.append(Ztring::ToZtring((size_t)i->first, 16));
-        m_File.append(_T(" | "));
+        m_File.append(__T(" | "));
         Ztring Temp;
         Temp.From_Number(static_cast<int>(i->second.Size));
         while(Temp.size()<7)
-            Temp=_T(" ")+Temp;
+            Temp=__T(" ")+Temp;
         m_File.append(Temp);
-        m_File.append(_T(" bytes"));
-        m_File.append(_T(" | "));
+        m_File.append(__T(" bytes"));
+        m_File.append(__T(" | "));
         m_File.append(Ztring().From_Local(i->second.File.c_str()));
-        m_File.append(_T(" ("));
+        m_File.append(__T(" ("));
         m_File.append(Ztring::ToZtring(i->second.Line));
-        m_File.append(_T(")"));
+        m_File.append(__T(")"));
         m_File.append(EOL);
     }
 
@@ -122,11 +107,11 @@ void MemoryDebug::ReportLeaks()
     */
     m_File.append(EOL);
     m_File.append(EOL);
-    m_File.append(_T("-- "));
+    m_File.append(__T("-- "));
     m_File.append(Ztring::ToZtring(static_cast<int>(m_Blocks.size())));
-    m_File.append(_T(" non-released blocs, "));
+    m_File.append(__T(" non-released blocs, "));
     m_File.append(Ztring::ToZtring(static_cast<int>(TotalSize)));
-    m_File.append(_T(" bytes --"));
+    m_File.append(__T(" bytes --"));
     m_File.append(EOL);
 
     std::string ToWrite=m_File.To_Local().c_str();

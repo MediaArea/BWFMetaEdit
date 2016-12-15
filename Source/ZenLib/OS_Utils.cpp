@@ -1,24 +1,8 @@
-// ZenLib::OS_Utils - Cross platform OS utils
-// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
-//
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-// 3. This notice may not be removed or altered from any source distribution.
-//
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a zlib-style license that can
+ *  be found in the License.txt file in the root of the source tree.
+ */
 
 //---------------------------------------------------------------------------
 #include "ZenLib/PreComp.h"
@@ -51,20 +35,9 @@ namespace ZenLib
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool IsWin9X  ()
+bool IsWin9X ()
 {
-    #ifdef ZENLIB_USEWX
-        return true;
-    #else //ZENLIB_USEWX
-        #ifdef WINDOWS
-            if (GetVersion()<0x80000000)
-                return false;
-            else
-                return true;
-        #else //WINDOWS
-            return true;
-        #endif
-    #endif //ZENLIB_USEWX
+    return false; //Hardcoded value because we don't support Win9x anymore
 }
 
 //***************************************************************************
@@ -76,14 +49,7 @@ void Shell_Execute(const Ztring &ToExecute)
     #ifdef ZENLIB_USEWX
     #else //ZENLIB_USEWX
         #ifdef WINDOWS
-            #ifdef UNICODE
-                if (IsWin9X())
-                    ShellExecuteA(NULL, "open", ToExecute.To_Local().c_str(), NULL, NULL, 0);
-                else
-                    ShellExecute (NULL, _T("open"), ToExecute.c_str(), NULL, NULL, 0);
-            #else
-                ShellExecute(NULL, _T("open"), ToExecute.c_str(), NULL, NULL, 0);
-            #endif
+            ShellExecute(NULL, __T("open"), ToExecute.c_str(), NULL, NULL, 0);
         #else
             //Not supported
         #endif
@@ -109,18 +75,9 @@ Ztring Directory_Select_Caption;
         {
             if (uMsg==BFFM_INITIALIZED)
             {
-                if (IsWin9X())
-                {
-                    SetWindowTextA (hwnd, Directory_Select_Caption.To_Local().c_str());    // Caption
-                    SendMessageA   (hwnd, BFFM_ENABLEOK, 0, TRUE);
-                    SendMessageA   (hwnd, BFFM_SETSELECTION, true, (LPARAM)&InitDirA);
-                }
-                else
-                {
-                    SetWindowText  (hwnd, Directory_Select_Caption.c_str());    // Caption
-                    SendMessage    (hwnd, BFFM_ENABLEOK, 0, TRUE);
-                    SendMessage    (hwnd, BFFM_SETSELECTION, true, (LPARAM)&InitDir);
-                }
+                SetWindowText(hwnd, Directory_Select_Caption.c_str());    // Caption
+                SendMessage  (hwnd, BFFM_ENABLEOK, 0, TRUE);
+                SendMessage  (hwnd, BFFM_SETSELECTION, true, (LPARAM)&InitDir);
             }
             return 0;
         }
@@ -130,47 +87,40 @@ Ztring Directory_Select_Caption;
             //Caption
             Directory_Select_Caption=Caption;
 
-            if (IsWin9X())
+            //Values
+            LPMALLOC        Malloc;
+            LPSHELLFOLDER   ShellFolder;
+            BROWSEINFO      BrowseInfo;
+            LPITEMIDLIST    ItemIdList;
+
+            //Initializing the SHBrowseForFolder function
+            if (SHGetMalloc(&Malloc)!=NOERROR)
+                return Ztring();
+            if (SHGetDesktopFolder(&ShellFolder)!=NOERROR)
+                return Ztring();
+            ZeroMemory(&BrowseInfo, sizeof(BROWSEINFOW));
+            BrowseInfo.ulFlags+=BIF_RETURNONLYFSDIRS;
+            BrowseInfo.hwndOwner=(HWND)Handle;
+            BrowseInfo.pszDisplayName=InitDir;
+            BrowseInfo.lpszTitle=Title.c_str();
+            BrowseInfo.lpfn=ShowOpenFolder_CallbackProc;
+
+            //Displaying
+            ItemIdList=SHBrowseForFolder(&BrowseInfo);
+
+            //Releasing
+            ShellFolder->Release();
+            if (ItemIdList!=NULL)
             {
-                return Ztring(); //Not supported in Win9X
+                SHGetPathFromIDList(ItemIdList, InitDir);
+                Malloc->Free(ItemIdList);
+                Malloc->Release();
+
+                //The value
+                return InitDir;
             }
             else
-            {
-                //Values
-                LPMALLOC        Malloc;
-                LPSHELLFOLDER   ShellFolder;
-                BROWSEINFO      BrowseInfo;
-                LPITEMIDLIST    ItemIdList;
-
-                //Initializing the SHBrowseForFolder function
-                if (SHGetMalloc(&Malloc)!=NOERROR)
-                    return Ztring();
-                if (SHGetDesktopFolder(&ShellFolder)!=NOERROR)
-                    return Ztring();
-                ZeroMemory(&BrowseInfo, sizeof(BROWSEINFOW));
-                BrowseInfo.ulFlags+=BIF_RETURNONLYFSDIRS;
-                BrowseInfo.hwndOwner=(HWND)Handle;
-                BrowseInfo.pszDisplayName=InitDir;
-                BrowseInfo.lpszTitle=Title.c_str();
-                BrowseInfo.lpfn=ShowOpenFolder_CallbackProc;
-
-                //Displaying
-                ItemIdList=SHBrowseForFolder(&BrowseInfo);
-
-                //Releasing
-                ShellFolder->Release();
-                if (ItemIdList!=NULL)
-                {
-                    SHGetPathFromIDList(ItemIdList, InitDir);
-                    Malloc->Free(ItemIdList);
-                    Malloc->Release();
-
-                    //The value
-                    return InitDir;
-                }
-                else
-                    return Ztring();
-            }
+                return Ztring();
         }
 
     #else

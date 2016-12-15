@@ -39,6 +39,7 @@ HEADERS = \
     ../../Source/TinyXml/tinystr.h \
     ../../Source/TinyXml/tinyxml.h \
     ../../Source/ZenLib/BitStream.h \
+    ../../Source/ZenLib/BitStream_Fast.h \
     ../../Source/ZenLib/BitStream_LE.h \
     ../../Source/ZenLib/Conf.h \
     ../../Source/ZenLib/Conf_Internal.h \
@@ -50,6 +51,7 @@ HEADERS = \
     ../../Source/ZenLib/int128s.h \
     ../../Source/ZenLib/int128u.h \
     ../../Source/ZenLib/MemoryDebug.h \
+    ../../Source/ZenLib/MemoryUtils.h \
     ../../Source/ZenLib/OS_Utils.h \
     ../../Source/ZenLib/PreComp.h \
     ../../Source/ZenLib/Thread.h \

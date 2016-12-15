@@ -1144,7 +1144,7 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
             
             if (Wrong)
                 Message="does not respect rules ";
-            else if (!Value.empty() && (Value.size()<2 || Value[Value.size()-2]!=_T('\r') || Value[Value.size()-1]!=_T('\n') ))
+            else if (!Value.empty() && (Value.size()<2 || Value[Value.size()-2]!=__T('\r') || Value[Value.size()-1]!=__T('\n') ))
                 Message="does not terminate with \\r\\n";
         }
 
@@ -1346,7 +1346,7 @@ string Riff_Handler::Technical_Header()
 string Riff_Handler::Technical_Get()
 {
     ZtringList List;
-    List.Separator_Set(0, _T(","));
+    List.Separator_Set(0, __T(","));
     List.push_back(Chunks->Global->File_Name);
     List.push_back(Ztring::ToZtring(Chunks->Global->File_Size));
     if (File_IsValid)
@@ -1501,7 +1501,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
          && Chunk_Strings->Strings["codinghistory"].empty())
             timereference_Display=false;
         ZtringList List;
-        List.Separator_Set(0, _T(","));
+        List.Separator_Set(0, __T(","));
         List.push_back(Chunk_Strings->Strings["description"]);
         List.push_back(Chunk_Strings->Strings["originator"]);
         List.push_back(Chunk_Strings->Strings["originatorreference"]);
@@ -1523,7 +1523,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
     if (Field=="INFO" && &Chunk_Strings && Chunk_Strings)
     {
         ZtringList List;
-        List.Separator_Set(0, _T(","));
+        List.Separator_Set(0, __T(","));
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Info]; Pos++)
              List.push_back(Chunk_Strings->Strings[xxxx_Strings[Fields_Info][Pos]]);
         return List.Read();

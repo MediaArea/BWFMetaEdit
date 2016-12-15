@@ -18,8 +18,8 @@
 #include <iostream>
 using namespace std;
 
-#include <QtPlugin>
-#if defined(_WIN32) && QT_VERSION >= 0x00050000 //Qt5
+#if defined(_WIN32) && !defined(_DLL)
+    #include <QtPlugin>
     Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 #endif
 

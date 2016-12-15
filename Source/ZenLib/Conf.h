@@ -1,24 +1,8 @@
-// ZenLib::ZenTypes - To be independant of platform & compiler
-// Copyright (C) 2002-2011 MediaArea.net SARL, Info@MediaArea.net
-//
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-// 3. This notice may not be removed or altered from any source distribution.
-//
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a zlib-style license that can
+ *  be found in the License.txt file in the root of the source tree.
+ */
 
 //---------------------------------------------------------------------------
 #ifndef ZenConfH
@@ -188,13 +172,17 @@
 #endif
 //---------------------------------------------------------------------------
 //If we need size_t specific integer conversion
-#if defined(__LP64__) || defined(MACOSX)
-    #define NEED_SIZET
+#if !defined(SIZE_T_IS_LONG) && (defined(__LP64__) || defined(MACOSX))
+    #define SIZE_T_IS_LONG
 #endif
 
 //---------------------------------------------------------------------------
 //(-1) is known to be the MAX of an unsigned int but GCC complains about it
-#include <new>
+#ifdef __cplusplus
+    #include <new> //for size_t
+#else /* __cplusplus */
+    #include <stddef.h> //for size_t
+#endif /* __cplusplus */
 #include <cstring> //size_t
 namespace ZenLib
 {
@@ -216,19 +204,13 @@ namespace ZenLib
 
 //---------------------------------------------------------------------------
 //Char types
-#undef  _T
-#define _T(__x)     __T(__x)
-#undef  _TEXT
-#define _TEXT(__x)  __T(__x)
-#undef  __TEXT
-#define __TEXT(__x) __T(__x)
 #if defined(__UNICODE__)
     #if defined (_MSC_VER) && !defined (_NATIVE_WCHAR_T_DEFINED)
         #pragma message Native wchar_t is not defined, not tested, you should put /Zc:wchar_t in compiler options
     #endif
     typedef wchar_t Char;
     #undef  __T
-    #define __T(__x) L##__x
+    #define __T(__x) L ## __x
 #else // defined(__UNICODE__)
     typedef char Char;
     #undef  __T
@@ -358,12 +340,11 @@ typedef unsigned int            intu;
     #define snwprintf swprintf
 #endif
 
-//Windows - MSVC
-#if defined (_MSC_VER)
+//Windows - MSVC (before Visual Studio 2015)
+#if defined (_MSC_VER) && _MSC_VER < 1900
     #define snprintf _snprintf
     #define snwprintf _snwprintf
 #endif
 
 } //namespace
 #endif
-

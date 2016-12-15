@@ -1,23 +1,9 @@
-// int128u - integer 8 bytes
-// Copyright (C) 2007-2011 MediaArea.net SARL, Info@MediaArea.net
-//
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-//    misrepresented as being the original software.
-// 3. This notice may not be removed or altered from any source distribution.
-//
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a zlib-style license that can
+ *  be found in the License.txt file in the root of the source tree.
+ */
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //
 // based on http://Tringi.Mx-3.cz
@@ -60,6 +46,7 @@
     defined (__FreeBSD__)    || defined (__OpenBSD__)   || \
     defined (__NetBSD__)     || defined (__DragonFly__) || \
     defined (__sparc__)      || defined (__sparc64__)   || \
+    defined (__CYGWIN__) || \
     defined (__SUNPRO_CC)
     #define fmodl fmod
 #endif
@@ -274,7 +261,7 @@ int128 int128::div (const int128 & divisor, int128 & remainder) const throw () {
     };
     ++b;
 
-    while (true)
+    for (;;)
         if (r < ds) {
             if (!(b--)) break;
 
