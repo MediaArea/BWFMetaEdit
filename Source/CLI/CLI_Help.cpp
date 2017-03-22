@@ -87,6 +87,7 @@ std::string Help()
     ToDisplay<<"--out-core              current display (std::cout) in CSV format"<<std::endl;
     ToDisplay<<"--out-core=             specified file in CSV format"<<std::endl;
     ToDisplay<<"--out-core-xml          filename.core.xml (1 ouput per file) in XML format"<<std::endl;
+    ToDisplay<<"--out-core-xml=         specified file in XML format"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;

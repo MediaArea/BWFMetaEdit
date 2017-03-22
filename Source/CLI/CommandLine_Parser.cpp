@@ -69,6 +69,7 @@ int Parse(Core &C, string &Argument)
     OPTION("--in-core-remove",                              In_Core_Remove)
 //    OPTION("--in-core-xml",                                 In_Core_XML)
     OPTION("--out-core=",                                   Out_Core_File)
+    OPTION("--out-core-xml=",                               Out_Core_XML_File)
     OPTION("--out-core-xml",                                Out_Core_XML)
     OPTION("--out-core",                                    Out_Core_cout)
 
@@ -259,6 +260,15 @@ CL_OPTION(Out_Core_File)
 CL_OPTION(Out_Core_XML)
 {
     C.Out_Core_XML=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_Core_XML_File)
+{
+    //Form : --out-Core-XML=(FileName)
+    C.Out_Core_XML_FileName.assign(Argument, 15, std::string::npos);
 
     return -2; //Continue
 }
