@@ -126,7 +126,7 @@ size_t Core::Menu_File_Open_Files_Continue (const string &FileName)
         List.push_back(FileName);
     else
     {
-        List=Dir::GetAllFileNames(FileName, Dir::Parse_SubDirs);
+        List=Dir::GetAllFileNames(FileName, (Dir::dirlist_t)(Dir::Include_Files|Dir::Parse_SubDirs));
         if (List.empty())
             List.push_back(FileName);
     }
