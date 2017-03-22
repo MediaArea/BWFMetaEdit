@@ -61,6 +61,7 @@ CL_OPTION(In_Core_XML);
 CL_OPTION(Out_Core_cout);
 CL_OPTION(Out_Core_File);
 CL_OPTION(Out_Core_XML);
+CL_OPTION(Out_Core_XML_File);
 
 //---------------------------------------------------------------------------
 CL_OPTION(In__PMX_File);
