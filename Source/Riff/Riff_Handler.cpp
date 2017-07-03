@@ -377,7 +377,11 @@ bool Riff_Handler::BackToLastSave()
 //---------------------------------------------------------------------------
 string Riff_Handler::Get(const string &Field)
 {
-    return Get(Field_Get(Field), *chunk_strings_Get(Field)); 
+    Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
+    if (!Chunk_Strings || !*Chunk_Strings)
+        return string();
+    
+    return Get(Field_Get(Field), *Chunk_Strings);
 }
 
 //---------------------------------------------------------------------------
@@ -532,7 +536,11 @@ bool Riff_Handler::IsModified(const string &Field)
         return ToReturn;
     }
     
-    return IsModified(Field_Get(Field=="timereference (translated)"?Ztring("timereference"):Field), *chunk_strings_Get(Field)); 
+    Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
+    if (!Chunk_Strings || !*Chunk_Strings)
+        return false;
+    
+    return IsModified(Field_Get(Field=="timereference (translated)"?Ztring("timereference"):Field), *Chunk_Strings);
 }
 
 //---------------------------------------------------------------------------
@@ -1265,13 +1273,21 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsOriginal(const string &Field, const string &Value)
 {
-    return IsOriginal(Field_Get(Field=="timereference (translated)"?Ztring("timereference"):Field), Value, *chunk_strings_Get(Field)); 
+    Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
+    if (!Chunk_Strings || !*Chunk_Strings)
+        return true;
+    
+    return IsOriginal(Field_Get(Field=="timereference (translated)"?Ztring("timereference"):Field), Value, *Chunk_Strings);
 }
 
 //---------------------------------------------------------------------------
 string Riff_Handler::History(const string &Field)
 {
-    return History(Field_Get(Field), *chunk_strings_Get(Field)); 
+    Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
+    if (!Chunk_Strings || !*Chunk_Strings)
+        return string();
+    
+    return History(Field_Get(Field), *Chunk_Strings);
 }
 
 //***************************************************************************
