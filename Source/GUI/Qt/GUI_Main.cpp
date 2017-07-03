@@ -33,6 +33,11 @@
 #include <QThread>
 #include <QTimer>
 #include "ZenLib/Ztring.h"
+
+#if defined(__APPLE__) && QT_VERSION < 0x050400
+#include <CoreFoundation/CFURL.h>
+#endif
+
 using namespace std;
 //---------------------------------------------------------------------------
 
@@ -179,7 +184,29 @@ void GUI_Main::dropEvent(QDropEvent *Event)
         QList<QUrl> urls=Event->mimeData()->urls();
         for (int Pos=0; Pos<urls.size(); Pos++)
         {
-            Ztring File; File.From_UTF8(urls[Pos].toLocalFile().toUtf8().data());
+            Ztring File;
+#if defined(__APPLE__) && QT_VERSION < 0x050400
+            if (urls[Pos].url().startsWith("file:///.file/id="))
+            {
+                CFErrorRef Error = 0;
+                CFURLRef Cfurl = urls[Pos].toCFURL();
+                CFURLRef Absurl = CFURLCreateFilePathURL(kCFAllocatorDefault, Cfurl, &Error);
+
+                if(Error)
+                    continue;
+
+                File.From_UTF8(QUrl::fromCFURL(Absurl).toLocalFile().toUtf8().data());
+                CFRelease(Cfurl);
+                CFRelease(Absurl);
+            }
+            else
+            {
+                File.From_UTF8(urls[Pos].toLocalFile().toUtf8().data());
+            }
+#else
+            File.From_UTF8(urls[Pos].toLocalFile().toUtf8().data());
+#endif
+
             #ifdef __WINDOWS__
                 File.FindAndReplace("/", "\\", 0, Ztring_Recursive);
             #endif // __WINDOWS__

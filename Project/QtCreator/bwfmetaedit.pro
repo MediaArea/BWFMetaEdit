@@ -134,6 +134,7 @@ INCLUDEPATH += $$PWD/../../Source
 
 macx:
 {
+    LIBS += -framework CoreFoundation
     ICON = ../../Source/Resource/Image/FADGI/Logo.icns 
     QMAKE_INFO_PLIST = Info.plist
 }
