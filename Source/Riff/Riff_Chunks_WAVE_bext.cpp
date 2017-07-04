@@ -318,13 +318,7 @@ void Riff_WAVE_bext::Modify_Internal ()
     else
         Skip_XX   (602-Chunk.Content.Buffer_Offset); //Keeping old data
     if (Chunk.Content.Buffer_Offset<Chunk.Content.Size)
-        Put_String(Global->bext->Strings["codinghistory"].size(), Global->bext->Strings["codinghistory"]);
-    
-    if (Chunk.Content.Buffer_Offset<858)
-    {
-//        memset(Chunk.Content.Buffer+Chunk.Content.Buffer_Offset, 0x00, 858-Chunk.Content.Buffer_Offset);
-//        Chunk.Content.Size=858; //We free the no more needed space
-    }
+        Put_String(Chunk.Content.Size-Chunk.Content.Buffer_Offset, Global->bext->Strings["codinghistory"]);
 
     Chunk.Content.IsModified=true;
     Chunk.Content.Size_IsModified=true;
