@@ -295,7 +295,8 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_CodingHistoryDialog::OnAccept ()
 {
-    OnCurrentChanged(1);
+    if (Central->currentIndex()!=1)
+        OnCurrentChanged(1); //if not Text, convert to text first
     
     std::string Value=TextEdit->toPlainText().toLocal8Bit().data();
     if (!C->IsValid(FileName, Field, Value))
