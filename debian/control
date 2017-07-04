@@ -9,7 +9,7 @@ Homepage: http://mediainfo.sourceforge.net
 Package: bwfmetaedit
 Section: utils
 Architecture: any
-Depends: 
+Depends:
 Description: BWF MetaEdit provides:
  .
  (To be filled)

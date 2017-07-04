@@ -46,7 +46,7 @@ package_bwfmetaedit() {
 package_bwfmetaedit-gui() {
     pkgdesc="${pkgdesc} (GUI)"
     depends=('qt5-base')
-    
+
     cd "${srcdir}"/bwfmetaedit/Project/GNU/GUI
     make DESTDIR="${pkgdir}" install
 

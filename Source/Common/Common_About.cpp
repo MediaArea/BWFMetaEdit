@@ -47,8 +47,8 @@ const char* Description_Text() {return
 "Guidelines Initiative (FADGI) supported by AudioVisual Preservation\n"
 "Solutions.\n"
 "\n"
-"This tool permits embedding, editing, and exporting of metadata in\n" 
-"Broadcast WAVE Format (BWF) files. This tool can also enforce metadata\n" 
+"This tool permits embedding, editing, and exporting of metadata in\n"
+"Broadcast WAVE Format (BWF) files. This tool can also enforce metadata\n"
 "guidelines developed by the Federal Agencies Audio-Visual Working Group,\n"
 "as well as format specifications from the European Broadcasting\n"
 "Union (EBU), Microsoft, and IBM.\n"
@@ -180,7 +180,7 @@ const char* Columns_ToolTip(std::string Name)
 {
     for (size_t Pos=0; Pos<Columns_Text_Size; Pos++)
         if (Name==Columns[Pos].Name)
-            return Columns[Pos].ToolTip; 
+            return Columns[Pos].ToolTip;
     return ""; //no info
 }
 
