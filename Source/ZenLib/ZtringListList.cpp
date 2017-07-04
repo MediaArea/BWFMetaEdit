@@ -298,7 +298,7 @@ void ZtringListList::Write(const Ztring &ToWrite)
     while (i<l)
     {
         //Quote
-        if (i+Quote_Size<l)
+        if (i+Quote_Size<=l)
         {
             bool IsQuote=true;
             for (size_t j=0; j<Quote_Size; j++)
@@ -312,7 +312,7 @@ void ZtringListList::Write(const Ztring &ToWrite)
             if (IsQuote)
             {
                 //Double quote
-                if (i+Quote_Size*2<l)
+                if (i+Quote_Size*2<=l)
                 {
                     IsQuote=false;
                     for (size_t j=0; j<Quote_Size; j++)
@@ -338,7 +338,7 @@ void ZtringListList::Write(const Ztring &ToWrite)
         if (!q)
         {
             //Carriage return
-            if (i+Separator0_Size<l)
+            if (i+Separator0_Size<=l)
             {
                 bool IsSeparator0=true;
                 for (size_t j=0; j<Separator0_Size; j++)
@@ -359,7 +359,7 @@ void ZtringListList::Write(const Ztring &ToWrite)
             }
 
             //Carriage return
-            if (i+Separator1_Size<l)
+            if (i+Separator1_Size<=l)
             {
                 bool IsSeparator1=true;
                 for (size_t j=0; j<Separator1_Size; j++)
@@ -380,7 +380,12 @@ void ZtringListList::Write(const Ztring &ToWrite)
         }
 
         if (y>=size())
+        {
+            size_t PreviousSize=size();
             resize(y+1);
+            for (size_t j=0; j<=y; j++)
+                operator[](j).Separator_Set(0, Separator[1]);
+        }
         ZtringList& Line=operator[](y);
         if (x>=Line.size())
             Line.resize(x+1);
