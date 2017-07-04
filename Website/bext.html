@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
-<head> 
- <title>BEXT Audio Metadata Information</title> 
- <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-</head> 
-<body> 
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+ <title>BEXT Audio Metadata Information</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
 <h3>BEXT Audio Metadata Information</h3>
 <table border='1' summary="This table lists the values and descriptions of the BEXT metadata fields">
 	<tr><th>Metadata Value Name</th><th>Description</th></tr>
@@ -68,7 +68,7 @@
 			</div>
 		</td>
 	</tr>
-	
+
 	<tr>
 		<td>OriginatorReference</td>
 		<td>
@@ -97,7 +97,7 @@
 			</div>
 		</td>
 	</tr>
-	
+
 	<tr>
 		<td>OriginationDate</td>
 		<td>
@@ -160,7 +160,7 @@
 			<div>
 				<h4>FADGI recommendations:</h4>
 				<p>This element contains the file creation time. This is understood to mean the local time in the timezone for the archival entity; the structure of the bext chunk does not permit ISO 8601 datetime indication, which unambiguously indicates date and time in terms of UTC (Coordinated Universal Time or Temps Universel Coordonné).</p>
-				
+
 				Follow the ISO 8601 model which allows for some flexibility depending upon how much time information is available:				<ul>					<li>Hours and Minutes only: hh:mm</li>					<li>Hours, minutes and seconds: hh:mm:ss<br/></li>					<li>Where hh = two digits of hour (00 through 23) (am/pm NOT allowed) Hour is defined from 00 to 23 (use leading zeroes if less than 10).</li>					<li>Where mm = two digits of minute (00 through 59)</li>					<li>Where ss = two digits of second (00 through 59) Minute and second are defined from 00 to 59 (use leading zeroes if less than 10).</li>				</ul>
 				If string entered is under 8 characters, end field with a null character
 				<h4>FADGI Requirements:</h4>

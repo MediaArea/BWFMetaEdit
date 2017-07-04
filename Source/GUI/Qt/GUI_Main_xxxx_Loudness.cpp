@@ -46,7 +46,7 @@ GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &File
     Dialog=new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(Dialog, SIGNAL(accepted()), this, SLOT(OnAccept()));
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
-    
+
     //Extra - Bext
     Loudness=new QDoubleSpinBox();
     Loudness->setDecimals(2);
