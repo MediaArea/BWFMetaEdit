@@ -239,6 +239,7 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
     FileName=FileName_;
     Field=Field_;
     Rules_Recommendations=Rules_Recommendations_;
+    IsAccepted=false;
 
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
@@ -295,26 +296,8 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_CodingHistoryDialog::OnAccept ()
 {
-    if (Central->currentIndex()!=1)
-        OnCurrentChanged(1); //if not Text, convert to text first
+    IsAccepted=true;
     
-    std::string Value=TextEdit->toPlainText().toLocal8Bit().data();
-    if (!C->IsValid(FileName, Field, Value))
-    {
-        QMessageBox MessageBox;
-        MessageBox.setWindowTitle("BWF MetaEdit");
-        MessageBox.setText((string("Field does not conform to rules:\n")+C->IsValid_LastError(FileName)).c_str());
-        #if (QT_VERSION >= 0x040200)
-            MessageBox.setStandardButtons(QMessageBox::Ok);
-        #endif // (QT_VERSION >= 0x040200)
-        MessageBox.setIcon(QMessageBox::Warning);
-        MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
-        MessageBox.exec();
-        return;
-    }
-
-    C->Set(FileName, Field, Value);
-
     accept();
 }
 
@@ -603,6 +586,29 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
 
 void GUI_Main_xxxx_CodingHistoryDialog::hideEvent (QHideEvent*)
 {
+    if (!IsAccepted)
+        return;
+
+    //if not Text, convert to text first
     if (Central->currentIndex()==0)
         List2Text();
+
+    //Save content
+    std::string Value=TextEdit->toPlainText().toLocal8Bit().data();
+    if (!C->IsValid(FileName, Field, Value))
+    {
+        QMessageBox MessageBox;
+        MessageBox.setWindowTitle("BWF MetaEdit");
+        MessageBox.setText((string("Field does not conform to rules:\n")+C->IsValid_LastError(FileName)).c_str());
+        #if (QT_VERSION >= 0x040200)
+            MessageBox.setStandardButtons(QMessageBox::Ok);
+        #endif // (QT_VERSION >= 0x040200)
+        MessageBox.setIcon(QMessageBox::Warning);
+        MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+        MessageBox.exec();
+        return;
+    }
+
+    C->Set(FileName, Field, Value);
+
 }

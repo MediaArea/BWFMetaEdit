@@ -87,6 +87,7 @@ private:
     std::string Field;
     bool    Rules_Recommendations;
     ZtringListList List;
+    bool   IsAccepted;
 
     //Helpers
     void Fill();
