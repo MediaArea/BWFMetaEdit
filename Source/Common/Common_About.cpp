@@ -2,7 +2,7 @@
 //
 // This code was created in 2010 for the Library of Congress and the
 // other federal government agencies participating in the Federal Agencies
-// Digitization Guidelines Initiative and it is in the public domain.
+// Digital Guidelines Initiative and it is in the public domain.
 //
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -17,12 +17,10 @@
 
 //---------------------------------------------------------------------------
 const char* NameVersion_HTML() {return
-"<a href=\"http://www.digitizationguidelines.gov\">Federal Agencies Digitization Guidelines Initiative (FADGI)</a> BWF MetaEdit 1.3.1"
 ;}
 
 //---------------------------------------------------------------------------
 const char* NameVersion_Text() {return
-"Federal Agencies Digitization Guidelines Initiative (FADGI)\n"
 "BWF MetaEdit 1.3.1"
 ;}
 
@@ -34,7 +32,7 @@ const char* NameVersion_Text() {return
 const char* Description_HTML() {return
 "<h3>DESCRIPTION</h3>"
 ""
-"BWF MetaEdit was developed by the Federal Agencies Digitization Guidelines Initiative (FADGI) supported by AudioVisual Preservation Solutions.<br />"
+"BWF MetaEdit was developed by the Federal Agencies Digital Guidelines Initiative (FADGI) supported by AudioVisual Preservation Solutions.<br />"
 "<br />"
 "This tool permits embedding, editing, and exporting of metadata in Broadcast WAVE Format (BWF) files. This tool can also enforce metadata guidelines developed by the <a href=\"http://www.digitizationguidelines.gov/audio-visual/documents/wave_metadata.html\">Federal Agencies Audio-Visual Working Group</a>, as well as format specifications from the European Broadcasting Union (EBU), Microsoft, and IBM."
 ;}
@@ -43,7 +41,7 @@ const char* Description_HTML() {return
 const char* Description_Text() {return
 "DESCRIPTION\n"
 "\n"
-"BWF MetaEdit was developed by the Federal Agencies Digitization\n"
+"BWF MetaEdit was developed by the Federal Agencies Digital\n"
 "Guidelines Initiative (FADGI) supported by AudioVisual Preservation\n"
 "Solutions.\n"
 "\n"
@@ -70,7 +68,7 @@ const char* AuthorLicense_Text() {return
 "\n"
 "This code was created in 2010 for the Library of Congress and the other\n"
 "federal government agencies participating in the Federal Agencies\n"
-"Digitization Guidelines Initiative and it is in the public domain.\n"
+"Digital Guidelines Initiative and it is in the public domain.\n"
 ;}
 
 //***************************************************************************

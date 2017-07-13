@@ -2,7 +2,7 @@
 //
 // This code was created in 2010 for the Library of Congress and the
 // other federal government agencies participating in the Federal Agencies
-// Digitization Guidelines Initiative and it is in the public domain.
+// Digital Guidelines Initiative and it is in the public domain.
 //
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -104,7 +104,7 @@ GUI_Main::GUI_Main(Core* _C)
     */
     
     //GUI
-    setWindowTitle("BWF MetaEdit - Audio-Visual Working Group of the Federal Agencies Digitization Guidelines Initiative");
+    setWindowTitle("BWF MetaEdit - Audio-Visual Working Group of the Federal Agencies Digital Guidelines Initiative");
     setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
     setUnifiedTitleAndToolBarOnMac(true);
 }
