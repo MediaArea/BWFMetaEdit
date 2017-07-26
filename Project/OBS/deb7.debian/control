@@ -1,7 +1,7 @@
 Source: bwfmetaedit
 Priority: optional
 Maintainer: Jerome Martinez <info@mediaarea.net>
-Build-Depends: debhelper (>= 5), tofrodos, qtbase5-dev, qt5-default, pkg-config, automake, autoconf, libtool
+Build-Depends: debhelper (>= 5), tofrodos, libqt4-dev, pkg-config, automake, autoconf, libtool
 Standards-Version: 3.7.3
 Section: libs
 Homepage: http://mediainfo.sourceforge.net

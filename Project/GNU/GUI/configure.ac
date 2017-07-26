@@ -154,7 +154,7 @@ CXXFLAGS="$CXXFLAGS -DTIXML_USE_STL"
 dnl -------------------------------------------------------------------------
 dnl Use ZenLib
 dnl
-CXXFLAGS="$CXXFLAGS -pthread"
+CXXFLAGS="$CXXFLAGS -pthread -fPIC"
 LDFLAGS="$LDFLAGS -lpthread -pthread"
 
 dnl #########################################################################
