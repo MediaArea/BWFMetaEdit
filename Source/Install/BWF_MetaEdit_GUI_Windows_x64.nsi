@@ -3,13 +3,14 @@ RequestExecutionLevel admin
 
 ; Some defines
 !define PRODUCT_NAME "BWF MetaEdit"
+!define PRODUCT_NAME_EXE "bwfedit-gui.exe"
 !define PRODUCT_PUBLISHER "FADGI"
 !define PRODUCT_VERSION "1.3.1"
 !define PRODUCT_VERSION4 "${PRODUCT_VERSION}.0"
 !define PRODUCT_WEB_SITE "http://www.digitizationguidelines.gov"
 !define COMPANY_REGISTRY "Software\FADGI"
 !define PRODUCT_REGISTRY "Software\FADGI\BWF MetaEdit"
-!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\BWF_MetaEdit.exe"
+!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME_EXE}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
@@ -32,7 +33,7 @@ SetCompressor /FINAL /SOLID lzma
 ; Installer pages
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
-!define MUI_FINISHPAGE_RUN "$INSTDIR\bwfedit-gui.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\${PRODUCT_NAME_EXE}"
 !insertmacro MUI_PAGE_FINISH
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_WELCOME
@@ -74,31 +75,32 @@ Function .onInit
 FunctionEnd
 
 Section "SectionPrincipale" SEC01
-  SetOverwrite ifnewer
+  SetOverwrite on
+
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_NAME_EXE}" "" "" "" "" "" "${PRODUCT_NAME} ${PRODUCT_VERSION}"
   SetOutPath "$INSTDIR"
-  CreateDirectory "$SMPROGRAMS\BWF MetaEdit"
-  CreateShortCut "$SMPROGRAMS\BWF MetaEdit\BWF MetaEdit.lnk" "$INSTDIR\bwfedit-gui.exe" "" "" "" "" "" "BWF MetaEdit ${PRODUCT_VERSION}"
-  File "/oname=bwfedit-gui.exe" "..\..\Project\MSVC2015\GUI\x64\Release\BWF_MetaEdit_GUI.exe"
+  File "/oname=${PRODUCT_NAME_EXE}" "..\..\Project\MSVC2015\GUI\x64\Release\BWF_MetaEdit_GUI.exe"
   File "/oname=History.txt" "..\..\History_GUI.txt"
   File "..\..\License.html"
   File  "/oname=ReadMe.txt""..\..\Release\ReadMe_GUI_Windows.txt"
-SectionEnd
 
-Section -AdditionalIcons
-  SetOutPath $INSTDIR
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateShortCut "$SMPROGRAMS\BWF MetaEdit\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url" "" "" "" "" "" "Website"
-  CreateShortCut "$SMPROGRAMS\BWF MetaEdit\Uninstall.lnk" "$INSTDIR\uninst.exe" "" "" "" "" "" "Uninstall MediaInfo"
-  CreateShortCut "$SMPROGRAMS\BWF MetaEdit\History.lnk" "$INSTDIR\History.txt" "" "" "" "" "" "History"
+
+  # Delete files that might be present from older installation
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Website.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\History.lnk"
+  RMDir  "$SMPROGRAMS\${PRODUCT_NAME}"
 SectionEnd
 
 Section -Post
   WriteUninstaller "$INSTDIR\uninst.exe"
-  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\bwfedit-gui.exe"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\${PRODUCT_NAME_EXE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\bwfedit-gui.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\${PRODUCT_NAME_EXE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
 SectionEnd
@@ -107,16 +109,11 @@ SectionEnd
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\bwfedit-gui.exe"
+  Delete "$INSTDIR\${PRODUCT_NAME_EXE}"
   Delete "$INSTDIR\History.txt"
   Delete "$INSTDIR\License.html"
   Delete "$INSTDIR\ReadMe.txt"
-  Delete "$SMPROGRAMS\BWF MetaEdit\Uninstall.lnk"
-  Delete "$SMPROGRAMS\BWF MetaEdit\Website.lnk"
-  Delete "$SMPROGRAMS\BWF MetaEdit\BWF MetaEdit.lnk"
-  Delete "$SMPROGRAMS\BWF MetaEdit\History.lnk"
-
-  RMDir "$SMPROGRAMS\BWF MetaEdit"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}.lnk"
   RMDir "$INSTDIR"
 
   DeleteRegKey HKLM "${PRODUCT_REGISTRY}"
