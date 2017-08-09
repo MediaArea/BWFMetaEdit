@@ -377,6 +377,9 @@ bool Riff_Handler::BackToLastSave()
 //---------------------------------------------------------------------------
 string Riff_Handler::Get(const string &Field)
 {
+    if (Field=="SampleRate")
+        return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      )));
+
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return string();
