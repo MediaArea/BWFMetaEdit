@@ -3,7 +3,7 @@ RequestExecutionLevel admin
 
 ; Some defines
 !define PRODUCT_NAME "BWF MetaEdit"
-!define PRODUCT_NAME_EXE "bwfedit-gui.exe"
+!define PRODUCT_NAME_EXE "${PRODUCT_NAME}.exe"
 !define PRODUCT_PUBLISHER "FADGI"
 !define PRODUCT_VERSION "1.3.1"
 !define PRODUCT_VERSION4 "${PRODUCT_VERSION}.0"
@@ -33,7 +33,7 @@ SetCompressor /FINAL /SOLID lzma
 ; Installer pages
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
-!define MUI_FINISHPAGE_RUN "$INSTDIR\${PRODUCT_NAME_EXE}"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "..\..\Source\Resource\Image\Windows_Finish.bmp"
 !insertmacro MUI_PAGE_FINISH
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_WELCOME
@@ -59,8 +59,8 @@ BrandingText " "
 ; Modern UI end
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "..\..\Release\BWF_MetaEdit_GUI_${PRODUCT_VERSION}_Windows_i386.exe"
-InstallDir "$PROGRAMFILES\FADGI\BWF MetaEdit"
+OutFile "..\..\Release\BWFMetaEdit_GUI_${PRODUCT_VERSION}_Windows_i386.exe"
+InstallDir "$PROGRAMFILES\BWF MetaEdit"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails nevershow
 ShowUnInstDetails nevershow
@@ -86,12 +86,21 @@ Section "SectionPrincipale" SEC01
 
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
 
-  # Delete files that might be present from older installation
+  ; Delete files that might be present from older installation
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\BWF_MetaEdit.exe"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Website.lnk"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\History.lnk"
   RMDir  "$SMPROGRAMS\${PRODUCT_NAME}"
+  Delete "$PROGRAMFILES\FADGI\BWF MetaEdit\BWF MetaEdit.url"
+  Delete "$PROGRAMFILES\FADGI\BWF MetaEdit\bwfedit-gui.exe"
+  Delete "$PROGRAMFILES\FADGI\BWF MetaEdit\uninst.exe"
+  Delete "$PROGRAMFILES\FADGI\BWF MetaEdit\License.html"
+  Delete "$PROGRAMFILES\FADGI\BWF MetaEdit\History.txt"
+  Delete "$PROGRAMFILES\FADGI\BWF MetaEdit\ReadMe.txt"
+  RMDir "$PROGRAMFILES\FADGI\BWF MetaEdit"
+  RMDir "$PROGRAMFILES\FADGI" ; only if empty
 SectionEnd
 
 Section -Post

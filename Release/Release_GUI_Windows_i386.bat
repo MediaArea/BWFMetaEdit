@@ -10,25 +10,25 @@ if "%BPATH%"=="" (
 )
 
 @rem --- Clean up ---
-del   BWF_MetaEdit_GUI_Windows_i386.exe
-del   BWF_MetaEdit_GUI_Windows_i386_WithoutInstaller.7z
-rmdir BWF_MetaEdit_GUI_Windows_i386 /S /Q
-mkdir BWF_MetaEdit_GUI_Windows_i386
+del   BWFMetaEdit_GUI_Windows_i386.exe
+del   BWFMetaEdit_GUI_Windows_i386_WithoutInstaller.7z
+rmdir BWFMetaEdit_GUI_Windows_i386 /S /Q
+mkdir BWFMetaEdit_GUI_Windows_i386
 
 
 @rem --- Copying : Exe ---
-copy  ..\Project\MSVC2015\GUI\Win32\Release\BWF_MetaEdit_GUI.exe BWF_MetaEdit_GUI_Windows_i386\bwfmetaedit-gui.exe
+copy  ..\Project\MSVC2015\GUI\Win32\Release\BWF_MetaEdit_GUI.exe BWFMetaEdit_GUI_Windows_i386\bwfmetaedit-gui.exe
 
 @rem --- Copying : Information files ---
-copy ..\License.html BWF_MetaEdit_GUI_Windows_i386\
-copy ..\History_GUI.txt BWF_MetaEdit_GUI_Windows_i386\History.txt
-copy ..\conformance_point_document.xsd BWF_MetaEdit_GUI_Windows_i386\
-copy ReadMe_GUI_Windows.txt BWF_MetaEdit_GUI_Windows_i386\ReadMe.txt
+copy ..\License.html BWFMetaEdit_GUI_Windows_i386\
+copy ..\History_GUI.txt BWFMetaEdit_GUI_Windows_i386\History.txt
+copy ..\conformance_point_document.xsd BWFMetaEdit_GUI_Windows_i386\
+copy ReadMe_GUI_Windows.txt BWFMetaEdit_GUI_Windows_i386\ReadMe.txt
 
 
 rem --- Compressing Archive ---
-cd BWF_MetaEdit_GUI_Windows_i386\
-%BPATH%\Windows\7-Zip\7z a -r -tzip -mx9 ..\BWF_MetaEdit_GUI_Windows_i386_WithoutInstaller.zip *
+cd BWFMetaEdit_GUI_Windows_i386\
+%BPATH%\Windows\7-Zip\7z a -r -tzip -mx9 ..\BWFMetaEdit_GUI_Windows_i386_WithoutInstaller.zip *
 cd ..
 
 rem --- Installer ---
@@ -36,5 +36,5 @@ rem --- Installer ---
 
 rem --- Clean up ---
 if "%1"=="SkipCleanUp" goto SkipCleanUp
-rmdir BWF_MetaEdit_GUI_Windows_i386\ /S /Q
+rmdir BWFMetaEdit_GUI_Windows_i386\ /S /Q
 :SkipCleanUp

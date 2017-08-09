@@ -22,8 +22,8 @@ BEGIN
             VALUE "FileVersion", "1,2,0,0"
             VALUE "InternalName", "BWF_MetaEdit - CLI - MSVC 2015"
             VALUE "LegalCopyright", "BSD License"
-            VALUE "OriginalFilename", "BWF_MetaEdit.exe"
-            VALUE "ProductName", "BWF_MetaEdit_GUI"
+            VALUE "OriginalFilename", "bwfmetaedit.exe"
+            VALUE "ProductName", "BWF MetaEdit CLI"
             VALUE "ProductVersion", "1,2,0,0"
         END
     END
