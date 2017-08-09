@@ -73,7 +73,7 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
     setLayout(L);
 
     //Filling
-    SampleRate=Ztring(C->Get(FileName, "Sample rate")).To_int64u();
+    SampleRate=Ztring(C->Get(FileName, "SampleRate")).To_int64u();
     Ztring TimeReference=C->Get(FileName, "TimeReference");
     Ztring TimeReferenceS=C->Get(FileName, "TimeReference (translated)");
     TimeEdit->setTime(QTime::fromString(QString().fromUtf8(TimeReferenceS.To_Local().c_str()), Qt::ISODate));
@@ -114,7 +114,7 @@ void GUI_Main_xxxx_TimeReferenceDialog::OnTimeChanged (const QTime &Time)
     if (IsChanging || SampleRate==0)
         return;
 
-    LineEdit->setValue(((double)QTime(0, 0, 0, 0).msecsTo(Time))*SampleRate/1000);
+    LineEdit->setValue(float64_int64s(((double)QTime(0, 0, 0, 0).msecsTo(Time))*SampleRate/1000));
 }
 
 //---------------------------------------------------------------------------
@@ -123,18 +123,18 @@ void GUI_Main_xxxx_TimeReferenceDialog::OnValueEdited (const QString &Value)
     if (IsChanging || SampleRate==0)
         return;
 
-    int64u TimeReference=(int64u)LineEdit->value();
-    TimeReference=(int64u)(((float64)TimeReference)/(((float64)SampleRate)/1000));
+    int64s TimeReference=(int64s)LineEdit->value();
+    TimeReference=float64_int64s(((float64)TimeReference)/(((float64)SampleRate)/1000));
     IsChanging=true;
     if (TimeReference>23*60*60*1000+59*60*1000+59*1000+999)
     {
         TimeEdit->setEnabled(false);
-        TimeEdit->setTime(QTime().addMSecs(23*60*60*1000+59*60*1000+59*1000+999));
+        TimeEdit->setTime(QTime(0, 0, 0, 0).addMSecs(23*60*60*1000+59*60*1000+59*1000+999));
     }
     else
     {
         TimeEdit->setEnabled(true);
-        TimeEdit->setTime(QTime().addMSecs((int)TimeReference));
+        TimeEdit->setTime(QTime(0, 0, 0, 0).addMSecs((int)TimeReference));
     }
     IsChanging=false;
 }
