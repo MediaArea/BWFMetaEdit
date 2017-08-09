@@ -716,7 +716,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     QLabel* Basic_Material_TimeDate_Time_Label=new QLabel(tr("Time HH:MM:SS.mmm (UTC),"), this);
     Basic_Material_TimeDate_Time=new QTimeEdit(this);
     Basic_Material_TimeDate_Time->setDisplayFormat("hh:mm:ss.zzz");
-    connect(Basic_Material_TimeDate_Time, SIGNAL(timeChanged(const QTime &)), this, SLOT(OnvalueChanged_BM__T(const QTime &)));
+    connect(Basic_Material_TimeDate_Time, SIGNAL(timeChanged(const QTime &)), this, SLOT(OnvalueChanged_BM_T(const QTime &)));
     QLabel* Basic_Material_TimeDate_Samples_Label=new QLabel(tr(("Time "+Ztring::ToZtring(SampleRate)+" Hz (UTC),").c_str()), this);
     Basic_Material_TimeDate_Samples=new QDoubleSpinBox(this);
     Basic_Material_TimeDate_Samples->setDecimals(0);
@@ -758,7 +758,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     QLabel* Signature_TimeDate_Time_Label=new QLabel(tr("Time (UTC)"), this);
     Signature_TimeDate_Time=new QTimeEdit(this);
     Signature_TimeDate_Time->setDisplayFormat("hh:mm:ss.zzz");
-    connect(Signature_TimeDate_Time, SIGNAL(timeChanged(const QTime &)), this, SLOT(OnvalueChanged_S__T(const QTime &)));
+    connect(Signature_TimeDate_Time, SIGNAL(timeChanged(const QTime &)), this, SLOT(OnvalueChanged_S_T(const QTime &)));
     QLabel* Signature_TimeDate_Samples_Label=new QLabel(tr(("Time "+Ztring::ToZtring(SampleRate)+" Hz (UTC)").c_str()), this);
     Signature_TimeDate_Samples=new QDoubleSpinBox(this);
     Signature_TimeDate_Samples->setDecimals(0);
@@ -1104,29 +1104,61 @@ void GUI_Main_xxxx_UmidDialog::OnSignature_Toggled (bool Checked)
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_UmidDialog::OnvalueChanged_BM_T (const QTime &Value)
 {
-    if (SampleRate)
-        Basic_Material_TimeDate_Samples->setValue(((qint64)QTime().msecsTo(Value))*SampleRate/1000);
+    if (Updating || SampleRate==0)
+        return;
+
+    Basic_Material_TimeDate_Samples->setValue(float64_int64s(((double)QTime(0, 0, 0, 0).msecsTo(Value))*SampleRate/1000));
 }
 
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_UmidDialog::OnvalueChanged_BM_S (double Value)
 {
-    if (SampleRate)
-        Basic_Material_TimeDate_Time->setTime(QTime().addMSecs((int)(Value/SampleRate*1000)));
+    if (Updating || SampleRate==0)
+        return;
+
+    int64s TimeReference=float64_int64s(Value/SampleRate*1000);
+    Updating=true;
+    if (TimeReference>23*60*60*1000+59*60*1000+59*1000+999)
+    {
+        Basic_Material_TimeDate_Time->setEnabled(false);
+        Basic_Material_TimeDate_Time->setTime(QTime(0, 0, 0, 0).addMSecs(23*60*60*1000+59*60*1000+59*1000+999));
+    }
+    else
+    {
+        Basic_Material_TimeDate_Time->setEnabled(true);
+        Basic_Material_TimeDate_Time->setTime(QTime(0, 0, 0, 0).addMSecs((int)TimeReference));
+    }
+    Updating=false;
 }
 
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_UmidDialog::OnvalueChanged_S_T (const QTime &Value)
 {
-    if (SampleRate)
-        Signature_TimeDate_Samples->setValue(((qint64)QTime().msecsTo(Value))*SampleRate/1000);
+    if (Updating || SampleRate==0)
+        return;
+
+    Signature_TimeDate_Samples->setValue(float64_int64s(((double)QTime(0, 0, 0, 0).msecsTo(Value))*SampleRate/1000));
 }
 
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_UmidDialog::OnvalueChanged_S_S (double Value)
 {
-    if (SampleRate)
-        Signature_TimeDate_Time->setTime(QTime().addMSecs((int)(Value/SampleRate*1000)));
+    if (Updating || SampleRate==0)
+        return;
+
+    int64s TimeReference=float64_int64s(Value/SampleRate*1000);
+    Updating=true;
+    if (TimeReference>23*60*60*1000+59*60*1000+59*1000+999)
+    {
+        Signature_TimeDate_Time->setEnabled(false);
+        Signature_TimeDate_Time->setTime(QTime(0, 0, 0, 0).addMSecs(23*60*60*1000+59*60*1000+59*1000+999));
+    }
+    else
+    {
+        Signature_TimeDate_Time->setEnabled(true);
+        Signature_TimeDate_Time->setTime(QTime(0, 0, 0, 0).addMSecs((int)TimeReference));
+    }
+    Updating=false;
 }
 
 //---------------------------------------------------------------------------
