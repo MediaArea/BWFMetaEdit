@@ -17,7 +17,6 @@
 
 //---------------------------------------------------------------------------
 #include <algorithm>
-#include <functional>
 #include "ZenLib/ZtringList.h"
 using namespace std;
 #if defined(_MSC_VER) && _MSC_VER <= 1200
@@ -114,6 +113,8 @@ ZtringList &ZtringList::operator+= (const ZtringList &Source)
 // Operator =
 ZtringList &ZtringList::operator= (const ZtringList &Source)
 {
+    if (this == &Source)
+       return *this;
     clear();
     Ztring C=Separator[0];
     Ztring Q=Quote;
