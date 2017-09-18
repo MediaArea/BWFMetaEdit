@@ -198,15 +198,15 @@ void Riff_WAVE_bext::Read_Internal ()
     Global->bext->Strings["umid"]=UMID;
     if (Version>=2)
     {
-        if (LoudnessValue)
+        if (LoudnessValue!=0x7FFF)
             Global->bext->Strings["loudnessvalue"].From_Number((float)((int16s)LoudnessValue)/100, 2);
-        if (LoudnessRange)
+        if (LoudnessRange!=0x7FFF)
             Global->bext->Strings["loudnessrange"].From_Number((float)((int16s)LoudnessRange)/100, 2);
-        if (MaxTruePeakLevel)
+        if (MaxTruePeakLevel!=0x7FFF)
             Global->bext->Strings["maxtruepeaklevel"].From_Number((float)((int16s)MaxTruePeakLevel)/100, 2);
-        if (MaxMomentaryLoudness)
+        if (MaxMomentaryLoudness!=0x7FFF)
             Global->bext->Strings["maxmomentaryloudness"].From_Number((float)((int16s)MaxMomentaryLoudness)/100, 2);
-        if (MaxShortTermLoudness)
+        if (MaxShortTermLoudness!=0x7FFF)
             Global->bext->Strings["maxshorttermloudness"].From_Number((float)((int16s)MaxShortTermLoudness)/100, 2);
     }
     if (!CodingHistory.empty())
@@ -271,11 +271,22 @@ void Riff_WAVE_bext::Modify_Internal ()
     }
     Chunk.Content.Size=TargetedSize;
 
-    int16s  LoudnessValue=(int16u)float32_int32s(Ztring(Global->bext->Strings["loudnessvalue"]).To_float32()*100);
-    int16s  LoudnessRange=(int16u)float32_int32s(Ztring(Global->bext->Strings["loudnessrange"]).To_float32()*100);
-    int16s  MaxTruePeakLevel=(int16u)float32_int32s(Ztring(Global->bext->Strings["maxtruepeaklevel"]).To_float32()*100);
-    int16s  MaxMomentaryLoudness=(int16u)float32_int32s(Ztring(Global->bext->Strings["maxmomentaryloudness"]).To_float32()*100);
-    int16s  MaxShortTermLoudness=(int16u)float32_int32s(Ztring(Global->bext->Strings["maxshorttermloudness"]).To_float32()*100);
+    int16s LoudnessValue=0x7FFF;
+    if(!Global->bext->Strings["loudnessvalue"].empty())
+        LoudnessValue=(int16u)float32_int32s(Ztring(Global->bext->Strings["loudnessvalue"]).To_float32()*100);
+    int16s LoudnessRange=0x7FFF;
+    if(!Global->bext->Strings["loudnessrange"].empty())
+        LoudnessRange=(int16u)float32_int32s(Ztring(Global->bext->Strings["loudnessrange"]).To_float32()*100);
+    int16s MaxTruePeakLevel=0x7FFF;
+    if(!Global->bext->Strings["maxtruepeaklevel"].empty())
+        MaxTruePeakLevel=(int16u)float32_int32s(Ztring(Global->bext->Strings["maxtruepeaklevel"]).To_float32()*100);
+    int16s MaxMomentaryLoudness=0x7FFF;
+    if(!Global->bext->Strings["maxmomentaryloudness"].empty())
+        MaxMomentaryLoudness=(int16u)float32_int32s(Ztring(Global->bext->Strings["maxmomentaryloudness"]).To_float32()*100);
+    int16s MaxShortTermLoudness=0x7FFF;
+    if(!Global->bext->Strings["maxshorttermloudness"].empty())
+        MaxShortTermLoudness=(int16u)float32_int32s(Ztring(Global->bext->Strings["maxshorttermloudness"]).To_float32()*100);
+
     int16u  BextVersion=Global->bext->Strings["bextversion"].To_int16u();
     if (BextVersion<1 && !Global->bext->Strings["umid"].empty())
         BextVersion=1;
