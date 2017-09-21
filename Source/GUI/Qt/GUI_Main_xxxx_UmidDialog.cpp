@@ -1417,7 +1417,12 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
 
     //Basic_Material
     double bm_var = (double)(FromHex(Value, 32, 2)+(FromHex(Value, 34, 2)<<8)+(FromHex(Value, 36, 2)<<16)+(FromHex(Value, 38, 2)<<24));
-	Basic_Material_TimeDate_Samples->setValue((double)(FromHex(Value, 32, 2)+(FromHex(Value, 34, 2)<<8)+(FromHex(Value, 36, 2)<<16)+(FromHex(Value, 38, 2)<<24)));
+	Basic_Material_TimeDate_Samples->setValue(bm_var);
+    if (SampleRate)
+    {
+        int64s TimeReference=float64_int64s(bm_var/SampleRate*1000);
+        Basic_Material_TimeDate_Time->setTime(QTime(0, 0, 0, 0).addMSecs((int)TimeReference));
+    }
 
     Basic_Material_TimeDate_Date->setDate(QDate::fromJulianDay(2400001).addDays(FromBCD(Value, 40, 1, Fail)*10
                                                                               + FromBCD(Value, 41, 1, Fail)
@@ -1425,6 +1430,7 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
                                                                               + FromBCD(Value, 43, 1, Fail)*100
                                                                               + FromBCD(Value, 44, 1, Fail)*100000
                                                                               + FromBCD(Value, 45, 1, Fail)*10000));
+
     if (Fail)
         return false;
     if ((FromHex(Value, 46, 1)&0x8)!=0x8)
@@ -1444,7 +1450,12 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
 
         //Signature_TimeDate
         double sig_var = (double)(FromHex(Value, 64, 2)+(FromHex(Value, 66, 2)<<8)+(FromHex(Value, 68, 2)<<16)+(FromHex(Value, 70, 2)<<24));
-		Signature_TimeDate_Samples->setValue((double)(FromHex(Value, 64, 2)+(FromHex(Value, 66, 2)<<8)+(FromHex(Value, 68, 2)<<16)+(FromHex(Value, 70, 2)<<24)));
+		Signature_TimeDate_Samples->setValue(sig_var);
+        if (SampleRate)
+        {
+            int64s TimeReference=float64_int64s(sig_var/SampleRate*1000);
+            Signature_TimeDate_Time->setTime(QTime(0, 0, 0, 0).addMSecs((int)TimeReference));
+        }
 
         Signature_TimeDate_Date->setDate(QDate::fromJulianDay(2400001).addDays(FromBCD(Value, 72, 1, Fail)*10
                                                                              + FromBCD(Value, 73, 1, Fail)
