@@ -2,7 +2,7 @@
 //
 // This code was created in 2010 for the Library of Congress and the
 // other federal government agencies participating in the Federal Agencies
-// Digitization Guidelines Initiative and it is in the public domain.
+// Digital Guidelines Initiative and it is in the public domain.
 //
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -114,7 +114,7 @@ options Groups[Group_Max]=
             {"Rules_OriginatorReference_Rec", "BWF OriginatorReference (EBU R99-1999) recommendations", Type_CheckBox, false},
             {"Rules_INFO_Req", "INFO (Microsoft definition) requirements", Type_CheckBox, true},
             {"Rules_INFO_Rec", "INFO (Microsoft definition) recommendations", Type_CheckBox, false},
-            {"Rules_FADGI_Rec", "Federal Agencies Digitization Guidelines Initative recommendations", Type_CheckBox, false},
+            {"Rules_FADGI_Rec", "Federal Agencies Digital Guidelines Initative recommendations", Type_CheckBox, false},
         },
         true,
     },
