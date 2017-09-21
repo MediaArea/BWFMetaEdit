@@ -12,11 +12,30 @@
 #define GUI_Main_xxxx_LoudnessH
 //---------------------------------------------------------------------------
 
+#include <iostream>
+
 //---------------------------------------------------------------------------
 class Core;
 #include <QDialog>
+#include <QDoubleSpinBox>
 class QDoubleSpinBox;
 class QDialogButtonBox;
+//---------------------------------------------------------------------------
+
+//***************************************************************************
+// Helpers
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+class Loudness_SpinBox : public QDoubleSpinBox
+{
+    Q_OBJECT
+
+public:
+    Loudness_SpinBox(QWidget *parent = 0);
+    void fixup(QString &input) const;
+};
+
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -32,7 +51,7 @@ public:
     GUI_Main_xxxx_Loudness(Core* C, const std::string &FileName_, const std::string &Field_, const QString &Value, bool Rules_Requirements_, QWidget* parent=NULL);
 
     //Widgets
-    QDoubleSpinBox*     Loudness;
+    Loudness_SpinBox*   Loudness;
     QDialogButtonBox*   Dialog;
 
 private Q_SLOTS:

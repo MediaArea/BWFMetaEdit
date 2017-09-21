@@ -25,6 +25,24 @@
 //---------------------------------------------------------------------------
 
 //***************************************************************************
+// Helpers
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+Loudness_SpinBox::Loudness_SpinBox(QWidget *parent) : QDoubleSpinBox(parent)
+{
+}
+
+//---------------------------------------------------------------------------
+void Loudness_SpinBox::fixup(QString &input) const
+{
+        if(input == suffix() || input == QString(specialValueText().append(suffix())))
+            input = QString("%1%2").arg(minimum()).arg(suffix());
+        else
+            QDoubleSpinBox::fixup(input);
+}
+
+//***************************************************************************
 // Constructor/Destructor
 //***************************************************************************
 
@@ -48,17 +66,20 @@ GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &File
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
 
     //Extra - Bext
-    Loudness=new QDoubleSpinBox();
+    Loudness=new Loudness_SpinBox();
+    Loudness->setSpecialValueText("None");
     Loudness->setDecimals(2);
+
+    // Ranges are from min -1 (for None value)
     if (Rules_Requirements_)
     {
         if (Field=="LoudnessValue" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
-            Loudness->setRange(-99.99, 99.99);
+            Loudness->setRange(-100.00, 99.99);
         if (Field=="LoudnessRange")
-            Loudness->setRange(0, 99.99);
+            Loudness->setRange(-1, 99.99);
     }
     else
-        Loudness->setRange(-655.36, 655.35);
+        Loudness->setRange(-655.37, 655.35);
     if (Field=="LoudnessValue" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
         Loudness->setSuffix(" LUFS");
     if (Field=="LoudnessRange")
@@ -86,25 +107,26 @@ GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &File
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_Loudness::OnAccept ()
 {
-    std::string Value=Ztring().From_Number(Loudness->value(), 2).To_UTF8();
-    if (!C->IsValid(FileName, Field, Value))
+    std::string Value = "";
+    if(Loudness->value() != Loudness->minimum())
     {
-        QMessageBox MessageBox;
-        MessageBox.setWindowTitle("BWF MetaEdit");
-        MessageBox.setText((string("Field does not conform to rules:\n")+C->IsValid_LastError(FileName)).c_str());
-        #if (QT_VERSION >= 0x040200)
-            MessageBox.setStandardButtons(QMessageBox::Ok);
-        #endif // (QT_VERSION >= 0x040200)
-        MessageBox.setIcon(QMessageBox::Warning);
-        MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
-        MessageBox.exec();
-        return;
+        Value=Ztring().From_Number(Loudness->value(), 2).To_UTF8();
+        if (!C->IsValid(FileName, Field, Value))
+        {
+            QMessageBox MessageBox;
+            MessageBox.setWindowTitle("BWF MetaEdit");
+            MessageBox.setText((string("Field does not conform to rules:\n")+C->IsValid_LastError(FileName)).c_str());
+            #if (QT_VERSION >= 0x040200)
+                MessageBox.setStandardButtons(QMessageBox::Ok);
+            #endif // (QT_VERSION >= 0x040200)
+            MessageBox.setIcon(QMessageBox::Warning);
+            MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+            MessageBox.exec();
+            return;
+        }
     }
 
-    if (Loudness->value())
-        C->Set(FileName, Field, Value);
-    else
-        C->Set(FileName, Field, ""); //Clear the value instead of 0.00
+    C->Set(FileName, Field, Value);
 
     accept();
 }
