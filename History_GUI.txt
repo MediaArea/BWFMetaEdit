@@ -4,6 +4,19 @@ Notes:
 - Deleted
 x Correction
 
+Version 1.3.2, 2017-09-26
+-------------
++ Packages for latest versions of Debian, Ubuntu, Fedora, RHEL/CentOS...
++ Update of third party libs (Qt)
++ Update FADGI long name (Digitization to Digital)
+x Drag and drop was not working on newest versions of macOS
+x Fix sync issues between samples count and translated timestamp
+x Unknown loudness was stored as 0x0000 but specs says it must be 0x7FFF
+x CodingHistory edition was not working well on macOS
+x CodingHistory was not correctly reading history with carriage returns
+x Fix crash with some files
+x Fix several minor issues with UMID editor
+
 Version 1.3.1, 2014-04-14
 -------------
 + Refresh of the UI (upgrading Qt, the UI toolkit, to version 5.2)
