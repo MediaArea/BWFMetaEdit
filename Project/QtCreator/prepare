@@ -1,0 +1,29 @@
+#! /bin/sh
+
+QMAKE_ARG=
+
+OS=$(uname -s)
+if [ "$OS" = "Darwin" ]
+then
+  QMAKE_ARG="$QMAKE_ARG -spec macx-g++"
+fi
+
+if qmake --version >/dev/null 2>&1
+then
+    qmake $QMAKE_ARG $*
+elif qmake-qt5 --version >/dev/null 2>&1
+then
+    qmake-qt5 $QMAKE_ARG $*
+elif qmake5 --version >/dev/null 2>&1
+then
+    qmake5 $QMAKE_ARG $*
+elif qmake-qt4 --version >/dev/null 2>&1
+then
+    qmake-qt4 $QMAKE_ARG $*
+elif qmake4 --version >/dev/null 2>&1
+then
+    qmake4 $QMAKE_ARG $*
+else
+    echo qmake not found, please install Qt development package
+    exit
+fi

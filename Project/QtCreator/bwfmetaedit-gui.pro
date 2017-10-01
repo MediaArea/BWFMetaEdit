@@ -1,7 +1,36 @@
 QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+win32|macx {
 TARGET = "BWF MetaEdit"
+} else {
+TARGET = "bwfmetaedit-gui"
+}
+
+win32 {
+    RC_FILE = bwfmetaedit-gui.rc
+    contains(QT_ARCH, i386): DESTDIR = Win32
+    contains(QT_ARCH, x86_64): DESTDIR = x64
+}
+
+macx {
+    LIBS += -framework CoreFoundation
+    QMAKE_INFO_PLIST = ../Mac/Info.plist
+    ICON = ../Mac/Logo.icns
+
+    contains(MACSTORE, yes|1) {
+        QMAKE_CFLAGS += -gdwarf-2
+        QMAKE_CXXFLAGS += -gdwarf-2
+        QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+    }
+}
+
+unix {
+    isEmpty(BINDIR): BINDIR = /usr/bin
+    target.path = $$BINDIR
+    INSTALLS += target
+}
+
 TEMPLATE = app
 
 CONFIG += qt release
@@ -131,9 +160,3 @@ RESOURCES += \
     ../../Source/Resource/GUI_Main.qrc
 
 INCLUDEPATH += $$PWD/../../Source
-
-macx: {
-    LIBS += -framework CoreFoundation
-    ICON = ../../Source/Resource/Image/FADGI/Logo.icns
-    QMAKE_INFO_PLIST = Info.plist
-}
