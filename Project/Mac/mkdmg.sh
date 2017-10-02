@@ -27,7 +27,7 @@ KIND_lower=`echo ${KIND} |awk '{print tolower($0)}'`
 SIGNATURE="MediaArea.net"
 FILES="tmp-${APPNAME}_${KIND}"
 TEMPDMG="tmp-${APPNAME}_${KIND}.dmg"
-FINALDMG="${APPNAME}_${KIND}_${VERSION}_Mac.dmg"
+FINALDMG="${APPNAME/ /}_${KIND}_${VERSION}_Mac.dmg"
 
 # Clean up
 rm -fr "${FILES}-Root"
@@ -72,26 +72,16 @@ fi
 
 if [ "$KIND" = "GUI" ]; then
 
-    cd ../GNU/GUI
-    if test -e ".libs/${APPNAME_lower}-${KIND_lower}"; then
-        mv -f ".libs/${APPNAME_lower}-${KIND_lower}" .
-    fi
-    if ! test -x "${APPNAME_lower}-${KIND_lower}"; then
+    cd ../QtCreator
+    if ! test -e "${APPNAME}.app"; then
         echo
-        echo "${APPNAME_lower}-${KIND_lower} can’t be found, or this file isn’t a executable."
+        echo "${APPNAME}.app can’t be found, or this file isn’t a executable."
         echo
         exit 1
     fi
-    strip -u -r "${APPNAME_lower}-${KIND_lower}"
-    cd ../../Mac
+    cd ../Mac
 
-    mkdir -p "${FILES}/${APPNAME}.app/Contents/MacOS"
-    mkdir "${FILES}/${APPNAME}.app/Contents/Resources"
-    cp "../GNU/GUI/${APPNAME_lower}-${KIND_lower}" "${FILES}/${APPNAME}.app/Contents/MacOS/${APPNAME}"
-    cp Logo.icns "${FILES}/${APPNAME}.app/Contents/Resources"
-    cp Info.plist "${FILES}/${APPNAME}.app/Contents"
-    sed -i '' -e "s/VERSION/${VERSION}/g" "${FILES}/${APPNAME}.app/Contents/Info.plist"
-    echo -n 'APPL????' > "${FILES}/${APPNAME}.app/Contents/PkgInfo"
+    cp -r "../QtCreator/${APPNAME}.app" "${FILES}"
 
     macdeployqt "${FILES}/${APPNAME}.app"
 

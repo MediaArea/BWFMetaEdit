@@ -93,14 +93,9 @@ pushd Project/GNU/CLI
 popd
 
 # now build GUI
-pushd Project/GNU/GUI
-	%__chmod +x autogen
-	./autogen
-	%if 0%{?mageia} > 5
-		%configure --disable-dependency-tracking
-	%else
-		%configure
-	 %endif
+pushd Project/QtCreator
+	%__chmod +x prepare
+	./prepare BINDIR=%{_bindir}
 
 	%__make %{?jobs:-j%{jobs}}
 popd
@@ -110,8 +105,8 @@ pushd Project/GNU/CLI
 	%__make install DESTDIR=%{buildroot}
 popd
 
-pushd Project/GNU/GUI
-	%__make install DESTDIR=%{buildroot}
+pushd Project/QtCreator
+	%__make install INSTALL_ROOT=%{buildroot}
 popd
 
 # icon

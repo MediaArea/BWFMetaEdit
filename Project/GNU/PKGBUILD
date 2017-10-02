@@ -18,16 +18,15 @@ prepare() {
     sh ./autogen
     ./configure --prefix=/usr
 
-    cd "${srcdir}"/bwfmetaedit/Project/GNU/GUI
-    sh ./autogen
-    CXXFLAGS="-fPIC" ./configure --prefix=/usr
+    cd "${srcdir}"/bwfmetaedit/Project/QtCreator
+    sh ./prepare BINDIR=/usr/bin
 }
 
 build() {
     cd "${srcdir}"/bwfmetaedit/Project/GNU/CLI
     make
 
-    cd "${srcdir}"/bwfmetaedit/Project/GNU/GUI
+    cd "${srcdir}"/bwfmetaedit/Project/QtCreator
     make
 }
 
@@ -47,8 +46,8 @@ package_bwfmetaedit-gui() {
     pkgdesc="${pkgdesc} (GUI)"
     depends=('qt5-base')
 
-    cd "${srcdir}"/bwfmetaedit/Project/GNU/GUI
-    make DESTDIR="${pkgdir}" install
+    cd "${srcdir}"/bwfmetaedit/Project/QtCreator
+    make INSTALL_ROOT="${pkgdir}" install
 
     install -D -m 0644 "${srcdir}"/bwfmetaedit/License.html "${pkgdir}"/usr/share/licenses/${pkgname}/License.html
     install -D -m 0644 "${srcdir}"/bwfmetaedit/History_GUI.txt "${pkgdir}"/usr/share/doc/${pkgname}/History.txt

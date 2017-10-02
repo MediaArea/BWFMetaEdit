@@ -5,13 +5,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>BWFMetaEdit</string>
+	<string>BWF MetaEdit</string>
 	<key>CFBundleIconFile</key>
 	<string>Logo</string>
 	<key>CFBundleIdentifier</key>
 	<string>net.mediaarea.bwfmetaedit.mac</string>
 	<key>CFBundleName</key>
-	<string>BWFMetaEdit</string>
+	<string>BWF MetaEdit</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
