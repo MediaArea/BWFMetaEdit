@@ -26,7 +26,7 @@ BuildRequires:  automake
 BuildRequires:  autoconf
 %if 0%{?mageia}
 BuildRequires:  sane-backends-iscan
-%if 0%{?mageia} > 5
+%if 0%{?mageia} >= 6
 BuildRequires:  libproxy-pacrunner
 %endif
 BuildRequires:  libuuid-devel
@@ -43,7 +43,7 @@ BWF MetaEdit provides this service:
 Summary:	Supplies technical and tag information about a video or audio file (GUI)
 Group:		Productivity/Multimedia/Other
 
-%if 0%{?fedora_version}
+%if 0%{?fedora_version} || 0%{?centos} >= 7
 BuildRequires:  pkgconfig(Qt5)
 %else
 %if 0%{?mageia}
@@ -53,7 +53,11 @@ BuildRequires:  lib64qt5base5-devel
 BuildRequires:  libqt5base5-devel
 %endif
 %else
-BuildRequires:  libqt4-devel
+%if 0%{?suse_version} >= 1200
+BuildRequires: libqt5-qtbase-devel
+%else
+BuildRequires: libqt4-devel
+%endif
 %endif
 %endif
 
@@ -83,7 +87,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS"
 pushd Project/GNU/CLI
 	%__chmod +x autogen
 	./autogen
-	%if 0%{?mageia} > 5
+	%if 0%{?mageia} >= 6
 		%configure --disable-dependency-tracking
 	%else
 		%configure
