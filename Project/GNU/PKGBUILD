@@ -59,4 +59,5 @@ package_bwfmetaedit-gui() {
     install -D -m 0644 "${srcdir}"/bwfmetaedit/Project/GNU/GUI/bwfmetaedit-gui.desktop "${pkgdir}"/usr/share/applications/bwfmetaedit-gui.desktop
     install -D -m 0644 "${srcdir}"/bwfmetaedit/Project/GNU/GUI/bwfmetaedit-gui.kde3.desktop "${pkgdir}"/usr/share/apps/konqueror/servicemenus/bwfmetaedit-gui.desktop
     install -D -m 0644 "${srcdir}"/bwfmetaedit/Project/GNU/GUI/bwfmetaedit-gui.kde4.desktop "${pkgdir}"/usr/share/kde4/services/ServiceMenus/bwfmetaedit-gui.desktop
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/Project/GNU/GUI/bwfmetaedit-gui.kde4.desktop "${pkgdir}"/usr/share/kservices5/ServiceMenus/bwfmetaedit-gui.desktop
 }

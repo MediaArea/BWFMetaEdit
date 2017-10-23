@@ -73,6 +73,8 @@ install: build
 	install -m 644 Project/GNU/GUI/bwfmetaedit-gui.kde3.desktop $(CURDIR)/debian/tmp/usr/share/apps/konqueror/servicemenus/bwfmetaedit-gui.desktop
 	install -dm 755 $(CURDIR)/debian/tmp/usr/share/kde4/services/ServiceMenus/
 	install -m 644 Project/GNU/GUI/bwfmetaedit-gui.kde4.desktop $(CURDIR)/debian/tmp/usr/share/kde4/services/ServiceMenus/bwfmetaedit-gui.desktop
+	install -dm 755 $(CURDIR)/debian/tmp/usr/share/kservices5/ServiceMenus/
+	install -m 644 Project/GNU/GUI/bwfmetaedit-gui.kde4.desktop $(CURDIR)/debian/tmp/usr/share/kservices5/ServiceMenus/bwfmetaedit-gui.desktop
 
 # Build architecture-independent files here.
 binary-indep: build install
