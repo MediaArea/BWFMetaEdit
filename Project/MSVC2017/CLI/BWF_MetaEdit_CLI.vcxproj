@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,28 +19,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E3711417-8DF9-47DE-AADE-EA3832EA6BDC}</ProjectGuid>
-    <RootNamespace>GUI_Qt</RootNamespace>
+    <ProjectGuid>{8A1AE679-131A-493C-86CA-91179B0955A4}</ProjectGuid>
+    <RootNamespace>BWF_MetaEdit</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -64,13 +69,13 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\Intermediate\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\Intermediate\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\Intermediate\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\Intermediate\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -84,25 +89,29 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bwfmetaedit</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bwfmetaedit</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">bwfmetaedit</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">bwfmetaedit</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/qtbase/include;../../../../Qt/qtbase/include/QtWidgets;../../../../Qt/qtbase/include/QtGui;../../../../Qt/qtbase/include/QtCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5PlatformSupportd.lib;qwindowsd.lib;qminimald.lib;qtmaind.lib;winmm.lib;ws2_32.lib;imm32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../../Qt/qtbase/lib/MSVC2010/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)bwfmetaedit.exe</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -112,7 +121,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/qtbase/include;../../../../Qt/qtbase/include/QtWidgets;../../../../Qt/qtbase/include/QtGui;../../../../Qt/qtbase/include/QtCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -123,29 +132,27 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5PlatformSupportd.lib;qwindowsd.lib;qminimald.lib;qtmaind.lib;winmm.lib;ws2_32.lib;imm32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../../Qt/qtbase/lib/MSVC2010/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)bwfmetaedit.exe</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/qtbase/include;../../../../Qt/qtbase/include/QtWidgets;../../../../Qt/qtbase/include/QtGui;../../../../Qt/qtbase/include/QtCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib;qwindows.lib;qminimal.lib;qtmain.lib;winmm.lib;ws2_32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../../Qt/qtbase/lib/MSVC2010/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)bwfmetaedit.exe</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
@@ -156,68 +163,27 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/qtbase/include;../../../../Qt/qtbase/include/QtWidgets;../../../../Qt/qtbase/include/QtGui;../../../../Qt/qtbase/include/QtCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib;qwindows.lib;qminimal.lib;qtmain.lib;winmm.lib;ws2_32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../../Qt/qtbase/lib/MSVC2010/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)bwfmetaedit.exe</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Source\GUI\Qt\App.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_About.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Help.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Table.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Text.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Menu.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_Log.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_Trace.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Table.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Text.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_UndoDialog.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_UmidDialog.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx__Common.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Bext.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CodingHistoryDialog.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_DateDialog.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TextEditDialog.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TimeReferenceDialog.cpp" />
-    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Preferences.cpp" />
-    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_aXML.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_About.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Help.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_Core_Table.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_Core_Text.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_Ouput_Trace.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_Output_Log.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_Technical_Table.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_Technical_Text.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_UndoDialog.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_Loudness.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_UmidDialog.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_xxxx__Common.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_Bext.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_CodingHistoryDialog.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_DateDialog.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_TextEditDialog.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Main_xxxx_TimeReferenceDialog.cpp" />
-    <ClCompile Include="_Automated\moc_GUI_Preferences.cpp" />
-    <ClCompile Include="_Automated\qrc_GUI_Main.cpp" />
+    <ClCompile Include="..\..\..\Source\CLI\CLI_Help.cpp" />
+    <ClCompile Include="..\..\..\Source\CLI\CLI_Main.cpp" />
+    <ClCompile Include="..\..\..\Source\CLI\CommandLine_Parser.cpp" />
     <ClCompile Include="..\..\..\Source\Common\Common_About.cpp" />
     <ClCompile Include="..\..\..\Source\Common\Core.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Base.cpp" />
@@ -225,6 +191,7 @@
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE__PMX.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_aXML.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_bext.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_data.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_ds64.cpp" />
@@ -253,34 +220,15 @@
     <ClCompile Include="..\..\..\Source\ZenLib\ZtringList.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\ZtringListList.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\ZtringListListF.cpp" />
-    <ClCompile Include="..\..\..\Source\md5\md5.c" />
+    <ClCompile Include="..\..\..\Source\MD5\md5.c" />
     <ClCompile Include="..\..\..\Source\TinyXml\tinystr.cpp" />
     <ClCompile Include="..\..\..\Source\TinyXml\tinyxml.cpp" />
     <ClCompile Include="..\..\..\Source\TinyXml\tinyxmlerror.cpp" />
     <ClCompile Include="..\..\..\Source\TinyXml\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Source\GUI\Qt\App.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_About.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Help.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Table.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Text.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_Log.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_stderr.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_Trace.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Table.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Technical_Text.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_UndoDialog.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Loudness.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_UmidDialog.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx__Common.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_Bext.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CodingHistoryDialog.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_DateDialog.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TextEditDialog.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TimeReferenceDialog.h" />
-    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Preferences.h" />
+    <ClInclude Include="..\..\..\Source\CLI\CLI_Help.h" />
+    <ClInclude Include="..\..\..\Source\CLI\CommandLine_Parser.h" />
     <ClInclude Include="..\..\..\Source\Common\Common_About.h" />
     <ClInclude Include="..\..\..\Source\Common\Core.h" />
     <ClInclude Include="..\..\..\Source\Riff\Riff_Base.h" />
@@ -310,13 +258,12 @@
     <ClInclude Include="..\..\..\Source\ZenLib\ZtringList.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\ZtringListList.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\ZtringListListF.h" />
-    <ClInclude Include="..\..\..\Source\md5\md5.h" />
+    <ClInclude Include="..\..\..\Source\MD5\md5.h" />
     <ClInclude Include="..\..\..\Source\TinyXml\tinystr.h" />
     <ClInclude Include="..\..\..\Source\TinyXml\tinyxml.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="BWF_MetaEdit_GUI.rc" />
-    <ResourceCompile Include="..\..\..\Source\GUI\Qt\GUI_Main.rc" />
+    <ResourceCompile Include="BWF_MetaEdit_CLI.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

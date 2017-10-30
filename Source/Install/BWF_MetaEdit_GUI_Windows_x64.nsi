@@ -79,7 +79,7 @@ Section "SectionPrincipale" SEC01
 
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_NAME_EXE}" "" "" "" "" "" "${PRODUCT_NAME} ${PRODUCT_VERSION}"
   SetOutPath "$INSTDIR"
-  File "/oname=${PRODUCT_NAME_EXE}" "..\..\Project\MSVC2015\GUI\x64\Release\BWF_MetaEdit_GUI.exe"
+  File "/oname=${PRODUCT_NAME_EXE}" "..\..\Project\MSVC2017\GUI\x64\Release\BWF_MetaEdit_GUI.exe"
   File "/oname=History.txt" "..\..\History_GUI.txt"
   File "..\..\License.html"
   File  "/oname=ReadMe.txt""..\..\Release\ReadMe_GUI_Windows.txt"
