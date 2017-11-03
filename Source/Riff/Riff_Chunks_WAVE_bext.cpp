@@ -290,7 +290,7 @@ void Riff_WAVE_bext::Modify_Internal ()
     int16u  BextVersion=Global->bext->Strings["bextversion"].To_int16u();
     if (BextVersion<1 && !Global->bext->Strings["umid"].empty())
         BextVersion=1;
-    if (BextVersion<2 && (LoudnessValue || LoudnessRange || MaxTruePeakLevel || MaxMomentaryLoudness || MaxShortTermLoudness))
+    if (BextVersion<2 && (LoudnessValue!=0x7FFF || LoudnessRange!=0x7FFF || MaxTruePeakLevel!=0x7FFF || MaxMomentaryLoudness!=0x7FFF || MaxShortTermLoudness!=0x7FFF))
         BextVersion=2;
     Put_String(256, Global->bext->Strings["description"]);
     Put_String( 32, Global->bext->Strings["originator"]);
@@ -318,11 +318,14 @@ void Riff_WAVE_bext::Modify_Internal ()
         Put_UUID(int128u(0));
         Put_UUID(int128u(0));
     }
-    Put_L2    (     LoudnessValue);
-    Put_L2    (     LoudnessRange);
-    Put_L2    (     MaxTruePeakLevel);
-    Put_L2    (     MaxMomentaryLoudness);
-    Put_L2    (     MaxShortTermLoudness);
+    if (BextVersion>=2)
+    {
+        Put_L2    (     LoudnessValue);
+        Put_L2    (     LoudnessRange);
+        Put_L2    (     MaxTruePeakLevel);
+        Put_L2    (     MaxMomentaryLoudness);
+        Put_L2    (     MaxShortTermLoudness);
+    }
     if (BextVersion<=2)
         while (Chunk.Content.Buffer_Offset<602)
             Put_L1(0); //Erasing old data
