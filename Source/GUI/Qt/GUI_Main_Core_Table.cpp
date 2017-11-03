@@ -99,7 +99,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         //Handling date display
         if (!Date.empty())
         {
-            menu.addAction(new QAction(QString().fromUtf8(Date.To_Local().c_str()), this));
+            menu.addAction(new QAction(QString().fromLocal8Bit(Date.To_Local().c_str()), this));
             menu.addSeparator();
         }
 
@@ -110,7 +110,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
             {
                 Pos--;
 
-                QString Text=QString().fromUtf8(History[Pos].To_Local().c_str());
+                QString Text=QString().fromLocal8Bit(History[Pos].To_Local().c_str());
                 if (!Text.isEmpty())
                 {
                     QAction* Action=new QAction(Text, this);
@@ -132,7 +132,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         {
             for (int Row=0; Row<rowCount(); Row++)
             {
-                item(Row, Item->column())->setText(QString().fromUtf8(Ztring(C->Get(FileName, Field)).To_Local().c_str()));
+                item(Row, Item->column())->setText(QString::fromLocal8Bit(Ztring(C->Get(FileName, Field)).To_Local().c_str()));
                 dataChanged(indexFromItem(item(Row, Item->column())), indexFromItem(item(Row, Item->column())));
 
                 //Changing BextVersion Enabled value
@@ -150,7 +150,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
             Text=Text.remove("&Set ICRD to file creation timestamp ("); //If you change this, change the creation text too
             Text=Text.remove("&Set originationDate and Time to file creation timestamp ("); //If you change this, change the creation text too
             Text=Text.remove(")"); //If you change this, change the creation text too
-            if (horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("ICRD"))
+            if (horizontalHeaderItem(Item->column())->text()==QString().fromLocal8Bit("ICRD"))
             {
                 item(Item->row(), Item->column())->setText(Text);
                 dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
@@ -162,8 +162,8 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
                 QString Time=Text;
                 Time.remove(0, 10+1);
                 Time.remove(8, 4);
-                int Date_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("OriginationDate")?0:-1);
-                int Time_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("OriginationTime")?0:1);
+                int Date_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromLocal8Bit("OriginationDate")?0:-1);
+                int Time_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromLocal8Bit("OriginationTime")?0:1);
                 item(Item->row(), Date_Pos)->setText(Date);
                 dataChanged(indexFromItem(item(Item->row(), Date_Pos)), indexFromItem(item(Item->row(), Date_Pos)));
                 item(Item->row(), Time_Pos)->setText(Time);
@@ -300,7 +300,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         //Filling
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(NewValue.c_str());
+        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
         if (Field=="Originator")
             SetText(index, "IARL"); //IARL is sometimes updated if Originator is modified
 
@@ -326,7 +326,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         //Filling
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(NewValue.c_str());
+        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -396,7 +396,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         //Updating
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(NewValue.c_str());
+        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -443,7 +443,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         //Updating
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(NewValue.c_str());
+        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -467,7 +467,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         //Updating
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(NewValue.c_str());
+        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");

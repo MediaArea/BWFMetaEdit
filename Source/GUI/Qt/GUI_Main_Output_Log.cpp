@@ -46,9 +46,9 @@ bool GUI_Main_Output_Log::event (QEvent *Event)
         clear();
         switch (KindOfLog)
         {
-            case 1 : setPlainText(QString().fromUtf8(ZenLib::Ztring(C->Text_stdout.str()).To_Local().c_str())); break;
-            case 2 : setPlainText(QString().fromUtf8(ZenLib::Ztring(C->Text_stderr.str()).To_Local().c_str())); break;
-            case 3 : setPlainText(QString().fromUtf8(ZenLib::Ztring(C->Text_stdall.str()).To_Local().c_str())); break;
+            case 1 : setPlainText(QString().fromLocal8Bit(ZenLib::Ztring(C->Text_stdout.str()).To_Local().c_str())); break;
+            case 2 : setPlainText(QString().fromLocal8Bit(ZenLib::Ztring(C->Text_stderr.str()).To_Local().c_str())); break;
+            case 3 : setPlainText(QString().fromLocal8Bit(ZenLib::Ztring(C->Text_stdall.str()).To_Local().c_str())); break;
             default: ;
         }
 

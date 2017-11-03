@@ -39,7 +39,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
 
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
-    setWindowTitle(QString::fromUtf8(Field.c_str()));
+    setWindowTitle(QString::fromLocal8Bit(Field.c_str()));
     setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
 
     //Buttons
@@ -112,7 +112,7 @@ void GUI_Main_xxxx_TextEditDialog::OnTextChanged ()
         Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for iXML.<br />Edit at your own risk. For more information see the <a href=\"http://www.gallery.co.uk/ixml/\">iXML Specification</a><br />Edits to this chunk can not be undone</body></html>");
     else if (!C->IsValid(FileName, Field, Value))
     {
-        Label->setText(QString::fromUtf8(C->IsValid_LastError(FileName).c_str()));
+        Label->setText(QString::fromLocal8Bit(C->IsValid_LastError(FileName).c_str()));
         Dialog->button(QDialogButtonBox::Ok)->setEnabled(false);
     }
     else
@@ -162,7 +162,7 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Load()
     delete[] Buffer;
     ModifiedContent.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
     ModifiedContent.FindAndReplace("\r", "\n", 0, Ztring_Recursive);
-    QString ModifiedContentQ=QString().fromUtf8(ModifiedContent.To_Local().c_str());
+    QString ModifiedContentQ=QString().fromLocal8Bit(ModifiedContent.To_Local().c_str());
 
     TextEdit->setPlainText(ModifiedContentQ);
 }

@@ -46,7 +46,7 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
 
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
-    setWindowTitle(QString::fromUtf8(Field.c_str()));
+    setWindowTitle(QString::fromLocal8Bit(Field.c_str()));
     setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
 
     //Buttons
@@ -56,7 +56,7 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
     Date=NULL;
     if (Field=="OriginationDate")
     {
-        QString DateQ=QString().fromUtf8(ZenLib::Ztring(C->FileDate_Get(FileName)).To_Local().c_str());
+        QString DateQ=QString().fromLocal8Bit(ZenLib::Ztring(C->FileDate_Get(FileName)).To_Local().c_str());
         if (DateQ.size()>10)
         {
             DateQ.truncate(10);
@@ -70,7 +70,7 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
     }
     if (Field=="OriginationTime")
     {
-        QString TimeQ=QString().fromUtf8(ZenLib::Ztring(C->FileDate_Get(FileName)).To_Local().c_str());
+        QString TimeQ=QString().fromLocal8Bit(ZenLib::Ztring(C->FileDate_Get(FileName)).To_Local().c_str());
         if (TimeQ.size()>10)
         {
             TimeQ.remove(0, 10+1);
@@ -180,7 +180,7 @@ void GUI_Main_xxxx_DateDialog::OnTextChanged ()
     std::string Value=TextEdit->toPlainText().toLocal8Bit().data();
     if (!C->IsValid(FileName, Field, Value))
     {
-        Label->setText(QString::fromUtf8(C->IsValid_LastError(FileName).c_str()));
+        Label->setText(QString::fromLocal8Bit(C->IsValid_LastError(FileName).c_str()));
         Dialog->button(QDialogButtonBox::Ok)->setEnabled(false);
     }
     else
@@ -258,7 +258,7 @@ void GUI_Main_xxxx_DateDialog::OnMenu_Calendar ()
         {
             TimeEdit->setVisible(true);
             TimeEdit_Activated->setChecked(true);
-            TimeEdit->setTime(QTime::fromString(QString().fromUtf8(Value.To_Local().c_str()), Qt::ISODate));
+            TimeEdit->setTime(QTime::fromString(QString().fromLocal8Bit(Value.To_Local().c_str()), Qt::ISODate));
         }
     }
     OnCalendar_Changed();

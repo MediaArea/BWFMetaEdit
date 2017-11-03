@@ -338,7 +338,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Load()
     delete[] Buffer;
     ModifiedContent.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
     ModifiedContent.FindAndReplace("\r", "\n", 0, Ztring_Recursive);
-    QString ModifiedContentQ=QString().fromUtf8(ModifiedContent.To_Local().c_str());
+    QString ModifiedContentQ=QString().fromLocal8Bit(ModifiedContent.To_Local().c_str());
 
     TextEdit->setPlainText(ModifiedContentQ);
     if (Central->currentIndex()==0)
@@ -428,7 +428,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::List2Text ()
     }
     
     if (!ToReturn.empty())
-        TextEdit->setPlainText(ToReturn.To_Local().c_str());
+        TextEdit->setPlainText(QString::fromLocal8Bit(ToReturn.To_Local().c_str()));
 }
 
 //---------------------------------------------------------------------------
@@ -497,7 +497,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
                     Modified=true;
                     Value="ANALOGUE";
                 }
-                QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(Value.To_Local().c_str()));
+                QTableWidgetItem* Item=new QTableWidgetItem(QString().fromLocal8Bit(Value.To_Local().c_str()));
             
                 Table->setItem((int)Line_Pos, Column, Item);
             }
