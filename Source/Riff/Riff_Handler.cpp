@@ -476,7 +476,7 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
     }
     if (Field=="timereference" && Value=="0")
         Value.clear();
-    if (Field=="bext" && (Value=="0" || Value=="1"))
+    if (Field=="bext")
         return Set("bextversion", Value, Rules);
 
     //Setting it
