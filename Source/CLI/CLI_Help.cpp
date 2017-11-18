@@ -66,6 +66,7 @@ std::string Help()
     ToDisplay<<"--in-core=              data from the specified Core file"<<std::endl;
     ToDisplay<<"--in-core-remove        clear data (remove bext and INFO)"<<std::endl;
     //ToDisplay<<"--in-core-xml           data from filename.core.xml (NOT IMPLEMENTED)"<<std::endl;
+    ToDisplay<<"--BextVersion=          specified bext version"<<std::endl;
     ToDisplay<<"--Description=          specified bext description"<<std::endl;
     ToDisplay<<"--Originator=           specified bext originator"<<std::endl;
     ToDisplay<<"--OriginatorReference=  specified bext originator reference"<<std::endl;

@@ -449,6 +449,7 @@ CL_OPTION(Default)
      && Field!="originationdate"
      && Field!="originationtime"
      && Field!="timereference"
+     && Field!="bextversion"
      && Field!="umid"
      && Field!="history"
      && Field!="xmp"
