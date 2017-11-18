@@ -286,7 +286,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         ModifiedContentQ=index.model()->data(index.model()->index(index.row(), index.column(), rootIndex())).toString(); //Old value
 
     //Description / Originator / OriginatorReference
-    if (Field=="Description" || Field=="Originator" || Field=="OriginatorReference" || Field=="IARL") 
+    if (Field=="Description" || Field=="Originator" || Field=="OriginatorReference" || Field=="IARL" || Field=="IART" || Field=="ICMS" || Field=="ICMT" || Field=="ICOP" || Field=="IENG" || Field=="IGNR" || Field=="IKEY" || Field=="IMED" || Field=="INAM" || Field=="IPRD" || Field=="ISBJ" || Field=="ISFT" || Field=="ISRC" || Field=="ISRF" || Field=="ITCH") //Most INFO fields added in order to permit to show warning 
     {
         //User interaction
         GUI_Main_xxxx_TextEditDialog* Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName, Field, ModifiedContentQ);

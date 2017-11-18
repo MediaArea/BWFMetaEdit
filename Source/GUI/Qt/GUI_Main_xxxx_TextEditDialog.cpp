@@ -117,7 +117,22 @@ void GUI_Main_xxxx_TextEditDialog::OnTextChanged ()
     }
     else
     {
-        Label->setText(QString());
+        bool IsASCII=true;
+        for (size_t i=0; i<Value.size(); i++)
+            if (((unsigned char)Value[i]) >= 0x80)
+            {
+                IsASCII = false;
+                break;
+            }
+        if (IsASCII)
+            Label->setText(QString());
+        else
+        {
+            if (Field=="Description" || Field=="Originator" || Field=="OriginatorReference")
+                Label->setText("Warning: due to the presence of non ASCII characters, which are forbidden by EBU Text 3285 specifications,<br />there is a risk of interoperability issues with other tools (including BWF MetaEdit on other platforms)<br />as the content is converted with local codepage");
+            else
+                Label->setText("Warning: due to the presence of non ASCII characters, whose the encoding in files is not specified in WAV documents,<br />there is a risk of interoperability issues with other tools (including BWF MetaEdit on other platforms)<br />as the content is converted with local codepage");
+        }
         Dialog->button(QDialogButtonBox::Ok)->setEnabled(true);
     }
 }
