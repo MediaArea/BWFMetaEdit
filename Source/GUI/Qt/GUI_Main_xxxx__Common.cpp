@@ -296,7 +296,7 @@ void GUI_Main_xxxx__Common::SetText (int Row, const QString &Field)
         if (Field_Current==Field)
         {
             string FileName=FileName_Before+item(Row, 0)->text().toLocal8Bit().data();
-            item(Row, Column)->setText(C->Get(FileName, Field.toLocal8Bit().data()).c_str());
+            item(Row, Column)->setText(QString::fromLocal8Bit(C->Get(FileName, Field.toLocal8Bit().data()).c_str()));
             dataChanged(indexFromItem(item(Row, Column)), indexFromItem(item(Row, Column)));
             //Colors_Update(item(Row, Column), FileName, Field.toLocal8Bit().data());
             return;
@@ -376,7 +376,7 @@ void GUI_Main_xxxx__Common::Fill ()
     for (size_t Data_Pos=0; Data_Pos<List[0].size(); Data_Pos++)
         if (Data_Pos==0 || Main->Menu_Fields_CheckBoxes[Fill_Group()*options::MaxCount+Data_Pos-1]->isChecked())
         {
-            QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(List[0][Data_Pos].To_Local().c_str()));
+            QTableWidgetItem* Item=new QTableWidgetItem(QString().fromLocal8Bit(List[0][Data_Pos].To_Local().c_str()));
             Item->setToolTip(Columns_ToolTip(List[0][Data_Pos]));
             setHorizontalHeaderItem((int)(Data_Pos-ColumnMissing_Count), Item);
         }
@@ -396,7 +396,7 @@ void GUI_Main_xxxx__Common::Fill ()
                 if (Data_Pos<List[File_Pos].size())
                 {
                     ZenLib::Ztring Value=List[File_Pos][Data_Pos];
-                    Item=new QTableWidgetItem(QString().fromUtf8(Value.To_Local().c_str()));
+                    Item=new QTableWidgetItem(QString().fromLocal8Bit(Value.To_Local().c_str()));
                     Item->setToolTip(Columns_ToolTip(List[0][Data_Pos]));
                 }
                 else

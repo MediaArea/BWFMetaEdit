@@ -84,16 +84,16 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
 
     //Handling export display
     if (!Import.empty())
-        menu.addAction(new QAction(QString().fromUtf8(Import.To_Local().c_str()), this));
+        menu.addAction(new QAction(QString().fromLocal8Bit(Import.To_Local().c_str()), this));
     if (!Export.empty())
-        menu.addAction(new QAction(QString().fromUtf8(Export.To_Local().c_str()), this));
+        menu.addAction(new QAction(QString().fromLocal8Bit(Export.To_Local().c_str()), this));
     if (!Import.empty() || !Export.empty())
         menu.addSeparator();
 
     //Handling Fill display
     if (!Fill.empty())
     {
-        menu.addAction(new QAction(QString().fromUtf8(Fill.To_Local().c_str()), this));
+        menu.addAction(new QAction(QString().fromLocal8Bit(Fill.To_Local().c_str()), this));
         menu.addSeparator();
     }
 
@@ -104,7 +104,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         {
             Pos--;
 
-            QString Text=QString().fromUtf8(History[Pos].To_Local().c_str());
+            QString Text=QString().fromLocal8Bit(History[Pos].To_Local().c_str());
             if (!Text.isEmpty())
             {
                 QAction* Action=new QAction(Text, this);
@@ -117,7 +117,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     if (!Remove.empty())
     {
         menu.addSeparator();
-        menu.addAction(new QAction(QString().fromUtf8(Remove.To_Local().c_str()), this));
+        menu.addAction(new QAction(QString().fromLocal8Bit(Remove.To_Local().c_str()), this));
     }
 
     //Displaying
@@ -294,7 +294,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
             Ztring NewValue(C->Get(FileName, "BextVersion"));
 
             //Updating
-            item(index.row(), index.column())->setText(("Version "+NewValue).c_str());
+            item(index.row(), index.column())->setText(QString::fromLocal8Bit(("Version "+NewValue).c_str()));
             dataChanged(indexFromItem(item(index.row(), index.column())), indexFromItem(item(index.row(), index.column())));
             return false;
         }
@@ -310,7 +310,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         {
             Ztring ModifiedContent=C->Get(FileName, Field);
             ModifiedContent.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-            ModifiedContentQ=QString().fromUtf8(ModifiedContent.To_Local().c_str());
+            ModifiedContentQ=QString::fromLocal8Bit(ModifiedContent.To_Local().c_str());
         }
 
         //User interaction
@@ -343,7 +343,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         //Filling
         Ztring NewValue(C->Get(FileName, Field));
         NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(NewValue.c_str());
+        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
         return false;
     }
 

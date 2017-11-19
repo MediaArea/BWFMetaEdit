@@ -982,7 +982,7 @@ void GUI_Main_xxxx_UmidDialog::OnTextChanged (const QString &)
 
     if (!C->IsValid(FileName, Field, Value))
     {
-        Label->setText(QString::fromUtf8(C->IsValid_LastError(FileName).c_str()));
+        Label->setText(QString::fromLocal8Bit(C->IsValid_LastError(FileName).c_str()));
         Dialog->button(QDialogButtonBox::Ok)->setEnabled(false);
     }
     else

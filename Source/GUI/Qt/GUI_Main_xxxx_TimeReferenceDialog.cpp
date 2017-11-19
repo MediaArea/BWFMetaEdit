@@ -76,7 +76,7 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
     SampleRate=Ztring(C->Get(FileName, "SampleRate")).To_int64u();
     Ztring TimeReference=C->Get(FileName, "TimeReference");
     Ztring TimeReferenceS=C->Get(FileName, "TimeReference (translated)");
-    TimeEdit->setTime(QTime::fromString(QString().fromUtf8(TimeReferenceS.To_Local().c_str()), Qt::ISODate));
+    TimeEdit->setTime(QTime::fromString(QString().fromLocal8Bit(TimeReferenceS.To_Local().c_str()), Qt::ISODate));
     LineEdit->setValue(TimeReference.To_int32u());
     IsChanging=false;
 }
