@@ -144,6 +144,13 @@ popd
   %suse_update_desktop_file -n %{buildroot}/%{_datadir}/kde4/services/ServiceMenus/bwfmetaedit-gui.desktop AudioVideo AudioVideoEditing
   %suse_update_desktop_file -n %{buildroot}/%{_datadir}/kservices5/ServiceMenus/bwfmetaedit-gui.desktop AudioVideo AudioVideoEditing
 %endif
+%if %{undefined fedora_version} || 0%{?fedora_version} < 26
+install -dm 755 %{buildroot}%{_datadir}/appdata/
+install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datadir}/appdata/bwfmetaedit-gui.appdata.xml
+%else
+install -dm 755 %{buildroot}%{_datadir}/metainfo/
+install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datadir}/metainfo/bwfmetaedit-gui.metainfo.xml
+%endif
 
 %clean
 [ -d "%{buildroot}" -a "%{buildroot}" != "" ] && %__rm -rf "%{buildroot}"
@@ -176,6 +183,13 @@ popd
 %dir %{_datadir}/kservices5
 %dir %{_datadir}/kservices5/ServiceMenus
 %{_datadir}/kservices5/ServiceMenus/*.desktop
+%if 0%{?fedora_version} && 0%{?fedora_version} >= 26
+%dir %{_datadir}/metainfo
+%{_datadir}/metainfo/*.xml
+%else
+%dir %{_datadir}/appdata
+%{_datadir}/appdata/*.xml
+%endif
 
 %changelog
 * Tue Jan 01 2010 Jerome Martinez <info@mediaarea.net> - 1.2.0-0
