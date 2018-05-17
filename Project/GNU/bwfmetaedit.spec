@@ -15,6 +15,7 @@ License:		GPL
 URL:			http://mediainfo.sourceforge.net/
 Packager:		Jerome Martinez <info@mediaarea.net>
 Source0:		bwfmetaedit_%{version}-1.tar.gz
+Prefix:		%{_prefix}
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:	dos2unix
 BuildRequires: 	gcc-c++
