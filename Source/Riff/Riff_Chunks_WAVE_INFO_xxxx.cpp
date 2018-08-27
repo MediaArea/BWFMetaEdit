@@ -110,10 +110,11 @@ void Riff_WAVE_INFO_xxxx::Modify_Internal ()
 
     //Creating buffer
     Chunk.Content.Buffer_Offset=0;
-    Chunk.Content.Size=Global->INFO->Strings[Field].size();
-    delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[Global->INFO->Strings[Field].size()];
+    Chunk.Content.Size=Global->INFO->Strings[Field].size()+1;
+    delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[Chunk.Content.Size];
 
     Put_String(Global->INFO->Strings[Field].size(), Global->INFO->Strings[Field]);
+    Put_L1(0x00); //ZSTR i.e. null terminated text string
 
     Chunk.Content.IsModified=true;
     Chunk.Content.Size_IsModified=true;
