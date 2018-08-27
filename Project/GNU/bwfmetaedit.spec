@@ -4,7 +4,7 @@
 
 # norootforbuild
 
-%global bwfmetaedit_version		1.3.3
+%global bwfmetaedit_version		1.3.4
 
 Name:			bwfmetaedit
 Version:		%bwfmetaedit_version
