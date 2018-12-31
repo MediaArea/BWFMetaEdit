@@ -70,7 +70,7 @@ public:
     string                              Get                             (const string &FileName, const string &Field);
     bool                                Set                             (const string &FileName, const string &Field, const string &Value);
     string                              History                         (const string &FileName, const string &Field);
-    bool                                IsValid                         (const string &FileName, const string &Field, const string &Value);
+    bool                                IsValid                         (const string &FileName, const string &Field, const string &Value, bool IgnoreCoherency=false);
     string                              IsValid_LastError               (const string &FileName);
     bool                                IsModified                      (const string &FileName, const string &Field);
     string                              FileDate_Get                    (const string &FileName);

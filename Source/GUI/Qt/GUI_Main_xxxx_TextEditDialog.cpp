@@ -81,7 +81,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
 void GUI_Main_xxxx_TextEditDialog::OnAccept ()
 {
     std::string Value=TextEdit->toPlainText().toLocal8Bit().data();
-    if (!C->IsValid(FileName, Field, Value))
+    if (!C->IsValid(FileName, Field, Value, true))
     {
         QMessageBox MessageBox;
         MessageBox.setWindowTitle("BWF MetaEdit");
@@ -110,7 +110,7 @@ void GUI_Main_xxxx_TextEditDialog::OnTextChanged ()
         Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for aXML.<br />Edit at your own risk. For more information see the <a href=\"http://tech.ebu.ch/docs/tech/tech3285s5.pdf\">BWF aXML chunk specification</a><br />Edits to this chunk can not be undone</body></html>");
     else if (Field=="iXML")
         Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for iXML.<br />Edit at your own risk. For more information see the <a href=\"http://www.gallery.co.uk/ixml/\">iXML Specification</a><br />Edits to this chunk can not be undone</body></html>");
-    else if (!C->IsValid(FileName, Field, Value))
+    else if (!C->IsValid(FileName, Field, Value, true))
     {
         Label->setText(QString::fromLocal8Bit(C->IsValid_LastError(FileName).c_str()));
         Dialog->button(QDialogButtonBox::Ok)->setEnabled(false);

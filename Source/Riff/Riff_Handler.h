@@ -42,6 +42,7 @@ public:
         bool                            INFO_Req;
         bool                            INFO_Rec;
         bool                            FADGI_Rec;
+        bool                            EBU_ISRC_Rec;
 
         rules()
         {
@@ -52,6 +53,7 @@ public:
             INFO_Req=true;
             INFO_Rec=false;
             FADGI_Rec=false;
+            EBU_ISRC_Rec=false;
         }
     };
 
@@ -73,7 +75,7 @@ public:
     bool            Remove              (const string &Field);
     string          History             (const string &Field);
     bool            IsOriginal          (const string &Field, const string &Value);
-    bool            IsValid             (const string &Field, const string &Value, rules Rules);
+    bool            IsValid             (const string &Field, const string &Value, rules Rules, bool IgnoreCoherency=false);
     string          IsValid_LastError   () {return IsValid_Errors.str();}
     bool            IsModified          (const string &Field);
     

@@ -115,6 +115,7 @@ options Groups[Group_Max]=
             {"Rules_INFO_Req", "INFO (Microsoft definition) requirements", Type_CheckBox, true},
             {"Rules_INFO_Rec", "INFO (Microsoft definition) recommendations", Type_CheckBox, false},
             {"Rules_FADGI_Rec", "Federal Agencies Digital Guidelines Initative recommendations", Type_CheckBox, false},
+            {"Rules_EBU_ISRC_Rec", "EBU recommendations about automatic ISRC filling", Type_CheckBox, true},
         },
         true,
     },
