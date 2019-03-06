@@ -13,6 +13,9 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then sudo apt-get update -qq ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then sudo apt-get install -y libqt4-dev ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then brew update ; true ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then brew install qt@5.5 ; true ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then brew install qt ; true ; fi
 
-script: export PATH=/usr/local/opt/qt@5.5/bin:$PATH && cd Project/GNU/CLI/ && ./autogen.sh && ./configure && make && cd ../../QtCreator && ./prepare INCLUDEPATH+=/usr/local/include CONFIG+=c++11 -after QMAKE_MACOSX_DEPLOYMENT_TARGET=10.9 && make
+  # get a working version of toolchain.prf
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then sudo curl -o /usr/local/opt/qt/mkspecs/features/toolchain.prf http://code.qt.io/cgit/qt/qtbase.git/plain/mkspecs/features/toolchain.prf?id=62013d77721820976102581b4cbd31404c109903 ; fi
+
+script: export PATH=/usr/local/opt/qt/bin:$PATH && cd Project/GNU/CLI/ && ./autogen.sh && ./configure && make && cd ../../QtCreator && ./prepare INCLUDEPATH+=/usr/local/include CONFIG+=c++11 -after QMAKE_MACOSX_DEPLOYMENT_TARGET=10.9 && make
