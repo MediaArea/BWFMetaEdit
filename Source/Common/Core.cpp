@@ -897,9 +897,10 @@ int Core::Menu_File_Import_Core(const string &FileName)
 			                while (Element)
 			                {
                                 string Field=Element->ValueStr();
-                                string Value=Element->GetText();
+                                const char* Value=Element->GetText();
                                 if (!Field.empty())
-                                    In_Core_Add(FileName, Field=="TimeReference_translated"?"TimeReference (translated)":Field.c_str(), Value); 
+                                    In_Core_Add(FileName, Field=="TimeReference_translated"?"TimeReference (translated)":Field.c_str(), Value?Ztring(Value):Ztring());
+
                                 Element=Element->NextSiblingElement();
                             }
                         }
