@@ -262,6 +262,7 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_INFO_Req                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_INFO_Req(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_INFO_Rec                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_INFO_Rec(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_FADGI_Rec                 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_FADGI_Rec(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_EBU_ISRC_Rec              ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_EBU_ISRC_Rec(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_Riff2Rf64_Reject           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_riff2rf64_Reject(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_Overwrite_Reject           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Overwrite_Reject(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_NoPadding_Accept           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_NoPadding_Accept(bool)));
@@ -811,6 +812,17 @@ void GUI_Main::OnMenu_Rules_INFO_Rec(bool)
 void GUI_Main::OnMenu_Rules_FADGI_Rec(bool)
 {
     C->Rules.FADGI_Rec=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_FADGI_Rec]->isChecked();
+
+    if (View==NULL)
+        return;
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Rules_EBU_ISRC_Rec(bool)
+{
+    C->Rules.EBU_ISRC_Rec=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_EBU_ISRC_Rec]->isChecked();
 
     if (View==NULL)
         return;

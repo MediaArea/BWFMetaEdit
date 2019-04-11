@@ -142,6 +142,7 @@ public Q_SLOTS:
     void OnMenu_Rules_INFO_Req                      (bool);
     void OnMenu_Rules_INFO_Rec                      (bool);
     void OnMenu_Rules_FADGI_Rec                     (bool);
+    void OnMenu_Rules_EBU_ISRC_Rec                  (bool);
     void OnMenu_Options_TechCore                    (bool);
     void OnMenu_Options_riff2rf64_Reject            (bool);
     void OnMenu_Options_Overwrite_Reject            (bool);

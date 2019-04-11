@@ -52,6 +52,7 @@ enum option_rules
     Option_Rules_INFO_Req,
     Option_Rules_INFO_Rec,
     Option_Rules_FADGI_Rec,
+    Option_Rules_EBU_ISRC_Rec,
     Option_Rules_Max
 };
 

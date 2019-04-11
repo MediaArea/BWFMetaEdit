@@ -670,6 +670,7 @@ void Core::Menu_File_Undo_SelectBackupFile(size_t Pos)
     Rules.INFO_Req=false;
     Rules.INFO_Rec=false;
     Rules.FADGI_Rec=false;
+    Rules.EBU_ISRC_Rec=false;
 
     //Launching
     Menu_File_Import_Core(BackupFiles[Pos]);
@@ -1116,14 +1117,14 @@ bool Core::IsModified_Get (const string &FileName)
 }
 
 //---------------------------------------------------------------------------
-bool Core::IsValid (const string &FileName, const string &Field, const string &Value)
+bool Core::IsValid (const string &FileName, const string &Field, const string &Value, bool IgnoreCoherency)
 {
     handlers::iterator Handler=Handlers.find(FileName);
     if (Handler==Handlers.end())
         return false; //file is not registred
 
     if (Handler->second.Riff)
-        return Handler->second.Riff->IsValid(Ztring(Field).MakeLowerCase(), Value, Rules);
+        return Handler->second.Riff->IsValid(Ztring(Field).MakeLowerCase(), Value, Rules, IgnoreCoherency);
 
     return false;
 }

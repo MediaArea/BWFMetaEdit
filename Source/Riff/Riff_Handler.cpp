@@ -388,6 +388,14 @@ string Riff_Handler::Get(const string &Field)
 }
 
 //---------------------------------------------------------------------------
+static const string aXML_Begin     ="<ebuCoreMain xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"urn:ebu:metadata-schema:ebucore\">\r\n"
+                                    "    <coreMetadata>\r\n";
+static const string aXML_ISRC_Begin="        <identifier typeLabel=\"GUID\" typeDefinition=\"Globally Unique Identifier\" formatLabel=\"ISRC\" formatDefinition=\"International Standard Recording Code\" formatLink=\"http://www.ebu.ch/metadata/cs/ebu_IdentifierTypeCodeCS.xml#3.7\">\r\n"
+                                    "            <dc:identifier>ISRC:";
+static const string aXML_ISRC_End  =            "</dc:identifier>\r\n"
+                                    "        </identifier>\r\n";
+static const string aXML_End       ="    </coreMetadata>\r\n"
+                                    "</ebuCoreMain>\r\n";
 bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
 {
     //Integrity
@@ -445,8 +453,91 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
           ||  Value[Value.size()- 1]< '0' || Value[Value.size()- 1]> '9')) 
         Field="timereference (translated)";
 
+    // EBU ISRC recommandations, link aXML ISRC and INFO ISRC
+    Ztring FieldToFill, ValueToFill;
+    if (Rules.EBU_ISRC_Rec)
+    {
+        if (Field=="ISRC")
+        {
+            Ztring OldISRC=Get("ISRC");
+            if (Value!=OldISRC)
+            {
+                Ztring aXML=Get("aXML");
+                if (aXML.empty())
+                {
+                    aXML =aXML_Begin;
+                    aXML+=aXML_ISRC_Begin;
+                    aXML+=Value;
+                    aXML+=aXML_ISRC_End;
+                    aXML+=aXML_End;
+                    FieldToFill="aXML";
+                    ValueToFill=aXML;
+                }
+                else
+                {
+                    size_t Begin=aXML.find(aXML_ISRC_Begin);
+                    size_t End=aXML.find(aXML_ISRC_End, Begin);
+                    if (Begin!=string::npos && End!=string::npos && End<=Begin+aXML_ISRC_Begin.size()+20)
+                    {
+                        Ztring OldISRC_aXML=aXML.substr(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
+                        Ztring OldISRC_INFO=Get("ISRC");
+                        if (OldISRC_aXML.empty() || OldISRC_INFO==OldISRC_aXML)
+                        {
+                            if (Value.empty())
+                            {
+                                aXML.erase(Begin, End+aXML_ISRC_End.size()-Begin);
+                                if (aXML==aXML_Begin+aXML_End)
+                                    aXML.clear();
+                            }
+                            else
+                            {
+                                aXML.erase(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
+                                aXML.insert(Begin+aXML_ISRC_Begin.size(), Value);
+                            }
+                            FieldToFill="aXML";
+                            ValueToFill=aXML;
+                        }
+                    }
+                    else if (aXML.size()>=aXML_End.size() && !aXML.compare(aXML.size()-aXML_End.size(), aXML_End.size(), aXML_End))
+                    {
+                        aXML.insert(aXML.size()-aXML_End.size(), aXML_ISRC_Begin+Value+aXML_ISRC_End);
+                        FieldToFill="aXML";
+                        ValueToFill=aXML;
+                    }
+
+                }
+            }
+        }
+        if (Field=="axml")
+        {
+            Ztring OldaXML=Get("aXML");
+            if (!Value.empty() && Value!=OldaXML)
+            {
+                Ztring NewISRC_aXML;
+                size_t Begin=Value.find(aXML_ISRC_Begin);
+                size_t End=Value.find(aXML_ISRC_End, Begin);
+                if (Begin!=string::npos && End!=string::npos && End<=Begin+aXML_ISRC_Begin.size()+20)
+                    NewISRC_aXML=Value.substr(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
+                Ztring OldISRC_aXML;
+                Begin=OldaXML.find(aXML_ISRC_Begin);
+                End=OldaXML.find(aXML_ISRC_End, Begin);
+                if (Begin!=string::npos && End!=string::npos && End<=Begin+aXML_ISRC_Begin.size()+20)
+                    OldISRC_aXML=OldaXML.substr(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
+                if (!NewISRC_aXML.empty() && NewISRC_aXML!=OldISRC_aXML)
+                {
+                    Ztring OldISRC_INFO=Get("ISRC");
+                    if (OldISRC_INFO.empty() || OldISRC_INFO==OldISRC_aXML)
+                    {
+                        FieldToFill="ISRC";
+                        ValueToFill=NewISRC_aXML;
+                    }
+                }
+            }
+        }
+    }
+
     //Testing validity
-    if (!IsValid(Field, Value, Rules)
+    if (!IsValid(Field, Value, Rules, true)
      && !IsOriginal(Field, Value))
         return false;
 
@@ -487,6 +578,10 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
     {
         if (Rules.FADGI_Rec && Chunks && Chunks->Global && Chunks->Global->INFO)
             Set("IARL", Value, Rules); //If INFO is present, IARL is filled with the same value
+    }
+    if (!FieldToFill.empty())
+    {
+        Set(FieldToFill, ValueToFill, Rules);
     }
 
     return ToReturn;
@@ -547,7 +642,7 @@ bool Riff_Handler::IsModified(const string &Field)
 }
 
 //---------------------------------------------------------------------------
-bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rules)
+bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rules, bool IgnoreCoherency)
 {
     //Reformating
     IsValid_Errors.str(string());
@@ -1239,6 +1334,33 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
         //If error
         if (!Message.empty()) 
             IsValid_Errors<<"malformed input, ICRD "<<Message;
+    }
+
+    //ISRC
+    else if (Field=="ISRC")
+    {
+        //Test
+        string Message;
+        if (Rules.EBU_ISRC_Rec && !IgnoreCoherency)
+        {
+            //From aXML
+            Ztring aXML=Get("aXML");
+            Ztring aXML_ISRC;
+            size_t Begin=aXML.find(aXML_ISRC_Begin);
+            size_t End=aXML.find(aXML_ISRC_End, Begin);
+            if (Begin!=string::npos && End!=string::npos && End<=Begin+aXML_ISRC_Begin.size()+20)
+                aXML_ISRC=aXML.substr(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
+
+            //From INFO
+            if (!aXML_ISRC.empty() && !Value.empty() && aXML_ISRC!=Value)
+            {
+                Message="is not same between aXML and INFO chunks";
+            }
+        }
+
+        //If error
+        if (!Message.empty()) 
+            IsValid_Errors<<"malformed input, ISRC "<<Message;
     }
 
     //ICRD
