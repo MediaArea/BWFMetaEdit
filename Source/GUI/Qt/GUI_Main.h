@@ -202,6 +202,8 @@ private:
     //Helpers
     void View_Refresh(view View_New=View_None);
     bool Close(const std::string &FileName=std::string());
+    std::string* ToClose_FileName;
+    bool Exit;
     enum open_timer_init
     {
         Timer_Open_Files,

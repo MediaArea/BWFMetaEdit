@@ -51,6 +51,8 @@ GUI_Main::GUI_Main(Core* _C)
 {
     //Internal
     C=_C;
+    Exit=false;
+    ToClose_FileName=NULL;
 
     //Options
     Bext_Toggle=false;
@@ -223,7 +225,7 @@ void GUI_Main::dropEvent(QDropEvent *Event)
 //---------------------------------------------------------------------------
 void GUI_Main::closeEvent(QCloseEvent *Event)
 {
-    if (Close())
+    if (Close() || Exit)
         Event->accept();
     else
         Event->ignore();
@@ -256,13 +258,8 @@ bool GUI_Main::Close(const string &FileName)
             {
                 case QMessageBox::Save    : // Save was clicked
                                             OnMenu_File_Save_All();
-                                            if (!C->Text_stderr.str().empty())
-                                                return false; // Errors were present, showing errors
-                                            else
-                                            {
-                                                C->Menu_File_Close_All();
-                                                return true;
-                                            }
+                                            Exit=true;
+                                            return false; // Work in progress in another thread
                                             break;
                 case QMessageBox::Discard : // Don't Save was clicked
                                             C->Menu_File_Close_All();
@@ -300,13 +297,8 @@ bool GUI_Main::Close(const string &FileName)
             {
                 case QMessageBox::Save    : // Save was clicked
                                             OnMenu_File_Save_All();
-                                            if (!C->Text_stderr.str().empty())
-                                                return false; // Errors were present, showing errors
-                                            else
-                                            {
-                                                C->Menu_File_Close_File(FileName);
-                                                return true;
-                                            }
+                                            ToClose_FileName=new string(FileName);
+                                            return false; // work in progress in another thread;
                                             break;
                 case QMessageBox::Discard : // Don't Save was clicked
                                             C->Menu_File_Close_File(FileName);
@@ -440,7 +432,25 @@ void GUI_Main::OnOpen_Timer ()
                                           C->StdOut("Opening files, finished");
                                           break;
             case Timer_Save             : C->Menu_File_Save_End();
-                                          C->StdOut("Saving files, finished"); break;
+                                          C->StdOut("Saving files, finished");
+                                          if (ToClose_FileName)
+                                          {
+                                              if (C->Text_stderr.str().empty())
+                                                  C->Menu_File_Close_File(*ToClose_FileName);
+                                              delete ToClose_FileName;
+                                              ToClose_FileName=NULL;
+                                          }
+                                          if (Exit)
+                                          {
+                                              if (C->Text_stderr.str().empty())
+                                              {
+                                                   C->Menu_File_Close_All();
+                                                   close();
+                                              }
+                                              else
+                                                  Exit=false;
+                                          }
+                                          break;
             default                     : C->StdOut("???, finished"); break;
         }
 
