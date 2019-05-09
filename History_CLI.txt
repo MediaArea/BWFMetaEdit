@@ -4,6 +4,9 @@ Notes:
 - Deleted
 x Correction
 
+Version 1.3.8, 2019-04-26
+-------------
+
 Version 1.3.7, 2019-04-19
 -------------
 + Fix crash with empty fields in XML input
