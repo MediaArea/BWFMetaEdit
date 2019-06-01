@@ -187,6 +187,10 @@ public:
         buffer              Out_Buffer_End;
         bool                Out_Buffer_WriteAtEnd;
 
+        #ifdef MACSTORE
+        string              Temp_Path;
+        string              Temp_Name;
+        #endif
         string              File_Name;
         int64u              File_Size;
         string              File_Date;

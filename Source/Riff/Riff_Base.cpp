@@ -12,6 +12,12 @@
 #include "Riff/Riff_Chunks.h" //Needed for ds64
 #include <iostream>
 #include <cstring>
+
+#ifdef MACSTORE
+#include "Common/Mac_Helpers.h"
+#include "ZenLib/Dir.h"
+#endif
+
 using namespace std;
 using namespace ZenLib;
 //---------------------------------------------------------------------------
@@ -491,7 +497,14 @@ void Riff_Base::Write ()
         else
         {
             //Real writing
+            #ifdef MACSTORE
+            Global->Temp_Name=makeUniqueFileName();
+            Global->Temp_Path=makeTemporaryDirectoryForFile(Global->File_Name.c_str());
+
+            if (!Global->Out.Create(Global->Temp_Path+Global->Temp_Name, false))
+            #else
             if (!Global->Out.Create(Global->File_Name+".tmp", false))
+            #endif
                 throw exception_write("Can not create temporary file");
 
             //Begin
@@ -527,8 +540,20 @@ void Riff_Base::Write ()
             //Renaming files
             if (!File::Delete(Global->File_Name))
                 throw exception_write("Original file can't be deleted");
+            #ifdef MACSTORE
+            if (!File::Move(Global->Temp_Path+Global->Temp_Name, Global->File_Name))
+            #else
             if (!File::Move(Global->File_Name+".tmp", Global->File_Name))
+            #endif
                 throw exception_write("Temporary file can't be renamed");
+
+            #ifdef MACSTORE
+            if (Global->Temp_Path.size() && Dir::Exists(Global->Temp_Path))
+                deleteTemporaryDirectory(Global->Temp_Path.c_str());
+
+            Global->Temp_Name="";
+            Global->Temp_Path="";
+            #endif
         }
     }
 }
@@ -646,8 +671,15 @@ void Riff_Base::Write_Internal (const int8u* Temp, size_t Temp_Offset)
         {
             if (!Global->Out.Opened_Get())
             {
+                #ifdef MACSTORE
+                Global->Temp_Name=makeUniqueFileName();
+                Global->Temp_Path=makeTemporaryDirectoryForFile(Global->File_Name.c_str());
+                if (!Global->Out.Create(Global->Temp_Path+Global->Temp_Name))
+                    throw exception_write(Global->Temp_Path+Global->Temp_Name+": temporary file can not be created");
+                #else
                 if (!Global->Out.Create(Global->File_Name+".tmp"))
                     throw exception_write(Global->File_Name+": temporary file can not be created");
+                #endif
             }
             if (Global->Out.Write(Temp, Temp_Offset)<Temp_Offset)
                 throw exception_write();
