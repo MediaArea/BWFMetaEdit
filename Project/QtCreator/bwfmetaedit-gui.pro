@@ -156,6 +156,13 @@ SOURCES = \
     ../../Source/ZenLib/ZtringListList.cpp \
     ../../Source/ZenLib/ZtringListListF.cpp
 
+contains(MACSTORE, yes|1) {
+    DEFINES           += MACSTORE
+    HEADERS           += ../../Source/Common/Mac_Helpers.h
+    OBJECTIVE_SOURCES += ../../Source/Common/Mac_Helpers.mm
+    LIBS              += -framework Foundation
+}
+
 RESOURCES += \
     ../../Source/Resource/GUI_Main.qrc
 
