@@ -35,7 +35,7 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, i
     //Internal
     C=_C;
     FileName=FileName_;
-    int8u BextVersion=Ztring().From_Local(C->Get(FileName, "BextVersion")).To_int8u();
+    int8u BextVersion=Ztring().From_UTF8(C->Get(FileName, "BextVersion")).To_int8u();
 
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
@@ -80,7 +80,7 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, i
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_Bext::OnAccept ()
 {
-    std::string Value=Ztring::ToZtring(Version->value(), 0).To_Local();
+    std::string Value=Ztring::ToZtring(Version->value(), 0).To_UTF8();
     if (!C->IsValid(FileName, "BextVersion", Value))
     {
         QMessageBox MessageBox;

@@ -97,7 +97,7 @@ GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &File
     Loudness->setFocus();
 
     //Default settings
-    Loudness->setValue(Ztring(C->Get(FileName, Field)).To_float32());
+    Loudness->setValue(Ztring().From_UTF8(C->Get(FileName, Field)).To_float32());
 }
 
 //***************************************************************************

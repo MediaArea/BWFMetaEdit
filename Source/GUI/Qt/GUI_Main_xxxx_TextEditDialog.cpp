@@ -39,7 +39,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
 
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
-    setWindowTitle(QString::fromLocal8Bit(Field.c_str()));
+    setWindowTitle(QString::fromUtf8(Field.c_str()));
     setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
 
     //Buttons
@@ -80,7 +80,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_TextEditDialog::OnAccept ()
 {
-    std::string Value=TextEdit->toPlainText().toLocal8Bit().data();
+    std::string Value=TextEdit->toPlainText().toUtf8().data();
     if (!C->IsValid(FileName, Field, Value, true))
     {
         QMessageBox MessageBox;
@@ -103,7 +103,7 @@ void GUI_Main_xxxx_TextEditDialog::OnAccept ()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_TextEditDialog::OnTextChanged ()
 {
-    std::string Value=TextEdit->toPlainText().toLocal8Bit().data();
+    std::string Value=TextEdit->toPlainText().toUtf8().data();
     if (Field=="XMP")
         Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for XMP.<br />Edit at your own risk. For more information see the <a href=\"http://www.adobe.com/products/xmp/\">Adobe XMP website</a><br />Edits to this chunk can not be undone</body></html>");
     else if (Field=="aXML")
@@ -112,7 +112,7 @@ void GUI_Main_xxxx_TextEditDialog::OnTextChanged ()
         Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for iXML.<br />Edit at your own risk. For more information see the <a href=\"http://www.gallery.co.uk/ixml/\">iXML Specification</a><br />Edits to this chunk can not be undone</body></html>");
     else if (!C->IsValid(FileName, Field, Value, true))
     {
-        Label->setText(QString::fromLocal8Bit(C->IsValid_LastError(FileName).c_str()));
+        Label->setText(QString::fromUtf8(C->IsValid_LastError(FileName).c_str()));
         Dialog->button(QDialogButtonBox::Ok)->setEnabled(false);
     }
     else
@@ -173,11 +173,11 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Load()
     Buffer[Buffer_Offset]='\0';
 
     //Filling
-    Ztring ModifiedContent((const char*)Buffer);
+    Ztring ModifiedContent=Ztring().From_UTF8((const char*)Buffer);
     delete[] Buffer;
-    ModifiedContent.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-    ModifiedContent.FindAndReplace("\r", "\n", 0, Ztring_Recursive);
-    QString ModifiedContentQ=QString().fromLocal8Bit(ModifiedContent.To_Local().c_str());
+    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+    ModifiedContent.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+    QString ModifiedContentQ=QString().fromUtf8(ModifiedContent.To_UTF8().c_str());
 
     TextEdit->setPlainText(ModifiedContentQ);
 }
@@ -199,5 +199,5 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Save()
         return;
 
     //Filling
-    F.Write(Ztring(TextEdit->toPlainText().toLocal8Bit().data()));
+    F.Write(Ztring(TextEdit->toPlainText().toUtf8().data()));
 }

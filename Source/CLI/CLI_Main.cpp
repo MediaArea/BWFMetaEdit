@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
     //Parsing
     C.Menu_File_Open_Files_Begin();
     for (size_t Pos=0; Pos<In_Core_File_List.size(); Pos++)
-        if (C.Menu_File_Import_Core(In_Core_File_List[Pos])<0)
+        if (C.Menu_File_Import_Core(In_Core_File_List[Pos].To_UTF8())<0)
         {
             //Errors
             std::cerr<<C.Text_stderr.str()<<std::endl;
@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
             return 0; //Stopping on error is requested
         }
     for (size_t Pos=0; Pos<Files.size(); Pos++)
-        C.Menu_File_Open_Files_Continue(Files[Pos]);
+        C.Menu_File_Open_Files_Continue(Files[Pos].To_UTF8());
 
     //If no filenames (and no options with filenames)
     if (C.Menu_File_Open_Files_Open_Get()==0)

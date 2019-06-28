@@ -41,7 +41,7 @@ bool GUI_Main_Core_Text::event (QEvent *Event)
     {
         //Showing
         clear();
-        insertPlainText(QString().fromLocal8Bit(ZenLib::Ztring(C->Core_Get()).To_Local().c_str()));
+        insertPlainText(QString().fromUtf8(C->Core_Get().c_str()));
         
         //Event accepting
         Event->accept();

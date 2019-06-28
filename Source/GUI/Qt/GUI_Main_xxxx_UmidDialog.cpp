@@ -598,7 +598,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     Updating=false;
 	bSigUpdated=true;
 
-    SampleRate=Ztring(C->Get(FileName, "SampleRate")).To_int16u();
+    SampleRate=Ztring().From_UTF8(C->Get(FileName, "SampleRate")).To_int16u();
     while (((qint64)SampleRate)*24*60*60>=0x100000000LL)
         SampleRate/=2;
 
@@ -717,7 +717,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     Basic_Material_TimeDate_Time=new QTimeEdit(this);
     Basic_Material_TimeDate_Time->setDisplayFormat("hh:mm:ss.zzz");
     connect(Basic_Material_TimeDate_Time, SIGNAL(timeChanged(const QTime &)), this, SLOT(OnvalueChanged_BM_T(const QTime &)));
-    QLabel* Basic_Material_TimeDate_Samples_Label=new QLabel(tr(("Time "+Ztring::ToZtring(SampleRate)+" Hz (UTC),").c_str()), this);
+    QLabel* Basic_Material_TimeDate_Samples_Label=new QLabel(tr(("Time "+Ztring::ToZtring(SampleRate).To_UTF8()+" Hz (UTC),").c_str()), this);
     Basic_Material_TimeDate_Samples=new QDoubleSpinBox(this);
     Basic_Material_TimeDate_Samples->setDecimals(0);
     Basic_Material_TimeDate_Samples->setMaximum((double)(((qint64)SampleRate)*24*60*60-1));
@@ -759,7 +759,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     Signature_TimeDate_Time=new QTimeEdit(this);
     Signature_TimeDate_Time->setDisplayFormat("hh:mm:ss.zzz");
     connect(Signature_TimeDate_Time, SIGNAL(timeChanged(const QTime &)), this, SLOT(OnvalueChanged_S_T(const QTime &)));
-    QLabel* Signature_TimeDate_Samples_Label=new QLabel(tr(("Time "+Ztring::ToZtring(SampleRate)+" Hz (UTC)").c_str()), this);
+    QLabel* Signature_TimeDate_Samples_Label=new QLabel(tr(("Time "+Ztring::ToZtring(SampleRate).To_UTF8()+" Hz (UTC)").c_str()), this);
     Signature_TimeDate_Samples=new QDoubleSpinBox(this);
     Signature_TimeDate_Samples->setDecimals(0);
     Signature_TimeDate_Samples->setMaximum((double)(((qint64)SampleRate)*24*60*60-1));
@@ -929,7 +929,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     if (Value.size()>=64)
         Free_Signature->setText(Value.substr(64, 64).c_str());
     Updating=false;
-    if (TryList(Value))
+    if (TryList(Ztring().From_UTF8(Value)))
     {
         Central->setCurrentIndex(0);
         Label->setText("Limitations: SMPTE ST330-2000 only, Audio UMID only, SMPTE Material Number Generation Method only");
@@ -953,7 +953,7 @@ void GUI_Main_xxxx_UmidDialog::OnAccept ()
 	if (Central->currentIndex()!=1)
         OnCurrentChanged(1);
     
-    std::string Value=(Free_Basic->text()+Free_Signature->text()).toLocal8Bit().data();
+    std::string Value=(Free_Basic->text()+Free_Signature->text()).toUtf8().data();
     if (!C->IsValid(FileName, Field, Value))
     {
         QMessageBox MessageBox;
@@ -976,13 +976,13 @@ void GUI_Main_xxxx_UmidDialog::OnAccept ()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_UmidDialog::OnTextChanged (const QString &)
 {
-    std::string Value=Free_Basic->text().toLocal8Bit().data();
+    std::string Value=Free_Basic->text().toUtf8().data();
     if (Value.size()==64)
-        Value+=Free_Signature->text().toLocal8Bit().data();
+        Value+=Free_Signature->text().toUtf8().data();
 
     if (!C->IsValid(FileName, Field, Value))
     {
-        Label->setText(QString::fromLocal8Bit(C->IsValid_LastError(FileName).c_str()));
+        Label->setText(QString::fromUtf8(C->IsValid_LastError(FileName).c_str()));
         Dialog->button(QDialogButtonBox::Ok)->setEnabled(false);
     }
     else
@@ -991,7 +991,7 @@ void GUI_Main_xxxx_UmidDialog::OnTextChanged (const QString &)
         Dialog->button(QDialogButtonBox::Ok)->setEnabled(true);
     }
 
-    Central->setTabEnabled(0, TryList((Free_Basic->text()+Free_Signature->text()).toLocal8Bit().data()));
+    Central->setTabEnabled(0, TryList((Free_Basic->text()+Free_Signature->text()).toUtf8().data()));
 }
 
 //---------------------------------------------------------------------------
@@ -1027,11 +1027,11 @@ void GUI_Main_xxxx_UmidDialog::OnMenu_Load()
     Buffer[Buffer_Offset]='\0';
 
     //Filling
-    Ztring ModifiedContent((const char*)Buffer);
+    Ztring ModifiedContent=Ztring().From_UTF8((const char*)Buffer);
     delete[] Buffer;
-    ModifiedContent.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-    ModifiedContent.FindAndReplace("\r", "\n", 0, Ztring_Recursive);
-    Field=ModifiedContent.To_Local();
+    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+    ModifiedContent.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+    Field=ModifiedContent.To_UTF8();
 
     if (Field.empty())
         Free_Basic->setText(Field.substr(0, 64).c_str());
@@ -1055,7 +1055,7 @@ void GUI_Main_xxxx_UmidDialog::OnMenu_Save()
         return;
 
     //Filling
-    F.Write(Ztring((Free_Basic->text()+Free_Signature->text()).toLocal8Bit().data()));
+    F.Write(Ztring((Free_Basic->text()+Free_Signature->text()).toUtf8().data()));
 }
 
 //---------------------------------------------------------------------------
@@ -1379,7 +1379,7 @@ void GUI_Main_xxxx_UmidDialog::Text2List ()
     if (Updating)
         return;    
         
-    TryList((Free_Basic->text()+Free_Signature->text()).toLocal8Bit().data());
+    TryList((Free_Basic->text()+Free_Signature->text()).toUtf8().data());
     Label->setText("Limitations: SMPTE ST330-2000 only, Audio UMID only, SMPTE Material Number Generation Method only");
 }
 
@@ -1389,19 +1389,19 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
     Value.MakeUpperCase();
     bool Fail=false;
     
-    if (!C->IsValid(FileName, Field, Value))
+    if (!C->IsValid(FileName, Field, Value.To_UTF8()))
         return false;
 
     if (Value.empty())
         return true;
 
     //Basic_Ul
-    if (Value.find("060A2B34010101010101021")!=0)
+    if (Value.find(__T("060A2B34010101010101021"))!=0)
         return false;
     Basic_Ul_InstanceMethod->setCurrentIndex(Value[23]-(Value[23]<='9'?'0':'A'));
     
     //Basic_Other
-    switch (FromHex(Value, 24, 2))
+    switch (FromHex(Value.To_UTF8(), 24, 2))
     {
         case 0x13 : if (Value.size()!=64)
                         return false;
@@ -1413,10 +1413,10 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
                     break;
         default  : return false;
     }
-    Basic_Ul_Instance->setValue(FromHex(Value, 26, 6));
+    Basic_Ul_Instance->setValue(FromHex(Value.To_UTF8(), 26, 6));
 
     //Basic_Material
-    double bm_var = (double)(FromHex(Value, 32, 2)+(FromHex(Value, 34, 2)<<8)+(FromHex(Value, 36, 2)<<16)+(FromHex(Value, 38, 2)<<24));
+    double bm_var = (double)(FromHex(Value.To_UTF8(), 32, 2)+(FromHex(Value.To_UTF8(), 34, 2)<<8)+(FromHex(Value.To_UTF8(), 36, 2)<<16)+(FromHex(Value.To_UTF8(), 38, 2)<<24));
 	Basic_Material_TimeDate_Samples->setValue(bm_var);
     if (SampleRate)
     {
@@ -1424,23 +1424,23 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
         Basic_Material_TimeDate_Time->setTime(QTime(0, 0, 0, 0).addMSecs((int)TimeReference));
     }
 
-    Basic_Material_TimeDate_Date->setDate(QDate::fromJulianDay(2400001).addDays(FromBCD(Value, 40, 1, Fail)*10
-                                                                              + FromBCD(Value, 41, 1, Fail)
-                                                                              + FromBCD(Value, 42, 1, Fail)*1000
-                                                                              + FromBCD(Value, 43, 1, Fail)*100
-                                                                              + FromBCD(Value, 44, 1, Fail)*100000
-                                                                              + FromBCD(Value, 45, 1, Fail)*10000));
+    Basic_Material_TimeDate_Date->setDate(QDate::fromJulianDay(2400001).addDays(FromBCD(Value.To_UTF8(), 40, 1, Fail)*10
+                                                                              + FromBCD(Value.To_UTF8(), 41, 1, Fail)
+                                                                              + FromBCD(Value.To_UTF8(), 42, 1, Fail)*1000
+                                                                              + FromBCD(Value.To_UTF8(), 43, 1, Fail)*100
+                                                                              + FromBCD(Value.To_UTF8(), 44, 1, Fail)*100000
+                                                                              + FromBCD(Value.To_UTF8(), 45, 1, Fail)*10000));
 
     if (Fail)
         return false;
-    if ((FromHex(Value, 46, 1)&0x8)!=0x8)
+    if ((FromHex(Value.To_UTF8(), 46, 1)&0x8)!=0x8)
         return false;    
-    int8u Zone=(int8u)(((FromHex(Value, 46, 1)&0x3)<<4)|FromHex(Value, 47, 1));
+    int8u Zone=(int8u)(((FromHex(Value.To_UTF8(), 46, 1)&0x3)<<4)|FromHex(Value.To_UTF8(), 47, 1));
     for (int Pos=0; Pos<64; Pos++)
         if (Zone_IndexToInt[Pos]==Zone)
             Basic_Material_TimeDate_Zone->setCurrentIndex(Pos);
-    Basic_Material_Random->setValue(FromHex(Value, 48, 4));
-    Basic_Material_Machine->setValue(FromHex64(Value, 52, 12));
+    Basic_Material_Random->setValue(FromHex(Value.To_UTF8(), 48, 4));
+    Basic_Material_Machine->setValue(FromHex64(Value.To_UTF8(), 52, 12));
 
     //Signature
     if (Value.size()==128 && bSigUpdated )
@@ -1449,7 +1449,7 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
 		Signature_Enabled->setChecked(true);
 
         //Signature_TimeDate
-        double sig_var = (double)(FromHex(Value, 64, 2)+(FromHex(Value, 66, 2)<<8)+(FromHex(Value, 68, 2)<<16)+(FromHex(Value, 70, 2)<<24));
+        double sig_var = (double)(FromHex(Value.To_UTF8(), 64, 2)+(FromHex(Value.To_UTF8(), 66, 2)<<8)+(FromHex(Value.To_UTF8(), 68, 2)<<16)+(FromHex(Value.To_UTF8(), 70, 2)<<24));
 		Signature_TimeDate_Samples->setValue(sig_var);
         if (SampleRate)
         {
@@ -1457,30 +1457,30 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
             Signature_TimeDate_Time->setTime(QTime(0, 0, 0, 0).addMSecs((int)TimeReference));
         }
 
-        Signature_TimeDate_Date->setDate(QDate::fromJulianDay(2400001).addDays(FromBCD(Value, 72, 1, Fail)*10
-                                                                             + FromBCD(Value, 73, 1, Fail)
-                                                                             + FromBCD(Value, 74, 1, Fail)*1000
-                                                                             + FromBCD(Value, 75, 1, Fail)*100
-                                                                             + FromBCD(Value, 76, 1, Fail)*100000
-                                                                             + FromBCD(Value, 77, 1, Fail)*10000));
+        Signature_TimeDate_Date->setDate(QDate::fromJulianDay(2400001).addDays(FromBCD(Value.To_UTF8(), 72, 1, Fail)*10
+                                                                             + FromBCD(Value.To_UTF8(), 73, 1, Fail)
+                                                                             + FromBCD(Value.To_UTF8(), 74, 1, Fail)*1000
+                                                                             + FromBCD(Value.To_UTF8(), 75, 1, Fail)*100
+                                                                             + FromBCD(Value.To_UTF8(), 76, 1, Fail)*100000
+                                                                             + FromBCD(Value.To_UTF8(), 77, 1, Fail)*10000));
         if (Fail)
             return false;
-        if ((FromHex(Value, 78, 1)&0x8)!=0x8)
+        if ((FromHex(Value.To_UTF8(), 78, 1)&0x8)!=0x8)
             return false;    
-        int8u TempI8=(int8u)(((FromHex(Value, 78, 1)&0x3)<<4)|FromHex(Value, 79, 1));
+        int8u TempI8=(int8u)(((FromHex(Value.To_UTF8(), 78, 1)&0x3)<<4)|FromHex(Value.To_UTF8(), 79, 1));
         for (int Pos=0; Pos<64; Pos++)
             if (Zone_IndexToInt[Pos]==TempI8)
                 Signature_TimeDate_Zone->setCurrentIndex(Pos);
 
         //Signature_Spatial
-        Signature_Spatial_Altitude->setValue(FromBCD(Value, 80, 1, Fail)*10
-                                           + FromBCD(Value, 81, 1, Fail)
-                                           + FromBCD(Value, 82, 1, Fail)*1000
-                                           + FromBCD(Value, 83, 1, Fail)*100
-                                           + FromBCD(Value, 84, 1, Fail)*100000
-                                           + FromBCD(Value, 85, 1, Fail)*10000
-                                           + FromBCD(Value, 86, 1, Fail)*10000000
-                                           + FromBCD(Value, 87, 1, Fail)*1000000);
+        Signature_Spatial_Altitude->setValue(FromBCD(Value.To_UTF8(), 80, 1, Fail)*10
+                                           + FromBCD(Value.To_UTF8(), 81, 1, Fail)
+                                           + FromBCD(Value.To_UTF8(), 82, 1, Fail)*1000
+                                           + FromBCD(Value.To_UTF8(), 83, 1, Fail)*100
+                                           + FromBCD(Value.To_UTF8(), 84, 1, Fail)*100000
+                                           + FromBCD(Value.To_UTF8(), 85, 1, Fail)*10000
+                                           + FromBCD(Value.To_UTF8(), 86, 1, Fail)*10000000
+                                           + FromBCD(Value.To_UTF8(), 87, 1, Fail)*1000000);
         if (Fail)
             return false;
 
@@ -1565,55 +1565,55 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
 
 
        string TempS;
-        TempI8=FromHex(Value, 104, 2);
+        TempI8=FromHex(Value.To_UTF8(), 104, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 106, 2);
+        TempI8=FromHex(Value.To_UTF8(), 106, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 108, 2);
+        TempI8=FromHex(Value.To_UTF8(), 108, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 110, 2);
+        TempI8=FromHex(Value.To_UTF8(), 110, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
         Signature_Other_Country->lineEdit()->setText(TempS.c_str());
         TempS.clear();
-        TempI8=FromHex(Value, 112, 2);
+        TempI8=FromHex(Value.To_UTF8(), 112, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 114, 2);
+        TempI8=FromHex(Value.To_UTF8(), 114, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 116, 2);
+        TempI8=FromHex(Value.To_UTF8(), 116, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 118, 2);
+        TempI8=FromHex(Value.To_UTF8(), 118, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
         Signature_Other_Organization->setText(TempS.c_str());
         TempS.clear();
-        TempI8=FromHex(Value, 120, 2);
+        TempI8=FromHex(Value.To_UTF8(), 120, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 122, 2);
+        TempI8=FromHex(Value.To_UTF8(), 122, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 124, 2);
+        TempI8=FromHex(Value.To_UTF8(), 124, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 126, 2);
+        TempI8=FromHex(Value.To_UTF8(), 126, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
@@ -1622,55 +1622,55 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
 		
         //Signature_Other
         //string TempS;
-        TempI8=FromHex(Value, 104, 2);
+        TempI8=FromHex(Value.To_UTF8(), 104, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 106, 2);
+        TempI8=FromHex(Value.To_UTF8(), 106, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 108, 2);
+        TempI8=FromHex(Value.To_UTF8(), 108, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 110, 2);
+        TempI8=FromHex(Value.To_UTF8(), 110, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
         Signature_Other_Country->lineEdit()->setText(TempS.c_str());
         TempS.clear();
-        TempI8=FromHex(Value, 112, 2);
+        TempI8=FromHex(Value.To_UTF8(), 112, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 114, 2);
+        TempI8=FromHex(Value.To_UTF8(), 114, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 116, 2);
+        TempI8=FromHex(Value.To_UTF8(), 116, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 118, 2);
+        TempI8=FromHex(Value.To_UTF8(), 118, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
         Signature_Other_Organization->setText(TempS.c_str());
         TempS.clear();
-        TempI8=FromHex(Value, 120, 2);
+        TempI8=FromHex(Value.To_UTF8(), 120, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 122, 2);
+        TempI8=FromHex(Value.To_UTF8(), 122, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 124, 2);
+        TempI8=FromHex(Value.To_UTF8(), 124, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;
-        TempI8=FromHex(Value, 126, 2);
+        TempI8=FromHex(Value.To_UTF8(), 126, 2);
         if (TempI8<0x20 || TempI8>0x7E)
             return false;
         TempS+=(char)TempI8;

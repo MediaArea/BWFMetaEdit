@@ -15,18 +15,18 @@
 #import <Foundation/Foundation.h>
 //---------------------------------------------------------------------------
 
-string makeUniqueFileName()
+Ztring makeUniqueFileName()
 {
     NSString *unique = [[NSProcessInfo processInfo] globallyUniqueString];
-    string toReturn = string([unique UTF8String]);
+    Ztring toReturn = Ztring().From_UTF8([unique UTF8String]);
 
     return toReturn;
 }
 
-string makeTemporaryDirectoryForFile(const char *path)
+Ztring makeTemporaryDirectoryForFile(const Ztring& path)
 {
-    string toReturn;
-    NSURL *url = [NSURL fileURLWithPath:@(path)];
+    Ztring toReturn;
+    NSURL *url = [NSURL fileURLWithPath:@(path.To_UTF8().c_str())];
 
     if(!url)
         return toReturn;
@@ -49,19 +49,19 @@ string makeTemporaryDirectoryForFile(const char *path)
     if(!temporaryDirectoryPath)
         return toReturn;
 
-    toReturn = string([temporaryDirectoryPath UTF8String]);
+    toReturn = Ztring().From_UTF8([temporaryDirectoryPath UTF8String]);
 
-    if(toReturn.size() && toReturn[toReturn.size()-1]!='/')
-        toReturn+="/";
+    if(toReturn.size() && toReturn[toReturn.size()-1]!=__T('/'))
+        toReturn+=__T("/");
 
     return toReturn;
 }
 
-bool deleteTemporaryDirectory(const char *path)
+bool deleteTemporaryDirectory(const Ztring& path)
 {
     bool toReturn = false;
 
-    NSURL *url = [NSURL fileURLWithPath:@(path)];
+    NSURL *url = [NSURL fileURLWithPath:@(path.To_UTF8().c_str())];
 
     if(!url)
         return toReturn;

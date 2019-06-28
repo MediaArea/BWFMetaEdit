@@ -264,11 +264,11 @@ std::string GUI_Preferences::ConfigDirectory_Get()
     //Getting application folder
     Ztring ApplicationFolder;
     #ifdef _WIN32
-        CHAR Path[MAX_PATH];
+        WCHAR Path[MAX_PATH];
         BOOL Result=SHGetSpecialFolderPath(NULL, Path, CSIDL_APPDATA, true);
-        ApplicationFolder=Ztring(Path)+"\\bwfmetaedit";
+        ApplicationFolder=Ztring(Path)+__T("\\bwfmetaedit");
     #else //_WIN32
-        ApplicationFolder=Ztring().From_Local(std::getenv("HOME"))+"/.bwfmetaedit";
+        ApplicationFolder=Ztring().From_Local(std::getenv("HOME"))+__T("/.bwfmetaedit");
     #endif //_WIN32
     
     //Creating the directory
@@ -279,14 +279,14 @@ std::string GUI_Preferences::ConfigDirectory_Get()
     if (!Dir::Exists(ApplicationFolder))
         return string();
 
-    return ApplicationFolder;
+    return ApplicationFolder.To_UTF8();
 }
 
 //---------------------------------------------------------------------------
 std::string GUI_Preferences::ConfigFileName_Get()
 {
     //Getting application folder
-    Ztring ApplicationFolder=ConfigDirectory_Get();
+    string ApplicationFolder=ConfigDirectory_Get();
     if (ApplicationFolder.empty())
         return string();
 
@@ -302,7 +302,7 @@ void GUI_Preferences::OnLoad()
         return; //There is a problem
 
     ZtringListListF Config;
-    Config.Load(ConfigFileName);
+    Config.Load(Ztring().From_UTF8(ConfigFileName));
     if (Config.empty())
     {
         //No config file, creating a default one
@@ -346,10 +346,10 @@ void GUI_Preferences::OnLoad()
     else
     {
         Extra_BackupDirectory_Specific_Radio->setChecked(true);
-        Extra_BackupDirectory_Specific->setText(Config("Extra_BackupDirectory").c_str());
+        Extra_BackupDirectory_Specific->setText(Config("Extra_BackupDirectory").To_UTF8().c_str());
         Extra_BackupDirectory_Specific->setEnabled(true);
     }
-    Main->BackupDirectory_Set(Extra_BackupDirectory_Specific->text().toLocal8Bit().data());
+    Main->BackupDirectory_Set(Extra_BackupDirectory_Specific->text().toUtf8().data());
     if (Config("Extra_LogFile").empty())
     {
         Extra_LogFile_Deactivated->setChecked(true);
@@ -359,10 +359,10 @@ void GUI_Preferences::OnLoad()
     else
     {
         Extra_LogFile_Activated_Radio->setChecked(true);
-        Extra_LogFile_Activated->setText(Config("Extra_LogFile").c_str());
+        Extra_LogFile_Activated->setText(Config("Extra_LogFile").To_UTF8().c_str());
         Extra_LogFile_Activated->setEnabled(true);
     }
-    Main->LogFile_Set(Extra_LogFile_Activated->text().toLocal8Bit().data());
+    Main->LogFile_Set(Extra_LogFile_Activated->text().toUtf8().data());
     if (Config("Extra_Bext_DefaultVersion").empty())
     {
         Extra_Bext_DefaultVersion->setValue(0);
@@ -407,18 +407,18 @@ void GUI_Preferences::OnSave()
     }
 
     File Prefs;
-    Prefs.Create(ConfigFileName);
+    Prefs.Create(Ztring().From_UTF8(ConfigFileName));
     for (size_t Group=0; Group<Group_Max; Group++)
     {
         for (size_t Option=0; Option<Groups[Group].Option_Size; Option++)
         {
             Ztring Content;
-            Content+=Groups[Group].Option[Option].UniqueName;
-            Content+=" = ";
+            Content+=Ztring().From_UTF8(Groups[Group].Option[Option].UniqueName);
+            Content+=__T(" = ");
             switch (Groups[Group].Option[Option].Type)
             {
-                case Type_CheckBox     : Content+=CheckBoxes  [Group*options::MaxCount+Option]->isChecked()?'1':'0'; break;
-                case Type_RadioButton  : Content+=RadioButtons[Group*options::MaxCount+Option]->isChecked()?'1':'0'; break;
+                case Type_CheckBox     : Content+=CheckBoxes  [Group*options::MaxCount+Option]->isChecked()?__T('1'):__T('0'); break;
+                case Type_RadioButton  : Content+=RadioButtons[Group*options::MaxCount+Option]->isChecked()?__T('1'):__T('0'); break;
                 default                 : ;
             }
             
@@ -430,28 +430,28 @@ void GUI_Preferences::OnSave()
     //Extra
     {
         Ztring Content;
-        Content+="Extra_BackupDirectory";
-        Content+=" = ";
+        Content+=__T("Extra_BackupDirectory");
+        Content+=__T(" = ");
         if (Extra_BackupDirectory_Specific_Radio->isChecked())
-            Content+=Ztring().From_Local(Extra_BackupDirectory_Specific->text().toLocal8Bit().data());
+            Content+=Ztring().From_UTF8(Extra_BackupDirectory_Specific->text().toUtf8().data());
         Content+=EOL;
         Prefs.Write(Content);
-        Main->BackupDirectory_Set(Extra_BackupDirectory_Specific->text().toLocal8Bit().data());
+        Main->BackupDirectory_Set(Extra_BackupDirectory_Specific->text().toUtf8().data());
     }
     {
         Ztring Content;
-        Content+="Extra_LogFile";
-        Content+=" = ";
+        Content+=__T("Extra_LogFile");
+        Content+=__T(" = ");
         if (Extra_LogFile_Activated_Radio->isChecked())
-            Content+=Ztring().From_Local(Extra_LogFile_Activated->text().toLocal8Bit().data());
+            Content+=Ztring().From_UTF8(Extra_LogFile_Activated->text().toUtf8().data());
         Content+=EOL;
         Prefs.Write(Content);
-        Main->LogFile_Set(Extra_LogFile_Activated->text().toLocal8Bit().data());
+        Main->LogFile_Set(Extra_LogFile_Activated->text().toUtf8().data());
     }
     {
         Ztring Content;
-        Content+="Extra_Bext_DefaultVersion";
-        Content+=" = ";
+        Content+=__T("Extra_Bext_DefaultVersion");
+        Content+=__T(" = ");
         Ztring Data=Ztring().From_Number(Extra_Bext_DefaultVersion->value());
         Content+=Data;
         Content+=EOL;
@@ -460,8 +460,8 @@ void GUI_Preferences::OnSave()
     }
     {
         Ztring Content;
-        Content+="Extra_Bext_MaxVersion";
-        Content+=" = ";
+        Content+=__T("Extra_Bext_MaxVersion");
+        Content+=__T(" = ");
         Ztring Data=Ztring().From_Number(Extra_Bext_MaxVersion->value());
         Content+=Data;
         Content+=EOL;
@@ -470,8 +470,8 @@ void GUI_Preferences::OnSave()
     }
     {
         Ztring Content;
-        Content+="Extra_Bext_Toggle";
-        Content+=" = ";
+        Content+=__T("Extra_Bext_Toggle");
+        Content+=__T(" = ");
         Ztring Data=Ztring().From_Number(Extra_Bext_Toggle->isChecked());
         Content+=Data;
         Content+=EOL;
@@ -555,7 +555,7 @@ void GUI_Preferences::OnExtra_LogFile_Activated_RadioToggled (bool Checked)
 {
     if (Checked)
     {
-        Extra_LogFile_Activated->setText((ConfigDirectory_Get()+PathSeparator+"LogFile.txt").c_str());
+        Extra_LogFile_Activated->setText((ConfigDirectory_Get()+Ztring(&PathSeparator, 1).To_UTF8()+"LogFile.txt").c_str());
         Extra_LogFile_Activated->setEnabled(true);
     }
     else

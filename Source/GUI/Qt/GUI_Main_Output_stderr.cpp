@@ -43,7 +43,7 @@ bool GUI_Main_Output_stderr::event (QEvent *Event)
     {
         //Showing
         clear();
-        setPlainText(QString().fromUtf8(ZenLib::Ztring(C->Text_stderr.str()).To_Local().c_str()));
+        setPlainText(QString().fromUtf8(ZenLib::Ztring(C->Text_stderr.str()).To_UTF8().c_str()));
 
         Event->accept();
         return true;

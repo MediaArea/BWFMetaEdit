@@ -89,11 +89,11 @@ Core::Core()
     Canceled=false;
     SaveMode=false;
     #ifdef _WIN32
-        CHAR Path[MAX_PATH];
+        WCHAR Path[MAX_PATH];
         BOOL Result=SHGetSpecialFolderPath(NULL, Path, CSIDL_APPDATA, true);
-        ApplicationFolder=Ztring(Path)+"\\bwfmetaedit";
+        ApplicationFolder=Ztring(Path)+__T("\\bwfmetaedit");
     #else //_WIN32
-        ApplicationFolder=Ztring().From_Local(std::getenv("HOME"))+"/.bwfmetaedit";
+        ApplicationFolder=Ztring().From_Local(std::getenv("HOME"))+__T("/.bwfmetaedit");
     #endif //_WIN32
 }
 
@@ -122,18 +122,18 @@ void Core::Menu_File_Open_Files_Begin ()
 size_t Core::Menu_File_Open_Files_Continue (const string &FileName)
 {
     ZtringList List;
-    if (File::Exists(FileName))
-        List.push_back(FileName);
+    if (File::Exists(Ztring().From_UTF8(FileName)))
+        List.push_back(Ztring().From_UTF8(FileName));
     else
     {
-        List=Dir::GetAllFileNames(FileName, (Dir::dirlist_t)(Dir::Include_Files|Dir::Parse_SubDirs));
+        List=Dir::GetAllFileNames(Ztring().From_UTF8(FileName), (Dir::dirlist_t)(Dir::Include_Files|Dir::Parse_SubDirs));
         if (List.empty())
-            List.push_back(FileName);
+            List.push_back(Ztring().From_UTF8(FileName));
     }
 
     for (size_t Pos=0; Pos<List.size(); Pos++)
-        if (!WrongExtension_Skip || (List[Pos].size()>4 && Ztring(List[Pos]).MakeLowerCase().rfind(".wav")==List[Pos].size()-4))
-            Handlers[List[Pos]]; //Adding the reference
+        if (!WrongExtension_Skip || (List[Pos].size()>4 && Ztring(List[Pos]).MakeLowerCase().rfind(__T(".wav"))==List[Pos].size()-4))
+            Handlers[List[Pos].To_UTF8()]; //Adding the reference
 
     return List.size();
 }
@@ -231,9 +231,9 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
             //Settings - Adding default Core values if the Core value does not exist yet (from --xxx=)
             for (map<string, Ztring>::iterator In_Core_Item=Handler_Default.In_Core.begin(); In_Core_Item!=Handler_Default.In_Core.end(); In_Core_Item++)
             {
-                map<string, Ztring>::iterator Handler_in_Core_Item=Handler->second.In_Core.find(Ztring(In_Core_Item->first).MakeLowerCase());
+                map<string, Ztring>::iterator Handler_in_Core_Item=Handler->second.In_Core.find(Ztring().From_UTF8(In_Core_Item->first).MakeLowerCase().To_UTF8());
                 if (Handler_in_Core_Item==Handler->second.In_Core.end())
-                    Handler->second.In_Core[Ztring(In_Core_Item->first).MakeLowerCase()]=In_Core_Item->second;
+                    Handler->second.In_Core[Ztring().From_UTF8(In_Core_Item->first).MakeLowerCase().To_UTF8()]=In_Core_Item->second;
             }
             
             //Special Characters
@@ -241,12 +241,12 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
             {
                 for (map<string, Ztring>::iterator Field=Handler->second.In_Core.begin(); Field!=Handler->second.In_Core.end(); Field++)
                 {
-                    Field->second.FindAndReplace("\\\\", "|SC1|", 0, Ztring_Recursive);
-                    Field->second.FindAndReplace("\\r", "\r", 0, Ztring_Recursive);
-                    Field->second.FindAndReplace("\\n", "\n", 0, Ztring_Recursive);
-                    Field->second.FindAndReplace("\\t", "\t", 0, Ztring_Recursive);
-                    Field->second.FindAndReplace("\\0", "\0", 0, Ztring_Recursive);
-                    Field->second.FindAndReplace("|SC1|", "\\", 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("\\\\"), __T("|SC1|"), 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("\\r"), __T("\r"), 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("\\t"), __T("\t"), 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("\\0"), __T("\0"), 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("|SC1|"), __T("\\"), 0, Ztring_Recursive);
                 }
             }
 
@@ -279,7 +279,7 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
         {
             for (map<string, Ztring>::iterator In_Core_Item=Handler->second.In_Core.begin(); In_Core_Item!=Handler->second.In_Core.end(); In_Core_Item++)
             {
-                Handler->second.Riff->Set(In_Core_Item->first, In_Core_Item->second, Rules);
+                Handler->second.Riff->Set(In_Core_Item->first, In_Core_Item->second.To_UTF8(), Rules);
                 StdAll(Handler);
             }
         }
@@ -496,7 +496,7 @@ ZtringList Core::Menu_File_Close_File_FileName_Get()
 //---------------------------------------------------------------------------
 void Core::Menu_File_Close_File_FileName_Set(const string &FileName)
 {
-    Menu_Close_File_FileNames.push_back(FileName);
+    Menu_Close_File_FileNames.push_back(Ztring().From_UTF8(FileName));
 }
 
 //---------------------------------------------------------------------------
@@ -529,27 +529,27 @@ bool Core::Menu_File_Undo_BackupFilesExist()
 {
     if (!Dir::Exists(ApplicationFolder))
         return false;
-    
-    BackupFiles=Dir::GetAllFileNames(ApplicationFolder+PathSeparator+"Backup-*.csv");
+
+    BackupFiles=Dir::GetAllFileNames(ApplicationFolder+PathSeparator+__T("Backup-*.csv"));
 
     return !BackupFiles.empty();
 }
 
 //---------------------------------------------------------------------------
-bool Menu_File_Undo_ListBackupFiles_sort_function (const string &i, const string &j) {return (i.compare(j)>0);}
+bool Menu_File_Undo_ListBackupFiles_sort_function (const Ztring &i, const Ztring &j) {return (i.compare(j)>0);}
 ZtringList Core::Menu_File_Undo_ListBackupFiles()
 {
     if (!Dir::Exists(ApplicationFolder))
         return ZtringList();
     
-    BackupFiles=Dir::GetAllFileNames(ApplicationFolder+PathSeparator+"Backup-*.csv");
+    BackupFiles=Dir::GetAllFileNames(ApplicationFolder+PathSeparator+__T("Backup-*.csv"));
     std::sort(BackupFiles.begin(), BackupFiles.end(), Menu_File_Undo_ListBackupFiles_sort_function);
     
     ZtringList BackupFiles_ToReturn=BackupFiles;
     for (size_t Pos=0; Pos<BackupFiles_ToReturn.size(); Pos++)
     {
         ZenLib::Ztring Value=BackupFiles[Pos];
-        size_t BackupPos=Value.rfind("Backup-");
+        size_t BackupPos=Value.rfind(__T("Backup-"));
         if (BackupPos!=(string::npos) && BackupPos+7+8+1+8<Value.size())
         {
             Value=Value.substr(BackupPos+7, 10+1+8);
@@ -568,7 +568,7 @@ string Core::Menu_File_Undo_ListModifiedFiles(size_t Pos)
 {
     //Retrieving file name
     if (Pos>BackupFiles.size())
-        return string();    
+        return string();
     Ztring FileName=BackupFiles[Pos];
 
     //Opening the file
@@ -598,12 +598,12 @@ string Core::Menu_File_Undo_ListModifiedFiles(size_t Pos)
     //Filling
     Ztring ModifiedContent((const char*)Buffer);
     delete[] Buffer;
-    ModifiedContent.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-    ModifiedContent.FindAndReplace("\r", "\n", 0, Ztring_Recursive);
+    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+    ModifiedContent.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
 
     //Showing
     ZtringListList List;
-    List.Separator_Set(0, "\n");
+    List.Separator_Set(0, __T("\n"));
     List.Separator_Set(1, __T(","));
     List.Write(ModifiedContent);
 
@@ -642,14 +642,14 @@ string Core::Menu_File_Undo_ListModifiedFiles(size_t Pos)
     }
 
     //Filling
-    Ztring ToDisplay="Root directory:\n"+FileName_Before+"\n\nModified Files:\n";
+    Ztring ToDisplay=__T("Root directory:\n")+FileName_Before+__T("\n\nModified Files:\n");
     for (size_t File_Pos=1; File_Pos<List.size(); File_Pos++)
     {
         if (!List[File_Pos].empty())
-            ToDisplay+=List[File_Pos][0]+"\n";
+            ToDisplay+=List[File_Pos][0]+__T("\n");
     }
     
-    return ToDisplay;
+    return ToDisplay.To_UTF8();
 }
 
 //---------------------------------------------------------------------------
@@ -657,7 +657,7 @@ void Core::Menu_File_Undo_SelectBackupFile(size_t Pos)
 {
     //Integrity
     if (Pos>BackupFiles.size())
-        return;    
+        return;
 
     //Backuping
     Riff_Handler::rules Rules_Sav=Rules;
@@ -673,7 +673,7 @@ void Core::Menu_File_Undo_SelectBackupFile(size_t Pos)
     Rules.EBU_ISRC_Rec=false;
 
     //Launching
-    Menu_File_Import_Core(BackupFiles[Pos]);
+    Menu_File_Import_Core(BackupFiles[Pos].To_UTF8());
 
     //Restoring
     Rules=Rules_Sav;
@@ -693,9 +693,9 @@ size_t Core::Menu_File_Save ()
     Batch_IsBackuping=true;
     time_t Time=time(NULL);
     Ztring TimeS; TimeS.Date_From_Seconds_1970_Local((int32u)Time);
-    TimeS.FindAndReplace(":", "-", 0, Ztring_Recursive);
-    TimeS.FindAndReplace(" ", "-", 0, Ztring_Recursive);
-    Out_Core_CSV_FileName=ApplicationFolder+"/Backup-"+TimeS+".csv";
+    TimeS.FindAndReplace(__T(":"), __T("-"), 0, Ztring_Recursive);
+    TimeS.FindAndReplace(__T(" "), __T("-"), 0, Ztring_Recursive);
+    Out_Core_CSV_FileName=ApplicationFolder.To_UTF8()+"/Backup-"+TimeS.To_UTF8()+".csv";
     Batch_Launch();
     Out_Core_CSV_FileName.clear();
     Batch_IsBackuping=false;
@@ -720,9 +720,9 @@ bool Core::Menu_File_Save_Start ()
     Batch_IsBackuping=true;
     time_t Time=time(NULL);
     Ztring TimeS; TimeS.Date_From_Seconds_1970_Local((int32u)Time);
-    TimeS.FindAndReplace(":", "-", 0, Ztring_Recursive);
-    TimeS.FindAndReplace(" ", "-", 0, Ztring_Recursive);
-    Out_Core_CSV_FileName=ApplicationFolder+"/Backup-"+TimeS+".csv";
+    TimeS.FindAndReplace(__T(":"), __T("-"), 0, Ztring_Recursive);
+    TimeS.FindAndReplace(__T(" "), __T("-"), 0, Ztring_Recursive);
+    Out_Core_CSV_FileName=ApplicationFolder.To_UTF8()+"/Backup-"+TimeS.To_UTF8()+".csv";
     bool Simulation_Enabled_Save=Simulation_Enabled;
     Simulation_Enabled=true;
     Batch_Launch();
@@ -783,7 +783,7 @@ int Core::Menu_File_Import_Core(const string &FileName)
     {
         //Checking if file exists
         File In_Bext_File;
-        if (!In_Bext_File.Open(FileName))
+        if (!In_Bext_File.Open(Ztring().From_UTF8(FileName)))
             throw "--in-core=: file does not exist";
         int64u File_Size=In_Bext_File.Size_Get();
         if (File_Size>((size_t)-1)-1)
@@ -854,15 +854,15 @@ int Core::Menu_File_Import_Core(const string &FileName)
                 {
                     //Adapting file names
                     #ifdef _WIN32
-                        List[File_Pos][0].FindAndReplace("/", "\\");
+                        List[File_Pos][0].FindAndReplace(__T("/"), __T("\\"));
                     #else
-                        List[File_Pos][0].FindAndReplace("\\", "/");
+                        List[File_Pos][0].FindAndReplace(__T("\\"), __T("/"));
                     #endif
                     
                     //Saving core items
                     for (size_t Pos=0; Pos<List[0].size(); Pos++)
                     {
-                        bool Result=In_Core_Add(List[File_Pos][0], List[0][Pos], Pos<List[File_Pos].size()?List[File_Pos](Pos):Ztring()); 
+                        bool Result=In_Core_Add(List[File_Pos][0].To_UTF8(), List[0][Pos].To_UTF8(), Pos<List[File_Pos].size()?List[File_Pos](Pos).To_UTF8():string());
                         if (!Result)
                             Errors_Validity_Detected=true;
                     }
@@ -900,7 +900,7 @@ int Core::Menu_File_Import_Core(const string &FileName)
                                 string Field=Element->ValueStr();
                                 const char* Value=Element->GetText();
                                 if (!Field.empty())
-                                    In_Core_Add(FileName, Field=="TimeReference_translated"?"TimeReference (translated)":Field.c_str(), Value?Ztring(Value):Ztring());
+                                    In_Core_Add(FileName, Field=="TimeReference_translated"?"TimeReference (translated)":Field.c_str(), Value?string(Value):string());
 
                                 Element=Element->NextSiblingElement();
                             }
@@ -961,11 +961,11 @@ const string& Core::Technical_Get ()
         return Text;
 
     Text+=Riff_Handler::Technical_Header();
-    Text+=EOL;
+    Text+=Ztring(EOL).To_UTF8();
 
     for (handlers::iterator Handler=Handlers.begin(); Handler!=Handlers.end(); Handler++)
         if (Handler->second.Riff)
-            Text+=Handler->second.Riff->Technical_Get()+EOL;   
+            Text+=Handler->second.Riff->Technical_Get()+Ztring(EOL).To_UTF8();
 
     return Text;
 }
@@ -981,13 +981,13 @@ const string& Core::Core_Get ()
     ZtringListList List;
     List.Separator_Set(0, EOL);
     List.Separator_Set(1, __T(","));
-    List.push_back(Riff_Handler::Core_Header());
+    List.push_back(Ztring().From_UTF8(Riff_Handler::Core_Header()));
 
     for (handlers::iterator Handler=Handlers.begin(); Handler!=Handlers.end(); Handler++)
         if (Handler->second.Riff)
-            List.push_back(Handler->second.Riff->Core_Get(Batch_IsBackuping));
+            List.push_back(Ztring().From_UTF8(Handler->second.Riff->Core_Get(Batch_IsBackuping)));
 
-    Text=List.Read();
+    Text=List.Read().To_UTF8();
     return Text;
 }
 
@@ -998,7 +998,7 @@ const string& Core::Output_Trace_Get ()
 
     for (handlers::iterator Handler=Handlers.begin(); Handler!=Handlers.end(); Handler++)
         if (Handler->second.Riff)
-            Text+=Handler->first+EOL+Handler->second.Riff->Trace_Get()+EOL+EOL;   
+            Text+=Handler->first+Ztring(EOL).To_UTF8()+Handler->second.Riff->Trace_Get()+Ztring(EOL).To_UTF8()+Ztring(EOL).To_UTF8();
 
     return Text;
 }
@@ -1009,17 +1009,17 @@ bool Core::In_Core_Add (const string &FileName, const string &Field, const strin
     if (Value=="NOCHANGE")
         return true;
    
-    if (File::Exists(FileName))
-        Handlers[FileName].In_Core[Field]=Value;
+    if (File::Exists(Ztring().From_UTF8(FileName)))
+        Handlers[FileName].In_Core[Field]=Ztring().From_UTF8(Value);
     else
     {
         //Handling wildcards
-        ZtringList List=Dir::GetAllFileNames(FileName);
+        ZtringList List=Dir::GetAllFileNames(Ztring().From_UTF8(FileName));
         if (List.empty())
-            List.push_back(FileName);
+            List.push_back(Ztring().From_UTF8(FileName));
 
         for (size_t Pos=0; Pos<List.size(); Pos++)
-            Handlers[List[Pos]].In_Core[Field]=Value;
+            Handlers[List[Pos].To_UTF8()].In_Core[Field]=Ztring().From_UTF8(Value);
     }
 
     return true;
@@ -1031,7 +1031,7 @@ bool Core::In_Core_Add (const string &Field, const string &Value)
     if (Value=="NOCHANGE")
         return true;
    
-    Handler_Default.In_Core[Field]=Value;
+    Handler_Default.In_Core[Field]=Ztring().From_UTF8(Value);
 
     return true;
 }
@@ -1055,7 +1055,7 @@ bool Core::Set (const string &FileName, const string &Field, const string &Value
     if (Handler==Handlers.end())
         return true; //file is not registred
 
-    Handler->second.In_Core[Field]=Value;
+    Handler->second.In_Core[Field]=Ztring().From_UTF8(Value);
     if (Handler->second.Riff)
     {
         StdClear(Handler);
@@ -1124,7 +1124,7 @@ bool Core::IsValid (const string &FileName, const string &Field, const string &V
         return false; //file is not registred
 
     if (Handler->second.Riff)
-        return Handler->second.Riff->IsValid(Ztring(Field).MakeLowerCase(), Value, Rules, IgnoreCoherency);
+        return Handler->second.Riff->IsValid(Ztring().From_UTF8(Field).MakeLowerCase().To_UTF8(), Value, Rules, IgnoreCoherency);
 
     return false;
 }
@@ -1163,7 +1163,7 @@ string Core::History (const string &FileName, const string &Field)
         return string(); //file is not registred
 
     if (Handler->second.Riff)
-        return Handler->second.Riff->History(Ztring(Field).MakeLowerCase());
+        return Handler->second.Riff->History(Ztring().From_UTF8(Field).MakeLowerCase().To_UTF8());
 
     return string();
 }
@@ -1191,16 +1191,16 @@ void Core::Batch_Begin()
     //--out-technical-file out-technical-XML preparation
     if (!Out_Tech_CSV_FileName.empty() || Out_Tech_XML)
     {
-        Out_Tech_File_Header.Separator_Set(0, ",");
-        Out_Tech_File_Header.Write(Riff_Handler::Technical_Header());
+        Out_Tech_File_Header.Separator_Set(0, __T(","));
+        Out_Tech_File_Header.Write(Ztring().From_UTF8(Riff_Handler::Technical_Header()));
         Ztring Header;
-        Header+=Riff_Handler::Technical_Header();
+        Header+=Ztring().From_UTF8(Riff_Handler::Technical_Header());
         Header+=EOL;
         if (!Out_Tech_CSV_FileName.empty()) //Only for --out-technical-file
         {
             try
             {
-                if (!Out_Tech_File.Create(Out_Tech_CSV_FileName))
+                if (!Out_Tech_File.Create(Ztring().From_UTF8(Out_Tech_CSV_FileName)))
                     throw "--out-Technical-file: error during file creation";
                 if (!Out_Tech_File.Write(Header))
                     throw "--out-Technical-file: error during file writing";
@@ -1218,17 +1218,17 @@ void Core::Batch_Begin()
     //--out-Core-CSV=file and --out-Core-XML=file and out-Core-XML preparation
     if (!Out_Core_CSV_FileName.empty() || !Out_Core_XML_FileName.empty() || Out_Core_XML)
     {
-        Out_Core_CSV_File_Header.Separator_Set(0, ",");
-        Out_Core_CSV_File_Header.Write(Riff_Handler::Core_Header());
+        Out_Core_CSV_File_Header.Separator_Set(0, __T(","));
+        Out_Core_CSV_File_Header.Write(Ztring().From_UTF8(Riff_Handler::Core_Header()));
 
         if (!Out_Core_CSV_FileName.empty()) //Only for --out-Core-CSV=file
         {
             Ztring Header;
-            Header+=Riff_Handler::Core_Header();
+            Header+=Ztring().From_UTF8(Riff_Handler::Core_Header());
             Header+=EOL;
             try
             {
-                if (!Out_Core_CSV_File.Create(Out_Core_CSV_FileName))
+                if (!Out_Core_CSV_File.Create(Ztring().From_UTF8(Out_Core_CSV_FileName)))
                     throw "--out-Core-CSV=file: error during file creation";
                 if (!Out_Core_CSV_File.Write(Header))
                     throw "--out-Core-CSV=file: error during file writing";
@@ -1245,11 +1245,11 @@ void Core::Batch_Begin()
         if (!Out_Core_XML_FileName.empty()) //--out-Core-XML=file preparation
         {
             Ztring Header;
-            Header+="<?xml version=\"1.0\" encoding=\"UTF-8\"?>";Header+=EOL;
-            Header+="<conformance_point_document>";Header+=EOL;
+            Header+=__T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");Header+=EOL;
+            Header+=__T("<conformance_point_document>");Header+=EOL;
             try
             {
-                if (!Out_Core_XML_File.Create(Out_Core_XML_FileName))
+                if (!Out_Core_XML_File.Create(Ztring().From_UTF8(Out_Core_XML_FileName)))
                     throw "--out-Core-XML=file: error during file creation";
                 if (!Out_Core_XML_File.Write(Header))
                     throw "--out-Core-XML=file: error during file writing";
@@ -1280,7 +1280,7 @@ void Core::Batch_Finish()
     if (!Out_Core_XML_FileName.empty())
     {
         Ztring Footer;
-        Footer+="</conformance_point_document>";Footer+=EOL;
+        Footer+=__T("</conformance_point_document>");Footer+=EOL;
 
         if (!Out_Core_XML_File.Write(Footer))
             throw "--out-Core-XML=file: error during file writing";
@@ -1379,9 +1379,9 @@ void Core::Batch_Launch(handlers::iterator &Handler)
 //---------------------------------------------------------------------------
 void Core::Batch_Launch_Technical(handlers::iterator &Handler)
 {
-    string Technical;
+    Ztring Technical;
     if (!Out_Tech_CSV_FileName.empty() || Out_Tech_XML)
-        Technical=Handler->second.Riff->Technical_Get()+EOL;     
+        Technical=Ztring().From_UTF8(Handler->second.Riff->Technical_Get())+EOL;
 
     //Technical chunk (with a Conformance Point Document)
     if (!Out_Tech_CSV_FileName.empty())
@@ -1400,19 +1400,19 @@ void Core::Batch_Launch_Technical(handlers::iterator &Handler)
         List_Content.Write(Technical);
         
         //Preparing XML file
-        string Content;
-        Content+="<?xml version=\"1.0\" encoding=\"UTF-8\"?>";Content+=EOL;
-        Content+="<Technical>";Content+=EOL;
+        Ztring Content;
+        Content+=__T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");Content+=EOL;
+        Content+=__T("<Technical>");Content+=EOL;
         for (size_t Header_Pos=0; Header_Pos<Out_Tech_File_Header.size(); Header_Pos++)
             if (Header_Pos<List_Content.size() && !List_Content[Header_Pos].empty())
-                Content+=" <"+Out_Tech_File_Header[Header_Pos]+">"+List_Content[Header_Pos]+"</"+Out_Tech_File_Header[Header_Pos]+">"+EOL;
-        Content+="</Technical>";Content+=EOL;
+                Content+=__T(" <")+Out_Tech_File_Header[Header_Pos]+__T(">")+List_Content[Header_Pos]+__T("</")+Out_Tech_File_Header[Header_Pos]+__T(">")+EOL;
+        Content+=__T("</Technical>");Content+=EOL;
 
         try
         {
             //Saving file
             File F;
-            if (!F.Create(Handler->second.Riff->FileName_Get()+".Technical.xml"))
+            if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".Technical.xml")))
                 throw "--out-technical-XML: error during file creation";
             if (!F.Write(Content))
                 throw "--out-technical-XML: error during file writing";
@@ -1428,7 +1428,7 @@ void Core::Batch_Launch_Technical(handlers::iterator &Handler)
 //---------------------------------------------------------------------------
 void Core::Batch_Launch_Core(handlers::iterator &Handler)
 {
-    string Core=Handler->second.Riff->Core_Get(Batch_IsBackuping);     
+    Ztring Core=Ztring().From_UTF8(Handler->second.Riff->Core_Get(Batch_IsBackuping));
 
     //Core chunk (with a Conformance Point Document)
     if (!Out_Core_CSV_FileName.empty() && (!Batch_IsBackuping || Handler->second.Riff->IsModified_Get())) //If backuping, only if file is modified
@@ -1447,28 +1447,28 @@ void Core::Batch_Launch_Core(handlers::iterator &Handler)
         List_Content.Write(Core);
         
         //Preparing XML file
-        string Content;
-        Content+=" <File name=\"";Content+=List_Content[0];Content+="\">";Content+=EOL;
+        Ztring Content;
+        Content+=__T(" <File name=\"");Content+=List_Content[0];Content+=__T("\">");Content+=EOL;
         if (Core.find(',')!=string::npos)
         {
-            Content+="  <Core>";Content+=EOL;
+            Content+=__T("  <Core>");Content+=EOL;
             for (size_t Header_Pos=1; Header_Pos<Out_Core_CSV_File_Header.size(); Header_Pos++)
                 if (Header_Pos<List_Content.size() && !List_Content[Header_Pos].empty())
                 {
-                    List_Content[Header_Pos].FindAndReplace("&", "&amp;", 0, Ztring_Recursive);
-                    List_Content[Header_Pos].FindAndReplace(EOL, "&#x0d;&#x0a;", 0, Ztring_Recursive);
-                    List_Content[Header_Pos].FindAndReplace("<", "&lt;", 0, Ztring_Recursive);
-                    List_Content[Header_Pos].FindAndReplace(">", "&gt;", 0, Ztring_Recursive);
-                    List_Content[Header_Pos].FindAndReplace("\"", "&quot;", 0, Ztring_Recursive);
-                    List_Content[Header_Pos].FindAndReplace("'", "&apos;", 0, Ztring_Recursive);
-                    Out_Core_CSV_File_Header[Header_Pos].FindAndReplace(" ", "_", 0, Ztring_Recursive);
-                    Out_Core_CSV_File_Header[Header_Pos].FindAndReplace("(", "", 0, Ztring_Recursive);
-                    Out_Core_CSV_File_Header[Header_Pos].FindAndReplace(")", "", 0, Ztring_Recursive);
-                    Content+="   <"+Out_Core_CSV_File_Header[Header_Pos]+">"+List_Content[Header_Pos]+"</"+Out_Core_CSV_File_Header[Header_Pos]+">"+EOL;
+                    List_Content[Header_Pos].FindAndReplace(__T("&"), __T("&amp;"), 0, Ztring_Recursive);
+                    List_Content[Header_Pos].FindAndReplace(EOL, __T("&#x0d;&#x0a;"), 0, Ztring_Recursive);
+                    List_Content[Header_Pos].FindAndReplace(__T("<"), __T("&lt;"), 0, Ztring_Recursive);
+                    List_Content[Header_Pos].FindAndReplace(__T(">"), __T("&gt;"), 0, Ztring_Recursive);
+                    List_Content[Header_Pos].FindAndReplace(__T("\""), __T("&quot;"), 0, Ztring_Recursive);
+                    List_Content[Header_Pos].FindAndReplace(__T("'"), __T("&apos;"), 0, Ztring_Recursive);
+                    Out_Core_CSV_File_Header[Header_Pos].FindAndReplace(__T(" "), __T("_"), 0, Ztring_Recursive);
+                    Out_Core_CSV_File_Header[Header_Pos].FindAndReplace(__T("("), __T(""), 0, Ztring_Recursive);
+                    Out_Core_CSV_File_Header[Header_Pos].FindAndReplace(__T(")"), __T(""), 0, Ztring_Recursive);
+                    Content+=__T("   <")+Out_Core_CSV_File_Header[Header_Pos]+__T(">")+List_Content[Header_Pos]+__T("</")+Out_Core_CSV_File_Header[Header_Pos]+__T(">")+EOL;
                 }
-            Content+="  </Core>";Content+=EOL;
+            Content+=__T("  </Core>");Content+=EOL;
         }
-        Content+=" </File>";Content+=EOL;
+        Content+=__T(" </File>");Content+=EOL;
 
         //Saving file
         if (!Out_Core_XML_File.Write(Content))
@@ -1483,29 +1483,29 @@ void Core::Batch_Launch_Core(handlers::iterator &Handler)
         List_Content.Write(Core);
         
         //Preparing XML file
-        string Content;
-        Content+="<?xml version=\"1.0\" encoding=\"UTF-8\"?>";Content+=EOL;
-        Content+="<conformance_point_document>";Content+=EOL;
-        Content+=" <File name=\"";Content+=List_Content[0];Content+="\">";Content+=EOL;
-        Content+="  <Core>";Content+=EOL;
+        Ztring Content;
+        Content+=__T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");Content+=EOL;
+        Content+=__T("<conformance_point_document>");Content+=EOL;
+        Content+=__T(" <File name=\"");Content+=List_Content[0];Content+=__T("\">");Content+=EOL;
+        Content+=__T("  <Core>");Content+=EOL;
         for (size_t Header_Pos=1; Header_Pos<Out_Core_CSV_File_Header.size(); Header_Pos++)
             if (Header_Pos<List_Content.size() && !List_Content[Header_Pos].empty())
             {
-                List_Content[Header_Pos].FindAndReplace(EOL, "<br />", 0, Ztring_Recursive);
-                Out_Core_CSV_File_Header[Header_Pos].FindAndReplace(" ", "_", 0, Ztring_Recursive);
-                Out_Core_CSV_File_Header[Header_Pos].FindAndReplace("(", "", 0, Ztring_Recursive);
-                Out_Core_CSV_File_Header[Header_Pos].FindAndReplace(")", "", 0, Ztring_Recursive);
-                Content+="   <"+Out_Core_CSV_File_Header[Header_Pos]+">"+List_Content[Header_Pos]+"</"+Out_Core_CSV_File_Header[Header_Pos]+">"+EOL;
+                List_Content[Header_Pos].FindAndReplace(EOL, __T("<br />"), 0, Ztring_Recursive);
+                Out_Core_CSV_File_Header[Header_Pos].FindAndReplace(__T(" "), __T("_"), 0, Ztring_Recursive);
+                Out_Core_CSV_File_Header[Header_Pos].FindAndReplace(__T("("), __T(""), 0, Ztring_Recursive);
+                Out_Core_CSV_File_Header[Header_Pos].FindAndReplace(__T(")"), __T(""), 0, Ztring_Recursive);
+                Content+=__T("   <")+Out_Core_CSV_File_Header[Header_Pos]+__T(">")+List_Content[Header_Pos]+__T("</")+Out_Core_CSV_File_Header[Header_Pos]+__T(">")+EOL;
             }
-        Content+="  </Core>";Content+=EOL;
-        Content+=" </File>";Content+=EOL;
-        Content+="</conformance_point_document>";Content+=EOL;
+        Content+=__T("  </Core>");Content+=EOL;
+        Content+=__T(" </File>");Content+=EOL;
+        Content+=__T("</conformance_point_document>");Content+=EOL;
 
         try
         {
             //Saving file
             File F;
-            if (!F.Create(Handler->second.Riff->FileName_Get()+".Core.xml"))
+            if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".Core.xml")))
                 throw "--out-Core-XML: error during file creation";
             if (!F.Write(Content))
                 throw "--out-Core-XML: error during file writing";
@@ -1529,9 +1529,9 @@ void Core::Batch_Launch_PMX(handlers::iterator &Handler)
         try
         {
             File F;
-            if (!F.Create(Handler->second.Riff->FileName_Get()+".XMP.xml"))
+            if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".XMP.xml")))
                 throw "--out-XMP-XML: error during file creation";
-            if (!F.Write(Content))
+            if (!F.Write(Ztring().From_UTF8(Content)))
                 throw "--out-XMP-XML: error during file writing";
         }
         catch (const char *Message)
@@ -1553,9 +1553,9 @@ void Core::Batch_Launch_aXML(handlers::iterator &Handler)
         try
         {
             File F;
-            if (!F.Create(Handler->second.Riff->FileName_Get()+".aXML.xml"))
+            if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".aXML.xml")))
                 throw "--out-aXML-XML: error during file creation";
-            if (!F.Write(Content))
+            if (!F.Write(Ztring().From_UTF8(Content)))
                 throw "--out-aXML-XML: error during file writing";
         }
         catch (const char *Message)
@@ -1577,9 +1577,9 @@ void Core::Batch_Launch_iXML(handlers::iterator &Handler)
         try
         {
             File F;
-            if (!F.Create(Handler->second.Riff->FileName_Get()+".iXML.xml"))
+            if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".iXML.xml")))
                 throw "--out-iXML-XML: error during file creation";
-            if (!F.Write(Content))
+            if (!F.Write(Ztring().From_UTF8(Content)))
                 throw "--out-iXML-XML: error during file writing";
         }
         catch (const char *Message)
@@ -1652,14 +1652,14 @@ void Core::StdAll(handlers::iterator &Handler)
 
     if (!Handler->second.Riff->Information.str().empty())
     {
-        Text_stdout<<TimeS<<" "<<Handler->second.Riff->Information.str();
-        Text_stdall<<TimeS<<" "<<Handler->second.Riff->Information.str();
+        Text_stdout<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Information.str();
+        Text_stdall<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Information.str();
         if (!LogFile.empty())
         {
             Ztring Data;
             Data+=TimeS;
-            Data+=" ";
-            Data+=Handler->second.Riff->Information.str();
+            Data+=__T(" ");
+            Data+=Ztring().From_UTF8(Handler->second.Riff->Information.str());
             File F(LogFile, File::Access_Write_Append);
             F.Write(Data);
         }
@@ -1667,14 +1667,14 @@ void Core::StdAll(handlers::iterator &Handler)
     }
     if (!Handler->second.Riff->Errors.str().empty())
     {
-        Text_stderr<<TimeS<<" "<<Handler->second.Riff->Errors.str();
-        Text_stdall<<TimeS<<" "<<Handler->second.Riff->Errors.str();
+        Text_stderr<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Errors.str();
+        Text_stdall<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Errors.str();
         if (!LogFile.empty())
         {
             Ztring Data;
             Data+=TimeS;
-            Data+=" ";
-            Data+=Handler->second.Riff->Errors.str();
+            Data+=__T(" ");
+            Data+=Ztring().From_UTF8(Handler->second.Riff->Errors.str());
             File F(LogFile, File::Access_Write_Append);
             F.Write(Data);
         }
@@ -1692,14 +1692,14 @@ void Core::StdOut(string Text)
     time_t Time=time(NULL);
     Ztring TimeS; TimeS.Date_From_Seconds_1970_Local((int32u)Time);
 
-    Text_stdout<<TimeS<<" "<<Text<<endl;
-    Text_stdall<<TimeS<<" "<<Text<<endl;
+    Text_stdout<<TimeS.To_UTF8()<<" "<<Text<<endl;
+    Text_stdall<<TimeS.To_UTF8()<<" "<<Text<<endl;
     if (!LogFile.empty())
     {
         Ztring Data;
         Data+=TimeS;
-        Data+=" ";
-        Data+=Text;
+        Data+=__T(" ");
+        Data+=Ztring().From_UTF8(Text);
         Data+=EOL;
         File F(LogFile, File::Access_Write_Append);
         F.Write(Data);
@@ -1715,8 +1715,8 @@ void Core::StdErr(string Text)
     time_t Time=time(NULL);
     Ztring TimeS; TimeS.Date_From_Seconds_1970_Local((int32u)Time);
 
-    Text_stderr<<TimeS<<" "<<Text<<endl;
-    Text_stdall<<TimeS<<" "<<Text<<endl;
+    Text_stderr<<TimeS.To_UTF8()<<" "<<Text<<endl;
+    Text_stdall<<TimeS.To_UTF8()<<" "<<Text<<endl;
     Text_stderr_Updated=true;
 }
 

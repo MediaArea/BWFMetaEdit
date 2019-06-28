@@ -67,7 +67,7 @@ GUI_Main_UndoDialog::GUI_Main_UndoDialog(Core* _C, QWidget* parent)
     //Fill
     ZtringList List=C->Menu_File_Undo_ListBackupFiles();
     for (size_t Pos=0; Pos<List.size(); Pos++)
-        ListWidget->addItem(QString().fromLocal8Bit(List[Pos].To_Local().c_str()));
+        ListWidget->addItem(QString().fromUtf8(List[Pos].To_UTF8().c_str()));
 }
 
 //***************************************************************************
@@ -76,8 +76,8 @@ GUI_Main_UndoDialog::GUI_Main_UndoDialog(Core* _C, QWidget* parent)
 
 void GUI_Main_UndoDialog::currentItemChanged (QListWidgetItem* Current, QListWidgetItem* Previous)
 {
-    Ztring ToDisplay=C->Menu_File_Undo_ListModifiedFiles(ListWidget->currentRow());
+    string ToDisplay=C->Menu_File_Undo_ListModifiedFiles(ListWidget->currentRow());
 
-    ListInfo->setText(QString().fromLocal8Bit(ToDisplay.To_Local().c_str()));
+    ListInfo->setText(QString().fromUtf8(ToDisplay.c_str()));
 }
 

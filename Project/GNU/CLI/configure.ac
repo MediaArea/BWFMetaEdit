@@ -36,6 +36,7 @@ dnl
 AC_ARG_ENABLE(debug,        AC_HELP_STRING([--enable-debug],        [Enable full debug]),                       , enable_debug=no)
 AC_ARG_ENABLE(gprof,        AC_HELP_STRING([--enable-gprof],        [Enable gprof log]),                        , enable_gprof=no)
 AC_ARG_ENABLE(universal_binary, AC_HELP_STRING([--enable-universal_binary], [Create Mac PPC/i386 Universal binary]),      , enable_universal_binary=no)
+AC_ARG_ENABLE(unicode,          AS_HELP_STRING([--disable-unicode],         [Disable unicode]),                           , enable_unicode=yes)
 AC_ARG_ENABLE(arch-ppc,         AC_HELP_STRING([--with-arch-ppc],           [Create Mac PPC Universal binary]),           , enable_arch_ppc=no)
 AC_ARG_ENABLE(arch-i386,        AC_HELP_STRING([--with-arch-i386],          [Create Mac i386 Universal binary]),          , enable_arch_i386=no)
 AC_ARG_ENABLE(arch-x86_64,      AC_HELP_STRING([--enable-arch-x86_64],      [Create Mac x86_64 architecture]),            , enable_arch_x86_64=no)
@@ -70,6 +71,16 @@ if test "$enable_large_files" = "yes"; then
 	ZenLib_LargeFiles="yes"
 else
 	ZenLib_LargeFiles="no"
+fi
+
+dnl -------------------------------------------------------------------------
+dnl Unicode
+dnl
+if test "$enable_unicode" = "yes"; then
+	CXXFLAGS="$CXXFLAGS -DUNICODE -D_UNICODE"
+	ZenLib_Unicode="yes"
+else
+	ZenLib_Unicode="no"
 fi
 
 dnl #########################################################################

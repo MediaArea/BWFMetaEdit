@@ -49,9 +49,9 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     QTableWidgetItem* Item=itemAt(Event->pos());
     if (Item==NULL)
         return;
-    string FileName=FileName_Before+item(Item->row(), 0)->text().toLocal8Bit().data();
-    string Field=horizontalHeaderItem(Item->column())->text().toLocal8Bit().data();
-    ZtringList History; History.Write(C->History(FileName, Field));
+    string FileName=FileName_Before+item(Item->row(), 0)->text().toUtf8().data();
+    string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
+    ZtringList History; History.Write(Ztring().From_UTF8(C->History(FileName, Field)));
     Ztring Import;
     Ztring Export;
     Ztring Fill;
@@ -84,16 +84,16 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
 
     //Handling export display
     if (!Import.empty())
-        menu.addAction(new QAction(QString().fromLocal8Bit(Import.To_Local().c_str()), this));
+        menu.addAction(new QAction(QString().fromUtf8(Import.To_UTF8().c_str()), this));
     if (!Export.empty())
-        menu.addAction(new QAction(QString().fromLocal8Bit(Export.To_Local().c_str()), this));
+        menu.addAction(new QAction(QString().fromUtf8(Export.To_UTF8().c_str()), this));
     if (!Import.empty() || !Export.empty())
         menu.addSeparator();
 
     //Handling Fill display
     if (!Fill.empty())
     {
-        menu.addAction(new QAction(QString().fromLocal8Bit(Fill.To_Local().c_str()), this));
+        menu.addAction(new QAction(QString().fromUtf8(Fill.To_UTF8().c_str()), this));
         menu.addSeparator();
     }
 
@@ -104,7 +104,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         {
             Pos--;
 
-            QString Text=QString().fromLocal8Bit(History[Pos].To_Local().c_str());
+            QString Text=QString().fromUtf8(History[Pos].To_UTF8().c_str());
             if (!Text.isEmpty())
             {
                 QAction* Action=new QAction(Text, this);
@@ -117,7 +117,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     if (!Remove.empty())
     {
         menu.addSeparator();
-        menu.addAction(new QAction(QString().fromLocal8Bit(Remove.To_Local().c_str()), this));
+        menu.addAction(new QAction(QString().fromUtf8(Remove.To_UTF8().c_str()), this));
     }
 
     //Displaying
@@ -126,7 +126,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         return;
 
     //Retrieving data
-    string ModifiedContent=Action->text().toLocal8Bit().data();
+    string ModifiedContent=Action->text().toUtf8().data();
 
     //Specific cases
     if (ModifiedContent=="Remove it") //If you change this, change the creation text too
@@ -145,7 +145,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         File F;
         if (!F.Create(ZenLib::Ztring().From_UTF8(FileNamesQ.toUtf8().data())))
             return;
-        F.Write(C->Get(FileName, Field));
+        F.Write(Ztring().From_UTF8(C->Get(FileName, Field)));
         
         return;
     }
@@ -183,11 +183,11 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         Buffer[Buffer_Offset]='\0';
 
         //Filling
-        Ztring Value((const char*)Buffer);
+        Ztring Value=Ztring().From_UTF8((const char*)Buffer);
         delete[] Buffer;
-        Value.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        Value.FindAndReplace("\r", "\n", 0, Ztring_Recursive);
-        if (!C->IsValid(FileName, Field, Value))
+        Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+        Value.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+        if (!C->IsValid(FileName, Field, Value.To_UTF8()))
         {
             QMessageBox MessageBox;
             MessageBox.setWindowTitle("BWF MetaEdit");
@@ -201,7 +201,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
             return;
         }
 
-        ModifiedContent=Value;
+        ModifiedContent=Value.To_UTF8();
     }
 
     //Filling
@@ -216,9 +216,9 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         item(Item->row(), Item->column())->setText(C->Get(FileName, "MD5Generated").c_str());
     else
     {
-        Ztring NewValue(ModifiedContent);
-        NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(Item->row(), Item->column())->setText(NewValue.c_str());
+        Ztring NewValue=Ztring().From_UTF8(ModifiedContent);
+        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+        item(Item->row(), Item->column())->setText(NewValue.To_UTF8().c_str());
     }
 
     //Configuring
@@ -236,8 +236,8 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         return QTableWidget::edit(index, trigger, Event); //Normal editing
 
     //Init
-    string FileName=FileName_Before+item(index.row(), 0)->text().toLocal8Bit().data();
-    string Field=horizontalHeaderItem(index.column())->text().toLocal8Bit().data();
+    string FileName=FileName_Before+item(index.row(), 0)->text().toUtf8().data();
+    string Field=horizontalHeaderItem(index.column())->text().toUtf8().data();
 
     //Should we handle edition manualy?
     if (trigger!=DoubleClicked && trigger!=AnyKeyPressed)
@@ -260,7 +260,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         if (Main->Bext_Toggle_Get())
         {
             //Retrieving data
-            int8u NewValue=Ztring().From_Local(C->Get(FileName, "BextVersion").c_str()).To_int8u();
+            int8u NewValue=Ztring().From_UTF8(C->Get(FileName, "BextVersion").c_str()).To_int8u();
             if (NewValue>=Main->Bext_MaxVersion_Get())
             {
                 bool HasV1=C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty();
@@ -276,8 +276,8 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
                 NewValue++;
 
             //Filling
-            C->Set(FileName, "BextVersion", Ztring::ToZtring(NewValue).To_Local());
-            item(index.row(), index.column())->setText(Ztring(__T("Version ")+Ztring::ToZtring(NewValue)).To_Local().c_str());
+            C->Set(FileName, "BextVersion", Ztring::ToZtring(NewValue).To_UTF8());
+            item(index.row(), index.column())->setText(Ztring(__T("Version ")+Ztring::ToZtring(NewValue)).To_UTF8().c_str());
             dataChanged(indexFromItem(item(index.row(), index.column())), indexFromItem(item(index.row(), index.column())));
             return false;
         }
@@ -291,10 +291,10 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
                 return false; //No change
             }
             delete Edit; //Edit=NULL;
-            Ztring NewValue(C->Get(FileName, "BextVersion"));
+            string NewValue(C->Get(FileName, "BextVersion"));
 
             //Updating
-            item(index.row(), index.column())->setText(QString::fromLocal8Bit(("Version "+NewValue).c_str()));
+            item(index.row(), index.column())->setText(QString::fromUtf8(string("Version "+NewValue).c_str()));
             dataChanged(indexFromItem(item(index.row(), index.column())), indexFromItem(item(index.row(), index.column())));
             return false;
         }
@@ -308,9 +308,9 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         //Retrieving data
         if (!ModifiedContentQ.isEmpty())
         {
-            Ztring ModifiedContent=C->Get(FileName, Field);
-            ModifiedContent.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-            ModifiedContentQ=QString::fromLocal8Bit(ModifiedContent.To_Local().c_str());
+            Ztring ModifiedContent=Ztring().From_UTF8(C->Get(FileName, Field));
+            ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+            ModifiedContentQ=QString::fromUtf8(ModifiedContent.To_UTF8().c_str());
         }
 
         //User interaction
@@ -341,9 +341,9 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         delete Edit; //Edit=NULL;
 
         //Filling
-        Ztring NewValue(C->Get(FileName, Field));
-        NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
+        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
+        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
         return false;
     }
 
@@ -379,7 +379,7 @@ bool GUI_Main_Technical_Table::Fill_Enabled (const string &FileName, const strin
 
     if (Field=="bext")
     {
-        if (Main->Bext_MaxVersion_Get()>2 || Ztring(C->Get(FileName, "BextVersion")).To_int16u()>Main->Bext_MaxVersion_Get() || (C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty()))
+        if (Main->Bext_MaxVersion_Get()>2 || Ztring().From_UTF8(C->Get(FileName, "BextVersion")).To_int16u()>Main->Bext_MaxVersion_Get() || (C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty()))
             return !C->Overwrite_Reject && Value!="No";
         else
             return false;

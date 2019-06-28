@@ -79,7 +79,7 @@ void Riff_WAVE_data::Read_Internal ()
         MD5Final(Digest, &MD5);
         int128u DigestI=BigEndian2int128u(Digest);
         Global->MD5Generated=new Riff_Base::global::chunk_strings;
-        Global->MD5Generated->Strings["md5generated"]=Ztring().From_Number(DigestI, 16);
+        Global->MD5Generated->Strings["md5generated"]=Ztring().From_Number(DigestI, 16).To_UTF8();
         while (Global->MD5Generated->Strings["md5generated"].size()<32)
             Global->MD5Generated->Strings["md5generated"].insert(Global->MD5Generated->Strings["md5generated"].begin(), '0'); //Padding with 0, this must be a 32-byte string    
     }

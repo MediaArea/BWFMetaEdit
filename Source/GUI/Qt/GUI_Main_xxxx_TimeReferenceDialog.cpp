@@ -73,10 +73,10 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
     setLayout(L);
 
     //Filling
-    SampleRate=Ztring(C->Get(FileName, "SampleRate")).To_int64u();
-    Ztring TimeReference=C->Get(FileName, "TimeReference");
-    Ztring TimeReferenceS=C->Get(FileName, "TimeReference (translated)");
-    TimeEdit->setTime(QTime::fromString(QString().fromLocal8Bit(TimeReferenceS.To_Local().c_str()), Qt::ISODate));
+    SampleRate=Ztring().From_UTF8(C->Get(FileName, "SampleRate")).To_int64u();
+    Ztring TimeReference=Ztring().From_UTF8(C->Get(FileName, "TimeReference"));
+    Ztring TimeReferenceS=Ztring().From_UTF8(C->Get(FileName, "TimeReference (translated)"));
+    TimeEdit->setTime(QTime::fromString(QString().fromUtf8(TimeReferenceS.To_UTF8().c_str()), Qt::ISODate));
     LineEdit->setValue(TimeReference.To_int64u());
     IsChanging=false;
 }
@@ -88,7 +88,7 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_TimeReferenceDialog::OnAccept ()
 {
-    std::string Value=LineEdit->text().toLocal8Bit().data();
+    std::string Value=LineEdit->text().toUtf8().data();
     if (!C->IsValid(FileName, Field, Value))
     {
         QMessageBox MessageBox;

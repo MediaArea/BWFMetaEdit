@@ -63,18 +63,18 @@ void Riff_WAVE_INFO_xxxx::Read_Internal ()
     }
 
     //Integrity
-    if (Global->INFO->Strings.find(Ztring().From_CC4(Chunk.Header.Name))!=Global->INFO->Strings.end())
-        throw exception_valid("2 "+Ztring().From_CC4(Chunk.Header.Name)+" chunks");
+    if (Global->INFO->Strings.find(Ztring().From_CC4(Chunk.Header.Name).To_UTF8())!=Global->INFO->Strings.end())
+        throw exception_valid("2 "+Ztring().From_CC4(Chunk.Header.Name).To_UTF8()+" chunks");
 
     //Reading
     Read_Internal_ReadAllInBuffer();
     
     //Parsing
-    Ztring Value;    
+    string Value;
     Get_String(Chunk.Content.Size, Value);
         
     //Filling
-    Ztring Field=Ztring().From_CC4(Chunk.Header.Name);
+    string Field=Ztring().From_CC4(Chunk.Header.Name).To_UTF8();
     Global->INFO->Strings[Field]=Value;
 
     //Details
@@ -97,7 +97,7 @@ void Riff_WAVE_INFO_xxxx::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_INFO_xxxx::Modify_Internal ()
 {
-    string Field=Ztring().From_CC4(Chunk.Header.Name).MakeUpperCase();
+    string Field=Ztring().From_CC4(Chunk.Header.Name).MakeUpperCase().To_UTF8();
     if (Global->INFO->Strings[Field].empty())
     {
         Chunk.Content.IsRemovable=true;
