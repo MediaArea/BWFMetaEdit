@@ -39,6 +39,7 @@ AC_ARG_ENABLE(universal_binary, AC_HELP_STRING([--enable-universal_binary], [Cre
 AC_ARG_ENABLE(arch-ppc,         AC_HELP_STRING([--with-arch-ppc],           [Create Mac PPC Universal binary]),           , enable_arch_ppc=no)
 AC_ARG_ENABLE(arch-i386,        AC_HELP_STRING([--with-arch-i386],          [Create Mac i386 Universal binary]),          , enable_arch_i386=no)
 AC_ARG_ENABLE(arch-x86_64,      AC_HELP_STRING([--enable-arch-x86_64],      [Create Mac x86_64 architecture]),            , enable_arch_x86_64=no)
+AC_ARG_ENABLE(large_files,      AC_HELP_STRING([--disable-large_files],     [Disable large files support]),               , enable_large_files=yes)
 
 dnl -------------------------------------------------------------------------
 dnl Arguments - With
@@ -60,6 +61,16 @@ dnl Use ZenLib
 dnl
 CXXFLAGS="$CXXFLAGS -pthread"
 LDFLAGS="$LDFLAGS -lpthread -pthread"
+
+dnl -------------------------------------------------------------------------
+dnl Large files
+dnl
+if test "$enable_large_files" = "yes"; then
+	CXXFLAGS="$CXXFLAGS -D_LARGE_FILES -D_FILE_OFFSET_BITS=64"
+	ZenLib_LargeFiles="yes"
+else
+	ZenLib_LargeFiles="no"
+fi
 
 dnl #########################################################################
 dnl ### C/C++ compiler options used to compile
