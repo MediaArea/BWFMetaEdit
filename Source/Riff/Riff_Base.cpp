@@ -324,7 +324,7 @@ void Riff_Base::Write ()
     {
         //Calculating block size
         int64u Block_Size=Block_Size_Get();
-        if (Block_Size>RIFF_Size_Limit)
+        if (Block_Size>RIFF_Size_Limit || (Global->IsRF64 && Chunk.Header.Level==1))
         {
             //We need RF64
             if (Chunk.Header.Level==1)
@@ -362,10 +362,10 @@ void Riff_Base::Write ()
         {
             int8u Header[8];
             int32u2BigEndian(Header, Chunk.Header.Name);
-            if (Chunk.Content.Size<=RIFF_Size_Limit)
-                int32u2LittleEndian(Header+4, (int32u)(Chunk.Content.Size));
-            else if (Chunk.Header.Level==2 && Chunk.Header.Name==Elements::WAVE_data)
+            if ((Global->IsRF64 || Chunk.Content.Size>RIFF_Size_Limit) && Global->ds64 && Chunk.Header.Level==2 && Chunk.Header.Name==Elements::WAVE_data)
                 int32u2LittleEndian(Header+4, 0xFFFFFFFF);
+            else if (Chunk.Content.Size<=RIFF_Size_Limit)
+                int32u2LittleEndian(Header+4, (int32u)(Chunk.Content.Size));
             else
                 throw exception_write("Block size is too big");
             Write_Internal(Header, 8);
