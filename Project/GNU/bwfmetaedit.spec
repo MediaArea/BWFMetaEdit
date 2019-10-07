@@ -25,6 +25,9 @@ BuildRequires:	update-desktop-files
 %endif
 BuildRequires:  automake
 BuildRequires:  autoconf
+%if 0%{?rhel_version} >= 800 || 0%{?centos_version} >= 800
+BuildRequires:  gdb
+%endif
 %if 0%{?mageia}
 BuildRequires:  sane-backends-iscan
 %if 0%{?mageia} >= 6
