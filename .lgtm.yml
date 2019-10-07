@@ -1,0 +1,11 @@
+extraction:
+  cpp:
+    configure:
+      command:
+      - "cd Project/GNU/CLI"
+      - "sh autogen.sh"
+      - "./configure"
+    index:
+      build_command:
+      - "cd Project/GNU/CLI"
+      - "make"
