@@ -36,7 +36,7 @@ TEMPLATE = app
 CONFIG += qt release
 CONFIG += no_keywords
 
-DEFINES += TIXML_USE_STL
+DEFINES += TIXML_USE_STL _LARGE_FILES _FILE_OFFSET_BITS=64
 
 HEADERS = \
     ../../Source/Common/Common_About.h \
