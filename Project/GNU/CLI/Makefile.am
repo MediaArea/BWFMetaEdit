@@ -48,4 +48,8 @@ bwfmetaedit_SOURCES = \
 
 #bwfmetaedit_LDFLAGS     = -no-undefined -version-info 0:0:0
 
+AM_TESTS_FD_REDIRECT = 9>&2
+
+TESTS = test/version.sh test/metadata.sh test/overwrite.sh test/null.sh
+
 AM_CPPFLAGS = -I../../../Source
