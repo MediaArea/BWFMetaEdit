@@ -102,12 +102,28 @@ rm "${test}/${testfile}" || fatal "internal" "rm command failed"
 # test metadata from xml
 generate_testfile
 
-run_bwfmetaedit --in-core-xml="${test}/test.xml"
+run_bwfmetaedit --in-core="${test}/test.xml" "${test}/${testfile}"
 if [ "${?}" -ne 0 ] ; then
     error "metadata/add" "command failed"
 fi
 
+run_bwfmetaedit --out-core-xml="${test}/test.xml" "${test}/${testfile}"
+check_success
+if [ "${?}" -ne 0 ] ; then
+    error "metadata/read" "command failed"
+fi
+
 verify_metadata
+
+run_bwfmetaedit --in-core-remove "${test}/${testfile}"
+
+run_bwfmetaedit --out-core-xml="${test}/test.xml" "${test}/${testfile}"
+check_success
+if [ "${?}" -ne 0 ] ; then
+    error "metadata/read" "command failed"
+fi
+
+[ "$(xmllint --xpath 'count(///Core/*)' ${test}/test.xml)" == "0" ] || error "metadata/read" "Core is not empty after in-core-remove"
 
 rm -fr "${test}"
 
