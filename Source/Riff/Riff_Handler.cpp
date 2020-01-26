@@ -307,7 +307,7 @@ bool Riff_Handler::Save()
     }
 
     //Old temporary file
-    #if MASTORE
+    #if MACSTORE
     if ((Chunks->Global->Temp_Path.size() && (Chunks->Global->Temp_Name.size() && File::Exists(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name) && !File::Delete(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name))
     #else
     if (File::Exists(Chunks->Global->File_Name+".tmp") && !File::Delete(Chunks->Global->File_Name+".tmp"))
@@ -636,14 +636,17 @@ bool Riff_Handler::Remove(const string &Field)
 
     //bext + INFO
     if (Ztring(Field).MakeLowerCase()=="core")
+    {
+        bool ToReturn=true;
         for (size_t Fields_Pos=Fields_Bext; Fields_Pos<=Fields_Info; Fields_Pos++) //Only Bext and Info
             for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
             {
-                bool ToReturn=true;
                 if (!Set(Field_Get(xxxx_Strings[Fields_Pos][Pos]), string(), *chunk_strings_Get(xxxx_Strings[Fields_Pos][Pos]), Chunk_Name2_Get(xxxx_Strings[Fields_Pos][Pos]), Chunk_Name3_Get(xxxx_Strings[Fields_Pos][Pos])))
                     ToReturn=false;
-                return ToReturn;
             }
+
+        return ToReturn;
+    }
 
     return Set(Field, string(), *chunk_strings_Get(Field), Chunk_Name2_Get(Field), Chunk_Name3_Get(Field)); 
 }
