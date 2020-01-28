@@ -308,7 +308,7 @@ bool Riff_Handler::Save()
 
     //Old temporary file
     #if MACSTORE
-    if ((Chunks->Global->Temp_Path.size() && (Chunks->Global->Temp_Name.size() && File::Exists(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name) && !File::Delete(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name))
+    if (Chunks->Global->Temp_Path.size() && Chunks->Global->Temp_Name.size() && File::Exists(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name) && !File::Delete(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name))
     #else
     if (File::Exists(Chunks->Global->File_Name+".tmp") && !File::Delete(Chunks->Global->File_Name+".tmp"))
     #endif
