@@ -339,6 +339,8 @@ void Riff_Base::Write ()
                 }
                 if (Chunk.Header.List==Elements::RF64)
                 {
+                    Subs[0]->Modify();
+                    Block_Size=Block_Size_Get();
                     Global->ds64->riffSize=Block_Size-8;
                     if (Global->data)
                         Global->ds64->dataSize=Global->data->Size;

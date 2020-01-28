@@ -60,10 +60,12 @@ void Riff_WAVE_ds64::Modify_Internal ()
 
     //Creating buffer
     Chunk.Content.Buffer_Offset=0;
-    Chunk.Content.Size=28;
-    delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[28];
+    if (Chunk.Content.Size<28)
+    {
+        Chunk.Content.Size=28;
+        delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[28];
+    }
     memset(Chunk.Content.Buffer, '\0', 28);
-    Chunk.Content.Size=28;
 
     Put_L8(Global->ds64->riffSize);
     Put_L8(Global->ds64->dataSize);
