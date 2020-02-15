@@ -56,7 +56,7 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
     Label->setText(tr("or"));
     LineEdit=new QDoubleSpinBox(this);
     LineEdit->setMinimum(0);
-    LineEdit->setMaximum(0xFFFFFFFF);
+    LineEdit->setMaximum(0xFFFFFFFFFFFFFFFF);
     LineEdit->setDecimals(0);
     connect(LineEdit, SIGNAL(valueChanged (const QString &)), this, SLOT(OnValueEdited (const QString &)));
     LimeEdit_Label=new QLabel(this);
@@ -77,7 +77,7 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
     Ztring TimeReference=C->Get(FileName, "TimeReference");
     Ztring TimeReferenceS=C->Get(FileName, "TimeReference (translated)");
     TimeEdit->setTime(QTime::fromString(QString().fromLocal8Bit(TimeReferenceS.To_Local().c_str()), Qt::ISODate));
-    LineEdit->setValue(TimeReference.To_int32u());
+    LineEdit->setValue(TimeReference.To_int64u());
     IsChanging=false;
 }
 
