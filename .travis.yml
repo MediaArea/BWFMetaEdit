@@ -1,5 +1,6 @@
 language: cpp
 
+dist: bionic
 sudo: required
 
 matrix:
@@ -11,7 +12,7 @@ matrix:
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then sudo apt-get update -qq ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then sudo apt-get install -y libxml2-utils libqt4-dev ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then sudo apt-get install -y libxml2-utils qtbase5-dev qtdeclarative5-dev qtquickcontrols2-5-dev libqt5svg5-dev qt5-default ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then brew update ; true ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then brew install qt ; true ; fi
 

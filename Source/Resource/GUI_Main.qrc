@@ -1,24 +1,30 @@
- <!DOCTYPE RCC><RCC version="1.0">
- <qresource><file>Image/Menu/File_Open_File.png</file></qresource>
- <qresource><file>Image/Menu/File_Open_Directory.png</file></qresource>
- <qresource><file>Image/Menu/File_Save.png</file></qresource>
- <qresource><file>Image/Menu/View_Technical.png</file></qresource>
- <qresource><file>Image/Menu/View_Core.png</file></qresource>
- <qresource><file>Image/Menu/Options_Prefs.png</file></qresource>
- <qresource><file>Image/Menu/Help.png</file></qresource>
- <qresource><file>Image/Menu/About.png</file></qresource>
- <qresource><file>Image/FADGI/Logo.png</file></qresource>
- <qresource><file>Documentation/index.html</file></qresource>
- <qresource><file>Documentation/bext.html</file></qresource>
- <qresource><file>Documentation/core_doc_help.html</file></qresource>
- <qresource><file>Documentation/errors.html</file></qresource>
- <qresource><file>Documentation/listinfo.html</file></qresource>
- <qresource><file>Documentation/md5.html</file></qresource>
- <qresource><file>Documentation/options.html</file></qresource>
- <qresource><file>Documentation/tech_view_help.html</file></qresource>
- <qresource><file>Documentation/trace.html</file></qresource>
- <qresource><file>Documentation/validation_rules_help.html</file></qresource>
- <qresource><file>Documentation/workflows.html</file></qresource>
- <qresource><file>Documentation/xml_chunks.html</file></qresource>
- <qresource><file>License.html</file></qresource>
- </RCC>
+<RCC>
+ <qresource prefix="/">
+  <file>Image/Menu/File_Open_File.png</file>
+  <file>Image/Menu/File_Open_Directory.png</file>
+  <file>Image/Menu/File_Save.png</file>
+  <file>Image/Menu/View_Technical.png</file>
+  <file>Image/Menu/View_Core.png</file>
+  <file>Image/Menu/View_PerFile.png</file>
+  <file>Image/Menu/Options_Prefs.png</file>
+  <file>Image/Menu/Help.png</file>
+  <file>Image/Menu/About.png</file>
+  <file>Image/FADGI/Logo.png</file>
+  <file>Documentation/index.html</file>
+  <file>Documentation/bext.html</file>
+  <file>Documentation/core_doc_help.html</file>
+  <file>Documentation/errors.html</file>
+  <file>Documentation/listinfo.html</file>
+  <file>Documentation/md5.html</file>
+  <file>Documentation/options.html</file>
+  <file>Documentation/tech_view_help.html</file>
+  <file>Documentation/trace.html</file>
+  <file>Documentation/validation_rules_help.html</file>
+  <file>Documentation/workflows.html</file>
+  <file>Documentation/xml_chunks.html</file>
+  <file>License.html</file>
+  <!-- BUG: Qt5.9 fail to detect and link to qml plugins libraries if the qml file is not placed on the project directory -->
+  <file alias="PerFile.qml">../../Project/QtCreator/PerFile.qml</file>
+  <file alias="qtquickcontrols2.conf">../../Project/QtCreator/qtquickcontrols2.conf</file>
+ </qresource>
+</RCC>

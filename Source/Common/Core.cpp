@@ -680,6 +680,38 @@ void Core::Menu_File_Undo_SelectBackupFile(size_t Pos)
 }
 
 //---------------------------------------------------------------------------
+size_t Core::Menu_File_Save_File (const string &FileName)
+{
+    if (!Dir::Exists(ApplicationFolder))
+    {
+        Dir::Create(ApplicationFolder);
+        if (!Dir::Exists(ApplicationFolder))
+            return 0;
+    }
+
+    handlers::iterator Handler=Handlers.find(FileName);
+
+    if( Handler==Handlers.end())
+        return 0;
+
+    //Backup
+    Batch_IsBackuping=true;
+    time_t Time=time(NULL);
+    Ztring TimeS; TimeS.Date_From_Seconds_1970_Local((int32u)Time);
+    TimeS.FindAndReplace(__T(":"), __T("-"), 0, Ztring_Recursive);
+    TimeS.FindAndReplace(__T(" "), __T("-"), 0, Ztring_Recursive);
+    Out_Core_CSV_FileName=ApplicationFolder.To_UTF8()+"/Backup-"+TimeS.To_UTF8()+".csv";
+    Batch_Launch(Handler);
+    Out_Core_CSV_FileName.clear();
+    Batch_IsBackuping=false;
+    
+    //Running
+    Batch_Launch(Handler);
+
+    return 1;
+}
+
+//---------------------------------------------------------------------------
 size_t Core::Menu_File_Save ()
 {
     if (!Dir::Exists(ApplicationFolder))
@@ -688,7 +720,7 @@ size_t Core::Menu_File_Save ()
         if (!Dir::Exists(ApplicationFolder))
             return 0;
     }
-    
+
     //Backup
     Batch_IsBackuping=true;
     time_t Time=time(NULL);

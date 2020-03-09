@@ -81,6 +81,13 @@ void GUI_Main::Menu_Create()
 
     //Menu Views
     Menu_Fields_RadioButtons=new QAction*[Preferences->Groups_Count_Get()*options::MaxCount];
+
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile] = new QAction(QIcon(":/Image/Menu/View_PerFile.png"), tr("File"), this);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile]->setShortcut(tr(""));
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile]->setCheckable(true);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile]->setStatusTip(tr(""));
+    connect(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_PerFile(bool)));
+
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table] = new QAction(QIcon(":/Image/Menu/View_Technical.png"), tr("Technical Metadata (table)"), this);
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]->setShortcut(tr(""));
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]->setCheckable(true);
@@ -130,6 +137,7 @@ void GUI_Main::Menu_Create()
     connect(Menu_View_Output_Trace, SIGNAL(triggered()), this, SLOT(OnMenu_View_Output_Trace()));
 
     Menu_View_Group = new QActionGroup(this);
+    Menu_View_Group->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile]);
     Menu_View_Group->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]);
     Menu_View_Group->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text]);
     Menu_View_Group->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]);
@@ -139,6 +147,8 @@ void GUI_Main::Menu_Create()
     Menu_View_Group->addAction(Menu_View_Output_stderr);
     Menu_View_Group->addAction(Menu_View_Output_Trace);
     Menu_View = menuBar()->addMenu(tr("&View"));
+    Menu_View->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile]);
+    Menu_View->addSeparator();
     Menu_View->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]);
     Menu_View->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text]);
     Menu_View->addSeparator();
@@ -412,6 +422,15 @@ void GUI_Main::OnMenu_File_Save_Files()
 }
 
 //---------------------------------------------------------------------------
+void GUI_Main::OnMenu_File_Save_File(const QString& FileName)
+{
+    C->StdOut(string("Saving file ") + FileName.toStdString() + string("..."));
+    C->Menu_File_Save_File(FileName.toStdString());
+    C->StdOut("Saving files, finished");
+    View_Refresh();
+}
+
+//---------------------------------------------------------------------------
 void GUI_Main::OnMenu_File_Save_All()
 {
     //Running
@@ -484,6 +503,16 @@ void GUI_Main::OnMenu_View_Core_Text(bool Checked)
 
     //Showing
     View_Refresh(View_Core_Text);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_View_PerFile(bool Checked)
+{
+    if (!Checked)
+        return;
+
+    //Showing
+    View_Refresh(View_PerFile);
 }
 
 //---------------------------------------------------------------------------
@@ -1183,6 +1212,7 @@ void GUI_Main::ToolBar_Create()
     ToolBar->addSeparator();
     ToolBar->addAction(Menu_File_Save_All);
     ToolBar->addSeparator();
+    ToolBar->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile]);
     ToolBar->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]);
     ToolBar->addAction(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]);
     ToolBar->addSeparator();

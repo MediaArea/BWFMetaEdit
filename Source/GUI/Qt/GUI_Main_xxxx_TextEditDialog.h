@@ -32,7 +32,7 @@ class GUI_Main_xxxx_TextEditDialog : public QDialog
 
 public:
     //Constructor/Destructor
-    GUI_Main_xxxx_TextEditDialog(Core* C, const std::string &FileName, const std::string &Field, const QString &Value, QWidget* parent=NULL);
+    GUI_Main_xxxx_TextEditDialog(Core* C, const std::string &FileName, const std::string &Field, const QString &Value, bool ReadOnly=false, QWidget* parent=NULL);
 
     //Widgets
     QTextEdit*          TextEdit;
@@ -53,6 +53,7 @@ private:
     Core* C;
     std::string FileName;
     std::string Field;
+    bool ReadOnly;
 };
 
 #endif

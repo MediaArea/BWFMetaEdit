@@ -47,26 +47,28 @@ BWF MetaEdit provides this service:
 Summary:	Supplies technical and tag information about a video or audio file (GUI)
 Group:		Productivity/Multimedia/Other
 
-%if 0%{?fedora_version} || 0%{?centos} >= 7
+%if 0%{?fedora_version} || 0%{?centos}
 BuildRequires:  pkgconfig(Qt5)
-%else
+BuildRequires:  pkgconfig(Qt5QuickControls2)
+BuildRequires:  pkgconfig(Qt5Svg)
+%endif
+
 %if 0%{?mageia}
 %ifarch x86_64
 BuildRequires:  lib64qt5base5-devel
+BuildRequires:  lib64qt5quickcontrols2-devel
+BuildRequires:  lib64qt5svg-devel
 %else
 BuildRequires:  libqt5base5-devel
-%endif
-%else
-%if 0%{?suse_version} >= 1200
-BuildRequires: libqt5-qtbase-devel
-%else
-BuildRequires: libqt4-devel
-%endif
+BuildRequires:  libqt5quickcontrols2-devel
+BuildRequires:  libqt5svg-devel
 %endif
 %endif
 
-%if 0%{?rhel} >= 7
-BuildRequires:  gnu-free-sans-fonts
+%if 0%{?suse_version} >= 1200
+BuildRequires:  libqt5-qtbase-devel
+BuildRequires:  libqt5-qtsvg-devel
+BuildRequires:  libQt5QuickControls2-devel
 %endif
 
 %description gui

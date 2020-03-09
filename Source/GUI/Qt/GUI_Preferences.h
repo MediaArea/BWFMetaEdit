@@ -78,6 +78,7 @@ enum option_md5
 
 enum option_defaultview
 {
+    Option_DefaultView_PerFile,
     Option_DefaultView_Tech_Table,
     Option_DefaultView_Tech_Text,
     Option_DefaultView_Core_Table,
@@ -106,12 +107,12 @@ struct options
 
     struct option
     {
-        char*   UniqueName;
-        char*   Description;
+        const char*   UniqueName;
+        const char*   Description;
         type    Type;
         bool    DefaultConfigValue;
     };
-    char*       Name;
+    const char*       Name;
     size_t      Option_Size;
     option      Option[MaxCount];
     bool        InTemporaryPrefs;

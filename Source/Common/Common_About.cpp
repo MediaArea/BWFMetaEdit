@@ -114,8 +114,8 @@ const char* Websites_Text() {return
 
 struct column_text
 {
-    char* Name;
-    char* ToolTip;
+    const char* Name;
+    const char* ToolTip;
 };
 const size_t Columns_Text_Size=18+15+17;
 column_text Columns[]=
