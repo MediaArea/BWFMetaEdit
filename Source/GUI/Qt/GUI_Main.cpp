@@ -176,12 +176,12 @@ void GUI_Main::dragEnterEvent(QDragEnterEvent *Event)
  
 void GUI_Main::dropEvent(QDropEvent *Event)
 {
-    //Configuring
-    C->StdOut("Opening files...");
-    C->Menu_File_Open_Files_Begin();
-    const QMimeData* Data=Event->mimeData ();
+    ZtringList Files;
+    ZtringList Cores;
+
     if (Event->mimeData()->hasUrls())
     {
+
         //foreach (QUrl url, Event->mimeData()->urls())
         QList<QUrl> urls=Event->mimeData()->urls();
         for (int Pos=0; Pos<urls.size(); Pos++)
@@ -210,16 +210,44 @@ void GUI_Main::dropEvent(QDropEvent *Event)
 #endif
 
             #ifdef __WINDOWS__
-                File.FindAndReplace("/", "\\", 0, Ztring_Recursive);
+                File.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
             #endif // __WINDOWS__
-            C->Menu_File_Open_Files_Continue(File);
+            if (File.size()>=4 && (File.rfind(__T(".csv"),File.size()-4, 4)!=string::npos || File.rfind(__T(".xml"),File.size()-4, 4)!=string::npos))
+                Cores.push_back(File);
+            else
+                Files.push_back(File);
         }
     }
 
-    //Showing
-    C->Menu_File_Open_Files_Finish_Start();
-    C->Menu_File_Open_Files_Finish_Middle_Threaded();
-    Open_Timer_Init(Timer_DragAndDrop);
+    if (Cores.size())
+    {
+        //Configuring
+        C->StdOut("Importing Core file...");
+        for (size_t Pos=0; Pos<Cores.size(); Pos++)
+            C->Menu_File_Import_Core(Cores[Pos]);
+        C->StdOut("Importing Core file, finished");
+        //Showing
+        if (C->Text_stderr_Updated_Get())
+        {
+            Menu_View_Output_stderr->setChecked(true);
+            View_Refresh(View_Output_stderr);
+        }
+        else
+            View_Refresh();
+    }
+
+    if (Files.size())
+    {
+        //Configuring
+        C->StdOut("Opening files...");
+        C->Menu_File_Open_Files_Begin();
+        for (size_t Pos=0; Pos<Files.size(); Pos++)
+            C->Menu_File_Open_Files_Continue(Files[Pos]);
+        //Showing
+        C->Menu_File_Open_Files_Finish_Start();
+        C->Menu_File_Open_Files_Finish_Middle_Threaded();
+        Open_Timer_Init(Timer_DragAndDrop);
+    }
 }
 
 //---------------------------------------------------------------------------
