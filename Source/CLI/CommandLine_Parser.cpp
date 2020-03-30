@@ -32,7 +32,7 @@ ZtringList In_Core_File_List;
 //---------------------------------------------------------------------------
 //Parse Command Line
 #define OPTION(_TEXT, _TOLAUNCH) \
-    else if (Argument.find(__T(_TEXT))==0)        return CL_##_TOLAUNCH(C, Argument); \
+    else if (Argument.find(_TEXT)==0)        return CL_##_TOLAUNCH(C, Argument); \
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -218,7 +218,7 @@ CL_OPTION(Out_Tech_File)
 CL_OPTION(In_Core_File)
 {
     //Form : --in-Core=(FileName)
-    In_Core_File_List.push_back(Ztring(Argument, 10, std::string::npos));
+    In_Core_File_List.push_back(Ztring(Ztring().From_Local(Argument), 10, std::string::npos));
     
     return -2; //Continue
 }
@@ -442,24 +442,24 @@ CL_OPTION(Default)
         return 0;
     }
         
-    Ztring Field(Argument, 2, Egal_Pos-2); Field.MakeLowerCase();
-    if (Field!="description"
-     && Field!="originator"
-     && Field!="originatorreference"
-     && Field!="originationdate"
-     && Field!="originationtime"
-     && Field!="timereference"
-     && Field!="bextversion"
-     && Field!="loudnessvalue"
-     && Field!="loudnessrange"
-     && Field!="maxtruepeaklevel"
-     && Field!="maxmomentaryloudness"
-     && Field!="maxshorttermloudness"
-     && Field!="umid"
-     && Field!="history"
-     && Field!="xmp"
-     && Field!="axml"
-     && Field!="ixml"
+    Ztring Field(Ztring().From_Local(Argument), 2, Egal_Pos-2); Field.MakeLowerCase();
+    if (Field!=__T("description")
+     && Field!=__T("originator")
+     && Field!=__T("originatorreference")
+     && Field!=__T("originationdate")
+     && Field!=__T("originationtime")
+     && Field!=__T("timereference")
+     && Field!=__T("bextversion")
+     && Field!=__T("loudnessvalue")
+     && Field!=__T("loudnessrange")
+     && Field!=__T("maxtruepeaklevel")
+     && Field!=__T("maxmomentaryloudness")
+     && Field!=__T("maxshorttermloudness")
+     && Field!=__T("umid")
+     && Field!=__T("history")
+     && Field!=__T("xmp")
+     && Field!=__T("axml")
+     && Field!=__T("ixml")
      && Field.size()!=4) //All INFO sub-chunks
     {
         std::cout<<Argument<<" is unknown"<<std::endl;
@@ -467,7 +467,7 @@ CL_OPTION(Default)
     }
 
     string Value=string(Argument, Egal_Pos+1, std::string::npos);
-    C.In_Core_Add(Field, Value);
+    C.In_Core_Add(Field.To_UTF8(), Value);
 
     return -2; //Continue
 }

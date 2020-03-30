@@ -38,7 +38,7 @@ void Riff_WAVE_INFO::Read_Internal ()
 //---------------------------------------------------------------------------
 size_t Riff_WAVE_INFO::Insert_Internal (int32u Chunk_Name_Insert)
 {
-    if (Global->INFO->Strings[Ztring().From_CC4(Chunk_Name_Insert).MakeUpperCase()].empty())
+    if (Global->INFO->Strings[Ztring().From_CC4(Chunk_Name_Insert).MakeUpperCase().To_UTF8()].empty())
         return Subs.size(); //No data to add    
     Riff_Base* NewChunk=new Riff_WAVE_INFO_xxxx(Global);
     NewChunk->Header_Name_Set(Chunk_Name_Insert);

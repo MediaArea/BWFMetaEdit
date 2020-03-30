@@ -13,12 +13,12 @@
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#include <string>
+#include "ZenLib/Ztring.h"
 
-using namespace std;
+using namespace ZenLib;
 
 //---------------------------------------------------------------------------
-string makeUniqueFileName();
-string makeTemporaryDirectoryForFile(const char *path);
-bool deleteTemporaryDirectory(const char *path);
+Ztring makeUniqueFileName();
+Ztring makeTemporaryDirectoryForFile(const Ztring& path);
+bool deleteTemporaryDirectory(const Ztring& path);
 #endif

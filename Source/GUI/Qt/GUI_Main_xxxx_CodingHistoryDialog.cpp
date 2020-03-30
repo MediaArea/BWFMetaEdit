@@ -49,7 +49,7 @@ void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft,
     //Retrieving data
     size_t Row=(size_t)topLeft.row();
     size_t Column=(size_t)topLeft.column();
-    string Value=topLeft.model()->data(topLeft.model()->index(topLeft.row(), topLeft.column(), rootIndex())).toString().toLocal8Bit().data();
+    string Value=topLeft.model()->data(topLeft.model()->index(topLeft.row(), topLeft.column(), rootIndex())).toString().toUtf8().data();
     
     //Sizing
     if (Row>=List->size())
@@ -58,7 +58,7 @@ void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft,
         (*List)[Row].resize(Column+1);    
 
     //Filling
-    (*List)[Row][Column]=Value;
+    (*List)[Row][Column]=Ztring().From_UTF8(Value);
 
     //Adapting
     if (Row+1==(*List).size())
@@ -275,7 +275,7 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
 
     //Filling
     TextEdit->setPlainText(OldText);
-    string Text=OldText.toLocal8Bit().data();
+    string Text=OldText.toUtf8().data();
     if (Text.find("Coding History ")==0)
         Text.erase(0, 15);    
     if (Text.size()==0
@@ -334,11 +334,11 @@ void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Load()
     Buffer[Buffer_Offset]='\0';
 
     //Filling
-    Ztring ModifiedContent((const char*)Buffer);
+    Ztring ModifiedContent=Ztring().From_UTF8((const char*)Buffer);
     delete[] Buffer;
-    ModifiedContent.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-    ModifiedContent.FindAndReplace("\r", "\n", 0, Ztring_Recursive);
-    QString ModifiedContentQ=QString().fromLocal8Bit(ModifiedContent.To_Local().c_str());
+    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+    ModifiedContent.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+    QString ModifiedContentQ=QString().fromUtf8(ModifiedContent.To_UTF8().c_str());
 
     TextEdit->setPlainText(ModifiedContentQ);
     if (Central->currentIndex()==0)
@@ -359,7 +359,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Save()
         return;
 
     //Filling
-    F.Write(Ztring(TextEdit->toPlainText().toLocal8Bit().data()));
+    F.Write(Ztring(TextEdit->toPlainText().toUtf8().data()));
 }
 
 //---------------------------------------------------------------------------
@@ -428,7 +428,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::List2Text ()
     }
     
     if (!ToReturn.empty())
-        TextEdit->setPlainText(QString::fromLocal8Bit(ToReturn.To_Local().c_str()));
+        TextEdit->setPlainText(QString::fromUtf8(ToReturn.To_UTF8().c_str()));
 }
 
 //---------------------------------------------------------------------------
@@ -442,7 +442,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
     bool Modified=false;
 
     //Loading
-    string Text=TextEdit->toPlainText().toLocal8Bit().data();
+    string Text=TextEdit->toPlainText().toUtf8().data();
 //	if(Text.empty())
 //		return;
 	List.clear();
@@ -451,7 +451,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
         List.Separator_Set(1, ",");
     else
         List.Separator_Set(1, ", ");
-    List.Write(Text);
+    List.Write(Ztring().From_UTF8(Text));
 	int size = List.size();
 
     Table->setRowCount((int)List.size()+1);
@@ -468,7 +468,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
         for (size_t Data_Pos=0; Data_Pos<List[Line_Pos].size(); Data_Pos++)
         {
             int Column=-1;
-            Ztring &Value=List[Line_Pos][Data_Pos];
+            string Value=List[Line_Pos][Data_Pos].To_UTF8();
             if (Line_Pos==0 && Data_Pos==0 && Value.find("Coding History ")==0)
             {
                 Modified=true;
@@ -497,7 +497,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
                     Modified=true;
                     Value="ANALOGUE";
                 }
-                QTableWidgetItem* Item=new QTableWidgetItem(QString().fromLocal8Bit(Value.To_Local().c_str()));
+                QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(Value.c_str()));
             
                 Table->setItem((int)Line_Pos, Column, Item);
             }
@@ -594,7 +594,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::hideEvent (QHideEvent*)
         List2Text();
 
     //Save content
-    std::string Value=TextEdit->toPlainText().toLocal8Bit().data();
+    std::string Value=TextEdit->toPlainText().toUtf8().data();
     if (!C->IsValid(FileName, Field, Value))
     {
         QMessageBox MessageBox;

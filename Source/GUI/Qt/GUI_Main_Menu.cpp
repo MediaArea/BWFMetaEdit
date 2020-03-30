@@ -247,10 +247,10 @@ void GUI_Main::Menu_Create()
     for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
     {
         if (Preferences->Group_Options_Count_Get((group)Group, true))
-            Menu_Fields_Menus[Group]=Menu_Fields_Main->addMenu(QString().fromLocal8Bit(Preferences->Group_Name_Get((group)Group).c_str()));
+            Menu_Fields_Menus[Group]=Menu_Fields_Main->addMenu(QString().fromUtf8(Preferences->Group_Name_Get((group)Group).c_str()));
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
         {
-            Menu_Fields_CheckBoxes[Group*options::MaxCount+Option] = new QAction(QString().fromLocal8Bit(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
+            Menu_Fields_CheckBoxes[Group*options::MaxCount+Option] = new QAction(QString().fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
             Menu_Fields_Menus[Group]->addAction(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]);
             Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setCheckable(true);
         }
@@ -340,10 +340,10 @@ void GUI_Main::OnMenu_File_Open_Files()
     {
         #ifdef WIN32
             Ztring Temp=FileNames[Pos];
-            Temp.FindAndReplace("/", "\\", 0, Ztring_Recursive);
-            C->Menu_File_Open_Files_Continue(Temp);
+            Temp.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
+            C->Menu_File_Open_Files_Continue(Temp.To_UTF8());
         #else
-            C->Menu_File_Open_Files_Continue(FileNames[Pos]);
+            C->Menu_File_Open_Files_Continue(FileNames[Pos].To_UTF8());
         #endif
     }
 
@@ -369,10 +369,10 @@ void GUI_Main::OnMenu_File_Open_Directory()
     C->StdOut("Opening directory...");
     C->Menu_File_Open_Files_Begin();
     #ifdef _WIN32
-        Ztring Temp; Temp.From_UTF8(FileNamesQ.toUtf8().data()).FindAndReplace("/", "\\", 0, Ztring_Recursive);
-        C->Menu_File_Open_Files_Continue(Temp);
+        Ztring Temp; Temp.From_UTF8(FileNamesQ.toUtf8().data()).FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
+        C->Menu_File_Open_Files_Continue(Temp.To_UTF8());
     #else
-        C->Menu_File_Open_Files_Continue(ZenLib::Ztring().From_UTF8(FileNamesQ.toUtf8().data()));
+        C->Menu_File_Open_Files_Continue(FileNamesQ.toUtf8().data());
     #endif
 
     //Showing
@@ -387,7 +387,7 @@ void GUI_Main::OnMenu_File_Close_Files()
     ZtringList List=C->Menu_File_Close_File_FileName_Get();
     for (size_t Pos=0; Pos<List.size(); Pos++)
     {
-        if (!Close(List[Pos]))
+        if (!Close(List[Pos].To_UTF8()))
             return;
     }
     C->Menu_File_Close_File_FileName_Clear();
@@ -532,7 +532,7 @@ void GUI_Main::OnMenu_Import_Core_File()
     //Configuring
     C->StdOut("Importing Core file...");
     for (size_t Pos=0; Pos<FileNames.size(); Pos++)
-        C->Menu_File_Import_Core(FileNames[Pos]);
+        C->Menu_File_Import_Core(FileNames[Pos].To_UTF8());
     C->StdOut("Importing Core file, finished");
 
     //Showing
@@ -582,7 +582,7 @@ void GUI_Main::OnMenu_Export_Technical_CSV_Global()
     }
 
     //Configuring
-    C->Out_Tech_CSV_FileName=ZenLib::Ztring().From_UTF8(FileNamesQ.toUtf8().data());
+    C->Out_Tech_CSV_FileName=FileNamesQ.toUtf8().data();
     
     //Running
     C->Simulation_Enabled=true;
@@ -612,7 +612,7 @@ void GUI_Main::OnMenu_Export_Core_CSV_Global()
     }
 
     //Configuring
-    C->Out_Core_CSV_FileName=ZenLib::Ztring().From_UTF8(FileNamesQ.toUtf8().data());
+    C->Out_Core_CSV_FileName=FileNamesQ.toUtf8().data();
     
     //Running
     C->Simulation_Enabled=true;
@@ -642,7 +642,7 @@ void GUI_Main::OnMenu_Export_Core_XML_Global()
     }
 
     //Configuring
-    C->Out_Core_XML_FileName=ZenLib::Ztring().From_UTF8(FileNamesQ.toUtf8().data());
+    C->Out_Core_XML_FileName=FileNamesQ.toUtf8().data();
     
     //Running
     C->Simulation_Enabled=true;

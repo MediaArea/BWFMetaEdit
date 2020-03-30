@@ -59,10 +59,10 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         QTableWidgetItem* Item=itemAt(Event->pos());
         if (Item==NULL)
             return;
-        string FileName=FileName_Before+item(Item->row(), 0)->text().toLocal8Bit().data();
-        string Field=horizontalHeaderItem(Item->column())->text().toLocal8Bit().data();
-        ZtringList History; History.Write(C->History(FileName, Field));
-        Ztring Date;
+        string FileName=FileName_Before+item(Item->row(), 0)->text().toUtf8().data();
+        string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
+        ZtringList History; History.Write(Ztring().From_UTF8(C->History(FileName, Field)));
+        string Date;
         if (Field=="OriginationDate" || Field=="OriginationTime" || Field=="ICRD")
         {
             Date=C->FileDate_Get(FileName);
@@ -99,7 +99,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         //Handling date display
         if (!Date.empty())
         {
-            menu.addAction(new QAction(QString().fromLocal8Bit(Date.To_Local().c_str()), this));
+            menu.addAction(new QAction(QString().fromUtf8(Date.c_str()), this));
             menu.addSeparator();
         }
 
@@ -110,7 +110,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
             {
                 Pos--;
 
-                QString Text=QString().fromLocal8Bit(History[Pos].To_Local().c_str());
+                QString Text=QString().fromUtf8(History[Pos].To_UTF8().c_str());
                 if (!Text.isEmpty())
                 {
                     QAction* Action=new QAction(Text, this);
@@ -132,7 +132,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         {
             for (int Row=0; Row<rowCount(); Row++)
             {
-                item(Row, Item->column())->setText(QString::fromLocal8Bit(Ztring(C->Get(FileName, Field)).To_Local().c_str()));
+                item(Row, Item->column())->setText(QString::fromUtf8(C->Get(FileName, Field).c_str()));
                 dataChanged(indexFromItem(item(Row, Item->column())), indexFromItem(item(Row, Item->column())));
 
                 //Changing BextVersion Enabled value
@@ -150,7 +150,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
             Text=Text.remove("&Set ICRD to file creation timestamp ("); //If you change this, change the creation text too
             Text=Text.remove("&Set originationDate and Time to file creation timestamp ("); //If you change this, change the creation text too
             Text=Text.remove(")"); //If you change this, change the creation text too
-            if (horizontalHeaderItem(Item->column())->text()==QString().fromLocal8Bit("ICRD"))
+            if (horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("ICRD"))
             {
                 item(Item->row(), Item->column())->setText(Text);
                 dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
@@ -162,8 +162,8 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
                 QString Time=Text;
                 Time.remove(0, 10+1);
                 Time.remove(8, 4);
-                int Date_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromLocal8Bit("OriginationDate")?0:-1);
-                int Time_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromLocal8Bit("OriginationTime")?0:1);
+                int Date_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("OriginationDate")?0:-1);
+                int Time_Pos=Item->column()+(horizontalHeaderItem(Item->column())->text()==QString().fromUtf8("OriginationTime")?0:1);
                 item(Item->row(), Date_Pos)->setText(Date);
                 dataChanged(indexFromItem(item(Item->row(), Date_Pos)), indexFromItem(item(Item->row(), Date_Pos)));
                 item(Item->row(), Time_Pos)->setText(Time);
@@ -198,8 +198,8 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
             QTableWidgetItem* Item=Items[Pos];
             if (Item)
             {
-                string FileName=FileName_Before+item(Item->row(), 0)->text().toLocal8Bit().data();
-                string Field=horizontalHeaderItem(Item->column())->text().toLocal8Bit().data();
+                string FileName=FileName_Before+item(Item->row(), 0)->text().toUtf8().data();
+                string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
                 if (!item(Item->row(), Item->column())->text().isEmpty() && C->IsValid(FileName, Field, string()) && Field!="BextVersion")
                 {
                     ShowClear=true;
@@ -229,7 +229,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
                 QTableWidgetItem* Item=Items[Pos];
                 if (Item)
                 {
-                    string Field=horizontalHeaderItem(Item->column())->text().toLocal8Bit().data();
+                    string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
 
                     if (Field!="BextVersion")
                     {
@@ -259,14 +259,14 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         return QTableWidget::edit(index, trigger, Event); //Normal editing
 
     //Init
-    string FileName=FileName_Before+item(index.row(), 0)->text().toLocal8Bit().data();
-    string Field=horizontalHeaderItem(index.column())->text().toLocal8Bit().data();
+    string FileName=FileName_Before+item(index.row(), 0)->text().toUtf8().data();
+    string Field=horizontalHeaderItem(index.column())->text().toUtf8().data();
 
     //Line is selected?
     if (trigger==CurrentChanged)
     {
         C->Menu_File_Close_File_FileName_Clear();
-        C->Menu_File_Close_File_FileName_Set(FileName_Before+item(index.row(), 0)->text().toLocal8Bit().data());
+        C->Menu_File_Close_File_FileName_Set(FileName_Before+item(index.row(), 0)->text().toUtf8().data());
         Main->Menu_Update();
     }
 
@@ -298,9 +298,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Filling
-        Ztring NewValue(C->Get(FileName, Field));
-        NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
+        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
+        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
         if (Field=="Originator")
             SetText(index, "IARL"); //IARL is sometimes updated if Originator is modified
 
@@ -324,9 +324,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Filling
-        Ztring NewValue(C->Get(FileName, Field));
-        NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
+        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
+        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -341,7 +341,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         if (Main->Bext_Toggle_Get())
         {
             //Retrieving data
-            int8u NewValue=Ztring().From_Local(C->Get(FileName, "BextVersion").c_str()).To_int8u();
+            int8u NewValue=Ztring().From_UTF8(C->Get(FileName, "BextVersion").c_str()).To_int8u();
             if (NewValue>=Main->Bext_MaxVersion_Get())
             {
                 bool HasV1=C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty();
@@ -357,8 +357,8 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
                 NewValue++;
 
             //Filling
-            C->Set(FileName, "BextVersion", Ztring::ToZtring(NewValue).To_Local());
-            item(index.row(), index.column())->setText(Ztring::ToZtring(NewValue).To_Local().c_str());
+            C->Set(FileName, "BextVersion", Ztring::ToZtring(NewValue).To_UTF8());
+            item(index.row(), index.column())->setText(Ztring::ToZtring(NewValue).To_UTF8().c_str());
             Colors_Update(item(index.row(), index.column()), FileName, Field); //Must be forced because normal method does not handle Yes/No
             return false;
         }
@@ -372,10 +372,10 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
                 return false; //No change
             }
             delete Edit; //Edit=NULL;
-            Ztring NewValue(C->Get(FileName, "BextVersion"));
+            Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, "BextVersion"));
 
             //Updating
-            item(index.row(), index.column())->setText(NewValue.c_str());
+            item(index.row(), index.column())->setText(NewValue.To_UTF8().c_str());
             Colors_Update(item(index.row(), index.column()), FileName, Field); //Must be forced because normal method does not handle Yes/No
             return false;
         }
@@ -394,9 +394,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Updating
-        Ztring NewValue(C->Get(FileName, Field));
-        NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
+        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
+        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -441,9 +441,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Updating
-        Ztring NewValue(C->Get(FileName, Field));
-        NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
+        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
+        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -465,9 +465,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Updating
-        Ztring NewValue(C->Get(FileName, Field));
-        NewValue.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromLocal8Bit(NewValue.c_str()));
+        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
+        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -503,7 +503,7 @@ bool GUI_Main_Core_Table::Fill_Enabled (const string &FileName, const string &Fi
 
     if (Field=="BextVersion")
     {
-        if (Main->Bext_MaxVersion_Get()>2 || Ztring(C->Get(FileName, "BextVersion")).To_int16u()>Main->Bext_MaxVersion_Get() || (C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty()))
+        if (Main->Bext_MaxVersion_Get()>2 || Ztring().From_UTF8(C->Get(FileName, "BextVersion")).To_int16u()>Main->Bext_MaxVersion_Get() || (C->Get(FileName, "LoudnessValue").empty() && C->Get(FileName, "LoudnessRange").empty() && C->Get(FileName, "MaxTruePeakLevel").empty() && C->Get(FileName, "MaxMomentaryLoudness").empty() && C->Get(FileName, "MaxShortTermLoudness").empty()))
             return true;
         else
             return false;

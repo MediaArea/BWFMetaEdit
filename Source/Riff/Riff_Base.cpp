@@ -75,7 +75,7 @@ void Riff_Base::Read (chunk &Chunk_In)
             Global->Trace<<'0';
         if (Global->In.Position_Get()-Chunk.Header.Size<0x10)
             Global->Trace<<'0';
-        Global->Trace<<Ztring::ToZtring(Global->In.Position_Get()-Chunk.Header.Size, 16)<<' ';
+        Global->Trace<<Ztring::ToZtring(Global->In.Position_Get()-Chunk.Header.Size, 16).To_UTF8()<<' ';
 
         //Size
         int64u Size=Chunk.Content.Size+Chunk.Header.Size-8;
@@ -93,12 +93,12 @@ void Riff_Base::Read (chunk &Chunk_In)
             Global->Trace<<'0';
         if (Size<0x10)
             Global->Trace<<'0';
-        Global->Trace<<Ztring::ToZtring(Size, 16)<<' ';
+        Global->Trace<<Ztring::ToZtring(Size, 16).To_UTF8()<<' ';
 
         //Chunk name
         for (size_t Pos=1; Pos<Chunk.Header.Level; Pos++)
             Global->Trace<<"     ";
-        Global->Trace<<Ztring().From_CC4(Chunk.Header.Name);
+        Global->Trace<<Ztring().From_CC4(Chunk.Header.Name).To_UTF8();
         
         //Size
         /*
@@ -501,11 +501,11 @@ void Riff_Base::Write ()
             //Real writing
             #ifdef MACSTORE
             Global->Temp_Name=makeUniqueFileName();
-            Global->Temp_Path=makeTemporaryDirectoryForFile(Global->File_Name.c_str());
+            Global->Temp_Path=makeTemporaryDirectoryForFile(Global->File_Name);
 
             if (!Global->Out.Create(Global->Temp_Path+Global->Temp_Name, false))
             #else
-            if (!Global->Out.Create(Global->File_Name+".tmp", false))
+            if (!Global->Out.Create(Global->File_Name+__T(".tmp"), false))
             #endif
                 throw exception_write("Can not create temporary file");
 
@@ -545,16 +545,16 @@ void Riff_Base::Write ()
             #ifdef MACSTORE
             if (!File::Move(Global->Temp_Path+Global->Temp_Name, Global->File_Name))
             #else
-            if (!File::Move(Global->File_Name+".tmp", Global->File_Name))
+            if (!File::Move(Global->File_Name+__T(".tmp"), Global->File_Name))
             #endif
                 throw exception_write("Temporary file can't be renamed");
 
             #ifdef MACSTORE
             if (Global->Temp_Path.size() && Dir::Exists(Global->Temp_Path))
-                deleteTemporaryDirectory(Global->Temp_Path.c_str());
+                deleteTemporaryDirectory(Global->Temp_Path);
 
-            Global->Temp_Name="";
-            Global->Temp_Path="";
+            Global->Temp_Name=__T("");
+            Global->Temp_Path=__T("");
             #endif
         }
     }
@@ -579,7 +579,7 @@ void Riff_Base::Read_Internal ()
         default                  :
                                     if (!Global->UnsupportedChunks.empty())
                                         Global->UnsupportedChunks+=" ";
-                                    Global->UnsupportedChunks+=Ztring().From_CC4(Chunk.Header.Name);
+                                    Global->UnsupportedChunks+=Ztring().From_CC4(Chunk.Header.Name).To_UTF8();
     }
         
     Read_Internal_ReadAllInBuffer();
@@ -675,12 +675,12 @@ void Riff_Base::Write_Internal (const int8u* Temp, size_t Temp_Offset)
             {
                 #ifdef MACSTORE
                 Global->Temp_Name=makeUniqueFileName();
-                Global->Temp_Path=makeTemporaryDirectoryForFile(Global->File_Name.c_str());
+                Global->Temp_Path=makeTemporaryDirectoryForFile(Global->File_Name);
                 if (!Global->Out.Create(Global->Temp_Path+Global->Temp_Name))
-                    throw exception_write(Global->Temp_Path+Global->Temp_Name+": temporary file can not be created");
+                    throw exception_write(Ztring(Global->Temp_Path+Global->Temp_Name).To_UTF8()+": temporary file can not be created");
                 #else
-                if (!Global->Out.Create(Global->File_Name+".tmp"))
-                    throw exception_write(Global->File_Name+": temporary file can not be created");
+                if (!Global->Out.Create(Global->File_Name+__T(".tmp")))
+                    throw exception_write(Global->File_Name.To_UTF8()+": temporary file can not be created");
                 #endif
             }
             if (Global->Out.Write(Temp, Temp_Offset)<Temp_Offset)

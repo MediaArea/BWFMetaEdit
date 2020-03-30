@@ -155,19 +155,19 @@ bool Riff_Handler::Open(const string &FileName)
     
     //Global info
     delete Chunks; Chunks=new Riff();
-    Chunks->Global->File_Name=FileName;
+    Chunks->Global->File_Name=Ztring().From_UTF8(FileName);
 
     //Opening file
-    if (!File::Exists(FileName) || !Chunks->Global->In.Open(FileName))
+    if (!File::Exists(Ztring().From_UTF8(FileName)) || !Chunks->Global->In.Open(Ztring().From_UTF8(FileName)))
     {
         Errors<<FileName<<": File does not exist"<<endl;
         PerFile_Error<<"File does not exist"<<endl;
         return false;
     }
     Chunks->Global->File_Size=Chunks->Global->In.Size_Get();
-    Chunks->Global->File_Date=Chunks->Global->In.Created_Local_Get();
+    Chunks->Global->File_Date=Chunks->Global->In.Created_Local_Get().To_UTF8();
     if (Chunks->Global->File_Date.empty())
-        Chunks->Global->File_Date=Chunks->Global->In.Modified_Local_Get();
+        Chunks->Global->File_Date=Chunks->Global->In.Modified_Local_Get().To_UTF8();
 
     //Base
     Riff_Base::chunk Chunk;
@@ -189,12 +189,12 @@ bool Riff_Handler::Open(const string &FileName)
     }
     catch (exception_read_chunk &e)
     {
-        Errors<<Chunks->Global->File_Name<<": "<<Ztring().From_CC4(Chunk.Header.Name)<<" "<<e.what()<<endl;
-        PerFile_Error<<Ztring().From_CC4(Chunk.Header.Name)<<" "<<e.what()<<endl;
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": "<<Ztring().From_CC4(Chunk.Header.Name).To_UTF8()<<" "<<e.what()<<endl;
+        PerFile_Error<<Ztring().From_CC4(Chunk.Header.Name).To_UTF8()<<" "<<e.what()<<endl;
     }
     catch (exception &e)
     {
-        Errors<<Chunks->Global->File_Name<<": "<<e.what()<<endl;
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": "<<e.what()<<endl;
         PerFile_Error<<e.what()<<endl;
         ReturnValue=false;
     }
@@ -207,40 +207,40 @@ bool Riff_Handler::Open(const string &FileName)
         //Log
         if (Chunks->Global->NoPadding_IsCorrected)
         {
-            Information<<Chunks->Global->File_Name<<": no-padding correction"<<endl;
+            Information<<Chunks->Global->File_Name.To_UTF8()<<": no-padding correction"<<endl;
             PerFile_Information<<"no-padding correction"<<endl;
         }
 
         //Saving initial values
-        Core_FromFile=Core_Get();
+        Core_FromFile=Ztring().From_UTF8(Core_Get());
 
         //MD5
         if (Chunks->Global->VerifyMD5)
         {
             //Removing all MD5 related info
-            Ztring PerFile_Error_Temp=PerFile_Error.str();
+            Ztring PerFile_Error_Temp=Ztring().From_UTF8(PerFile_Error.str());
             PerFile_Error_Temp.FindAndReplace(Ztring("MD5, failed verification\n"), Ztring());
-            PerFile_Error.str(PerFile_Error_Temp);
-            Ztring PerFile_Information_Temp=PerFile_Information.str();
+            PerFile_Error.str(PerFile_Error_Temp.To_UTF8());
+            Ztring PerFile_Information_Temp=Ztring().From_UTF8(PerFile_Information.str());
             PerFile_Information_Temp.FindAndReplace(Ztring("MD5, no existing MD5 chunk\n"), Ztring());
             PerFile_Information_Temp.FindAndReplace(Ztring("MD5, verified\n"), Ztring());
-            PerFile_Information.str(PerFile_Information_Temp);
+            PerFile_Information.str(PerFile_Information_Temp.To_UTF8());
             
             //Checking
             if (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()))
             {
-                Information<<Chunks->Global->File_Name<<": MD5, no existing MD5 chunk"<<endl;
+                Information<<Chunks->Global->File_Name.To_UTF8()<<": MD5, no existing MD5 chunk"<<endl;
                 PerFile_Information<<"MD5, no existing MD5 chunk"<<endl;
             }
             else if (Chunks->Global->MD5Generated && Chunks->Global->MD5Generated->Strings["md5generated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
             {
-                Errors<<Chunks->Global->File_Name<<": MD5, failed verification"<<endl;
+                Errors<<Chunks->Global->File_Name.To_UTF8()<<": MD5, failed verification"<<endl;
                 PerFile_Error.str(string());
                 PerFile_Error<<"MD5, failed verification"<<endl;
             }
             else
             {
-                Information<<Chunks->Global->File_Name<<": MD5, verified"<<endl;
+                Information<<Chunks->Global->File_Name.To_UTF8()<<": MD5, verified"<<endl;
                 PerFile_Information.str(string());
                 PerFile_Information<<"MD5, verified"<<endl;
             }
@@ -278,7 +278,7 @@ bool Riff_Handler::Save()
     //Write only if modified
     if (!IsModified_Get())
     {
-        Information<<Chunks->Global->File_Name<<": Nothing to do"<<endl;
+        Information<<Chunks->Global->File_Name.To_UTF8()<<": Nothing to do"<<endl;
         return false;
     }
 
@@ -293,7 +293,7 @@ bool Riff_Handler::Save()
     //File size management
     if (riff2rf64_Reject && Chunks && Chunks->Global->ds64==NULL && Chunks->Block_Size_Get()>RIFF_Size_Limit)
     {
-        Errors<<Chunks->Global->File_Name<<": File size would be too big (and --reject-riff2rf64 option)"<<endl;
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": File size would be too big (and --reject-riff2rf64 option)"<<endl;
         PerFile_Error<<"File size would be too big (and --reject-riff2rf64 option)"<<endl;
         return false;
     }
@@ -301,7 +301,7 @@ bool Riff_Handler::Save()
     //Opening files
     if (!Chunks->Global->In.Open(Chunks->Global->File_Name))
     {
-        Errors<<Chunks->Global->File_Name<<": File does not exist anymore"<<endl;
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": File does not exist anymore"<<endl;
         PerFile_Error<<"File does not exist anymore"<<endl;
         return false;
     }
@@ -310,24 +310,24 @@ bool Riff_Handler::Save()
     #if MACSTORE
     if (Chunks->Global->Temp_Path.size() && Chunks->Global->Temp_Name.size() && File::Exists(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name) && !File::Delete(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name))
     #else
-    if (File::Exists(Chunks->Global->File_Name+".tmp") && !File::Delete(Chunks->Global->File_Name+".tmp"))
+    if (File::Exists(Chunks->Global->File_Name+__T(".tmp")) && !File::Delete(Chunks->Global->File_Name+__T(".tmp")))
     #endif
     {
-        Errors<<Chunks->Global->File_Name<<": Old temporary file can't be deleted"<<endl;
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": Old temporary file can't be deleted"<<endl;
         PerFile_Error<<"Old temporary file can't be deleted"<<endl;
         return false;
     }
 
     #ifdef MACSTORE
     if (Chunks->Global->Temp_Name.size())
-        Chunks->Global->Temp_Name="";
+        Chunks->Global->Temp_Name=__T("");
 
     if (Chunks->Global->Temp_Path.size())
     {
         if (Dir::Exists(Chunks->Global->Temp_Path))
-            deleteTemporaryDirectory(Chunks->Global->Temp_Path.c_str());
+            deleteTemporaryDirectory(Chunks->Global->Temp_Path);
 
-        Chunks->Global->Temp_Path="";
+        Chunks->Global->Temp_Path=__T("");
     }
     #endif
     //Parsing
@@ -343,17 +343,17 @@ bool Riff_Handler::Save()
             File::Delete(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name);
 
         if (Chunks->Global->Temp_Name.size())
-            Chunks->Global->Temp_Name="";
+            Chunks->Global->Temp_Name=__T("");
 
         if (Chunks->Global->Temp_Path.size())
         {
             if (Dir::Exists(Chunks->Global->Temp_Path))
-                deleteTemporaryDirectory(Chunks->Global->Temp_Path.c_str());
+                deleteTemporaryDirectory(Chunks->Global->Temp_Path);
 
-            Chunks->Global->Temp_Path="";
+            Chunks->Global->Temp_Path=__T("");
         }
         #else
-        File::Delete(Chunks->Global->File_Name+".tmp");
+        File::Delete(Chunks->Global->File_Name+__T(".tmp"));
         #endif
         CriticalSectionLocker(Chunks->Global->CS);
         File_IsCanceled=true;
@@ -362,15 +362,15 @@ bool Riff_Handler::Save()
     }
     catch (exception &e)
     {
-        Errors<<Chunks->Global->File_Name<<": "<<e.what()<<endl;
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": "<<e.what()<<endl;
         return false;
     }
 
     //Log
-    Information<<(Chunks?Chunks->Global->File_Name:"")<<": Is modified"<<endl;
+    Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": Is modified"<<endl;
 
     //Loading the new file (we are verifying the integraty of the generated file)
-    string FileName=Chunks->Global->File_Name;
+    string FileName=Chunks->Global->File_Name.To_UTF8();
     bool GenerateMD5_Temp=Chunks->Global->GenerateMD5;
     Chunks->Global->GenerateMD5=false;
     if (!Open(FileName) && Chunks==NULL) //There may be an error but file is open (eg MD5 error)
@@ -396,9 +396,9 @@ bool Riff_Handler::BackToLastSave()
         {
             if (!IsOriginal(xxxx_Strings[Fields_Pos][Pos], Get(xxxx_Strings[Fields_Pos][Pos])))
             {
-                ZtringList HistoryList; HistoryList.Write(History(xxxx_Strings[Fields_Pos][Pos]));
+                ZtringList HistoryList; HistoryList.Write(Ztring().From_UTF8(History(xxxx_Strings[Fields_Pos][Pos])));
                 if (!HistoryList.empty())
-                    Set(xxxx_Strings[Fields_Pos][Pos], HistoryList[0], rules());
+                    Set(xxxx_Strings[Fields_Pos][Pos], HistoryList[0].To_UTF8(), rules());
             }
         }
 
@@ -415,7 +415,7 @@ bool Riff_Handler::BackToLastSave()
 string Riff_Handler::Get(const string &Field)
 {
     if (Field=="SampleRate")
-        return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      )));
+        return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      ).To_UTF8()));
 
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
@@ -452,27 +452,28 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
      || Value_=="NOCHANGE")
         return true;
     
-    Ztring Value=Value_; 
-    Value.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-    Value.FindAndReplace("\n\r", "\n", 0, Ztring_Recursive); //Bug in v0.2.1 XML, \r\n was inverted
-    Value.FindAndReplace("\r", "\n", 0, Ztring_Recursive);
-    Value.FindAndReplace("\n", "\r\n", 0, Ztring_Recursive);
+    Ztring Value__=Ztring().From_UTF8(Value_);
+    Value__.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+    Value__.FindAndReplace(__T("\n\r"), __T("\n"), 0, Ztring_Recursive); //Bug in v0.2.1 XML, \r\n was inverted
+    Value__.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+    Value__.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
 
-    if (Value.size()>7
-     && Value[0]=='f'
-     && Value[1]=='i'
-     && Value[2]=='l'
-     && Value[3]=='e'
-     && Value[4]==':'
-     && Value[5]=='/'
-     && Value[6]=='/')
+    if (Value__.size()>7
+     && Value__[0]==__T('f')
+     && Value__[1]==__T('i')
+     && Value__[2]==__T('l')
+     && Value__[3]==__T('e')
+     && Value__[4]==__T(':')
+     && Value__[5]==__T('/')
+     && Value__[6]==__T('/'))
     {
-        if (!Value.Assign_FromFile(Value.substr(7, string::npos)))
+        if (!Value__.Assign_FromFile(Value__.substr(7, string::npos)))
         {
-            Errors<<Chunks->Global->File_Name<<": Malformed input ("<<Field<<"="<<Value<<", File does not exist)"<<endl;
+            Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value__.To_UTF8()<<", File does not exist)"<<endl;
             return false;
         }
     }
+    string Value=Value__.To_UTF8();
 
     //Legacy
     if (Field=="timereference" && !(Value.size()<12
@@ -491,15 +492,15 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
         Field="timereference (translated)";
 
     // EBU ISRC recommandations, link aXML ISRC and INFO ISRC
-    Ztring FieldToFill, ValueToFill;
+    string FieldToFill, ValueToFill;
     if (Rules.EBU_ISRC_Rec)
     {
         if (Field=="ISRC")
         {
-            Ztring OldISRC=Get("ISRC");
+            string OldISRC=Get("ISRC");
             if (Value!=OldISRC)
             {
-                Ztring aXML=Get("aXML");
+                string aXML=Get("aXML");
                 if (aXML.empty())
                 {
                     aXML =aXML_Begin;
@@ -516,8 +517,8 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
                     size_t End=aXML.find(aXML_ISRC_End, Begin);
                     if (Begin!=string::npos && End!=string::npos && End<=Begin+aXML_ISRC_Begin.size()+20)
                     {
-                        Ztring OldISRC_aXML=aXML.substr(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
-                        Ztring OldISRC_INFO=Get("ISRC");
+                        string OldISRC_aXML=aXML.substr(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
+                        string OldISRC_INFO=Get("ISRC");
                         if (OldISRC_aXML.empty() || OldISRC_INFO==OldISRC_aXML)
                         {
                             if (Value.empty())
@@ -547,22 +548,22 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
         }
         if (Field=="axml")
         {
-            Ztring OldaXML=Get("aXML");
+            string OldaXML=Get("aXML");
             if (!Value.empty() && Value!=OldaXML)
             {
-                Ztring NewISRC_aXML;
+                string NewISRC_aXML;
                 size_t Begin=Value.find(aXML_ISRC_Begin);
                 size_t End=Value.find(aXML_ISRC_End, Begin);
                 if (Begin!=string::npos && End!=string::npos && End<=Begin+aXML_ISRC_Begin.size()+20)
                     NewISRC_aXML=Value.substr(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
-                Ztring OldISRC_aXML;
+                string OldISRC_aXML;
                 Begin=OldaXML.find(aXML_ISRC_Begin);
                 End=OldaXML.find(aXML_ISRC_End, Begin);
                 if (Begin!=string::npos && End!=string::npos && End<=Begin+aXML_ISRC_Begin.size()+20)
                     OldISRC_aXML=OldaXML.substr(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
                 if (!NewISRC_aXML.empty() && NewISRC_aXML!=OldISRC_aXML)
                 {
-                    Ztring OldISRC_INFO=Get("ISRC");
+                    string OldISRC_INFO=Get("ISRC");
                     if (OldISRC_INFO.empty() || OldISRC_INFO==OldISRC_aXML)
                     {
                         FieldToFill="ISRC";
@@ -582,13 +583,13 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
     if (Field=="timereference (translated)")
     {
         if (Value.empty())
-            return Set("timereference", Ztring(), Rules);    
+            return Set("timereference", string(), Rules);
         else if (Value.size()>=12 && Chunks && Chunks->Global && Chunks->Global->fmt_ && Chunks->Global->fmt_->sampleRate)
         {
-            int64u HH=Ztring(Value.substr(0, Value.size()-10)).To_int64u(); 
-            int64u MM=Ztring(Value.substr(Value.size()-9, 2 )).To_int64u(); 
-            int64u SS=Ztring(Value.substr(Value.size()-6, 2 )).To_int64u(); 
-            int64u MS=Ztring(Value.substr(Value.size()-3, 3 )).To_int64u();
+            int64u HH=Ztring().From_UTF8(Value.substr(0, Value.size()-10)).To_int64u();
+            int64u MM=Ztring().From_UTF8(Value.substr(Value.size()-9, 2 )).To_int64u();
+            int64u SS=Ztring().From_UTF8(Value.substr(Value.size()-6, 2 )).To_int64u();
+            int64u MS=Ztring().From_UTF8(Value.substr(Value.size()-3, 3 )).To_int64u();
             int64u TimeReference;
             TimeReference=HH*60*60*1000
                         + MM*   60*1000
@@ -597,7 +598,7 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
             TimeReference=(int64u)(((float64)TimeReference)/1000*Chunks->Global->fmt_->sampleRate);
             
             if (Value!=Get("timereference (translated)"))
-                return Set("timereference", Ztring().From_Number(TimeReference), Rules);
+                return Set("timereference", Ztring().From_Number(TimeReference).To_UTF8(), Rules);
             else
                 return true;
         }
@@ -635,7 +636,7 @@ bool Riff_Handler::Remove(const string &Field)
     }
 
     //bext + INFO
-    if (Ztring(Field).MakeLowerCase()=="core")
+    if (Ztring().From_UTF8(Field).MakeLowerCase()==__T("core"))
     {
         bool ToReturn=true;
         for (size_t Fields_Pos=Fields_Bext; Fields_Pos<=Fields_Info; Fields_Pos++) //Only Bext and Info
@@ -678,7 +679,7 @@ bool Riff_Handler::IsModified(const string &Field)
     if (!Chunk_Strings || !*Chunk_Strings)
         return false;
     
-    return IsModified(Field_Get(Field=="timereference (translated)"?Ztring("timereference"):Field), *Chunk_Strings);
+    return IsModified(Field_Get(Field=="timereference (translated)"?string("timereference"):Field), *Chunk_Strings);
 }
 
 //---------------------------------------------------------------------------
@@ -686,12 +687,13 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
 {
     //Reformating
     IsValid_Errors.str(string());
-    Ztring Field=Field_Get(Field_);
-    Ztring Value=Value_;
-    Value.FindAndReplace("\r\n", "\n", 0, Ztring_Recursive);
-    Value.FindAndReplace("\n\r", "\n", 0, Ztring_Recursive); //Bug in v0.2.1 XML, \r\n was inverted
-    Value.FindAndReplace("\r", "\n", 0, Ztring_Recursive);
-    Value.FindAndReplace("\n", "\r\n", 0, Ztring_Recursive);
+    string Field=Field_Get(Field_);
+    Ztring Value__=Ztring().From_UTF8(Value_);
+    Value__.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+    Value__.FindAndReplace(__T("\n\r"), __T("\n"), 0, Ztring_Recursive); //Bug in v0.2.1 XML, \r\n was inverted
+    Value__.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+    Value__.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
+    string Value=Value__.To_UTF8();
 
     //Rules
     if (Rules.FADGI_Rec)
@@ -1140,7 +1142,7 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
                 Message="must be positive value";
             if (Message.empty())
             {
-                float32 Float=Ztring(Value).To_float32();
+                float32 Float=Ztring().From_UTF8(Value).To_float32();
                 if (Float<=-327.68 || Float>=327.69)
                 {
                     if (Field=="loudnessrange")
@@ -1173,9 +1175,9 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
             //Loading
             bool Wrong=false;
             ZtringListList List;
-            List.Separator_Set(0, "\r\n");
-            List.Separator_Set(1, ",");
-            List.Write(Value);
+            List.Separator_Set(0, __T("\r\n"));
+            List.Separator_Set(1, __T(","));
+            List.Write(Ztring().From_UTF8(Value));
 
             for (size_t Line_Pos=0; Line_Pos<List.size(); Line_Pos++)
             {
@@ -1183,16 +1185,16 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
                 {
                     int Column=-1;
                     Ztring &Value=List[Line_Pos][Data_Pos];
-                    if (Value.size()>=2 && Value[1]=='=')
+                    if (Value.size()>=2 && Value[1]==__T('='))
                     {
                         switch (Value[0])
                         {
-                            case 'A' : Column=0; break;
-                            case 'F' : Column=1; break;
-                            case 'B' : Column=2; break;
-                            case 'W' : Column=3; break;
-                            case 'M' : Column=4; break;
-                            case 'T' : Column=5; break;
+                            case __T('A') : Column=0; break;
+                            case __T('F') : Column=1; break;
+                            case __T('B') : Column=2; break;
+                            case __T('W') : Column=3; break;
+                            case __T('M') : Column=4; break;
+                            case __T('T') : Column=5; break;
                             default  : Wrong=true;
                         }
                     }
@@ -1203,77 +1205,77 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
                         Value.erase(0, 2);
                         switch (Column)
                         {
-                            case 0 :    if (Value!=""
-                                         && Value!="ANALOGUE"
-                                         && Value!="PCM"
-                                         && Value!="MPEG1L1"
-                                         && Value!="MPEG1L2"
-                                         && Value!="MPEG1L3"
-                                         && Value!="MPEG2L1"
-                                         && Value!="MPEG2L2"
-                                         && Value!="MPEG2L3")
+                            case 0 :    if (Value!=__T("")
+                                         && Value!=__T("ANALOGUE")
+                                         && Value!=__T("PCM")
+                                         && Value!=__T("MPEG1L1")
+                                         && Value!=__T("MPEG1L2")
+                                         && Value!=__T("MPEG1L3")
+                                         && Value!=__T("MPEG2L1")
+                                         && Value!=__T("MPEG2L2")
+                                         && Value!=__T("MPEG2L3"))
                                         Wrong=true;
                                         break;
                                      
 
-                            case 1 :    if (Value!=""
-                                         && Value!="11000"
-                                         && Value!="22050"
-                                         && Value!="24000"
-                                         && Value!="32000"
-                                         && Value!="44100"
-                                         && Value!="48000"
-                                         && Value!="64000"
-                                         && Value!="88200"
-                                         && Value!="96000")
+                            case 1 :    if (Value!=__T("")
+                                         && Value!=__T("11000")
+                                         && Value!=__T("22050")
+                                         && Value!=__T("24000")
+                                         && Value!=__T("32000")
+                                         && Value!=__T("44100")
+                                         && Value!=__T("48000")
+                                         && Value!=__T("64000")
+                                         && Value!=__T("88200")
+                                         && Value!=__T("96000"))
                                         Wrong=true;
                                         break;
 
-                            case 2 :    if (Value!=""
-                                         && Value!="8"
-                                         && Value!="16"
-                                         && Value!="24"
-                                         && Value!="32"
-                                         && Value!="40"
-                                         && Value!="48"
-                                         && Value!="56"
-                                         && Value!="64"
-                                         && Value!="80"
-                                         && Value!="96"
-                                         && Value!="112"
-                                         && Value!="128"
-                                         && Value!="144"
-                                         && Value!="160"
-                                         && Value!="176"
-                                         && Value!="192"
-                                         && Value!="224"
-                                         && Value!="256"
-                                         && Value!="320"
-                                         && Value!="352"
-                                         && Value!="384"
-                                         && Value!="416"
-                                         && Value!="448")
+                            case 2 :    if (Value!=__T("")
+                                         && Value!=__T("8")
+                                         && Value!=__T("16")
+                                         && Value!=__T("24")
+                                         && Value!=__T("32")
+                                         && Value!=__T("40")
+                                         && Value!=__T("48")
+                                         && Value!=__T("56")
+                                         && Value!=__T("64")
+                                         && Value!=__T("80")
+                                         && Value!=__T("96")
+                                         && Value!=__T("112")
+                                         && Value!=__T("128")
+                                         && Value!=__T("144")
+                                         && Value!=__T("160")
+                                         && Value!=__T("176")
+                                         && Value!=__T("192")
+                                         && Value!=__T("224")
+                                         && Value!=__T("256")
+                                         && Value!=__T("320")
+                                         && Value!=__T("352")
+                                         && Value!=__T("384")
+                                         && Value!=__T("416")
+                                         && Value!=__T("448"))
                                         Wrong=true;
                                         break;
 
-                            case 3 :    if (Value!=""
-                                         && Value!="8"
-                                         && Value!="12"
-                                         && Value!="14"
-                                         && Value!="16"
-                                         && Value!="18"
-                                         && Value!="20"
-                                         && Value!="22"
-                                         && Value!="24"
-                                         && Value!="32")
+                            case 3 :    if (Value!=__T("")
+                                         && Value!=__T("8")
+                                         && Value!=__T("12")
+                                         && Value!=__T("14")
+                                         && Value!=__T("16")
+                                         && Value!=__T("18")
+                                         && Value!=__T("20")
+                                         && Value!=__T("22")
+                                         && Value!=__T("24")
+                                         && Value!=__T("32"))
                                         Wrong=true;
                                         break;
 
-                            case 4 :    if (Value!=""
-                                         && Value!="mono"
-                                         && Value!="stereo"
-                                         && Value!="dual-mono"
-                                         && Value!="joint-stereo")
+                            case 4 :    if (Value!=__T("")
+                                         && Value!=__T("mono")
+                                         && Value!=__T("stereo")
+                                         && Value!=__T("dual-mono")
+                                         && Value!=__T("joint-stereo"))
                                         Wrong=true;
                                         break;
                             default :   ;
@@ -1324,7 +1326,7 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
     {
         if (Value.find_first_of("\r\n")!=string::npos)
         {
-            Errors<<(Chunks?Chunks->Global->File_Name:"")<<": malformed input (ICMT="<<Value<<", carriage return are not acceptable)"<<endl;
+            Errors<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": malformed input (ICMT="<<Value<<", carriage return are not acceptable)"<<endl;
             return false;
         }
     }
@@ -1384,8 +1386,8 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
         if (Rules.EBU_ISRC_Rec && !IgnoreCoherency)
         {
             //From aXML
-            Ztring aXML=Get("aXML");
-            Ztring aXML_ISRC;
+            string aXML=Get("aXML");
+            string aXML_ISRC;
             size_t Begin=aXML.find(aXML_ISRC_Begin);
             size_t End=aXML.find(aXML_ISRC_End, Begin);
             if (Begin!=string::npos && End!=string::npos && End<=Begin+aXML_ISRC_Begin.size()+20)
@@ -1428,7 +1430,7 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
 
     if (!IsValid_Errors.str().empty())
     {
-        Errors<<(Chunks?Chunks->Global->File_Name:"")<<": "<<IsValid_Errors.str()<<endl;
+        Errors<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": "<<IsValid_Errors.str()<<endl;
         return false;
     }
     else
@@ -1442,7 +1444,7 @@ bool Riff_Handler::IsOriginal(const string &Field, const string &Value)
     if (!Chunk_Strings || !*Chunk_Strings)
         return true;
     
-    return IsOriginal(Field_Get(Field=="timereference (translated)"?Ztring("timereference"):Field), Value, *Chunk_Strings);
+    return IsOriginal(Field_Get(Field=="timereference (translated)"?Ztring("timereference").To_UTF8():Field), Value, *Chunk_Strings);
 }
 
 //---------------------------------------------------------------------------
@@ -1483,7 +1485,7 @@ string Riff_Handler::Core_Get(bool Batch_IsBackuping)
 {
     //FromFile
     if (Batch_IsBackuping)
-        return Core_FromFile;
+        return Core_FromFile.To_UTF8();
     
     ZtringList List;
     List.Separator_Set(0, ",");
@@ -1491,9 +1493,9 @@ string Riff_Handler::Core_Get(bool Batch_IsBackuping)
     List.push_back(Chunks->Global->File_Name);
     for (size_t Fields_Pos=Fields_Bext; Fields_Pos<=Fields_Info; Fields_Pos++) //Only Bext and Info
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
-             List.push_back(Get(xxxx_Strings[Fields_Pos][Pos]));
+             List.push_back(Ztring().From_UTF8(Get(xxxx_Strings[Fields_Pos][Pos])));
 
-    return List.Read();
+    return List.Read().To_UTF8();
 }
 
 //---------------------------------------------------------------------------
@@ -1532,36 +1534,36 @@ string Riff_Handler::Technical_Get()
     List.push_back(Ztring::ToZtring(Chunks->Global->File_Size));
     if (File_IsValid)
     {
-        List.push_back(Chunks->Global->IsRF64?"Wave (RF64)":"Wave");
-        List.push_back( Chunks->Global->fmt_==NULL                                            ?"":Ztring().From_CC2(Chunks->Global->fmt_->formatType      ));
-        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->channelCount  ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->channelCount    )));
-        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      )));
-        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->bytesPerSecond*8)));
-        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bitsPerSample ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample   )));
-        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0 || Chunks->Global->data==NULL || Chunks->Global->data->Size==(int64u)-1)?"":Ztring().Duration_From_Milliseconds(Chunks->Global->data->Size*1000/Chunks->Global->fmt_->bytesPerSecond)));
-        List.push_back(Chunks->Global->UnsupportedChunks);
+        List.push_back(Chunks->Global->IsRF64?__T("Wave (RF64)"):__T("Wave"));
+        List.push_back( Chunks->Global->fmt_==NULL                                            ?__T(""):Ztring().From_CC2(Chunks->Global->fmt_->formatType      ));
+        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->channelCount  ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->channelCount    )));
+        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      )));
+        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->bytesPerSecond*8)));
+        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bitsPerSample ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample   )));
+        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0 || Chunks->Global->data==NULL || Chunks->Global->data->Size==(int64u)-1)?__T(""):Ztring().Duration_From_Milliseconds(Chunks->Global->data->Size*1000/Chunks->Global->fmt_->bytesPerSecond)));
+        List.push_back(Ztring().From_UTF8(Chunks->Global->UnsupportedChunks));
         if (Chunks->Global->bext!=NULL && !Chunks->Global->bext->Strings["bextversion"].empty())
-            List.push_back(Get("bext").empty()?"No":("Version "+Chunks->Global->bext->Strings["bextversion"]));
+            List.push_back(Get("bext").empty()?__T("No"):(__T("Version ")+Ztring().From_UTF8(Chunks->Global->bext->Strings["bextversion"])));
         else
-            List.push_back("No");
-        List.push_back(Get("INFO").empty()?"No":"Yes");
-        List.push_back(Get("XMP").empty()?"No":"Yes");
-        List.push_back(Get("aXML").empty()?"No":"Yes");
-        List.push_back(Get("iXML").empty()?"No":"Yes");
-        List.push_back(Get("MD5Stored"));
-        List.push_back(Get("MD5Generated"));
+            List.push_back(__T("No"));
+        List.push_back(Get("INFO").empty()?__T("No"):__T("Yes"));
+        List.push_back(Get("XMP").empty()?__T("No"):__T("Yes"));
+        List.push_back(Get("aXML").empty()?__T("No"):__T("Yes"));
+        List.push_back(Get("iXML").empty()?__T("No"):__T("Yes"));
+        List.push_back(Ztring().From_UTF8(Get("MD5Stored")));
+        List.push_back(Ztring().From_UTF8(Get("MD5Generated")));
     }
     else
         List.resize(17);
     string Errors_Temp=PerFile_Error.str();
     if (!Errors_Temp.empty())
         Errors_Temp.resize(Errors_Temp.size()-1);
-    List.push_back(Errors_Temp);
+    List.push_back(Ztring().From_UTF8(Errors_Temp));
     string Information_Temp=PerFile_Information.str();
     if (!Information_Temp.empty())
         Information_Temp.resize(Information_Temp.size()-1);
-    List.push_back(Information_Temp);
-    return List.Read();
+    List.push_back(Ztring().From_UTF8(Information_Temp));
+    return List.Read().To_UTF8();
 }
 
 //***************************************************************************
@@ -1577,7 +1579,7 @@ string Riff_Handler::Trace_Get()
 //---------------------------------------------------------------------------
 string Riff_Handler::FileName_Get()
 {
-    return Chunks->Global->File_Name;
+    return Chunks->Global->File_Name.To_UTF8();
 }
 
 //---------------------------------------------------------------------------
@@ -1658,7 +1660,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
     if (Field=="information")
         return PerFile_Information.str();
     if (Field=="sample rate" ||Field=="samplerate")
-        return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      )));
+        return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      ).To_UTF8()));
 
     if (!File_IsValid)
         return string();
@@ -1683,22 +1685,22 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
             timereference_Display=false;
         ZtringList List;
         List.Separator_Set(0, __T(","));
-        List.push_back(Chunk_Strings->Strings["description"]);
-        List.push_back(Chunk_Strings->Strings["originator"]);
-        List.push_back(Chunk_Strings->Strings["originatorreference"]);
-        List.push_back(Chunk_Strings->Strings["originationdate"]);
-        List.push_back(Chunk_Strings->Strings["originationtime"]);
-        List.push_back(Chunk_Strings->Strings["timereference (translated)"].empty()?(timereference_Display?Ztring("00:00:00.000"):Ztring()):Chunk_Strings->Strings["timereference (translated)"]);
-        List.push_back(Chunk_Strings->Strings["timereference"].empty()?(timereference_Display?Ztring("0"):Ztring()):Chunk_Strings->Strings["timereference"]);
-        List.push_back(timereference_Display?Chunk_Strings->Strings["bextversion"]:Ztring());
-        List.push_back(Chunk_Strings->Strings["umid"]);
-        List.push_back(Chunk_Strings->Strings["loudnessvalue"]);
-        List.push_back(Chunk_Strings->Strings["loudnessrange"]);
-        List.push_back(Chunk_Strings->Strings["maxtruepeaklevel"]);
-        List.push_back(Chunk_Strings->Strings["maxmomentaryloudness"]);
-        List.push_back(Chunk_Strings->Strings["maxshorttermloudness"]);
-        List.push_back(Chunk_Strings->Strings["codinghistory"]);
-        return List.Read();
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["description"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["originator"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["originatorreference"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["originationdate"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["originationtime"]));
+        List.push_back(Chunk_Strings->Strings["timereference (translated)"].empty()?(timereference_Display?Ztring("00:00:00.000"):Ztring()):Ztring().From_UTF8(Chunk_Strings->Strings["timereference (translated)"]));
+        List.push_back(Chunk_Strings->Strings["timereference"].empty()?(timereference_Display?Ztring("0"):Ztring()):Ztring().From_UTF8(Chunk_Strings->Strings["timereference"]));
+        List.push_back(timereference_Display?Ztring().From_UTF8(Chunk_Strings->Strings["bextversion"]):Ztring());
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["umid"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["loudnessvalue"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["loudnessrange"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["maxtruepeaklevel"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["maxmomentaryloudness"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["maxshorttermloudness"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["codinghistory"]));
+        return List.Read().To_UTF8();
     }
     //Special cases
     if (Field=="INFO" && &Chunk_Strings && Chunk_Strings)
@@ -1706,19 +1708,19 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         ZtringList List;
         List.Separator_Set(0, __T(","));
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Info]; Pos++)
-             List.push_back(Chunk_Strings->Strings[xxxx_Strings[Fields_Info][Pos]]);
-        return List.Read();
+             List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings[xxxx_Strings[Fields_Info][Pos]]));
+        return List.Read().To_UTF8();
     }
     if ((Field=="timereference (translated)" || Field=="timereference") && Chunk_Strings)
     {
         bool timereference_Display=false;
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Bext]; Pos++)
-             if (!Chunk_Strings->Strings[Field_Get(xxxx_Strings[Fields_Bext][Pos])].empty() && Ztring(xxxx_Strings[Fields_Bext][Pos])!="BextVersion")
+             if (!Chunk_Strings->Strings[Field_Get(xxxx_Strings[Fields_Bext][Pos])].empty() && string(xxxx_Strings[Fields_Bext][Pos])!="BextVersion")
                 timereference_Display=true;
         if (Field=="timereference (translated)")
-            return Chunk_Strings->Strings["timereference"].empty()?(timereference_Display?Ztring("00:00:00.000"):Ztring()):Ztring().Duration_From_Milliseconds((int64u)(((float64)Chunk_Strings->Strings["timereference"].To_int64u())*1000/Chunks->Global->fmt_->sampleRate));
+            return Chunk_Strings->Strings["timereference"].empty()?(timereference_Display?string("00:00:00.000"):string()):Ztring().Duration_From_Milliseconds((int64u)(((float64)Ztring().From_UTF8(Chunk_Strings->Strings["timereference"]).To_int64u())*1000/Chunks->Global->fmt_->sampleRate)).To_UTF8();
         else
-            return Chunk_Strings->Strings["timereference"].empty()?(timereference_Display?Ztring("0"):Ztring()):Chunk_Strings->Strings["timereference"];
+            return Chunk_Strings->Strings["timereference"].empty()?(timereference_Display?string("0"):string()):Chunk_Strings->Strings["timereference"];
     }
     if (Field=="bextversion" && Chunk_Strings)
     {
@@ -1726,13 +1728,13 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Bext]; Pos++)
              if (!Chunk_Strings->Strings[Field_Get(xxxx_Strings[Fields_Bext][Pos])].empty())
                 bextversion_Display=true;
-        return bextversion_Display?Chunk_Strings->Strings["bextversion"]:Ztring();
+        return bextversion_Display?Chunk_Strings->Strings["bextversion"]:string();
     }
 
     if (&Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
         return Chunk_Strings->Strings[Field];
     else
-        return Riff_Handler_EmptyZtring_Const;
+        return Riff_Handler_EmptyZtring_Const.To_UTF8();
 }
 
 //---------------------------------------------------------------------------
@@ -1749,36 +1751,36 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
     //Overwrite_Reject
     if (Overwrite_Reject && Chunk_Strings!=NULL && !Chunk_Strings->Strings[Field].empty())
     {
-        Errors<<(Chunks?Chunks->Global->File_Name:"")<<": overwriting is not authorized ("<<Field<<")"<<endl;
+        Errors<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": overwriting is not authorized ("<<Field<<")"<<endl;
         return false;
     }
 
     //Log
-    Ztring Value_ToDisplay=Value;
-    Value_ToDisplay.FindAndReplace("\r", " ", 0, Ztring_Recursive);
-    Value_ToDisplay.FindAndReplace("\n", " ", 0, Ztring_Recursive);
-    Information<<(Chunks?Chunks->Global->File_Name:"")<<": "<<Field<<", "<<((Chunk_Strings==NULL || Chunk_Strings->Strings[Field].empty())?"(empty)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Chunk_Strings->Strings[Field].c_str()))<<" --> "<<(Value.empty()?"(removed)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Value_ToDisplay.c_str()))<<endl;
+    Ztring Value_ToDisplay=Ztring().From_UTF8(Value);
+    Value_ToDisplay.FindAndReplace(__T("\r"), __T(" "), 0, Ztring_Recursive);
+    Value_ToDisplay.FindAndReplace(__T("\n"), __T(" "), 0, Ztring_Recursive);
+    Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": "<<Field<<", "<<((Chunk_Strings==NULL || Chunk_Strings->Strings[Field].empty())?"(empty)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Chunk_Strings->Strings[Field].c_str()))<<" --> "<<(Value.empty()?"(removed)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Value_ToDisplay.To_UTF8().c_str()))<<endl;
        
     //Special cases - Before
     if (Chunk_Strings==NULL)
         Chunk_Strings=new Riff_Base::global::chunk_strings();
     if (&Chunk_Strings==&Chunks->Global->bext && Field!="bextversion")
     {
-        if (Field=="umid" && !Value.empty() && Ztring(Get("bextversion")).To_int16u()<1)
+        if (Field=="umid" && !Value.empty() && Ztring().From_UTF8(Get("bextversion")).To_int16u()<1)
             Set("bextversion", "1", Chunk_Strings, Chunk_Name2, Chunk_Name3);
-        if ((Field=="loudnessvalue" || Field=="loudnessrange" || Field=="maxtruepeaklevel" || Field=="maxmomentaryloudness" || Field=="maxshorttermloudness") && !Value.empty() && Ztring(Get("bextversion")).To_int16u()<2)
+        if ((Field=="loudnessvalue" || Field=="loudnessrange" || Field=="maxtruepeaklevel" || Field=="maxmomentaryloudness" || Field=="maxshorttermloudness") && !Value.empty() && Ztring().From_UTF8(Get("bextversion")).To_int16u()<2)
             Set("bextversion", "2", Chunk_Strings, Chunk_Name2, Chunk_Name3);
         if (!Value.empty() && Chunk_Strings->Strings["bextversion"].empty())
-            Set("bextversion", Ztring::ToZtring(Bext_DefaultVersion), Chunk_Strings, Chunk_Name2, Chunk_Name3);
+            Set("bextversion", Ztring::ToZtring(Bext_DefaultVersion).To_UTF8(), Chunk_Strings, Chunk_Name2, Chunk_Name3);
     }
 
     //Filling
     bool Alreadyexists=false;
     for (size_t Pos=0; Pos<Chunk_Strings->Histories[Field].size(); Pos++)
-        if (Chunk_Strings->Histories[Field][Pos]==Chunk_Strings->Strings[Field])
+        if (Chunk_Strings->Histories[Field][Pos].To_UTF8()==Chunk_Strings->Strings[Field])
             Alreadyexists=true;
     if (!Alreadyexists)
-        Chunk_Strings->Histories[Field].push_back(Chunk_Strings->Strings[Field]);
+        Chunk_Strings->Histories[Field].push_back(Ztring().From_UTF8(Chunk_Strings->Strings[Field]));
     Chunk_Strings->Strings[Field]=Value;
 
     //Special cases - After
@@ -1786,10 +1788,10 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
     {
         bool bextversion_Delete=true;
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Bext]; Pos++)
-             if (!Chunk_Strings->Strings[Field_Get(xxxx_Strings[Fields_Bext][Pos])].empty() && Ztring(xxxx_Strings[Fields_Bext][Pos])!="BextVersion")
+             if (!Chunk_Strings->Strings[Field_Get(xxxx_Strings[Fields_Bext][Pos])].empty() && string(xxxx_Strings[Fields_Bext][Pos])!="BextVersion")
                 bextversion_Delete=false;
         if (bextversion_Delete)
-            Set("bextversion", Ztring(), Chunk_Strings, Chunk_Name2, Chunk_Name3);
+            Set("bextversion", string(), Chunk_Strings, Chunk_Name2, Chunk_Name3);
     }
 
     return true;
@@ -1808,7 +1810,7 @@ bool Riff_Handler::IsOriginal(const string &Field, const string &Value, Riff_Bas
     if (Chunk_Strings->Histories[Field].empty())
         return Value==Chunk_Strings->Strings[Field];
    
-    return Value==Chunk_Strings->Histories[Field][0];
+    return Value==Chunk_Strings->Histories[Field][0].To_UTF8();
 }
 
 //---------------------------------------------------------------------------
@@ -1825,9 +1827,9 @@ bool Riff_Handler::IsModified(const string &Field, Riff_Base::global::chunk_stri
     {
         //Special cases
         if (Field=="bextversion")
-            return !Chunk_Strings->Histories["bextversion"].empty() && !(Chunk_Strings->Strings["bextversion"]=="0" || Chunk_Strings->Histories["bextversion"][0]==Chunk_Strings->Strings["bextversion"]);
+            return !Chunk_Strings->Histories["bextversion"].empty() && !(Chunk_Strings->Strings["bextversion"]=="0" || Chunk_Strings->Histories["bextversion"][0].To_UTF8()==Chunk_Strings->Strings["bextversion"]);
 
-        return !Chunk_Strings->Histories[Field].empty() && Chunk_Strings->Histories[Field][0]!=Chunk_Strings->Strings[Field];
+        return !Chunk_Strings->Histories[Field].empty() && Chunk_Strings->Histories[Field][0].To_UTF8()!=Chunk_Strings->Strings[Field];
     }
     else
         return false;
@@ -1842,7 +1844,7 @@ string Riff_Handler::History(const string &Field, Riff_Base::global::chunk_strin
     //Special cases
     if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end() && Chunks->Global->fmt_ && Chunks->Global->fmt_->sampleRate)
     {
-        ZtringList List; List.Write(History("timereference", Chunk_Strings));
+        ZtringList List; List.Write(Ztring().From_UTF8(History("timereference", Chunk_Strings)));
         for (size_t Pos=0; Pos<List.size(); Pos++)
             List[Pos].Duration_From_Milliseconds((int64u)(((float64)List[Pos].To_int64u())*1000/Chunks->Global->fmt_->sampleRate));
         
@@ -1850,7 +1852,7 @@ string Riff_Handler::History(const string &Field, Riff_Base::global::chunk_strin
         bool ZeroAlreadyDone=false;
         for (size_t Pos=0; Pos<List.size(); Pos++)
         {
-            if (List[Pos]=="00:00:00.000")
+            if (List[Pos]==__T("00:00:00.000"))
             {
                 if (ZeroAlreadyDone)
                 {
@@ -1861,13 +1863,13 @@ string Riff_Handler::History(const string &Field, Riff_Base::global::chunk_strin
                     ZeroAlreadyDone=true;
             }
         }
-        return List.Read();
+        return List.Read().To_UTF8();
     }
 
     if (&Chunk_Strings!=NULL && Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
-        return Chunk_Strings->Histories[Field].Read();
+        return Chunk_Strings->Histories[Field].Read().To_UTF8();
     else
-        return Riff_Handler_EmptyZtring_Const;
+        return Riff_Handler_EmptyZtring_Const.To_UTF8();
 }
 
 //***************************************************************************
@@ -1891,29 +1893,29 @@ void Riff_Handler::Options_Update()
     if (Chunks->Global->VerifyMD5)
     {
         //Removing all MD5 related info
-        Ztring PerFile_Error_Temp=PerFile_Error.str();
+        Ztring PerFile_Error_Temp=Ztring().From_UTF8(PerFile_Error.str());
         PerFile_Error_Temp.FindAndReplace(Ztring("MD5, failed verification\n"), Ztring());
-        PerFile_Error.str(PerFile_Error_Temp);
-        Ztring PerFile_Information_Temp=PerFile_Information.str();
+        PerFile_Error.str(PerFile_Error_Temp.To_UTF8());
+        Ztring PerFile_Information_Temp=Ztring().From_UTF8(PerFile_Information.str());
         PerFile_Information_Temp.FindAndReplace(Ztring("MD5, no existing MD5 chunk\n"), Ztring());
         PerFile_Information_Temp.FindAndReplace(Ztring("MD5, verified\n"), Ztring());
-        PerFile_Information.str(PerFile_Information_Temp);
+        PerFile_Information.str(PerFile_Information_Temp.To_UTF8());
         
         //Checking
         if (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()))
         {
-            Information<<Chunks->Global->File_Name<<": MD5, no existing MD5 chunk"<<endl;
+            Information<<Chunks->Global->File_Name.To_UTF8()<<": MD5, no existing MD5 chunk"<<endl;
             PerFile_Information<<"MD5, no existing MD5 chunk"<<endl;
         }
         else if (Chunks->Global->MD5Generated && Chunks->Global->MD5Generated->Strings["md5generated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
         {
-            Errors<<Chunks->Global->File_Name<<": MD5, failed verification"<<endl;
+            Errors<<Chunks->Global->File_Name.To_UTF8()<<": MD5, failed verification"<<endl;
             PerFile_Error.str(string());
             PerFile_Error<<"MD5, failed verification"<<endl;
         }
         else
         {
-            Information<<Chunks->Global->File_Name<<": MD5, verified"<<endl;
+            Information<<Chunks->Global->File_Name.To_UTF8()<<": MD5, verified"<<endl;
             PerFile_Information.str(string());
             PerFile_Information<<"MD5, verified"<<endl;
         }
@@ -1935,7 +1937,7 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
     if (Chunks==NULL || Chunks->Global==NULL)
         return NULL;    
         
-    Ztring Field_Lowered=Ztring(Field).MakeLowerCase();
+    string Field_Lowered=Ztring().From_UTF8(Field).MakeLowerCase().To_UTF8();
     if (Field_Lowered=="history")
         Field_Lowered="codinghistory";
 
@@ -1990,7 +1992,7 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
 //---------------------------------------------------------------------------
 string Riff_Handler::Field_Get(const string &Field)
 {
-    Ztring Field_Lowered=Ztring(Field).MakeLowerCase();
+    string Field_Lowered=Ztring().From_UTF8(Field).MakeLowerCase().To_UTF8();
     if (Field_Lowered=="history")
         Field_Lowered="codinghistory";
 
@@ -2020,7 +2022,7 @@ string Riff_Handler::Field_Get(const string &Field)
 
     //Unknown 4 chars --> In INFO chunk, in uppercase
     if (Field.size()==4)
-        return Ztring(Field).MakeUpperCase();
+        return Ztring().From_UTF8(Field).MakeUpperCase().To_UTF8();
 
     //Unknown --> In INFO chunk, in uppercase
     return Field_Lowered;
@@ -2029,7 +2031,7 @@ string Riff_Handler::Field_Get(const string &Field)
 //---------------------------------------------------------------------------
 int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
 {
-    Ztring Field_Lowered=Ztring(Field).MakeLowerCase();
+    string Field_Lowered=Ztring().From_UTF8(Field).MakeLowerCase().To_UTF8();
     if (Field_Lowered=="history")
         Field_Lowered="codinghistory";
         
@@ -2085,7 +2087,7 @@ int32u Riff_Handler::Chunk_Name3_Get(const string &Field)
 {
     //INFO
     if (Chunk_Name2_Get(Field)==Elements::WAVE_INFO)
-        return Ztring(Field).MakeUpperCase().To_CC4(); 
+        return Ztring().From_UTF8(Field).MakeUpperCase().To_CC4();
     
     //Unknown / not needed
     return 0x00000000;

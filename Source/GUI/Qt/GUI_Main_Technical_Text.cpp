@@ -43,7 +43,7 @@ bool GUI_Main_Technical_Text::event (QEvent *Event)
     {
         //Showing
         clear();
-        setPlainText(QString().fromLocal8Bit(ZenLib::Ztring(C->Technical_Get()).To_Local().c_str()));
+        setPlainText(QString().fromUtf8(C->Technical_Get().c_str()));
 
         Event->accept();
         return true;

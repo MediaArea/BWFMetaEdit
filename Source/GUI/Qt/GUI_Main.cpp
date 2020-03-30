@@ -224,7 +224,7 @@ void GUI_Main::dropEvent(QDropEvent *Event)
         //Configuring
         C->StdOut("Importing Core file...");
         for (size_t Pos=0; Pos<Cores.size(); Pos++)
-            C->Menu_File_Import_Core(Cores[Pos]);
+            C->Menu_File_Import_Core(Cores[Pos].To_UTF8());
         C->StdOut("Importing Core file, finished");
         //Showing
         if (C->Text_stderr_Updated_Get())
@@ -242,7 +242,7 @@ void GUI_Main::dropEvent(QDropEvent *Event)
         C->StdOut("Opening files...");
         C->Menu_File_Open_Files_Begin();
         for (size_t Pos=0; Pos<Files.size(); Pos++)
-            C->Menu_File_Open_Files_Continue(Files[Pos]);
+            C->Menu_File_Open_Files_Continue(Files[Pos].To_UTF8());
         //Showing
         C->Menu_File_Open_Files_Finish_Start();
         C->Menu_File_Open_Files_Finish_Middle_Threaded();
@@ -361,7 +361,7 @@ void GUI_Main::Menu_Update()
     }
     else if (List.size()==1)
     {
-        Ztring Text="Close "+List.Read();
+        string Text="Close "+List.Read().To_UTF8();
         Menu_File_Close_Files->setText(Text.c_str());
         Menu_File_Close_Files->setEnabled(true);
     }
@@ -372,7 +372,7 @@ void GUI_Main::Menu_Update()
     }
     else
     {
-        Ztring Text="Close "+Ztring::ToZtring(List.size())+" files";
+        string Text="Close "+Ztring::ToZtring(List.size()).To_UTF8()+" files";
         Menu_File_Close_Files->setText(Text.c_str());
         Menu_File_Close_Files->setEnabled(true);
     }
@@ -422,13 +422,13 @@ void GUI_Main::Bext_Toggle_Set(bool Toggle)
 //---------------------------------------------------------------------------
 void GUI_Main::BackupDirectory_Set(const string &Value)
 {
-    C->ApplicationFolder=Value;
+    C->ApplicationFolder=Ztring().From_UTF8(Value);
 }
 
 //---------------------------------------------------------------------------
 void GUI_Main::LogFile_Set(const string &Value)
 {
-    C->LogFile=Value;
+    C->LogFile=Ztring().From_UTF8(Value);
 }
 
 //---------------------------------------------------------------------------

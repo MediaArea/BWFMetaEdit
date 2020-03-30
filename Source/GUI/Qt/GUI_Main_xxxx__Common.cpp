@@ -155,7 +155,7 @@ bool GUI_Main_xxxx__Common::event (QEvent* Event)
 
         C->Menu_File_Close_File_FileName_Clear();
         if (currentRow()!=-1)
-            C->Menu_File_Close_File_FileName_Set(FileName_Before+item(currentRow(), 0)->text().toLocal8Bit().data());
+            C->Menu_File_Close_File_FileName_Set(FileName_Before+item(currentRow(), 0)->text().toUtf8().data());
 
         Event->accept();
         return true;
@@ -208,9 +208,9 @@ void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QMo
     Updating=true;
 
     //Retrieving data
-    string FileName=FileName_Before+item(topLeft.row(), 0)->text().toLocal8Bit().data();
-    Ztring Field=horizontalHeaderItem(topLeft.column())->text().toLocal8Bit().data();
-    Ztring ModifiedContent=topLeft.model()->data(topLeft.model()->index(topLeft.row(), topLeft.column(), rootIndex())).toString().toLocal8Bit().data();
+    string FileName=FileName_Before+item(topLeft.row(), 0)->text().toUtf8().data();
+    string Field=horizontalHeaderItem(topLeft.column())->text().toUtf8().data();
+    string ModifiedContent=topLeft.model()->data(topLeft.model()->index(topLeft.row(), topLeft.column(), rootIndex())).toString().toUtf8().data();
     
     //Filling
     if (!(Field=="XMP" || Field=="aXML" || Field=="iXML")) //this is special cases
@@ -235,10 +235,10 @@ void GUI_Main_xxxx__Common::Colors_Update ()
 {
     for (int Row=0; Row<rowCount(); Row++)
     {
-        string FileName=FileName_Before+item(Row, 0)->text().toLocal8Bit().data();
+        string FileName=FileName_Before+item(Row, 0)->text().toUtf8().data();
         for (int Column=0; Column<columnCount(); Column++)
         {
-            Ztring Field=horizontalHeaderItem(Column)->text().toLocal8Bit().data();
+            string Field=horizontalHeaderItem(Column)->text().toUtf8().data();
 
             Colors_Update(item(Row, Column), FileName, Field);
         }
@@ -275,13 +275,13 @@ void GUI_Main_xxxx__Common::SetEnabled (int Row, const QString &Field)
         QString Field_Current=horizontalHeaderItem(Column)->text();
         if (Field_Current==Field)
         {
-            string FileName=FileName_Before+item(Row, 0)->text().toLocal8Bit().data();
+            string FileName=FileName_Before+item(Row, 0)->text().toUtf8().data();
             if (Fill_Enabled(FileName, "BextVersion", C->Get(FileName, "BextVersion")))
                 item(Row, Column)->setFlags(item(Row, Column)->flags()|Qt::ItemIsEnabled);
             else
                 item(Row, Column)->setFlags(item(Row, Column)->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
             dataChanged(indexFromItem(item(Row, Column)), indexFromItem(item(Row, Column)));
-            //Colors_Update(item(Row, Column), FileName, Field.toLocal8Bit().data());
+            //Colors_Update(item(Row, Column), FileName, Field.toUtf8().data());
             return;
         }
     }
@@ -295,10 +295,10 @@ void GUI_Main_xxxx__Common::SetText (int Row, const QString &Field)
         QString Field_Current=horizontalHeaderItem(Column)->text();
         if (Field_Current==Field)
         {
-            string FileName=FileName_Before+item(Row, 0)->text().toLocal8Bit().data();
-            item(Row, Column)->setText(QString::fromLocal8Bit(C->Get(FileName, Field.toLocal8Bit().data()).c_str()));
+            string FileName=FileName_Before+item(Row, 0)->text().toUtf8().data();
+            item(Row, Column)->setText(QString::fromUtf8(C->Get(FileName, Field.toUtf8().data()).c_str()));
             dataChanged(indexFromItem(item(Row, Column)), indexFromItem(item(Row, Column)));
-            //Colors_Update(item(Row, Column), FileName, Field.toLocal8Bit().data());
+            //Colors_Update(item(Row, Column), FileName, Field.toUtf8().data());
             return;
         }
     }
@@ -314,7 +314,7 @@ void GUI_Main_xxxx__Common::Fill ()
     ZtringListList List;
     List.Separator_Set(0, EOL);
     List.Separator_Set(1, __T(","));
-    List.Write(Fill_Content());
+    List.Write(Ztring().From_UTF8(Fill_Content()));
 
     //Elminating unuseful info from filenames
     FileName_Before.clear();
@@ -323,7 +323,7 @@ void GUI_Main_xxxx__Common::Fill ()
         size_t ToDelete=List[1][0].rfind(PathSeparator);
         if (ToDelete!=string::npos)
         {
-            FileName_Before=List[1][0].substr(0, ToDelete+1);
+            FileName_Before=Ztring(List[1][0].substr(0, ToDelete+1)).To_UTF8();
             List[1][0].erase(0, ToDelete+1);
         }
     }
@@ -333,7 +333,7 @@ void GUI_Main_xxxx__Common::Fill ()
         size_t File_Pos;
         for (ToDelete=0; ToDelete<List[1][0].size(); ToDelete++)
         {
-            char Char_File1=List[1][0][ToDelete];
+            Char Char_File1=List[1][0][ToDelete];
             for (File_Pos=2; File_Pos<List.size(); File_Pos++)
                 if (ToDelete>=List[File_Pos][0].size() || List[File_Pos][0][ToDelete]!=Char_File1)
                     break;
@@ -344,7 +344,7 @@ void GUI_Main_xxxx__Common::Fill ()
         ToDelete=List[1][0].rfind(PathSeparator, ToDelete);
         if (ToDelete!=string::npos)
         {
-            FileName_Before=List[1][0].substr(0, ToDelete+1);
+            FileName_Before=Ztring(List[1][0].substr(0, ToDelete+1)).To_UTF8();
             for (File_Pos=1; File_Pos<List.size(); File_Pos++)
                 List[File_Pos][0].erase(0, ToDelete+1);
         }
@@ -376,8 +376,8 @@ void GUI_Main_xxxx__Common::Fill ()
     for (size_t Data_Pos=0; Data_Pos<List[0].size(); Data_Pos++)
         if (Data_Pos==0 || Main->Menu_Fields_CheckBoxes[Fill_Group()*options::MaxCount+Data_Pos-1]->isChecked())
         {
-            QTableWidgetItem* Item=new QTableWidgetItem(QString().fromLocal8Bit(List[0][Data_Pos].To_Local().c_str()));
-            Item->setToolTip(Columns_ToolTip(List[0][Data_Pos]));
+            QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(List[0][Data_Pos].To_UTF8().c_str()));
+            Item->setToolTip(Columns_ToolTip(List[0][Data_Pos].To_UTF8()));
             setHorizontalHeaderItem((int)(Data_Pos-ColumnMissing_Count), Item);
         }
         else
@@ -396,14 +396,14 @@ void GUI_Main_xxxx__Common::Fill ()
                 if (Data_Pos<List[File_Pos].size())
                 {
                     ZenLib::Ztring Value=List[File_Pos][Data_Pos];
-                    Item=new QTableWidgetItem(QString().fromLocal8Bit(Value.To_Local().c_str()));
-                    Item->setToolTip(Columns_ToolTip(List[0][Data_Pos]));
+                    Item=new QTableWidgetItem(QString().fromUtf8(Value.To_UTF8().c_str()));
+                    Item->setToolTip(Columns_ToolTip(List[0][Data_Pos].To_UTF8()));
                 }
                 else
                     Item=new QTableWidgetItem(QString());
 
-                if (!C->IsValid_Get(FileName_Before+List[File_Pos][0])
-                 || (Data_Pos<List[File_Pos].size() && !Fill_Enabled(FileName_Before+List[File_Pos][0], List[0][Data_Pos], List[File_Pos][Data_Pos])))
+                if (!C->IsValid_Get(FileName_Before+List[File_Pos][0].To_UTF8())
+                 || (Data_Pos<List[File_Pos].size() && !Fill_Enabled(FileName_Before+List[File_Pos][0].To_UTF8(), List[0][Data_Pos].To_UTF8(), List[File_Pos][Data_Pos].To_UTF8())))
                     Item->setFlags(Item->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
                 setItem((int)File_Pos-1, (int)(Data_Pos-ColumnMissing_Count), Item);
             }
@@ -432,7 +432,7 @@ void GUI_Main_xxxx__Common::OnItemSelectionChanged ()
     QList<QTableWidgetSelectionRange> List=selectedRanges();
     for (int List_Pos=0; List_Pos<List.size(); List_Pos++)
         for (int Pos=List[List_Pos].topRow(); Pos<=List[List_Pos].bottomRow(); Pos++)
-            C->Menu_File_Close_File_FileName_Set(FileName_Before+item(Pos, 0)->text().toLocal8Bit().data());
+            C->Menu_File_Close_File_FileName_Set(FileName_Before+item(Pos, 0)->text().toUtf8().data());
 
     Main->Menu_Update();
 }

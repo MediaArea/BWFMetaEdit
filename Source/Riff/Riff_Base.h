@@ -164,7 +164,7 @@ public:
         };
         struct chunk_strings
         {
-            map<string, Ztring> Strings;
+            map<string, string> Strings;
             map<string, ZtringList> Histories;
         };
         struct buffer
@@ -188,10 +188,10 @@ public:
         bool                Out_Buffer_WriteAtEnd;
 
         #ifdef MACSTORE
-        string              Temp_Path;
-        string              Temp_Name;
+        Ztring              Temp_Path;
+        Ztring              Temp_Name;
         #endif
-        string              File_Name;
+        Ztring              File_Name;
         int64u              File_Size;
         string              File_Date;
         string              UnsupportedChunks;

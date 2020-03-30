@@ -50,7 +50,7 @@ bool GUI_Main_Trace::event (QEvent *Event)
     {
         //Showing
         clear();
-        setPlainText(QString().fromLocal8Bit(C->Output_Trace_Get().c_str()));
+        setPlainText(QString().fromUtf8(C->Output_Trace_Get().c_str()));
 
         Event->accept();
         return true;
