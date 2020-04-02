@@ -218,7 +218,11 @@ CL_OPTION(Out_Tech_File)
 CL_OPTION(In_Core_File)
 {
     //Form : --in-Core=(FileName)
+    #ifdef _WIN32
+    In_Core_File_List.push_back(Ztring(Ztring().From_UTF8(Argument), 10, std::string::npos));
+    #else
     In_Core_File_List.push_back(Ztring(Ztring().From_Local(Argument), 10, std::string::npos));
+    #endif
     
     return -2; //Continue
 }
@@ -441,8 +445,12 @@ CL_OPTION(Default)
         std::cout<<Argument<<" is unknown"<<std::endl;
         return 0;
     }
-        
+
+    #ifdef _WIN32
+    Ztring Field(Ztring().From_UTF8(Argument), 2, Egal_Pos-2); Field.MakeLowerCase();
+    #else
     Ztring Field(Ztring().From_Local(Argument), 2, Egal_Pos-2); Field.MakeLowerCase();
+    #endif
     if (Field!=__T("description")
      && Field!=__T("originator")
      && Field!=__T("originatorreference")
