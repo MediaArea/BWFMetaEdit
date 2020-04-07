@@ -605,7 +605,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
     setWindowTitle("Unique Material IDentifier");
-    setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
+    setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
     //Buttons
     Load=new QPushButton("&Load file...");
@@ -963,7 +963,7 @@ void GUI_Main_xxxx_UmidDialog::OnAccept ()
             MessageBox.setStandardButtons(QMessageBox::Ok);
         #endif // (QT_VERSION >= 0x040200)
         MessageBox.setIcon(QMessageBox::Warning);
-        MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+        MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
         MessageBox.exec();
         return;
     }

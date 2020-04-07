@@ -66,8 +66,8 @@ cp -r ../Source/Resource/*.qrc BWF_MetaEdit_GNU_FromSource/Source/Resource/
 cp -r ../Source/Resource/*.html BWF_MetaEdit_GNU_FromSource/Source/Resource/
 mkdir -p BWF_MetaEdit_GNU_FromSource/Source/Resource/Image/Menu
 cp -r ../Source/Resource/Image/Menu/*.png BWF_MetaEdit_GNU_FromSource/Source/Resource/Image/Menu/
-mkdir -p BWF_MetaEdit_GNU_FromSource/Source/Resource/Image/FADGI
-cp -r ../Source/Resource/Image/FADGI/*.png BWF_MetaEdit_GNU_FromSource/Source/Resource/Image/FADGI/
+mkdir -p BWF_MetaEdit_GNU_FromSource/Source/Resource/Image/Logo
+cp -r ../Source/Resource/Image/Logo/*.png BWF_MetaEdit_GNU_FromSource/Source/Resource/Image/Logo/
 mkdir -p BWF_MetaEdit_GNU_FromSource/Source/Resource/Documentation
 cp -r ../Source/Resource/Documentation/*.html BWF_MetaEdit_GNU_FromSource/Source/Resource/Documentation/
 mkdir -p BWF_MetaEdit_GNU_FromSource/Source/Riff

@@ -891,7 +891,7 @@ void GUI_Main::OnMenu_Options_Overwrite_Reject(bool)
             #endif // (QT_VERSION >= 0x040300)
         #endif // (QT_VERSION >= 0x040200)
         MessageBox.setIcon(QMessageBox::Warning);
-        MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+        MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
         switch (MessageBox.exec())
         {
             case QMessageBox::Save    : // Save was clicked
@@ -959,7 +959,7 @@ void GUI_Main::OnMenu_Options_GenerateMD5(bool)
             #endif // (QT_VERSION >= 0x040300)
         #endif // (QT_VERSION >= 0x040200)
         MessageBox.setIcon(QMessageBox::Warning);
-        MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+        MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
         switch (MessageBox.exec())
         {
             case QMessageBox::Yes     : // Yes was clicked
@@ -1066,7 +1066,7 @@ void GUI_Main::OnMenu_Options_EmbedMD5(bool)
                 #endif // (QT_VERSION >= 0x040300)
             #endif // (QT_VERSION >= 0x040200)
             MessageBox.setIcon(QMessageBox::Warning);
-            MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+            MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
             switch (MessageBox.exec())
             {
                 case QMessageBox::Yes     : // Yes was clicked
@@ -1100,7 +1100,7 @@ void GUI_Main::OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)
                 #endif // (QT_VERSION >= 0x040300)
             #endif // (QT_VERSION >= 0x040200)
             MessageBox.setIcon(QMessageBox::Warning);
-            MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+            MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
             switch (MessageBox.exec())
             {
                 case QMessageBox::Yes     : // Yes was clicked
@@ -1153,7 +1153,7 @@ void GUI_Main::OnMenu_Options_Preferences()
             #endif // (QT_VERSION >= 0x040300)
         #endif // (QT_VERSION >= 0x040200)
         MessageBox.setIcon(QMessageBox::Warning);
-        MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+        MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
         switch (MessageBox.exec())
         {
             case QMessageBox::Yes     : // Yes was clicked

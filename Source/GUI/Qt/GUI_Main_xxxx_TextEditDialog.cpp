@@ -41,7 +41,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
     setWindowTitle(QString::fromUtf8(Field.c_str()));
-    setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
+    setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
     //Buttons
     QDialogButtonBox::StandardButtons Buttons=QDialogButtonBox::Ok;
@@ -97,7 +97,7 @@ void GUI_Main_xxxx_TextEditDialog::OnAccept ()
             MessageBox.setStandardButtons(QMessageBox::Ok);
         #endif // (QT_VERSION >= 0x040200)
         MessageBox.setIcon(QMessageBox::Warning);
-        MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+        MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
         MessageBox.exec();
         return;
     }

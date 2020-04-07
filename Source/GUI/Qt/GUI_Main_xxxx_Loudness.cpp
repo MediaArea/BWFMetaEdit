@@ -58,7 +58,7 @@ GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &File
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
     setWindowTitle(Field.c_str());
-    setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
+    setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
     //Buttons
     Dialog=new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -120,7 +120,7 @@ void GUI_Main_xxxx_Loudness::OnAccept ()
                 MessageBox.setStandardButtons(QMessageBox::Ok);
             #endif // (QT_VERSION >= 0x040200)
             MessageBox.setIcon(QMessageBox::Warning);
-            MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+            MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
             MessageBox.exec();
             return;
         }
