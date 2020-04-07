@@ -54,6 +54,7 @@ public:
     void                                Menu_File_Close_All             ();
     bool                                Menu_File_Close_All_ShouldBeDisplayed();
     bool                                Menu_File_Close_All_ShouldBeEnabled();
+    size_t                              Menu_File_Save_File             (const string &FileName);
     size_t                              Menu_File_Save                  ();
     bool                                Menu_File_Save_Start            (); //Detailed version
     void                                Menu_File_Save_Middle_Threaded  (); //Launch the threaded version (with Entry())

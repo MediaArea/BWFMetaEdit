@@ -17,6 +17,7 @@
 #include "GUI/Qt/GUI_Main_Technical_Table.h"
 #include "GUI/Qt/GUI_Main_Technical_Text.h"
 #include "GUI/Qt/GUI_Main_Core_Table.h"
+#include "GUI/Qt/GUI_Main_PerFile.h"
 #include "GUI/Qt/GUI_Main_Core_Text.h"
 #include "GUI/Qt/GUI_Main_Output_Log.h"
 #include "GUI/Qt/GUI_Main_Output_Trace.h"
@@ -58,11 +59,14 @@ GUI_Main::GUI_Main(Core* _C)
     Bext_Toggle=false;
 
     //Configure
-    View_Current=View_Core_Table;
+    View_Current=View_PerFile;
     MustCreate=true;
 
     //GUI
     View=NULL;
+
+    // Set minimum window size to reasonable value
+    setMinimumSize(640, 480);
 
     //Menu and ToolBar
     Menu_Create();
@@ -90,6 +94,7 @@ GUI_Main::GUI_Main(Core* _C)
                 case Option_DefaultView_Tech_Text   : Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text ]->setChecked(true); break;
                 case Option_DefaultView_Core_Table  : Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]->setChecked(true); break;
                 case Option_DefaultView_Core_Text   : Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Text ]->setChecked(true); break;
+                case Option_DefaultView_PerFile     : Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile   ]->setChecked(true); break;
                 default                             : ;
             }
     }
@@ -108,7 +113,7 @@ GUI_Main::GUI_Main(Core* _C)
     //GUI
     setWindowTitle("BWF MetaEdit - Audio-Visual Working Group of the Federal Agencies Digital Guidelines Initiative");
     setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
-    setUnifiedTitleAndToolBarOnMac(true);
+    setUnifiedTitleAndToolBarOnMac(false); // BUG: black toolbar on PerFile view with true
 }
 
 //---------------------------------------------------------------------------
@@ -137,6 +142,7 @@ void GUI_Main::View_Refresh(view View_New)
             case View_Technical_Text            : View=new GUI_Main_Technical_Text  (C,    this); MustCreate=false; break;
             case View_Core_Table                : View=new GUI_Main_Core_Table      (C,    this); MustCreate=false; break;
             case View_Core_Text                 : View=new GUI_Main_Core_Text       (C,    this); MustCreate=false; break;
+            case View_PerFile                   : View=new GUI_Main_PerFile         (C,    this); MustCreate=false; break;
             case View_Output_stdall             : View=new GUI_Main_Output_Log      (C, 3, this); MustCreate=false; break;
             case View_Output_stdout             : View=new GUI_Main_Output_Log      (C, 1, this); MustCreate=false; break;
             case View_Output_stderr             : View=new GUI_Main_Output_Log      (C, 2, this); MustCreate=false; break;

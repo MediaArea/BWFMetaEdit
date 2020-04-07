@@ -10,7 +10,7 @@ license=('GPL')
 source=(${pkgname}_${pkgver}-1.tar.gz)
 md5sums=('00000000000000000000000000000000')
 arch=('i686' 'x86_64')
-makedepends=('qt5-base' 'qt5-tools' 'ca-certificates')
+makedepends=('qt5-base' 'qt5-quickcontrols2' 'qt5-svg' 'qt5-tools' 'ca-certificates')
 
 prepare() {
 
@@ -44,7 +44,7 @@ package_bwfmetaedit() {
 
 package_bwfmetaedit-gui() {
     pkgdesc="${pkgdesc} (GUI)"
-    depends=('qt5-base')
+    depends=('qt5-base' 'qt5-quickcontrols2' 'qt5-svg')
 
     cd "${srcdir}"/bwfmetaedit/Project/QtCreator
     make INSTALL_ROOT="${pkgdir}" install

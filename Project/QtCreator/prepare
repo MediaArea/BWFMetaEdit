@@ -1,13 +1,5 @@
 #! /bin/sh
 
-QMAKE_ARG=
-
-OS=$(uname -s)
-if [ "$OS" = "Darwin" ]
-then
-  QMAKE_ARG="$QMAKE_ARG -spec macx-g++"
-fi
-
 if qmake --version >/dev/null 2>&1
 then
     qmake $QMAKE_ARG $*

@@ -105,13 +105,13 @@ private:
     QAction*        Menu_Help_About;
     QAction*        Menu_Help_FADGI_Website;
 
-
 public Q_SLOTS:
     //Menu - Actions
     void OnMenu_File_Open_Files                     ();
     void OnMenu_File_Open_Directory                 ();
     void OnMenu_File_Close_Files                    ();
     void OnMenu_File_Close_All                      ();
+    void OnMenu_File_Save_File                      (const QString& FileName);
     void OnMenu_File_Save_Files                     ();
     void OnMenu_File_Save_All                       ();
     void OnMenu_File_Undo                           ();
@@ -119,6 +119,7 @@ public Q_SLOTS:
     void OnMenu_View_Technical_Text                 (bool);
     void OnMenu_View_Core_Table                     (bool);
     void OnMenu_View_Core_Text                      (bool);
+    void OnMenu_View_PerFile                        (bool);
     void OnMenu_View_Output_stdall                  ();
     void OnMenu_View_Output_stdout                  ();
     void OnMenu_View_Output_stderr                  ();
@@ -181,6 +182,7 @@ private:
     enum view
     {
         View_None,
+        View_PerFile,
         View_Technical_Table,
         View_Technical_Text,
         View_Core_Table,

@@ -147,7 +147,8 @@ options Groups[Group_Max]=
         "Default view",
         Option_DefaultView_Max,
         {
-            {"DefaultView_Tech_Table", "Technical Metadata (table)", Type_RadioButton, true},
+            {"DefaultView_PerFile", "File", Type_RadioButton, true},
+            {"DefaultView_Tech_Table", "Technical Metadata (table)", Type_RadioButton, false},
             {"DefaultView_Tech_Text", "Technical Metadata (text)", Type_RadioButton, false},
             {"DefaultView_Core_Table", "Core Metadata (table)", Type_RadioButton, false},
             {"DefaultView_Core_Text", "Core Metadata (text)", Type_RadioButton, false},

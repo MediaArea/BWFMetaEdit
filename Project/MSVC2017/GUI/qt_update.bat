@@ -2,6 +2,7 @@ mkdir _Automated
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_About.h -o_Automated\moc_GUI_About.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main.h -o_Automated\moc_GUI_Main.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Help.h -o_Automated\moc_GUI_Help.cpp
+..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_PerFile.h -o_Automated\moc_GUI_Main_PerFile.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_Core_Table.h -o_Automated\moc_GUI_Main_Core_Table.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_Core_Text.h  -o_Automated\moc_GUI_Main_Core_Text.cpp
 ..\..\..\..\Qt\bin\moc ..\..\..\Source\GUI\Qt\GUI_Main_Output_Log.h -o_Automated\moc_GUI_Main_Output_Log.cpp

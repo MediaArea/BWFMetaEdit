@@ -29,13 +29,14 @@
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::string &FileName_, const std::string &Field_, const QString &Value, QWidget* parent)
+GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::string &FileName_, const std::string &Field_, const QString &Value, bool ReadOnly_, QWidget* parent)
 : QDialog(parent)
 {
     //Internal
     C=_C;
     FileName=FileName_;
     Field=Field_;
+    ReadOnly=ReadOnly_;
 
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
@@ -43,10 +44,15 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
     setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
 
     //Buttons
+    QDialogButtonBox::StandardButtons Buttons=QDialogButtonBox::Ok;
+    if (!ReadOnly)
+        Buttons|=QDialogButtonBox::Cancel;
+
     Load=new QPushButton("&Import file...");
     Save=new QPushButton("&Export file...");
-    Dialog=new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-    Dialog->addButton(Load, QDialogButtonBox::ResetRole);
+    Dialog=new QDialogButtonBox(Buttons, Qt::Horizontal, this);
+    if (!ReadOnly)
+        Dialog->addButton(Load, QDialogButtonBox::ResetRole);
     Dialog->addButton(Save, QDialogButtonBox::ResetRole);
     connect(Dialog, SIGNAL(accepted()), this, SLOT(OnAccept()));
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
@@ -67,6 +73,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
     setLayout(L);
 
     TextEdit->setPlainText(Value);
+    TextEdit->setReadOnly(ReadOnly);
     QTextCursor Cursor=TextEdit->textCursor(); Cursor.setPosition(Value.length());
     TextEdit->setTextCursor(Cursor);
     TextEdit->setFocus();

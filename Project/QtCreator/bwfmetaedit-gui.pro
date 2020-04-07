@@ -1,5 +1,4 @@
-QT       += core gui
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui widgets quick quickwidgets svg
 
 win32|macx {
 TARGET = "BWF MetaEdit"
@@ -21,7 +20,7 @@ macx {
     contains(MACSTORE, yes|1) {
         QMAKE_CFLAGS += -gdwarf-2
         QMAKE_CXXFLAGS += -gdwarf-2
-        QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+        QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
     }
 }
 
@@ -30,8 +29,6 @@ unix {
     target.path = $$BINDIR
     INSTALLS += target
 }
-
-TEMPLATE = app
 
 CONFIG += qt release
 CONFIG += no_keywords
@@ -46,6 +43,7 @@ HEADERS = \
     ../../Source/GUI/Qt/GUI_Help.h \
     ../../Source/GUI/Qt/GUI_Main.h \
     ../../Source/GUI/Qt/GUI_Main_Core_Table.h \
+    ../../Source/GUI/Qt/GUI_Main_PerFile.h \
     ../../Source/GUI/Qt/GUI_Main_Core_Text.h \
     ../../Source/GUI/Qt/GUI_Main_Output_Log.h \
     ../../Source/GUI/Qt/GUI_Main_Output_Trace.h \
@@ -100,6 +98,7 @@ SOURCES = \
     ../../Source/GUI/Qt/GUI_Help.cpp \
     ../../Source/GUI/Qt/GUI_Main.cpp \
     ../../Source/GUI/Qt/GUI_Main_Core_Table.cpp \
+    ../../Source/GUI/Qt/GUI_Main_PerFile.cpp \
     ../../Source/GUI/Qt/GUI_Main_Core_Text.cpp \
     ../../Source/GUI/Qt/GUI_Main_Menu.cpp \
     ../../Source/GUI/Qt/GUI_Main_Output_Log.cpp \

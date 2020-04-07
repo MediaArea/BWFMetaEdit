@@ -21,11 +21,11 @@ Zen_Make()
 
 #############################################################################
 # BWF_MetaEdit
-if test -e Project/GNU/GUI/configure; then
- cd Project/GNU/GUI/
+if test -e Project/QtCreator/prepare; then
+ cd Project/QtCreator
  test -e Makefile && rm Makefile
- chmod u+x configure
- ./configure $*
+ chmod u+x prepare
+ ./prepare $*
  if test -e Makefile; then
   make clean
   Zen_Make
@@ -48,7 +48,7 @@ cd $Home
 #############################################################################
 # Going home
 cd $Home
-echo "BWF MetaEdit (GUI) executable is in Project/GNU/GUI"
-echo "For installing, cd Project/GNU/GUI && make install"
+echo "BWF MetaEdit (GUI) executable is in Project/QtCreator"
+echo "For installing, cd Project/QtCreator && make install"
 
 

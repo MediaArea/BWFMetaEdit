@@ -94,7 +94,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/include;../../../../Qt/include/QtWidgets;../../../../Qt/include/QtGui;../../../../Qt/include/QtCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/include;../../../../Qt/include/QtWidgets;../../../../Qt/include/QtGui;../../../../Qt/include/QtCore;../../../../Qt/include/QtQuickWidgets;../../../../Qt/include/QtQml;../../../../Qt/include/QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;UNICODE;_UNICODE;_DEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -104,7 +104,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5FontDatabaseSupportd.lib;Qt5EventDispatcherSupportd.lib;qt5AccessibilitySupportd.lib;Qt5ThemeSupportd.lib;qtmain.libd;qwindowsd.lib;qtpcre2d.lib;qtfreetyped.lib;qtharfbuzzd.lib;qtlibpngd.lib;libGLESv2d.lib;libEGLd.lib;preprocessord.lib;translatord.lib;version.lib;uxtheme.lib;winmm.lib;ws2_32.lib;imm32.lib;dwmapi.lib;d3d9.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5QuickWidgetsd.lib;Qt5Qmld.lib;Qt5Quickd.lib;Qt5Networkd.lib;Qt5FontDatabaseSupportd.lib;Qt5EventDispatcherSupportd.lib;qt5AccessibilitySupportd.lib;Qt5ThemeSupportd.lib;qtmain.libd;qwindowsd.lib;qtpcre2d.lib;qtfreetyped.lib;qtharfbuzzd.lib;qtlibpngd.lib;libGLESv2d.lib;libEGLd.lib;preprocessord.lib;translatord.lib;version.lib;uxtheme.lib;winmm.lib;ws2_32.lib;imm32.lib;dwmapi.lib;iphlpapi.lib;d3d9.lib;crypt32.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../../Qt/lib;../../../../Qt/plugins/platforms;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -117,7 +117,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../Source;../../../../Qt64/include;../../../../Qt64/include/QtWidgets;../../../../Qt64/include/QtGui;../../../../Qt64/include/QtCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source;../../../../Qt64/include;../../../../Qt64/include/QtWidgets;../../../../Qt64/include/QtGui;../../../../Qt64/include/QtCore;../../../../Qt64/include/QtQuickWidgets;../../../../Qt64/include/QtQml;../../../../Qt64/include/QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;UNICODE;_UNICODE;_DEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -128,7 +128,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5FontDatabaseSupportd.lib;Qt5EventDispatcherSupportd.lib;qt5AccessibilitySupportd.lib;Qt5ThemeSupportd.lib;qtmain.libd;qwindowsd.lib;qtpcre2d.lib;qtfreetyped.lib;qtharfbuzzd.lib;qtlibpngd.lib;libGLESv2d.lib;libEGLd.lib;preprocessord.lib;translatord.lib;version.lib;uxtheme.lib;winmm.lib;ws2_32.lib;imm32.lib;dwmapi.lib;d3d9.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5QuickWidgetsd.lib;Qt5Qmld.lib;Qt5Quickd.lib;Qt5Networkd.lib;Qt5FontDatabaseSupportd.lib;Qt5EventDispatcherSupportd.lib;qt5AccessibilitySupportd.lib;Qt5ThemeSupportd.lib;qtmain.libd;qwindowsd.lib;qtpcre2d.lib;qtfreetyped.lib;qtharfbuzzd.lib;qtlibpngd.lib;libGLESv2d.lib;libEGLd.lib;preprocessord.lib;translatord.lib;version.lib;uxtheme.lib;winmm.lib;ws2_32.lib;imm32.lib;dwmapi.lib;iphlpapi.lib;crypt32.lib;d3d9.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../../Qt64/lib;../../../../Qt64/plugins/platforms;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -139,7 +139,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/include;../../../../Qt/include/QtWidgets;../../../../Qt/include/QtGui;../../../../Qt/include/QtCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source;../../../../Qt/include;../../../../Qt/include/QtWidgets;../../../../Qt/include/QtGui;../../../../Qt/include/QtCore;../../../../Qt/include/QtQuickWidgets;../../../../Qt/include/QtQml;../../../../Qt/include/QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;UNICODE;_UNICODE;NDEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -148,7 +148,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5FontDatabaseSupport.lib;Qt5EventDispatcherSupport.lib;qt5AccessibilitySupport.lib;Qt5ThemeSupport.lib;qtmain.lib;qwindows.lib;qtpcre2.lib;qtfreetype.lib;qtharfbuzz.lib;qtlibpng.lib;libGLESv2.lib;libEGL.lib;preprocessor.lib;translator.lib;version.lib;uxtheme.lib;winmm.lib;ws2_32.lib;imm32.lib;dwmapi.lib;d3d9.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5QuickWidgets.lib;Qt5Qml.lib;Qt5Quick.lib;Qt5Network.lib;Qt5FontDatabaseSupport.lib;Qt5EventDispatcherSupport.lib;qt5AccessibilitySupport.lib;Qt5ThemeSupport.lib;qtmain.lib;qwindows.lib;qtpcre2.lib;qtfreetype.lib;qtharfbuzz.lib;qtlibpng.lib;libGLESv2.lib;libEGL.lib;preprocessor.lib;translator.lib;version.lib;uxtheme.lib;winmm.lib;ws2_32.lib;imm32.lib;dwmapi.lib;iphlpapi.lib;crypt32.lib;d3d9.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../../Qt/lib;../../../../Qt/plugins/platforms;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -163,7 +163,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../../Source;../../../../Qt64/include;../../../../Qt64/include/QtWidgets;../../../../Qt64/include/QtGui;../../../../Qt64/include/QtCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source;../../../../Qt64/include;../../../../Qt64/include/QtWidgets;../../../../Qt64/include/QtGui;../../../../Qt64/include/QtCore;../../../../Qt64/include/QtQuickWidgets;../../../../Qt64/include/QtQuickWidgets;../../../../Qt64/include/QtQml;../../../../Qt64/include/QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;UNICODE;_UNICODE;NDEBUG;_WINDOWS;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -172,7 +172,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5FontDatabaseSupport.lib;Qt5EventDispatcherSupport.lib;qt5AccessibilitySupport.lib;Qt5ThemeSupport.lib;qtmain.lib;qwindows.lib;qtpcre2.lib;qtfreetype.lib;qtharfbuzz.lib;qtlibpng.lib;libGLESv2.lib;libEGL.lib;preprocessor.lib;translator.lib;version.lib;uxtheme.lib;winmm.lib;ws2_32.lib;imm32.lib;dwmapi.lib;d3d9.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5QuickWidgets.lib;Qt5Qml.lib;Qt5Quick.lib;Qt5Network.lib;Qt5FontDatabaseSupport.lib;Qt5EventDispatcherSupport.lib;qt5AccessibilitySupport.lib;Qt5ThemeSupport.lib;qtmain.lib;qwindows.lib;qtpcre2.lib;qtfreetype.lib;qtharfbuzz.lib;qtlibpng.lib;libGLESv2.lib;libEGL.lib;preprocessor.lib;translator.lib;version.lib;uxtheme.lib;winmm.lib;ws2_32.lib;imm32.lib;dwmapi.lib;iphlpapi.lib;crypt32.lib;d3d9.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../../Qt64/lib;../../../../Qt64/plugins/platforms;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -185,6 +185,7 @@
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_About.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Help.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_PerFile.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Table.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Text.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_Menu.cpp" />
@@ -206,6 +207,7 @@
     <ClCompile Include="_Automated\moc_GUI_About.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Help.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main.cpp" />
+    <ClCompile Include="_Automated\moc_GUI_Main_PerFile.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_Core_Table.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_Core_Text.cpp" />
     <ClCompile Include="_Automated\moc_GUI_Main_Ouput_Trace.cpp" />
@@ -269,6 +271,7 @@
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_About.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Help.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_PerFile.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Table.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Core_Text.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_Output_Log.h" />
