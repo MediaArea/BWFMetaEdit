@@ -20,6 +20,12 @@
 #include "CLI/CommandLine_Parser.h"
 #include "CLI/CLI_Help.h"
 #include "Common/Core.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 using namespace std;
 //---------------------------------------------------------------------------
 
@@ -36,25 +42,55 @@ int main(int argc, char* argv[])
     //Localisation
     setlocale(LC_ALL, """""");
 
+    // Retrieve Windows command line
+    #ifdef _WIN32
+    int ArgcW;
+    LPWSTR* ArgvW=NULL;
+    ArgvW=CommandLineToArgvW(GetCommandLineW(), &ArgcW);
+
+    SetConsoleOutputCP(CP_UTF8);
+    #endif
+
     //Configure core
     Core C;
 
     //Retrieve command line (mainly for Unicode) and parse it
     ZtringList Files;
+    #ifdef _WIN32
+    for (int Pos=1; Pos<ArgcW; Pos++)
+    #else
     for (int Pos=1; Pos<argc; Pos++)
+    #endif
     {
         //First part of argument (before "=") should be case insensitive
+        #ifdef _WIN32
+        string Argument(Ztring().From_Unicode(ArgvW[Pos]).To_UTF8());
+        #else
         string Argument(argv[Pos]);
+        #endif
         size_t Egal_Pos=Argument.find(__T('='));
         if (Egal_Pos==string::npos)
             Egal_Pos=Argument.size();
         transform(Argument.begin(), Argument.begin()+Egal_Pos, Argument.begin(), (int(*)(int))tolower); //(int(*)(int)) is a patch for unix
         int Return=Parse (C, Argument);
         if (Return>=0)
+        {
+            #ifdef _WIN32
+            LocalFree(ArgvW);
+            #endif
             return Return; //no more tasks to do
+        }
         if (Return==-1)
-            Files.push_back(argv[Pos]);
+            #ifdef _WIN32
+            Files.push_back(Ztring().From_Unicode(ArgvW[Pos]));
+            #else
+            Files.push_back(Ztring().From_Local(argv[Pos]));
+            #endif
     }
+
+    #ifdef _WIN32
+    LocalFree(ArgvW);
+    #endif
      
     //Parsing
     C.Menu_File_Open_Files_Begin();
