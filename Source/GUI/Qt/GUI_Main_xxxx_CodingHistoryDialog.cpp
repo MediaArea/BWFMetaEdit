@@ -244,7 +244,7 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
     setWindowTitle("Coding History");
-    setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
+    setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
     //Buttons
     Load=new QPushButton("&Load file...");
@@ -533,7 +533,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
                     MessageBox.setStandardButtons(QMessageBox::Close);
                 #endif // (QT_VERSION >= 0x040200)
             MessageBox.setIcon(QMessageBox::Critical);
-            MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+            MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
             MessageBox.exec();
         }
 
@@ -560,7 +560,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
             #endif // (QT_VERSION >= 0x040300)
         #endif // (QT_VERSION >= 0x040200)
         MessageBox.setIcon(QMessageBox::Question);
-        MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+        MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
         switch (MessageBox.exec())
         {
             case QMessageBox::No    :   //Save was clicked
@@ -604,7 +604,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::hideEvent (QHideEvent*)
             MessageBox.setStandardButtons(QMessageBox::Ok);
         #endif // (QT_VERSION >= 0x040200)
         MessageBox.setIcon(QMessageBox::Warning);
-        MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+        MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
         MessageBox.exec();
         return;
     }

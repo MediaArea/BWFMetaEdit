@@ -54,7 +54,7 @@ GUI_About::GUI_About(QWidget * parent)
     L00->addWidget(Button_Description);
     L00->addWidget(Button_AuthorLicense);
     L00->addWidget(Button_Contact);
-    QPixmap* A=new QPixmap(QPixmap(":/Image/FADGI/Logo.png").scaledToWidth(160));
+    QPixmap* A=new QPixmap(QPixmap(":/Image/Logo/Logo.png").scaledToWidth(160));
     QLabel* B=new QLabel();
     B->setPixmap(*A);
     L00->addWidget(B);

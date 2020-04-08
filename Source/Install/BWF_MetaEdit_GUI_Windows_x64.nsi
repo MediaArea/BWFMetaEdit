@@ -23,7 +23,7 @@ SetCompressor /FINAL /SOLID lzma
 ; Modern UI
 !include "MUI2.nsh"
 !define MUI_ABORTWARNING
-!define MUI_ICON "..\..\Source\Resource\Image\FADGI\Logo.ico"
+!define MUI_ICON "..\..\Source\Resource\Image\Logo\Logo.ico"
 
 ; Language Selection Dialog Settings
 !define MUI_LANGDLL_REGISTRY_ROOT "${PRODUCT_UNINST_ROOT_KEY}"

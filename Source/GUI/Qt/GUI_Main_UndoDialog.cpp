@@ -42,7 +42,7 @@ GUI_Main_UndoDialog::GUI_Main_UndoDialog(Core* _C, QWidget* parent)
     //Configuration
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
     setWindowTitle("Undo last save oprerations");
-    setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
+    setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
     //Buttons
     QDialogButtonBox* Dialog=new QDialogButtonBox(QDialogButtonBox::Open | QDialogButtonBox::Cancel);

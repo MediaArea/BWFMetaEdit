@@ -121,10 +121,10 @@ popd
 
 # icon
 %__install -dm 755 %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
-%__install -m 644 Source/Resource/Image/FADGI/Logo128.png \
+%__install -m 644 Source/Resource/Image/Logo/Logo128.png \
 	%{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
 %__install -dm 755 %{buildroot}%{_datadir}/pixmaps
-%__install -m 644 Source/Resource/Image/FADGI/Logo.png \
+%__install -m 644 Source/Resource/Image/Logo/Logo.png \
 	%{buildroot}%{_datadir}/pixmaps/%{name}.png
 
 # menu-entry

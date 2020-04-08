@@ -196,7 +196,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
                 MessageBox.setStandardButtons(QMessageBox::Ok);
             #endif // (QT_VERSION >= 0x040200)
             MessageBox.setIcon(QMessageBox::Warning);
-            MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+            MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
             MessageBox.exec();
             return;
         }

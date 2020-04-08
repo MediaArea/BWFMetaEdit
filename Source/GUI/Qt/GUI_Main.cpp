@@ -112,7 +112,7 @@ GUI_Main::GUI_Main(Core* _C)
     
     //GUI
     setWindowTitle("BWF MetaEdit - Audio-Visual Working Group of the Federal Agencies Digital Guidelines Initiative");
-    setWindowIcon (QIcon(":/Image/FADGI/Logo.png"));
+    setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
     setUnifiedTitleAndToolBarOnMac(false); // BUG: black toolbar on PerFile view with true
 }
 
@@ -287,7 +287,7 @@ bool GUI_Main::Close(const string &FileName)
                 #endif // (QT_VERSION >= 0x040300)
             #endif // (QT_VERSION >= 0x040200)
             MessageBox.setIcon(QMessageBox::Warning);
-            MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+            MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
             switch (MessageBox.exec())
             {
                 case QMessageBox::Save    : // Save was clicked
@@ -326,7 +326,7 @@ bool GUI_Main::Close(const string &FileName)
                 #endif // (QT_VERSION >= 0x040300)
             #endif // (QT_VERSION >= 0x040200)
             MessageBox.setIcon(QMessageBox::Warning);
-            MessageBox.setWindowIcon(QIcon(":/Image/FADGI/Logo.png"));
+            MessageBox.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
             switch (MessageBox.exec())
             {
                 case QMessageBox::Save    : // Save was clicked
