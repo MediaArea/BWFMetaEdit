@@ -39,16 +39,16 @@ extern ZtringList In_Core_File_List;
 
 int main(int argc, char* argv[])
 {
-    //Localisation
-    setlocale(LC_ALL, """""");
-
-    // Retrieve Windows command line
     #ifdef _WIN32
+    // Retrieve Windows command line
     int ArgcW;
     LPWSTR* ArgvW=NULL;
     ArgvW=CommandLineToArgvW(GetCommandLineW(), &ArgcW);
 
     SetConsoleOutputCP(CP_UTF8);
+    #else
+    //Localisation
+    setlocale(LC_ALL, """""");
     #endif
 
     //Configure core
