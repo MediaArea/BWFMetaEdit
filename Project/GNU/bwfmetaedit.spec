@@ -11,9 +11,8 @@ Version:		%bwfmetaedit_version
 Release:		1
 Summary:		Supplies technical and tag information about a video or audio file (CLI)
 Group:			Productivity/Multimedia/Other
-License:		GPL
-URL:			http://mediainfo.sourceforge.net/
-Packager:		Jerome Martinez <info@mediaarea.net>
+License:		0BSD
+URL:			https://mediaarea.net/BWFMetaEdit
 Source0:		bwfmetaedit_%{version}-1.tar.gz
 Prefix:		%{_prefix}
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
@@ -82,7 +81,7 @@ This package contains the graphical user interface
 
 %prep
 %setup -q -n bwfmetaedit
-dos2unix     *.txt Release/*.txt
+dos2unix     *.txt Release/*.txt conformance_point_document.xsd
 %__chmod 644 *.html *.txt Release/*.txt
 
 %build
