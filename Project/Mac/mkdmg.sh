@@ -22,11 +22,11 @@ else
     exit 1
 fi
 
-APPNAME_lower=`echo ${APPNAME} |awk '{print tolower($0)}'`
+APPNAME_lower=`echo ${APPNAME/ /} |awk '{print tolower($0)}'`
 KIND_lower=`echo ${KIND} |awk '{print tolower($0)}'`
 SIGNATURE="MediaArea.net"
-FILES="tmp-${APPNAME}_${KIND}"
-TEMPDMG="tmp-${APPNAME}_${KIND}.dmg"
+FILES="tmp-${APPNAME/ /}_${KIND}"
+TEMPDMG="tmp-${APPNAME/ /}_${KIND}.dmg"
 FINALDMG="${APPNAME/ /}_${KIND}_${VERSION}_Mac.dmg"
 
 # Clean up
@@ -63,10 +63,10 @@ if [ "$KIND" = "CLI" ]; then
 
     mkdir -p "${FILES}-Root/usr/local/bin"
     cp "../GNU/CLI/${APPNAME_lower}" "${FILES}-Root/usr/local/bin"
-    codesign -f -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}-Root/usr/local/bin/${APPNAME_lower}"
+    codesign -f --deep --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}-Root/usr/local/bin/${APPNAME_lower}"
 
     pkgbuild --root "${FILES}-Root" --identifier "net.mediaarea.${APPNAME_lower}.mac-${KIND_lower}" --sign "Developer ID Installer: ${SIGNATURE}" --version "${VERSION}" "${FILES}/${APPNAME_lower}.pkg"
-    codesign -f -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}/${APPNAME_lower}.pkg"
+    codesign -f --deep --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}/${APPNAME_lower}.pkg"
 
 fi
 
@@ -106,13 +106,13 @@ if [ "$KIND" = "GUI" ]; then
             sed -i '' 's/_debug//g' Resources/Info.plist
         fi
         popd
-        codesign -f -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}/${APPNAME}.app/Contents/Frameworks/${FRAMEWORK}.framework"
+        codesign -f --deep --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}/${APPNAME}.app/Contents/Frameworks/${FRAMEWORK}.framework"
     done
 
     find "${FILES}/${APPNAME}.app/Contents/PlugIns" -name "*.dylib" -exec codesign -f -s "Developer ID Application: ${SIGNATURE}" --verbose "{}" \;
 
-    codesign -f -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}/${APPNAME}.app/Contents/MacOS/${APPNAME}"
-    codesign -f -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}/${APPNAME}.app"
+    codesign -f --deep --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}/${APPNAME}.app/Contents/MacOS/${APPNAME}"
+    codesign -f --deep --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}/${APPNAME}.app"
 fi
 
 echo
@@ -144,6 +144,8 @@ echo
 echo ========== Convert to compressed image ==========
 echo
 hdiutil convert "${TEMPDMG}" -format UDBZ -o "${FINALDMG}"
+
+codesign -f --deep --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FINALDMG}"
 
 unset -v APPNAME APPNAME_lower KIND KIND_lower VERSION SIGNATURE
 unset -v TEMPDMG FINALDMG FILES DEVICE
