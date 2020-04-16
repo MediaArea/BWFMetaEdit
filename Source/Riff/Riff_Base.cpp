@@ -195,9 +195,6 @@ bool Riff_Base::Read_Header (chunk &NewChunk)
     }
     if (NewChunk.Content.Size==0xFFFFFFFF && Global->IsRF64 && Global->ds64 && NewChunk.Header.Name==Elements::WAVE_data)
         NewChunk.Content.Size=Global->ds64->dataSize; //Setting real WAVE_data size
-    if (Global->In.Position_Get()+NewChunk.Content.Size>Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size
-     && !(NewChunk.Content.Size==0xFFFFFFFF && NewChunk.Header.Name==Elements::RF64)) //Not RF64
-        throw exception_valid("truncated");
     
     //List management (if present)
     if (NewChunk.Header.Name==Elements::LIST || NewChunk.Header.Name==Elements::RIFF || NewChunk.Header.Name==Elements::RF64)
@@ -228,6 +225,9 @@ void Riff_Base::Read_Internal_ReadAllInBuffer ()
         Chunk.Content.Size=Chunk.Content.Size;
     if (Chunk.Content.Size>(size_t)-1)
         throw exception_read_chunk("non-audio data exceeds available memory");
+
+    if (Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size>Global->In.Size_Get())
+        throw exception_valid("truncated");
 
     delete Chunk.Content.Buffer; Chunk.Content.Buffer=NULL;
 

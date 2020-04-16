@@ -1596,29 +1596,24 @@ string Riff_Handler::Technical_Get()
     List.Separator_Set(0, __T(","));
     List.push_back(Chunks->Global->File_Name);
     List.push_back(Ztring::ToZtring(Chunks->Global->File_Size));
-    if (File_IsValid)
-    {
-        List.push_back(Chunks->Global->IsRF64?__T("Wave (RF64)"):__T("Wave"));
-        List.push_back( Chunks->Global->fmt_==NULL                                            ?__T(""):Ztring().From_CC2(Chunks->Global->fmt_->formatType      ));
-        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->channelCount  ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->channelCount    )));
-        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      )));
-        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->bytesPerSecond*8)));
-        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bitsPerSample ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample   )));
-        List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0 || Chunks->Global->data==NULL || Chunks->Global->data->Size==(int64u)-1)?__T(""):Ztring().Duration_From_Milliseconds(Chunks->Global->data->Size*1000/Chunks->Global->fmt_->bytesPerSecond)));
-        List.push_back(Ztring().From_UTF8(Chunks->Global->UnsupportedChunks));
-        if (Chunks->Global->bext!=NULL && !Chunks->Global->bext->Strings["bextversion"].empty())
-            List.push_back(Get_Internal("bext").empty()?__T("No"):(__T("Version ")+Ztring().From_UTF8(Chunks->Global->bext->Strings["bextversion"])));
-        else
-            List.push_back(__T("No"));
-        List.push_back(Get_Internal("INFO").empty()?__T("No"):__T("Yes"));
-        List.push_back(Get_Internal("XMP").empty()?__T("No"):__T("Yes"));
-        List.push_back(Get_Internal("aXML").empty()?__T("No"):__T("Yes"));
-        List.push_back(Get_Internal("iXML").empty()?__T("No"):__T("Yes"));
-        List.push_back(Ztring().From_UTF8(Get_Internal("MD5Stored")));
-        List.push_back(Ztring().From_UTF8(Get_Internal("MD5Generated")));
-    }
+    List.push_back(Chunks->Global->IsRF64?__T("Wave (RF64)"):__T("Wave"));
+    List.push_back( Chunks->Global->fmt_==NULL                                            ?__T(""):Ztring().From_CC2(Chunks->Global->fmt_->formatType      ));
+    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->channelCount  ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->channelCount    )));
+    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      )));
+    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->bytesPerSecond*8)));
+    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bitsPerSample ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample   )));
+    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0 || Chunks->Global->data==NULL || Chunks->Global->data->Size==(int64u)-1)?__T(""):Ztring().Duration_From_Milliseconds(Chunks->Global->data->Size*1000/Chunks->Global->fmt_->bytesPerSecond)));
+    List.push_back(Ztring().From_UTF8(Chunks->Global->UnsupportedChunks));
+    if (Chunks->Global->bext!=NULL && !Chunks->Global->bext->Strings["bextversion"].empty())
+        List.push_back(Get_Internal("bext").empty()?__T("No"):(__T("Version ")+Ztring().From_UTF8(Chunks->Global->bext->Strings["bextversion"])));
     else
-        List.resize(17);
+        List.push_back(__T("No"));
+    List.push_back(Get_Internal("INFO").empty()?__T("No"):__T("Yes"));
+    List.push_back(Get_Internal("XMP").empty()?__T("No"):__T("Yes"));
+    List.push_back(Get_Internal("aXML").empty()?__T("No"):__T("Yes"));
+    List.push_back(Get_Internal("iXML").empty()?__T("No"):__T("Yes"));
+    List.push_back(Ztring().From_UTF8(Get_Internal("MD5Stored")));
+    List.push_back(Ztring().From_UTF8(Get_Internal("MD5Generated")));
     string Errors_Temp=PerFile_Error.str();
     if (!Errors_Temp.empty())
         Errors_Temp.resize(Errors_Temp.size()-1);
@@ -1749,9 +1744,6 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         return PerFile_Information.str();
     if (Field=="sample rate" ||Field=="samplerate")
         return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      ).To_UTF8()));
-
-    if (!File_IsValid)
-        return string();
 
     //Special cases
     if (Field=="bext" && &Chunk_Strings && Chunk_Strings)
@@ -1926,9 +1918,6 @@ bool Riff_Handler::IsModified(const string &Field, Riff_Base::global::chunk_stri
 //---------------------------------------------------------------------------
 string Riff_Handler::History(const string &Field, Riff_Base::global::chunk_strings* &Chunk_Strings)
 {
-    if (!File_IsValid)
-        return string();
-
     //Special cases
     if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end() && Chunks->Global->fmt_ && Chunks->Global->fmt_->sampleRate)
     {
