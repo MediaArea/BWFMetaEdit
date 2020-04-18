@@ -125,7 +125,7 @@ column_text Columns[]=
     {"Format", "The format of the RIFF chunk, typically 'Wave' or 'Wave (RF64)'."}
     {"CodecID", "This value represents the type of compression utilized within the audio data."},
     {"Channels", "The number of audio signals that are encoded in the audio data."},
-    {"SampleRate", "The number of audio samples per second."},
+    {"SampleRate", "The number of audio samples per second per channel."},
     {"BitRate", "The number of bits utilized per second of audio."},
     {"BitPerSample", "The number of bits utilized to produce one sample of audio."},
     {"Duration", "The total playing time for the audio data, displayed in HH:MM:SS.mmm (hours, minutes, seconds, milliseconds)"},
