@@ -122,6 +122,7 @@ column_text Columns[]=
 {
     {"FileName", "In order to provide a concise presentation the filepaths are displayed from the directory path were the files diverge. Thus if two files are opened from /HardDrive1/audiofiles/music/audiofile.wav and /HardDrive1/audiofiles/spokenword/audiofileB.wav then these will be displayed in the table view as '/music/audiofile.wav' and '/spokenword/audiofileB.wav' since the '/HardDrive1/audiofiles' section of the Filepath is common to the open files. The CSV version of the Technical Metadata view displays the full filepath to each file."},
     {"FileSize", "The size of the audio file in bytes."},
+    {"Format", "The format of the RIFF chunk, typically 'Wave' or 'Wave (RF64)'."}
     {"CodecID", "This value represents the type of compression utilized within the audio data."},
     {"Channels", "The number of audio signals that are encoded in the audio data."},
     {"SampleRate", "The number of audio samples per second."},
