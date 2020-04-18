@@ -120,8 +120,8 @@ struct column_text
 const size_t Columns_Text_Size=18+15+17;
 column_text Columns[]=
 {
-    {"FileSize", "In order to provide a concise presentation the filepaths are displayed from the directory path were the files diverge. Thus if two files are opened from /HardDrive1/audiofiles/music/audiofile.wav and /HardDrive1/audiofiles/spokenword/audiofileB.wav then these will be displayed in the table view as '/music/audiofile.wav' and '/spokenword/audiofileB.wav' since the '/HardDrive1/audiofiles' section of the Filepath is common to the open files. The CSV version of the Technical Metadata view displays the full filepath to each file."},
-    {"Format", "The size of the audio file in bytes."},
+    {"FileName", "In order to provide a concise presentation the filepaths are displayed from the directory path were the files diverge. Thus if two files are opened from /HardDrive1/audiofiles/music/audiofile.wav and /HardDrive1/audiofiles/spokenword/audiofileB.wav then these will be displayed in the table view as '/music/audiofile.wav' and '/spokenword/audiofileB.wav' since the '/HardDrive1/audiofiles' section of the Filepath is common to the open files. The CSV version of the Technical Metadata view displays the full filepath to each file."},
+    {"FileSize", "The size of the audio file in bytes."},
     {"CodecID", "This value represents the type of compression utilized within the audio data."},
     {"Channels", "The number of audio signals that are encoded in the audio data."},
     {"SampleRate", "The number of audio samples per second."},
