@@ -1474,7 +1474,7 @@ string Riff_Handler::Core_Header()
         }
 
     //Remove the extra ","
-    if (ToReturn.empty())
+    if (!ToReturn.empty())
         ToReturn.resize(ToReturn.size()-1);
 
     return ToReturn;
