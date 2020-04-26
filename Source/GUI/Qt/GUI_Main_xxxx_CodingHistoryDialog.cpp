@@ -50,7 +50,26 @@ void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft,
     size_t Row=(size_t)topLeft.row();
     size_t Column=(size_t)topLeft.column();
     string Value=topLeft.model()->data(topLeft.model()->index(topLeft.row(), topLeft.column(), rootIndex())).toString().toUtf8().data();
-    
+
+    if (!Value.empty())
+    {
+        Char Header;
+        switch (Column)
+        {
+            case 0 : Header='A'; break;
+            case 1 : Header='F'; break;
+            case 2 : Header='B'; break;
+            case 3 : Header='W'; break;
+            case 4 : Header='M'; break;
+            case 5 : Header='T'; break;
+            default: Header='\0';
+        }
+        if (Header!='\0')
+        {
+            Value.insert(Value.begin(), '=');
+            Value.insert(Value.begin(), Header);
+        }
+    }
     //Sizing
     if (Row>=List->size())
         List->resize(Row+1);    
@@ -399,22 +418,6 @@ void GUI_Main_xxxx_CodingHistoryDialog::List2Text ()
         {
             if (!List[Line][Column].empty())
             {
-                Char Header;
-                switch (Column)
-                {
-                    case 0 : Header='A'; break;
-                    case 1 : Header='F'; break;
-                    case 2 : Header='B'; break;
-                    case 3 : Header='W'; break;
-                    case 4 : Header='M'; break;
-                    case 5 : Header='T'; break;
-                    default: Header='\0';
-                }
-                if (Header!='\0')
-                {
-                    ToReturn+=Header;
-                    ToReturn+='=';
-                }
                 ToReturn+=List[Line][Column];
                 if (Column!=List[Line].size())
                     ToReturn+=',';
