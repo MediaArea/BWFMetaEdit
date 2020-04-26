@@ -283,6 +283,7 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Verify                      ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyMD5(bool)));
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5(bool)));
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_SwapEndian ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_SwapMD5Endianness(bool)));
     for (size_t Group=Group_Tech; Group<=Group_Core; Group++)
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
             connect(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_TechCore(bool)));
@@ -1119,6 +1120,13 @@ void GUI_Main::OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)
         C->Menu_File_Open_Files_Finish(); //TODO: progress bar
         View_Refresh();
     }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_SwapMD5Endianness(bool)
+{
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
 }
 
 //---------------------------------------------------------------------------

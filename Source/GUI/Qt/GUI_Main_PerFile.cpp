@@ -9,6 +9,7 @@
 
 //---------------------------------------------------------------------------
 #include "GUI/Qt/GUI_Main_PerFile.h"
+#include "GUI/Qt/GUI_Main_xxxx__Common.h"
 #include "GUI/Qt/GUI_Main.h"
 #include "GUI/Qt/GUI_Preferences.h"
 #include "GUI/Qt/GUI_Main_xxxx_Bext.h"
@@ -208,6 +209,9 @@ Q_INVOKABLE QString PerFileModel::value(const QString& FileName, const QString& 
     Ztring ModifiedContent=Ztring().From_UTF8(C->Get(FileName.toStdString(), Field.toStdString()));
     ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
 
+    if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian) && !ModifiedContent.empty())
+        ModifiedContent=Ztring().From_UTF8(Swap_MD5_Endianess(QString::fromUtf8(ModifiedContent.To_UTF8().c_str())).toStdString());
+
     return QString().fromUtf8(ModifiedContent.To_UTF8().c_str());
 }
 
@@ -253,6 +257,9 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
     ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
 
     if (readonly(FileName, Field)) {
+        if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian) && !ModifiedContent.empty())
+            ModifiedContent=Ztring().From_UTF8(Swap_MD5_Endianess(QString::fromUtf8(ModifiedContent.To_UTF8().c_str())).toStdString());
+
         GUI_Main_xxxx_TextEditDialog* Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()), true);
         Edit->exec();
         delete Edit; //Edit=NULL;

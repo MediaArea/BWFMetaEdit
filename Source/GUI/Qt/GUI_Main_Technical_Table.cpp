@@ -213,7 +213,10 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         item(Item->row(), Item->column())->setText(C->Get(FileName, Field).empty()?"No":"Yes");
     }
     else if (Field=="MD5Stored" && ModifiedContent=="Fill with MD5Generated")
-        item(Item->row(), Item->column())->setText(C->Get(FileName, "MD5Generated").c_str());
+    {
+        C->Set(FileName, "MD5Stored", C->Get(FileName, "MD5Generated"));
+        SetText(Item->row(), "MD5Stored");
+    }
     else
     {
         Ztring NewValue=Ztring().From_UTF8(ModifiedContent);
@@ -252,7 +255,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
             ModifiedContentQ.clear();
     }
     else
-        ModifiedContentQ=index.model()->data(index.model()->index(index.row(), index.column(), rootIndex())).toString(); //Old value
+        ModifiedContentQ=QString::fromUtf8(C->Get(FileName, Field).c_str()); //Old value
 
     //bext
     if (Field=="bext") 

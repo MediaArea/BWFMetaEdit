@@ -73,6 +73,7 @@ enum option_md5
     Option_MD5_Verify,
     Option_MD5_Embed,
     Option_MD5_Embed_AuthorizeOverWritting,
+    Option_MD5_SwapEndian,
     Option_MD5_Max
 };
 

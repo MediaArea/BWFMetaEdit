@@ -35,6 +35,28 @@ using namespace std;
 //---------------------------------------------------------------------------
 
 //***************************************************************************
+// Helpers
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+QString Swap_MD5_Endianess(const QString& Value)
+{
+    QString ToReturn;
+    int128u Bytes;
+
+    int128u2BigEndian((int8u*)&Bytes, Ztring().From_UTF8(Value.toStdString()).To_int128u());
+
+    if (Bytes==0)
+        return Value;
+
+    ToReturn=QString::fromUtf8(Ztring().From_Number(Bytes, 16).To_UTF8().c_str());
+    while (ToReturn.size()<32)
+        ToReturn.prepend('0'); //Padding with 0, this must be a 32-byte string
+
+    return ToReturn;
+}
+
+//***************************************************************************
 // OriginationTimeDelegate
 //***************************************************************************
 
@@ -296,7 +318,10 @@ void GUI_Main_xxxx__Common::SetText (int Row, const QString &Field)
         if (Field_Current==Field)
         {
             string FileName=FileName_Before+item(Row, 0)->text().toUtf8().data();
-            item(Row, Column)->setText(QString::fromUtf8(C->Get(FileName, Field.toUtf8().data()).c_str()));
+            if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian))
+                item(Row, Column)->setText(Swap_MD5_Endianess(QString::fromUtf8(C->Get(FileName, Field.toUtf8().data()).c_str())));
+            else
+                item(Row, Column)->setText(QString::fromUtf8(C->Get(FileName, Field.toUtf8().data()).c_str()));
             dataChanged(indexFromItem(item(Row, Column)), indexFromItem(item(Row, Column)));
             //Colors_Update(item(Row, Column), FileName, Field.toUtf8().data());
             return;
@@ -395,7 +420,12 @@ void GUI_Main_xxxx__Common::Fill ()
                 QTableWidgetItem* Item;
                 if (Data_Pos<List[File_Pos].size())
                 {
-                    ZenLib::Ztring Value=List[File_Pos][Data_Pos];
+                    Ztring Value=List[File_Pos][Data_Pos];
+
+                    QString Field=horizontalHeaderItem(Data_Pos-ColumnMissing_Count)->text();
+                    if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian) && !Value.empty())
+                        Value=Ztring().From_UTF8(Swap_MD5_Endianess(QString::fromUtf8(Value.To_UTF8().c_str())).toStdString());
+
                     Item=new QTableWidgetItem(QString().fromUtf8(Value.To_UTF8().c_str()));
                     Item->setToolTip(Columns_ToolTip(List[0][Data_Pos].To_UTF8()));
                 }
