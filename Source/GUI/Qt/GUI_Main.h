@@ -155,6 +155,7 @@ public Q_SLOTS:
     void OnMenu_Options_VerifyMD5                   (bool);
     void OnMenu_Options_EmbedMD5                    (bool);
     void OnMenu_Options_EmbedMD5_AuthorizeOverWritting (bool);
+    void OnMenu_Options_SwapMD5Endianness           (bool);
     void OnMenu_Options_ResetFieldSizes             ();
     void OnMenu_Options_Preferences                 ();
     void OnMenu_Help_Help                           ();
