@@ -377,8 +377,8 @@ void GUI_Main_xxxx__Common::Fill ()
         if (Data_Pos==0 || Main->Menu_Fields_CheckBoxes[Fill_Group()*options::MaxCount+Data_Pos-1]->isChecked())
         {
             QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(List[0][Data_Pos].To_UTF8().c_str()));
-            Item->setToolTip(Columns_ToolTip(List[0][Data_Pos].To_UTF8()));
             setHorizontalHeaderItem((int)(Data_Pos-ColumnMissing_Count), Item);
+            horizontalHeaderItem((Data_Pos-ColumnMissing_Count))->setToolTip(Columns_ToolTip(List[0][Data_Pos].To_UTF8()));
         }
         else
             ColumnMissing_Count++;
@@ -397,7 +397,6 @@ void GUI_Main_xxxx__Common::Fill ()
                 {
                     ZenLib::Ztring Value=List[File_Pos][Data_Pos];
                     Item=new QTableWidgetItem(QString().fromUtf8(Value.To_UTF8().c_str()));
-                    Item->setToolTip(Columns_ToolTip(List[0][Data_Pos].To_UTF8()));
                 }
                 else
                     Item=new QTableWidgetItem(QString());
