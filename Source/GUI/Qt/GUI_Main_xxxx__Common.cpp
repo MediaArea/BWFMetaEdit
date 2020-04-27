@@ -213,7 +213,7 @@ void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QMo
     string ModifiedContent=topLeft.model()->data(topLeft.model()->index(topLeft.row(), topLeft.column(), rootIndex())).toString().toUtf8().data();
     
     //Filling
-    if (!(Field=="XMP" || Field=="aXML" || Field=="iXML")) //this is special cases
+    if (!(Field=="XMP" || Field=="aXML" || Field=="iXML" || Field =="bext")) //this is special cases
         C->Set(FileName, Field, ModifiedContent);
 
     //Configuring
