@@ -147,6 +147,14 @@ Riff_Handler::~Riff_Handler ()
 //---------------------------------------------------------------------------
 bool Riff_Handler::Open(const string &FileName)
 {
+    CriticalSectionLocker CSL(CS);
+
+    return Open_Internal(FileName);
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::Open_Internal(const string &FileName)
+{
     //Init
     PerFile_Error.str(string());
     File_IsValid=false;
@@ -172,7 +180,7 @@ bool Riff_Handler::Open(const string &FileName)
     //Base
     Riff_Base::chunk Chunk;
     Chunk.Content.Size=Chunks->Global->File_Size;
-    Options_Update();
+    Options_Update_Internal();
 
     //Parsing
     try
@@ -212,7 +220,7 @@ bool Riff_Handler::Open(const string &FileName)
         }
 
         //Saving initial values
-        Core_FromFile=Ztring().From_UTF8(Core_Get());
+        Core_FromFile=Ztring().From_UTF8(Core_Get_Internal());
 
         //MD5
         if (Chunks->Global->VerifyMD5)
@@ -249,7 +257,7 @@ bool Riff_Handler::Open(const string &FileName)
          && Chunks->Global->MD5Generated && !Chunks->Global->MD5Generated->Strings["md5generated"].empty()
          && (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty())
           || EmbedMD5_AuthorizeOverWritting))
-                Set("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
+                Set_Internal("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
     }
 
     CriticalSectionLocker(Chunks->Global->CS);
@@ -261,6 +269,8 @@ bool Riff_Handler::Open(const string &FileName)
 //---------------------------------------------------------------------------
 bool Riff_Handler::Save()
 {
+    CriticalSectionLocker CSL(CS);
+
     Chunks->Global->CS.Enter();
     Chunks->Global->Progress=(float)0.05;
     Chunks->Global->CS.Leave();
@@ -276,7 +286,7 @@ bool Riff_Handler::Save()
     }
 
     //Write only if modified
-    if (!IsModified_Get())
+    if (!IsModified_Get_Internal())
     {
         Information<<Chunks->Global->File_Name.To_UTF8()<<": Nothing to do"<<endl;
         return false;
@@ -286,7 +296,7 @@ bool Riff_Handler::Save()
     for (size_t Fields_Pos=0; Fields_Pos<Fields_Max; Fields_Pos++)
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
         {
-            if (!IsOriginal(xxxx_Strings[Fields_Pos][Pos], Get(xxxx_Strings[Fields_Pos][Pos])))
+            if (!IsOriginal_Internal(xxxx_Strings[Fields_Pos][Pos], Get_Internal(xxxx_Strings[Fields_Pos][Pos])))
                 Chunks->Modify(Elements::WAVE, Chunk_Name2_Get(xxxx_Strings[Fields_Pos][Pos]), Chunk_Name3_Get(xxxx_Strings[Fields_Pos][Pos]));
         }
 
@@ -373,7 +383,7 @@ bool Riff_Handler::Save()
     string FileName=Chunks->Global->File_Name.To_UTF8();
     bool GenerateMD5_Temp=Chunks->Global->GenerateMD5;
     Chunks->Global->GenerateMD5=false;
-    if (!Open(FileName) && Chunks==NULL) //There may be an error but file is open (eg MD5 error)
+    if (!Open_Internal(FileName) && Chunks==NULL) //There may be an error but file is open (eg MD5 error)
     {
         Errors<<FileName<<": WARNING, the resulting file can not be validated, file may be CORRUPTED"<<endl;
         PerFile_Error<<"WARNING, the resulting file can not be validated, file may be CORRUPTED"<<endl;
@@ -384,21 +394,22 @@ bool Riff_Handler::Save()
 
     CriticalSectionLocker(Chunks->Global->CS);
     Chunks->Global->Progress=1;
-    
+
     return true;
 }
 
 //---------------------------------------------------------------------------
 bool Riff_Handler::BackToLastSave()
 {
+    CriticalSectionLocker CSL(CS);
     for (size_t Fields_Pos=0; Fields_Pos<Fields_Max; Fields_Pos++)
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
         {
-            if (!IsOriginal(xxxx_Strings[Fields_Pos][Pos], Get(xxxx_Strings[Fields_Pos][Pos])))
+            if (!IsOriginal_Internal(xxxx_Strings[Fields_Pos][Pos], Get_Internal(xxxx_Strings[Fields_Pos][Pos])))
             {
                 ZtringList HistoryList; HistoryList.Write(Ztring().From_UTF8(History(xxxx_Strings[Fields_Pos][Pos])));
                 if (!HistoryList.empty())
-                    Set(xxxx_Strings[Fields_Pos][Pos], HistoryList[0].To_UTF8(), rules());
+                    Set_Internal(xxxx_Strings[Fields_Pos][Pos], HistoryList[0].To_UTF8(), rules());
             }
         }
 
@@ -414,6 +425,14 @@ bool Riff_Handler::BackToLastSave()
 //---------------------------------------------------------------------------
 string Riff_Handler::Get(const string &Field)
 {
+    CriticalSectionLocker CSL(CS);
+
+    return Get_Internal(Field);
+}
+
+//---------------------------------------------------------------------------
+string Riff_Handler::Get_Internal(const string &Field)
+{
     if (Field=="SampleRate")
         return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      ).To_UTF8()));
 
@@ -425,6 +444,14 @@ string Riff_Handler::Get(const string &Field)
 }
 
 //---------------------------------------------------------------------------
+bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
+{
+    CriticalSectionLocker CSL(CS);
+
+    return Set_Internal(Field_, Value_, Rules);
+}
+
+//---------------------------------------------------------------------------
 static const string aXML_Begin     ="<ebuCoreMain xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"urn:ebu:metadata-schema:ebucore\">\r\n"
                                     "    <coreMetadata>\r\n";
 static const string aXML_ISRC_Begin="        <identifier typeLabel=\"GUID\" typeDefinition=\"Globally Unique Identifier\" formatLabel=\"ISRC\" formatDefinition=\"International Standard Recording Code\" formatLink=\"http://www.ebu.ch/metadata/cs/ebu_IdentifierTypeCodeCS.xml#3.7\">\r\n"
@@ -433,7 +460,7 @@ static const string aXML_ISRC_End  =            "</dc:identifier>\r\n"
                                     "        </identifier>\r\n";
 static const string aXML_End       ="    </coreMetadata>\r\n"
                                     "</ebuCoreMain>\r\n";
-bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
+bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rules Rules)
 {
     //Integrity
     if (Chunks==NULL)
@@ -497,10 +524,10 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
     {
         if (Field=="ISRC")
         {
-            string OldISRC=Get("ISRC");
+            string OldISRC=Get_Internal("ISRC");
             if (Value!=OldISRC)
             {
-                string aXML=Get("aXML");
+                string aXML=Get_Internal("aXML");
                 if (aXML.empty())
                 {
                     aXML =aXML_Begin;
@@ -518,7 +545,7 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
                     if (Begin!=string::npos && End!=string::npos && End<=Begin+aXML_ISRC_Begin.size()+20)
                     {
                         string OldISRC_aXML=aXML.substr(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
-                        string OldISRC_INFO=Get("ISRC");
+                        string OldISRC_INFO=Get_Internal("ISRC");
                         if (OldISRC_aXML.empty() || OldISRC_INFO==OldISRC_aXML)
                         {
                             if (Value.empty())
@@ -548,7 +575,7 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
         }
         if (Field=="axml")
         {
-            string OldaXML=Get("aXML");
+            string OldaXML=Get_Internal("aXML");
             if (!Value.empty() && Value!=OldaXML)
             {
                 string NewISRC_aXML;
@@ -563,7 +590,7 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
                     OldISRC_aXML=OldaXML.substr(Begin+aXML_ISRC_Begin.size(), End-(Begin+aXML_ISRC_Begin.size()));
                 if (!NewISRC_aXML.empty() && NewISRC_aXML!=OldISRC_aXML)
                 {
-                    string OldISRC_INFO=Get("ISRC");
+                    string OldISRC_INFO=Get_Internal("ISRC");
                     if (OldISRC_INFO.empty() || OldISRC_INFO==OldISRC_aXML)
                     {
                         FieldToFill="ISRC";
@@ -575,15 +602,15 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
     }
 
     //Testing validity
-    if (!IsValid(Field, Value, Rules, true)
-     && !IsOriginal(Field, Value))
+    if (!IsValid_Internal(Field, Value, Rules, true)
+     && !IsOriginal_Internal(Field, Value))
         return false;
 
     //Special cases - before
     if (Field=="timereference (translated)")
     {
         if (Value.empty())
-            return Set("timereference", string(), Rules);
+            return Set_Internal("timereference", string(), Rules);
         else if (Value.size()>=12 && Chunks && Chunks->Global && Chunks->Global->fmt_ && Chunks->Global->fmt_->sampleRate)
         {
             int64u HH=Ztring().From_UTF8(Value.substr(0, Value.size()-10)).To_int64u();
@@ -597,8 +624,8 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
                         + MS;
             TimeReference=(int64u)(((float64)TimeReference)/1000*Chunks->Global->fmt_->sampleRate);
             
-            if (Value!=Get("timereference (translated)"))
-                return Set("timereference", Ztring().From_Number(TimeReference).To_UTF8(), Rules);
+            if (Value!=Get_Internal("timereference (translated)"))
+                return Set_Internal("timereference", Ztring().From_Number(TimeReference).To_UTF8(), Rules);
             else
                 return true;
         }
@@ -606,7 +633,7 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
     if (Field=="timereference" && Value=="0")
         Value.clear();
     if (Field=="bext")
-        return Set("bextversion", Value, Rules);
+        return Set_Internal("bextversion", Value, Rules);
 
     //Setting it
     bool ToReturn=Set(Field, Value, *chunk_strings_Get(Field), Chunk_Name2_Get(Field), Chunk_Name3_Get(Field)); 
@@ -615,11 +642,11 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
     if (ToReturn && Field=="originator")
     {
         if (Rules.FADGI_Rec && Chunks && Chunks->Global && Chunks->Global->INFO)
-            Set("IARL", Value, Rules); //If INFO is present, IARL is filled with the same value
+            Set_Internal("IARL", Value, Rules); //If INFO is present, IARL is filled with the same value
     }
     if (!FieldToFill.empty())
     {
-        Set(FieldToFill, ValueToFill, Rules);
+        Set_Internal(FieldToFill, ValueToFill, Rules);
     }
 
     return ToReturn;
@@ -628,6 +655,8 @@ bool Riff_Handler::Set(const string &Field_, const string &Value_, rules Rules)
 //---------------------------------------------------------------------------
 bool Riff_Handler::Remove(const string &Field)
 {
+    CriticalSectionLocker CSL(CS);
+
     //Integrity
     if (Chunks==NULL)
     {
@@ -655,14 +684,22 @@ bool Riff_Handler::Remove(const string &Field)
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsModified(const string &Field)
 {
+    CriticalSectionLocker CSL(CS);
+
+    return IsModified_Internal(Field);
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::IsModified_Internal(const string &Field)
+{
     //Special cases
     if (Field_Get(Field)=="bext")
     {
         bool ToReturn=false;
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Bext]; Pos++)
-             if (IsModified(xxxx_Strings[Fields_Bext][Pos]))
+             if (IsModified_Internal(xxxx_Strings[Fields_Bext][Pos]))
                  ToReturn=true;
-        if (!ToReturn && IsModified("bextversion"))
+        if (!ToReturn && IsModified_Internal("bextversion"))
              ToReturn=true;
         return ToReturn;
     }
@@ -670,7 +707,7 @@ bool Riff_Handler::IsModified(const string &Field)
     {
         bool ToReturn=false;
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Info]; Pos++)
-             if (IsModified(xxxx_Strings[Fields_Info][Pos]))
+             if (IsModified_Internal(xxxx_Strings[Fields_Info][Pos]))
                  ToReturn=true;
         return ToReturn;
     }
@@ -684,6 +721,13 @@ bool Riff_Handler::IsModified(const string &Field)
 
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rules, bool IgnoreCoherency)
+{
+    CriticalSectionLocker CSL(CS);
+
+    return IsValid_Internal(Field_, Value_, Rules, IgnoreCoherency);
+}
+//---------------------------------------------------------------------------
+bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, rules Rules, bool IgnoreCoherency)
 {
     //Reformating
     IsValid_Errors.str(string());
@@ -747,7 +791,7 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
         {
             if (!Value.empty() && Value.size()!=32)
                 Message="must be 16 byte long hexadecimal coded text (32 byte long) value";
-            else if (!Value.empty() && !Get("MD5Stored").empty() && Value!=Get("MD5Stored"))
+            else if (!Value.empty() && !Get_Internal("MD5Stored").empty() && Value!=Get_Internal("MD5Stored"))
                 Message="Failed verification";
         }
 
@@ -1386,7 +1430,7 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
         if (Rules.EBU_ISRC_Rec && !IgnoreCoherency)
         {
             //From aXML
-            string aXML=Get("aXML");
+            string aXML=Get_Internal("aXML");
             string aXML_ISRC;
             size_t Begin=aXML.find(aXML_ISRC_Begin);
             size_t End=aXML.find(aXML_ISRC_End, Begin);
@@ -1440,6 +1484,14 @@ bool Riff_Handler::IsValid(const string &Field_, const string &Value_, rules Rul
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsOriginal(const string &Field, const string &Value)
 {
+    CriticalSectionLocker CSL(CS);
+
+    return IsOriginal_Internal(Field, Value);
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::IsOriginal_Internal(const string &Field, const string &Value)
+{
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return true;
@@ -1450,6 +1502,8 @@ bool Riff_Handler::IsOriginal(const string &Field, const string &Value)
 //---------------------------------------------------------------------------
 string Riff_Handler::History(const string &Field)
 {
+    CriticalSectionLocker CSL(CS);
+
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return string();
@@ -1483,6 +1537,14 @@ string Riff_Handler::Core_Header()
 //---------------------------------------------------------------------------
 string Riff_Handler::Core_Get(bool Batch_IsBackuping)
 {
+    CriticalSectionLocker CSL(CS);
+
+    return Core_Get_Internal(Batch_IsBackuping);
+}
+
+//---------------------------------------------------------------------------
+string Riff_Handler::Core_Get_Internal(bool Batch_IsBackuping)
+{
     //FromFile
     if (Batch_IsBackuping)
         return Core_FromFile.To_UTF8();
@@ -1493,7 +1555,7 @@ string Riff_Handler::Core_Get(bool Batch_IsBackuping)
     List.push_back(Chunks->Global->File_Name);
     for (size_t Fields_Pos=Fields_Bext; Fields_Pos<=Fields_Info; Fields_Pos++) //Only Bext and Info
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
-             List.push_back(Ztring().From_UTF8(Get(xxxx_Strings[Fields_Pos][Pos])));
+             List.push_back(Ztring().From_UTF8(Get_Internal(xxxx_Strings[Fields_Pos][Pos])));
 
     return List.Read().To_UTF8();
 }
@@ -1528,6 +1590,8 @@ string Riff_Handler::Technical_Header()
 //---------------------------------------------------------------------------
 string Riff_Handler::Technical_Get()
 {
+    CriticalSectionLocker CSL(CS);
+
     ZtringList List;
     List.Separator_Set(0, __T(","));
     List.push_back(Chunks->Global->File_Name);
@@ -1543,15 +1607,15 @@ string Riff_Handler::Technical_Get()
         List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0 || Chunks->Global->data==NULL || Chunks->Global->data->Size==(int64u)-1)?__T(""):Ztring().Duration_From_Milliseconds(Chunks->Global->data->Size*1000/Chunks->Global->fmt_->bytesPerSecond)));
         List.push_back(Ztring().From_UTF8(Chunks->Global->UnsupportedChunks));
         if (Chunks->Global->bext!=NULL && !Chunks->Global->bext->Strings["bextversion"].empty())
-            List.push_back(Get("bext").empty()?__T("No"):(__T("Version ")+Ztring().From_UTF8(Chunks->Global->bext->Strings["bextversion"])));
+            List.push_back(Get_Internal("bext").empty()?__T("No"):(__T("Version ")+Ztring().From_UTF8(Chunks->Global->bext->Strings["bextversion"])));
         else
             List.push_back(__T("No"));
-        List.push_back(Get("INFO").empty()?__T("No"):__T("Yes"));
-        List.push_back(Get("XMP").empty()?__T("No"):__T("Yes"));
-        List.push_back(Get("aXML").empty()?__T("No"):__T("Yes"));
-        List.push_back(Get("iXML").empty()?__T("No"):__T("Yes"));
-        List.push_back(Ztring().From_UTF8(Get("MD5Stored")));
-        List.push_back(Ztring().From_UTF8(Get("MD5Generated")));
+        List.push_back(Get_Internal("INFO").empty()?__T("No"):__T("Yes"));
+        List.push_back(Get_Internal("XMP").empty()?__T("No"):__T("Yes"));
+        List.push_back(Get_Internal("aXML").empty()?__T("No"):__T("Yes"));
+        List.push_back(Get_Internal("iXML").empty()?__T("No"):__T("Yes"));
+        List.push_back(Ztring().From_UTF8(Get_Internal("MD5Stored")));
+        List.push_back(Ztring().From_UTF8(Get_Internal("MD5Generated")));
     }
     else
         List.resize(17);
@@ -1573,24 +1637,32 @@ string Riff_Handler::Technical_Get()
 //---------------------------------------------------------------------------
 string Riff_Handler::Trace_Get()
 {
+    CriticalSectionLocker CSL(CS);
+
     return Chunks->Global->Trace.str();
 }
 
 //---------------------------------------------------------------------------
 string Riff_Handler::FileName_Get()
 {
+    CriticalSectionLocker CSL(CS);
+
     return Chunks->Global->File_Name.To_UTF8();
 }
 
 //---------------------------------------------------------------------------
 string Riff_Handler::FileDate_Get()
 {
+    CriticalSectionLocker CSL(CS);
+
     return Chunks->Global->File_Date;
 }
 
 //---------------------------------------------------------------------------
 float Riff_Handler::Progress_Get()
 {
+    CriticalSectionLocker CSL(CS);
+
     if (Chunks==NULL || Chunks->Global==NULL)
         return 0;    
     CriticalSectionLocker(Chunks->Global->CS);
@@ -1602,6 +1674,8 @@ float Riff_Handler::Progress_Get()
 //---------------------------------------------------------------------------
 void Riff_Handler::Progress_Clear()
 {
+    CriticalSectionLocker CSL(CS);
+
     if (Chunks==NULL || Chunks->Global==NULL)
         return;
 
@@ -1612,6 +1686,8 @@ void Riff_Handler::Progress_Clear()
 //---------------------------------------------------------------------------
 bool Riff_Handler::Canceled_Get()
 {
+    CriticalSectionLocker CSL(CS);
+
     if (Chunks==NULL || Chunks->Global==NULL)
         return false;    
     CriticalSectionLocker(Chunks->Global->CS);
@@ -1621,6 +1697,8 @@ bool Riff_Handler::Canceled_Get()
 //---------------------------------------------------------------------------
 void Riff_Handler::Cancel()
 {
+    CriticalSectionLocker CSL(CS);
+
     if (Chunks==NULL || Chunks->Global==NULL)
         return;    
     CriticalSectionLocker(Chunks->Global->CS);
@@ -1630,10 +1708,18 @@ void Riff_Handler::Cancel()
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsModified_Get()
 {
+    CriticalSectionLocker CSL(CS);
+
+    return IsModified_Get_Internal();
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::IsModified_Get_Internal()
+{
     bool ToReturn=false;
     for (size_t Fields_Pos=0; Fields_Pos<Fields_Max; Fields_Pos++)
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
-            if (IsModified(xxxx_Strings[Fields_Pos][Pos]))
+            if (IsModified_Internal(xxxx_Strings[Fields_Pos][Pos]))
                 ToReturn=true;
 
     if (!ToReturn && Chunks)
@@ -1645,6 +1731,8 @@ bool Riff_Handler::IsModified_Get()
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsValid_Get()
 {
+    CriticalSectionLocker CSL(CS);
+
     return File_IsValid;
 }
 
@@ -1748,7 +1836,7 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
      || (Chunk_Strings==NULL && Value.empty()))
         return true; //Nothing to do
 
-    //Overwrite_Reject
+    //Overwrite_Rejec
     if (Overwrite_Reject && Chunk_Strings!=NULL && !Chunk_Strings->Strings[Field].empty())
     {
         Errors<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": overwriting is not authorized ("<<Field<<")"<<endl;
@@ -1766,9 +1854,9 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
         Chunk_Strings=new Riff_Base::global::chunk_strings();
     if (&Chunk_Strings==&Chunks->Global->bext && Field!="bextversion")
     {
-        if (Field=="umid" && !Value.empty() && Ztring().From_UTF8(Get("bextversion")).To_int16u()<1)
+        if (Field=="umid" && !Value.empty() && Ztring().From_UTF8(Get_Internal("bextversion")).To_int16u()<1)
             Set("bextversion", "1", Chunk_Strings, Chunk_Name2, Chunk_Name3);
-        if ((Field=="loudnessvalue" || Field=="loudnessrange" || Field=="maxtruepeaklevel" || Field=="maxmomentaryloudness" || Field=="maxshorttermloudness") && !Value.empty() && Ztring().From_UTF8(Get("bextversion")).To_int16u()<2)
+        if ((Field=="loudnessvalue" || Field=="loudnessrange" || Field=="maxtruepeaklevel" || Field=="maxmomentaryloudness" || Field=="maxshorttermloudness") && !Value.empty() && Ztring().From_UTF8(Get_Internal("bextversion")).To_int16u()<2)
             Set("bextversion", "2", Chunk_Strings, Chunk_Name2, Chunk_Name3);
         if (!Value.empty() && Chunk_Strings->Strings["bextversion"].empty())
             Set("bextversion", Ztring::ToZtring(Bext_DefaultVersion).To_UTF8(), Chunk_Strings, Chunk_Name2, Chunk_Name3);
@@ -1805,7 +1893,7 @@ bool Riff_Handler::IsOriginal(const string &Field, const string &Value, Riff_Bas
    
     //Special cases
     if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
-        return IsOriginal("timereference", Get("timereference"));
+        return IsOriginal_Internal("timereference", Get_Internal("timereference"));
 
     if (Chunk_Strings->Histories[Field].empty())
         return Value==Chunk_Strings->Strings[Field];
@@ -1821,7 +1909,7 @@ bool Riff_Handler::IsModified(const string &Field, Riff_Base::global::chunk_stri
 
     //Special cases
     if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
-        return IsModified("timereference");
+        return IsModified_Internal("timereference");
 
     if (&Chunk_Strings!=NULL && Chunk_Strings && Chunk_Strings->Histories.find(Field)!=Chunk_Strings->Histories.end())
     {
@@ -1879,6 +1967,13 @@ string Riff_Handler::History(const string &Field, Riff_Base::global::chunk_strin
 //---------------------------------------------------------------------------
 void Riff_Handler::Options_Update()
 {
+    CriticalSectionLocker CSL(CS);
+
+    Options_Update_Internal();
+}
+
+void Riff_Handler::Options_Update_Internal()
+{
     if (Chunks==NULL || Chunks->Global==NULL)
         return;
 
@@ -1924,7 +2019,7 @@ void Riff_Handler::Options_Update()
      && Chunks->Global->MD5Generated && !Chunks->Global->MD5Generated->Strings["md5generated"].empty()
      && (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty())
       || EmbedMD5_AuthorizeOverWritting))
-            Set("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
+            Set_Internal("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
 }
 
 //***************************************************************************

@@ -76,7 +76,7 @@ public:
     string          History             (const string &Field);
     bool            IsOriginal          (const string &Field, const string &Value);
     bool            IsValid             (const string &Field, const string &Value, rules Rules, bool IgnoreCoherency=false);
-    string          IsValid_LastError   () {return IsValid_Errors.str();}
+    string          IsValid_LastError   () {CriticalSectionLocker(this->CS); return IsValid_Errors.str();}
     bool            IsModified          (const string &Field);
     
     //---------------------------------------------------------------------------
@@ -122,6 +122,18 @@ public:
 
 private:
     //---------------------------------------------------------------------------
+    //Helpers - Internal
+    bool      Open_Internal              (const string &FileName);
+    string    Get_Internal               (const string &Field);
+    bool      Set_Internal               (const string &Field, const string &Value, rules Rules);
+    bool      IsValid_Internal           (const string &Field, const string &Value, rules Rules, bool IgnoreCoherency=false);
+    bool      IsOriginal_Internal        (const string &Field, const string &Value);
+    bool      IsModified_Internal        (const string &Field);
+    string    Core_Get_Internal          (bool IsBackuping=false);
+    bool      IsModified_Get_Internal    ();
+    void      Options_Update_Internal    ();
+
+    //---------------------------------------------------------------------------
     //Helpers - Per item
     string          Get             (const string &Field,                       Riff_Base::global::chunk_strings* &Chunk_Strings);
     bool            Set             (const string &Field, const string &Value,  Riff_Base::global::chunk_strings* &Chunk_Strings, int32u Chunk_Name2, int32u Chunk_Name3=0x00000000);
@@ -144,6 +156,7 @@ private:
     Riff*           Chunks;
     bool            File_IsValid;
     bool            File_IsCanceled;
+    CriticalSection CS;
 };
 
 #endif
