@@ -140,7 +140,7 @@ options Groups[Group_Max]=
             {"MD5_Verify", "Verify MD5 for audio data", Type_CheckBox, false},
             {"MD5_Embed", "Embed MD5 for audio data", Type_CheckBox, false},
             {"MD5_Embed_AuthorizeOverWritting", "Allow overwriting of embedded MD5 value", Type_CheckBox, false},
-            {"MD5_SwapEndian", "Swap endianness of MD5 representation", Type_CheckBox, false},
+            {"MD5_SwapEndian", "Use big endian for the display of MD5 values", Type_CheckBox, false},
         },
         true,
     },
