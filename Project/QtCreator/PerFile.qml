@@ -8,54 +8,54 @@ Control {
         ListElement {
             section: "MD5"
             fields: [
-                ListElement{ name: "MD5Stored"; label: "MD5Stored"; lenght: 370 },
-                ListElement{ name: "MD5Generated"; label: "MD5Generated"; lenght: 370 }
+                ListElement{ name: "MD5Stored"; label: "MD5Stored"; fieldLength: 370 },
+                ListElement{ name: "MD5Generated"; label: "MD5Generated"; fieldLength: 370 }
             ]
         }
         ListElement {
             section: "CORE"
             fields: [
-                ListElement{ name: "LoudnessValue"; label: "LoudnessValue"; lenght: 185 },
-                ListElement{ name: "LoudnessRange"; label: "LoudnessRange"; lenght: 185 },
-                ListElement{ name: "MaxTruePeakLevel"; label: "MaxTruePeakLevel"; lenght: 185 },
-                ListElement{ name: "MaxMomentaryLoudness"; label: "MaxMomentaryLoudness"; lenght: 185 },
-                ListElement{ name: "MaxShortTermLoudness"; label: "MaxShortTermLoudness"; lenght: 185 },
-                ListElement{ name: "CodingHistory"; label: "CodingHistory"; lenght: 185 }
+                ListElement{ name: "LoudnessValue"; label: "LoudnessValue"; fieldLength: 185 },
+                ListElement{ name: "LoudnessRange"; label: "LoudnessRange"; fieldLength: 185 },
+                ListElement{ name: "MaxTruePeakLevel"; label: "MaxTruePeakLevel"; fieldLength: 185 },
+                ListElement{ name: "MaxMomentaryLoudness"; label: "MaxMomentaryLoudness"; fieldLength: 185 },
+                ListElement{ name: "MaxShortTermLoudness"; label: "MaxShortTermLoudness"; fieldLength: 185 },
+                ListElement{ name: "CodingHistory"; label: "CodingHistory"; fieldLength: 185 }
             ]
         }
         ListElement {
             section: "BEXT"
             fields: [
-                ListElement{ name: "BextVersion"; label: "Version"; lenght: 185 },
-                ListElement{ name: "Description"; label: "Description"; lenght: 185 },
-                ListElement{ name: "Originator"; label: "Originator"; lenght: 185 },
-                ListElement{ name: "OriginatorReference"; label: "OriginatorReference"; lenght: 185 },
-                ListElement{ name: "OriginationDate"; label: "OriginationDate"; lenght: 185 },
-                ListElement{ name: "TimeReference"; label: "Time Reference"; lenght: 185 },
-                ListElement{ name: "OriginationTime"; label: "OriginationTime"; lenght: 185 },
-                ListElement{ name: "UMID"; label: "UMID"; lenght: 560 }
+                ListElement{ name: "BextVersion"; label: "Version"; fieldLength: 185 },
+                ListElement{ name: "Description"; label: "Description"; fieldLength: 185 },
+                ListElement{ name: "Originator"; label: "Originator"; fieldLength: 185 },
+                ListElement{ name: "OriginatorReference"; label: "OriginatorReference"; fieldLength: 185 },
+                ListElement{ name: "OriginationDate"; label: "OriginationDate"; fieldLength: 185 },
+                ListElement{ name: "TimeReference"; label: "Time Reference"; fieldLength: 185 },
+                ListElement{ name: "OriginationTime"; label: "OriginationTime"; fieldLength: 185 },
+                ListElement{ name: "UMID"; label: "UMID"; fieldLength: 560 }
             ]
         }
         ListElement {
             section: "INFO"
             fields: [
-                ListElement{ name: "IARL"; label: "Archival Location (IARL)"; lenght: 185 },
-                ListElement{ name: "IART"; label: "Artist (IART)"; lenght: 185 },
-                ListElement{ name: "ICMS"; label: "Commissioned (ICMS)"; lenght: 185 },
-                ListElement{ name: "ICMT"; label: "Comments (ICMT)"; lenght: 185 },
-                ListElement{ name: "ICOP"; label: "Copyright (ICOP)"; lenght: 185 },
-                ListElement{ name: "ICRD"; label: "Creation date (ICRD)"; lenght: 185 },
-                ListElement{ name: "IENG"; label: "Engineer (IENG)"; lenght: 185 },
-                ListElement{ name: "IGNR"; label: "Genre (IGNR)"; lenght: 185 },
-                ListElement{ name: "IKEY"; label: "Keywords (IKEY)"; lenght: 185 },
-                ListElement{ name: "IMED"; label: "Medium (IMED)"; lenght: 185 },
-                ListElement{ name: "INAM"; label: "Name (Title) (INAM)"; lenght: 185 },
-                ListElement{ name: "IPRD"; label: "Product (Album) (IPRD)"; lenght: 185 },
-                ListElement{ name: "ISBJ"; label: "Subject (ISBJ)"; lenght: 185 },
-                ListElement{ name: "ISFT"; label: "Software (ISFT)"; lenght: 185 },
-                ListElement{ name: "ISRC"; label: "Source (ISRC)"; lenght: 185 },
-                ListElement{ name: "ISRF"; label: "Source Form (ISRF)"; lenght: 185 },
-                ListElement{ name: "ITCH"; label: "Technician (ITCH)"; lenght: 185 }
+                ListElement{ name: "IARL"; label: "Archival Location (IARL)"; fieldLength: 185 },
+                ListElement{ name: "IART"; label: "Artist (IART)"; fieldLength: 185 },
+                ListElement{ name: "ICMS"; label: "Commissioned (ICMS)"; fieldLength: 185 },
+                ListElement{ name: "ICMT"; label: "Comments (ICMT)"; fieldLength: 185 },
+                ListElement{ name: "ICOP"; label: "Copyright (ICOP)"; fieldLength: 185 },
+                ListElement{ name: "ICRD"; label: "Creation date (ICRD)"; fieldLength: 185 },
+                ListElement{ name: "IENG"; label: "Engineer (IENG)"; fieldLength: 185 },
+                ListElement{ name: "IGNR"; label: "Genre (IGNR)"; fieldLength: 185 },
+                ListElement{ name: "IKEY"; label: "Keywords (IKEY)"; fieldLength: 185 },
+                ListElement{ name: "IMED"; label: "Medium (IMED)"; fieldLength: 185 },
+                ListElement{ name: "INAM"; label: "Name (Title) (INAM)"; fieldLength: 185 },
+                ListElement{ name: "IPRD"; label: "Product (Album) (IPRD)"; fieldLength: 185 },
+                ListElement{ name: "ISBJ"; label: "Subject (ISBJ)"; fieldLength: 185 },
+                ListElement{ name: "ISFT"; label: "Software (ISFT)"; fieldLength: 185 },
+                ListElement{ name: "ISRC"; label: "Source (ISRC)"; fieldLength: 185 },
+                ListElement{ name: "ISRF"; label: "Source Form (ISRF)"; fieldLength: 185 },
+                ListElement{ name: "ITCH"; label: "Technician (ITCH)"; fieldLength: 185 }
             ]
         }
     }
@@ -386,11 +386,11 @@ Control {
                                             /*TextMetrics {
                                                 id: ruler
                                                 font: input.font
-                                                text: "—".repeat(lenght)
+                                                text: "—".repeat(fieldLength)
                                             }*/
                                             TextField {
                                                 id: input
-                                                width: lenght
+                                                width: fieldLength
                                                 color: Model.modified(file, name) ? "green" : "black"
                                                 text: Model.value(file, name)
                                                 readOnly: true
