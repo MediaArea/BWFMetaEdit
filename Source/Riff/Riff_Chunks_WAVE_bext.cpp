@@ -228,7 +228,7 @@ void Riff_WAVE_bext::Read_Internal ()
     for (std::map<string, string>::iterator String=Global->bext->Strings.begin(); String!=Global->bext->Strings.end(); String++)
     {
         Ztring temp=Ztring().From_UTF8(String->second);
-        temp.FindAndReplace(__T("\n"), EOL, 0, Ztring_Recursive);
+        temp.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
         String->second=temp.To_UTF8();
     }
 }
