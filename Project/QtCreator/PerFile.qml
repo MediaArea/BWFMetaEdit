@@ -120,11 +120,9 @@ Control {
                     }
                     Text {
                         id: title
-                        height: expand.height
                         width: parent.width - expand.width - edit.width - save.width - close.width - parent.spacing * 4
-                        text: file
+                        text: "<b>" + file + "</b>"
                         elide: Text.ElideMiddle
-                        color: "gray"
                     }
                     Image {
                         id: edit
@@ -430,6 +428,11 @@ Control {
                             }
                         }
                     }
+                }
+                Rectangle {
+                    width: parent.width
+                    height: 2
+                    color: "gainsboro"
                 }
             }
         }
