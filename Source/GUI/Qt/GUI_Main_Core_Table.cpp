@@ -191,6 +191,10 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         //Creating menu
         QMenu menu(this);
 
+        //Handling AllFiles display
+        menu.addAction(new QAction("Fill all open files with these fields values", this)); //If you change this, change the test text too
+        menu.addSeparator();
+
         //Handling Clear display
         bool ShowClear=false;
         for (int Pos=0; Pos<Items.size(); Pos++)
@@ -222,6 +226,26 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         QString Text=Action->text();
 
         //Special cases
+        if (Text=="Fill all open files with these fields values") //If you change this, change the creation text too
+        {
+            for (int Pos=0; Pos<Items.size(); Pos++)
+            {
+                QTableWidgetItem* Item=Items[Pos];
+                string FileName=FileName_Before+item(Item->row(), 0)->text().toUtf8().data();
+                string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
+                 for (int Row=0; Row<rowCount(); Row++)
+                {
+                    item(Row, Item->column())->setText(QString::fromUtf8(C->Get(FileName, Field).c_str()));
+                    dataChanged(indexFromItem(item(Row, Item->column())), indexFromItem(item(Row, Item->column())));
+
+                    //Changing BextVersion Enabled value
+                    SetText   (*Item, "BextVersion");
+                    SetEnabled(*Item, "BextVersion");
+                }
+            }
+            return;
+        }
+
         if (Text=="Clear these values") //If you change this, change the creation text too
         {
             for (int Pos=0; Pos<Items.size(); Pos++)
