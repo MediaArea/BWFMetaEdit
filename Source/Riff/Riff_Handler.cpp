@@ -439,8 +439,14 @@ string Riff_Handler::Get_Internal(const string &Field)
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return string();
+
+    Ztring Value=Ztring().From_UTF8(Get(Field_Get(Field), *Chunk_Strings));
+    Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+    Value.FindAndReplace(__T("\n\r"), __T("\n"), 0, Ztring_Recursive); //Bug in v0.2.1 XML, \r\n was inverted
+    Value.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+    Value.FindAndReplace(__T("\n"), EOL, 0, Ztring_Recursive);
     
-    return Get(Field_Get(Field), *Chunk_Strings);
+    return Value.To_UTF8();
 }
 
 //---------------------------------------------------------------------------
