@@ -43,6 +43,12 @@ int main (int argc, char** argv)
     Core C;
     C.Errors_Continue=true; //Always for the GUI
 
+    // QApplication initialisation reset charset to default (ASCII when launched from finder) value.
+    #ifdef __MACOSX__
+    if (strcmp(setlocale(LC_CTYPE, NULL), "C")==0)
+        setlocale(LC_CTYPE, "UTF-8");
+    #endif
+
     GUI_Main Window(&C);
     Window.show();
     int ToReturn=App.exec();
