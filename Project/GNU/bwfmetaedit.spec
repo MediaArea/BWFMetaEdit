@@ -27,13 +27,6 @@ BuildRequires:  autoconf
 %if 0%{?rhel_version} >= 800 || 0%{?centos_version} >= 800
 BuildRequires:  gdb
 %endif
-%if 0%{?mageia}
-BuildRequires:  sane-backends-iscan
-%if 0%{?mageia} >= 6
-BuildRequires:  libproxy-pacrunner
-%endif
-BuildRequires:  libuuid-devel
-%endif
 
 %description
 bwfmetaedit CLI (Command Line Interface)
@@ -46,7 +39,7 @@ BWF MetaEdit provides this service:
 Summary:	Supplies technical and tag information about a video or audio file (GUI)
 Group:		Productivity/Multimedia/Other
 
-%if 0%{?fedora_version} || 0%{?centos}
+%if 0%{?fedora_version} || 0%{?centos} >= 7
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5QuickControls2)
 BuildRequires:  pkgconfig(Qt5Svg)
@@ -55,11 +48,19 @@ BuildRequires:  pkgconfig(Qt5Svg)
 %if 0%{?mageia}
 %ifarch x86_64
 BuildRequires:  lib64qt5base5-devel
+BuildRequires:  lib64qt5quicktemplates2-devel
+BuildRequires:  lib64qt5quicktemplates2_5
 BuildRequires:  lib64qt5quickcontrols2-devel
+BuildRequires:  lib64qt5quickcontrols2_5
+BuildRequires:  lib64qt5quickwidgets-devel
 BuildRequires:  lib64qt5svg-devel
 %else
 BuildRequires:  libqt5base5-devel
+BuildRequires:  libqt5quicktemplates2-devel
+BuildRequires:  libqt5quicktemplates2_5
 BuildRequires:  libqt5quickcontrols2-devel
+BuildRequires:  libqt5quickcontrols2_5
+BuildRequires:  libqt5quickwidgets-devel
 BuildRequires:  libqt5svg-devel
 %endif
 %endif
