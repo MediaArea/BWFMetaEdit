@@ -367,6 +367,9 @@ void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Load()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Save()
 {
+    if (Central->currentIndex()==0)
+        List2Text();
+
     //User interaction
     QString FileNamesQ = QFileDialog::getSaveFileName(this, "", "", "");
     
