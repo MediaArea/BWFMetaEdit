@@ -59,7 +59,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         QTableWidgetItem* Item=itemAt(Event->pos());
         if (Item==NULL)
             return;
-        string FileName=FileName_Before+item(Item->row(), 0)->text().toUtf8().data();
+        string FileName=FileName_Before+item(Item->row(), FILENAME_COL)->text().toUtf8().data();
         string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
         ZtringList History; History.Write(Ztring().From_UTF8(C->History(FileName, Field)));
         string Date;
@@ -283,14 +283,14 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         return QTableWidget::edit(index, trigger, Event); //Normal editing
 
     //Init
-    string FileName=FileName_Before+item(index.row(), 0)->text().toUtf8().data();
+    string FileName=FileName_Before+item(index.row(), FILENAME_COL)->text().toUtf8().data();
     string Field=horizontalHeaderItem(index.column())->text().toUtf8().data();
 
     //Line is selected?
     if (trigger==CurrentChanged)
     {
         C->Menu_File_Close_File_FileName_Clear();
-        C->Menu_File_Close_File_FileName_Set(FileName_Before+item(index.row(), 0)->text().toUtf8().data());
+        C->Menu_File_Close_File_FileName_Set(FileName_Before+item(index.row(), FILENAME_COL)->text().toUtf8().data());
         Main->Menu_Update();
     }
 

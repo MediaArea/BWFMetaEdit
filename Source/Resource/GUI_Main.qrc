@@ -1,5 +1,7 @@
 <RCC>
  <qresource prefix="/">
+  <file>Image/Menu/File_Close.svg</file>
+  <file>Image/Menu/File_Close_Hovered.svg</file>
   <file>Image/Menu/File_Open_File.png</file>
   <file>Image/Menu/File_Open_Directory.png</file>
   <file>Image/Menu/File_Save.png</file>
