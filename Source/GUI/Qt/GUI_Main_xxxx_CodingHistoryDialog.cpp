@@ -283,7 +283,9 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
     Central->addTab(Table   , tr("EBU R98-1999"));
     Central->addTab(TextEdit, tr("Free text"));
     connect(Central, SIGNAL(currentChanged (int)), this, SLOT(OnCurrentChanged(int)));
-        
+
+    Table->setEditTriggers(QAbstractItemView::AllEditTriggers);
+
     QVBoxLayout* L=new QVBoxLayout();
     L->addWidget(Central);
     L->addWidget(Dialog);
