@@ -2,64 +2,67 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 
 Control {
+    id: "root"
+    readonly property color red: "#fc6744"
+    readonly property color green: "#90ee90"
+    readonly property color darkgreen: "#4ee44e"
     visible: true
     ListModel {
         id: sections
         ListElement {
             section: "MD5"
             fields: [
-                ListElement{ name: "MD5Stored"; label: "MD5Stored"; fieldLength: 370 },
-                ListElement{ name: "MD5Generated"; label: "MD5Generated"; fieldLength: 370 }
+                ListElement{ name: "MD5Stored"; label: "MD5Stored"; fieldLength: 370; fieldHeight: 32; multiline: false },
+                ListElement{ name: "MD5Generated"; label: "MD5Generated"; fieldLength: 370; fieldHeight: 32; multiline: false }
             ]
         }
         ListElement {
             section: "CORE"
             fields: [
-                ListElement{ name: "LoudnessValue"; label: "LoudnessValue"; fieldLength: 185 },
-                ListElement{ name: "LoudnessRange"; label: "LoudnessRange"; fieldLength: 185 },
-                ListElement{ name: "MaxTruePeakLevel"; label: "MaxTruePeakLevel"; fieldLength: 185 },
-                ListElement{ name: "MaxMomentaryLoudness"; label: "MaxMomentaryLoudness"; fieldLength: 185 },
-                ListElement{ name: "MaxShortTermLoudness"; label: "MaxShortTermLoudness"; fieldLength: 185 },
-                ListElement{ name: "CodingHistory"; label: "CodingHistory"; fieldLength: 185 }
+                ListElement{ name: "LoudnessValue"; label: "LoudnessValue"; fieldLength: 185; fieldHeight: 32; multiline: false },
+                ListElement{ name: "LoudnessRange"; label: "LoudnessRange"; fieldLength: 185; fieldHeight: 32; multiline: false },
+                ListElement{ name: "MaxTruePeakLevel"; label: "MaxTruePeakLevel"; fieldLength: 185; fieldHeight: 32; multiline: false },
+                ListElement{ name: "MaxMomentaryLoudness"; label: "MaxMomentaryLoudness"; fieldLength: 185; fieldHeight: 32; multiline: false },
+                ListElement{ name: "MaxShortTermLoudness"; label: "MaxShortTermLoudness"; fieldLength: 185; fieldHeight: 32; multiline: false },
+                ListElement{ name: "CodingHistory"; label: "CodingHistory"; fieldLength: 185; fieldHeight: 64; multiline: true }
             ]
         }
         ListElement {
             section: "BEXT"
             fields: [
-                ListElement{ name: "BextVersion"; label: "Version"; fieldLength: 185 },
-                ListElement{ name: "Description"; label: "Description"; fieldLength: 185 },
-                ListElement{ name: "Originator"; label: "Originator"; fieldLength: 185 },
-                ListElement{ name: "OriginatorReference"; label: "OriginatorReference"; fieldLength: 185 },
-                ListElement{ name: "OriginationDate"; label: "OriginationDate"; fieldLength: 185 },
-                ListElement{ name: "TimeReference"; label: "Time Reference"; fieldLength: 185 },
-                ListElement{ name: "OriginationTime"; label: "OriginationTime"; fieldLength: 185 },
-                ListElement{ name: "UMID"; label: "UMID"; fieldLength: 560 }
+                ListElement{ name: "BextVersion"; label: "Version"; fieldLength: 185; fieldHeight: 32; multiline: false },
+                ListElement{ name: "Description"; label: "Description"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "Originator"; label: "Originator"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "OriginatorReference"; label: "OriginatorReference"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "OriginationDate"; label: "OriginationDate"; fieldLength: 185; fieldHeight: 32; multiline: false },
+                ListElement{ name: "TimeReference"; label: "Time Reference"; fieldLength: 185; fieldHeight: 32; multiline: false },
+                ListElement{ name: "OriginationTime"; label: "OriginationTime"; fieldLength: 185; fieldHeight: 32; multiline: false },
+                ListElement{ name: "UMID"; label: "UMID"; fieldLength: 585; fieldHeight: 32; multiline: false }
             ]
         }
         ListElement {
             section: "INFO"
             fields: [
-                ListElement{ name: "IARL"; label: "Archival Location (IARL)"; fieldLength: 185 },
-                ListElement{ name: "IART"; label: "Artist (IART)"; fieldLength: 185 },
-                ListElement{ name: "ICMS"; label: "Commissioned (ICMS)"; fieldLength: 185 },
-                ListElement{ name: "ICMT"; label: "Comments (ICMT)"; fieldLength: 185 },
-                ListElement{ name: "ICOP"; label: "Copyright (ICOP)"; fieldLength: 185 },
-                ListElement{ name: "ICRD"; label: "Creation date (ICRD)"; fieldLength: 185 },
-                ListElement{ name: "IENG"; label: "Engineer (IENG)"; fieldLength: 185 },
-                ListElement{ name: "IGNR"; label: "Genre (IGNR)"; fieldLength: 185 },
-                ListElement{ name: "IKEY"; label: "Keywords (IKEY)"; fieldLength: 185 },
-                ListElement{ name: "IMED"; label: "Medium (IMED)"; fieldLength: 185 },
-                ListElement{ name: "INAM"; label: "Name (Title) (INAM)"; fieldLength: 185 },
-                ListElement{ name: "IPRD"; label: "Product (Album) (IPRD)"; fieldLength: 185 },
-                ListElement{ name: "ISBJ"; label: "Subject (ISBJ)"; fieldLength: 185 },
-                ListElement{ name: "ISFT"; label: "Software (ISFT)"; fieldLength: 185 },
-                ListElement{ name: "ISRC"; label: "Source (ISRC)"; fieldLength: 185 },
-                ListElement{ name: "ISRF"; label: "Source Form (ISRF)"; fieldLength: 185 },
-                ListElement{ name: "ITCH"; label: "Technician (ITCH)"; fieldLength: 185 }
+                ListElement{ name: "IARL"; label: "Archival Location (IARL)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "IART"; label: "Artist (IART)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "ICMS"; label: "Commissioned (ICMS)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "ICMT"; label: "Comments (ICMT)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "ICOP"; label: "Copyright (ICOP)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "ICRD"; label: "Creation date (ICRD)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "IENG"; label: "Engineer (IENG)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "IGNR"; label: "Genre (IGNR)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "IKEY"; label: "Keywords (IKEY)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "IMED"; label: "Medium (IMED)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "INAM"; label: "Name (Title) (INAM)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "IPRD"; label: "Product (Album) (IPRD)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "ISBJ"; label: "Subject (ISBJ)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "ISFT"; label: "Software (ISFT)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "ISRC"; label: "Source (ISRC)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "ISRF"; label: "Source Form (ISRF)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "ITCH"; label: "Technician (ITCH)"; fieldLength: 185; fieldHeight: 32; multiline: true }
             ]
         }
     }
-
     ScrollView {
         anchors.fill: parent
         width: parent.width
@@ -180,7 +183,7 @@ Control {
                             anchors.fill: parent
                             hoverEnabled: true
                             ToolTip {
-                                visible: parent.containsMouse
+                                visible: hovered
                                 timeout: 5000
                                 delay: 1000
                                 text: modified ? "Save" : "Saved"
@@ -253,7 +256,7 @@ Control {
                             Text {
                                 id: xmp
                                 text: "XMP"
-                                color: Model.visible(file, "XMP") ? (Model.modified(file, "XMP") ? "green" : "gray") : "lightgray"
+                                color: Model.visible(file, "XMP") ? (Model.modified(file, "XMP") ? root.green : "gray") : "lightgray"
                                 horizontalAlignment: Text.AlignHCenter
                                 MouseArea {
                                     anchors.fill: parent
@@ -262,17 +265,17 @@ Control {
                                     onClicked: {
                                         if(Model.visible(file, "XMP")) {
                                             Model.editField(file, "XMP")
-                                            parent.color = Model.modified(file, "XMP") ? "green" : "gray"
+                                            parent.color = Model.modified(file, "XMP") ? root.green : "gray"
                                         }
                                     }
                                     onEntered: {
                                         if(Model.visible(file, "XMP")) {
-                                            parent.color = Model.modified(file, "XMP") ? "darkgreen" : "dimgray"
+                                            parent.color = Model.modified(file, "XMP") ? root.darkgreen : "dimgray"
                                         }
                                     }
                                     onExited: {
                                         if(Model.visible(file, "XMP")) {
-                                            parent.color = Model.modified(file, "XMP") ? "green" : "gray"
+                                            parent.color = Model.modified(file, "XMP") ? root.green : "gray"
                                         }
                                     }
                                 }
@@ -280,7 +283,7 @@ Control {
                             Text {
                                 id: axml
                                 text: "aXML"
-                                color: Model.visible(file, "aXML") ? (Model.modified(file, "aXML") ? "green" : "gray") : "lightgray"
+                                color: Model.visible(file, "aXML") ? (Model.modified(file, "aXML") ? root.green : "gray") : "lightgray"
                                 horizontalAlignment: Text.AlignHCenter
                                 MouseArea {
                                     anchors.fill: parent
@@ -289,17 +292,17 @@ Control {
                                     onClicked: {
                                         if(Model.visible(file, "aXML")) {
                                             Model.editField(file, "aXML")
-                                            parent.color = Model.modified(file, "aXML") ? "green" : "gray"
+                                            parent.color = Model.modified(file, "aXML") ? root.green : "gray"
                                         }
                                     }
                                     onEntered: {
                                         if(Model.visible(file, "aXML")) {
-                                            parent.color = Model.modified(file, "aXML") ? "darkgreen" : "dimgray"
+                                            parent.color = Model.modified(file, "aXML") ? root.darkgreen : "dimgray"
                                         }
                                     }
                                     onExited: {
                                         if(Model.visible(file, "aXML")) {
-                                            parent.color = Model.modified(file, "aXML") ? "green" : "gray"
+                                            parent.color = Model.modified(file, "aXML") ? root.green : "gray"
                                         }
                                     }
                                 }
@@ -307,7 +310,7 @@ Control {
                             Text {
                                 id: ixml
                                 text: "iXML"
-                                color: Model.visible(file, "iXML") ? (Model.modified(file, "iXML") ? "green" : "gray") : "lightgray"
+                                color: Model.visible(file, "iXML") ? (Model.modified(file, "iXML") ? root.green : "gray") : "lightgray"
                                 horizontalAlignment: Text.AlignHCenter
                                 MouseArea {
                                     anchors.fill: parent
@@ -316,24 +319,24 @@ Control {
                                     onClicked: {
                                         if(Model.visible(file, "iXML")) {
                                             Model.editField(file, "iXML")
-                                            parent.color = Model.modified(file, "iXML") ? "green" : "gray"
+                                            parent.color = Model.modified(file, "iXML") ? root.green : "gray"
                                         }
                                     }
                                     onEntered: {
                                         if(Model.visible(file, "iXML")) {
-                                            parent.color = Model.modified(file, "iXML") ? "darkgreen" : "dimgray"
+                                            parent.color = Model.modified(file, "iXML") ? root.darkgreen : "dimgray"
                                         }
                                     }
                                     onExited: {
                                         if(Model.visible(file, "iXML")) {
-                                            parent.color = Model.modified(file, "iXML") ? "green" : "gray"
+                                            parent.color = Model.modified(file, "iXML") ? root.green : "gray"
                                         }
                                     }
                                 }
                             }
                         }
                         Text {
-                           text: "<h4><font color='red'>Errors:</font></h4>" + "<font color='red'>" + Model.errors(file) + "</font>"
+                           text: "<h4><font color='" + root.red + "'>Errors:</font></h4>" + "<font color='" + root.red + "'>" + Model.errors(file) + "</font>"
                            width: parent.width
                            visible: Model.errors(file).length > 0
                            wrapMode: Text.Wrap
@@ -372,7 +375,8 @@ Control {
                                         Row {
                                             visible: Model.visible(file, name)
                                             Label {
-                                                height: input.height
+                                                id: title
+                                                height: fieldHeight
                                                 width: 185
                                                 horizontalAlignment: Text.AlignRight
                                                 verticalAlignment: Text.AlignVCenter
@@ -384,40 +388,116 @@ Control {
                                                 font: input.font
                                                 text: "—".repeat(fieldLength)
                                             }*/
-                                            TextField {
-                                                id: input
+                                            ScrollView {
+                                                id: scollarea
+                                                height: fieldHeight
                                                 width: fieldLength
-                                                color: Model.modified(file, name) ? "green" : "black"
-                                                text: Model.value(file, name)
-                                                readOnly: true
-                                                selectByMouse: true
+                                                clip: true
+                                                ScrollBar.vertical.policy: contentHeight > height ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
+                                                ScrollBar.horizontal.policy: contentWidth > width ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
+                                                Component.onCompleted: {
+                                                ScrollBar.vertical.position = 0
+                                                ScrollBar.horizontal.position = 0
+                                                }
                                                 background: Rectangle {
-                                                    color: Model.readonly(file, name) ? "whitesmoke" : "transparent"
-                                                    border.color: parent.activeFocus ? "dodgerblue" : (Model.modified(file, name) ? "green" : "lightgray")
+                                                   color: Model.readonly(file, name) ? "whitesmoke" : "transparent"
+                                                    border.color: {
+                                                        if (parent.activeFocus) {
+                                                            return "dodgerblue"
+                                                        }
+                                                        else if (!Model.valid(file, name, input.text)) {
+                                                            return root.red
+                                                        }
+                                                        else if (Model.modified(file, name)) {
+                                                            return root.green
+                                                        }
+                                                        else {
+                                                            return "lightgray"
+                                                        }
+                                                    }
                                                     radius: 2
                                                 }
-                                                Keys.onPressed: {
-                                                    if (event.key === Qt.Key_Return) {
-                                                        Model.editField(file, name)
-                                                        event.accepted = true
+                                                TextArea {
+                                                    id: input
+                                                    color: "black"
+                                                    text: Model.value(file, name)
+                                                    readOnly: Model.readonly(file, name)
+                                                    selectByMouse: true
+                                                    onEditingFinished: {
+                                                        if (Model.valid(file, name, text)) {
+                                                            Model.setValue(file, name, text)
+                                                        }
                                                     }
-                                                }
-                                                onTextChanged: { cursorPosition = 0 }
-                                                onActiveFocusChanged: {
-                                                    if (activeFocus) {
-                                                        Model.setSelected(file)
+                                                    Keys.onPressed: {
+                                                        if (event.key == Qt.Key_Return && !multiline) {
+                                                            event.accepted = true;
+                                                        }
                                                     }
-                                                }
-                                                MouseArea {
+                                                    onActiveFocusChanged: {
+                                                        if (activeFocus) {
+                                                            Model.setSelected(file)
+                                                        }
+                                                    }
+                                                /*MouseArea {
                                                     anchors.fill: parent
-                                                    hoverEnabled: true
+                                                    //hoverEnabled: true
                                                     acceptedButtons: Qt.LeftButton
                                                     propagateComposedEvents: true
                                                     onClicked: {
                                                         input.forceActiveFocus()
+                                                        //Model.editField(file, name)
+                                                        mouse.accepted = false
+                                                    }
+                                                    onDoubleClicked: {
+                                                        input.forceActiveFocus()
                                                         Model.editField(file, name)
                                                         mouse.accepted = false
                                                     }
+                                                }*/
+                                                }
+                                            }
+                                            Image {
+                                                property var message: Model.valid(file, name, input.text) ? "" : Model.lastValidationError(file)
+                                                visible: !Model.valid(file, name, input.text)
+                                                height: 24
+                                                width: 24
+                                                source: "qrc:///Image/Menu/Error.svg"
+                                                anchors.verticalCenter: title.verticalCenter
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true
+                                                    ToolTip {
+                                                        visible: parent.containsMouse
+                                                        delay: 500
+                                                        text: parent.parent.message
+                                                        background: Rectangle {
+                                                            border.color: root.red
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            Button {
+                                                height: 24
+                                                width: 24
+                                                anchors.verticalCenter: title.verticalCenter
+                                                flat: true
+                                                hoverEnabled: true
+                                                onClicked: Model.editField(file, name)
+                                               Image {
+                                                   property var svg: ["data:image/svg+xml;utf8,",
+                                                       "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
+                                                         "<path d='M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/>",
+                                                         "<path d='M0 0h24v24H0z' fill='none'/>",
+                                                       "</svg>"].join('')
+                                                    source: svg.arg("gray")
+                                                    fillMode: Image.PreserveAspectFit
+                                                    anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
+                                                }
+                                                ToolTip {
+                                                    visible: parent.hovered
+                                                    delay: 1000
+                                                    timeout: 5000
+                                                    text: "Open in field editor"
                                                 }
                                             }
                                         }
