@@ -89,7 +89,7 @@ Core::Core()
     Canceled=false;
     SaveMode=false;
     #ifdef _WIN32
-        WCHAR Path[MAX_PATH];
+        TCHAR Path[MAX_PATH];
         BOOL Result=SHGetSpecialFolderPath(NULL, Path, CSIDL_APPDATA, true);
         ApplicationFolder=Ztring(Path)+__T("\\bwfmetaedit");
     #else //_WIN32
