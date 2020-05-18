@@ -624,7 +624,7 @@ string Core::Menu_File_Undo_ListModifiedFiles(size_t Pos)
         size_t File_Pos;
         for (ToDelete=0; ToDelete<List[1][0].size(); ToDelete++)
         {
-            char Char_File1=List[1][0][ToDelete];
+            Char Char_File1=List[1][0][ToDelete];
             for (File_Pos=2; File_Pos<List.size(); File_Pos++)
                 if (ToDelete>=List[File_Pos][0].size() || List[File_Pos][0][ToDelete]!=Char_File1)
                     break;
