@@ -21,6 +21,9 @@ class Core;
 class QEvent;
 class GUI_Main;
 using namespace std;
+
+#define FILENAME_COL 1
+
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -37,6 +40,8 @@ public:
 
 protected Q_SLOTS:
     void OnItemSelectionChanged ();
+    void OnSortIndicatorChanged (int Index, Qt::SortOrder Order);
+    void OnCloseClicked         ();
 
 protected:
     //Events

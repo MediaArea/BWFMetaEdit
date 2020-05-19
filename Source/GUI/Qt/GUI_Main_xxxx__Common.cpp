@@ -28,6 +28,8 @@
 #include <QStandardItemModel>
 #include <QDate>
 #include <QContextMenuEvent>
+#include <QHeaderView>
+#include <QPushButton>
 #include <QAction>
 #include <QMenu>
 using namespace ZenLib;
@@ -160,6 +162,7 @@ GUI_Main_xxxx__Common::GUI_Main_xxxx__Common(Core* _C, GUI_Main* parent)
     Updating=false;
 
     connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(OnItemSelectionChanged()));
+    connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)), this, SLOT(OnSortIndicatorChanged(int, Qt::SortOrder)));
 }
 
 //***************************************************************************
@@ -177,7 +180,7 @@ bool GUI_Main_xxxx__Common::event (QEvent* Event)
 
         C->Menu_File_Close_File_FileName_Clear();
         if (currentRow()!=-1)
-            C->Menu_File_Close_File_FileName_Set(FileName_Before+item(currentRow(), 0)->text().toUtf8().data());
+            C->Menu_File_Close_File_FileName_Set(FileName_Before+item(currentRow(), FILENAME_COL)->text().toUtf8().data());
 
         Event->accept();
         return true;
@@ -230,7 +233,7 @@ void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QMo
     Updating=true;
 
     //Retrieving data
-    string FileName=FileName_Before+item(topLeft.row(), 0)->text().toUtf8().data();
+    string FileName=FileName_Before+item(topLeft.row(), FILENAME_COL)->text().toUtf8().data();
     string Field=horizontalHeaderItem(topLeft.column())->text().toUtf8().data();
     string ModifiedContent=topLeft.model()->data(topLeft.model()->index(topLeft.row(), topLeft.column(), rootIndex())).toString().toUtf8().data();
     
@@ -257,8 +260,8 @@ void GUI_Main_xxxx__Common::Colors_Update ()
 {
     for (int Row=0; Row<rowCount(); Row++)
     {
-        string FileName=FileName_Before+item(Row, 0)->text().toUtf8().data();
-        for (int Column=0; Column<columnCount(); Column++)
+        string FileName=FileName_Before+item(Row, FILENAME_COL)->text().toUtf8().data();
+        for (int Column=FILENAME_COL; Column<columnCount(); Column++)
         {
             string Field=horizontalHeaderItem(Column)->text().toUtf8().data();
 
@@ -292,12 +295,12 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx__Common::SetEnabled (int Row, const QString &Field) 
 {
-    for (int Column=0; Column<columnCount(); Column++)
+    for (int Column=FILENAME_COL; Column<columnCount(); Column++)
     {
         QString Field_Current=horizontalHeaderItem(Column)->text();
         if (Field_Current==Field)
         {
-            string FileName=FileName_Before+item(Row, 0)->text().toUtf8().data();
+            string FileName=FileName_Before+item(Row, FILENAME_COL)->text().toUtf8().data();
             if (Fill_Enabled(FileName, "BextVersion", C->Get(FileName, "BextVersion")))
                 item(Row, Column)->setFlags(item(Row, Column)->flags()|Qt::ItemIsEnabled);
             else
@@ -312,12 +315,12 @@ void GUI_Main_xxxx__Common::SetEnabled (int Row, const QString &Field)
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx__Common::SetText (int Row, const QString &Field) 
 {
-    for (int Column=0; Column<columnCount(); Column++)
+    for (int Column=FILENAME_COL; Column<columnCount(); Column++)
     {
         QString Field_Current=horizontalHeaderItem(Column)->text();
         if (Field_Current==Field)
         {
-            string FileName=FileName_Before+item(Row, 0)->text().toUtf8().data();
+            string FileName=FileName_Before+item(Row, FILENAME_COL)->text().toUtf8().data();
             if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian))
                 item(Row, Column)->setText(Swap_MD5_Endianess(QString::fromUtf8(C->Get(FileName, Field.toUtf8().data()).c_str())));
             else
@@ -396,14 +399,20 @@ void GUI_Main_xxxx__Common::Fill ()
     for (size_t Option=0; Option<Main->Preferences->Group_Options_Count_Get(Fill_Group()); Option++)
         if (!Main->Menu_Fields_CheckBoxes[Fill_Group()*options::MaxCount+Option]->isChecked())
             ColumnMissing_Count++;
-    setColumnCount((int)(List[0].size()-ColumnMissing_Count));
+    setColumnCount((int)(FILENAME_COL+List[0].size()-ColumnMissing_Count));
     ColumnMissing_Count=0;
+
+    QTableWidgetItem* Item=new QTableWidgetItem("");
+    Item->setToolTip("Close");
+    setHorizontalHeaderItem(0, Item);
+    horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+
     for (size_t Data_Pos=0; Data_Pos<List[0].size(); Data_Pos++)
         if (Data_Pos==0 || Main->Menu_Fields_CheckBoxes[Fill_Group()*options::MaxCount+Data_Pos-1]->isChecked())
         {
             QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(List[0][Data_Pos].To_UTF8().c_str()));
-            setHorizontalHeaderItem((int)(Data_Pos-ColumnMissing_Count), Item);
-            horizontalHeaderItem((Data_Pos-ColumnMissing_Count))->setToolTip(Columns_ToolTip(List[0][Data_Pos].To_UTF8()));
+            setHorizontalHeaderItem((int)(FILENAME_COL+Data_Pos-ColumnMissing_Count), Item);
+            horizontalHeaderItem((FILENAME_COL+Data_Pos-ColumnMissing_Count))->setToolTip(Columns_ToolTip(List[0][Data_Pos].To_UTF8()));
         }
         else
             ColumnMissing_Count++;
@@ -411,6 +420,21 @@ void GUI_Main_xxxx__Common::Fill ()
     //Filling - VerticalHeader and content 
     for (size_t File_Pos=1; File_Pos<List.size(); File_Pos++)
     {
+        //Add close button
+        QIcon CloseIcon(":/Image/Menu/File_Close.svg");
+        CloseIcon.addFile(":/Image/Menu/File_Close_Hovered.svg",  QSize(), QIcon::Active);
+
+        QTableWidgetItem* Item=new QTableWidgetItem(""); //Create QTableWidgetItem to edit cell flags
+        Item->setToolTip("Close this file");
+        Item->setFlags(Qt::ItemIsEnabled);
+        setItem(File_Pos-1, 0, Item);
+
+        QPushButton* Close = new QPushButton(CloseIcon, "");
+        Close->setFlat(true);
+        setCellWidget(File_Pos-1, 0, Close);
+        connect(Close, SIGNAL(clicked()), this, SLOT(OnCloseClicked()));
+
+        //Fill fields
         if (List[File_Pos].empty())
             List[File_Pos].resize(1); //Empty filename, we need to manualy add it.
         ColumnMissing_Count=0;
@@ -422,7 +446,7 @@ void GUI_Main_xxxx__Common::Fill ()
                 {
                     Ztring Value=List[File_Pos][Data_Pos];
 
-                    QString Field=horizontalHeaderItem(Data_Pos-ColumnMissing_Count)->text();
+                    QString Field=horizontalHeaderItem(FILENAME_COL+Data_Pos-ColumnMissing_Count)->text();
                     if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian) && !Value.empty())
                         Value=Ztring().From_UTF8(Swap_MD5_Endianess(QString::fromUtf8(Value.To_UTF8().c_str())).toStdString());
 
@@ -434,7 +458,7 @@ void GUI_Main_xxxx__Common::Fill ()
                 if (!C->IsValid_Get(FileName_Before+List[File_Pos][0].To_UTF8())
                  || (Data_Pos<List[File_Pos].size() && !Fill_Enabled(FileName_Before+List[File_Pos][0].To_UTF8(), List[0][Data_Pos].To_UTF8(), List[File_Pos][Data_Pos].To_UTF8())))
                     Item->setFlags(Item->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
-                setItem((int)File_Pos-1, (int)(Data_Pos-ColumnMissing_Count), Item);
+                setItem((int)File_Pos-1, (int)(FILENAME_COL+Data_Pos-ColumnMissing_Count), Item);
             }
             else
                 ColumnMissing_Count++;
@@ -443,6 +467,7 @@ void GUI_Main_xxxx__Common::Fill ()
     //Configuring
     Colors_Update();
     resizeColumnsToContents();
+    setColumnWidth(0, rowHeight(0));
     setSortingEnabled(true);
 
     //Preparing
@@ -461,7 +486,35 @@ void GUI_Main_xxxx__Common::OnItemSelectionChanged ()
     QList<QTableWidgetSelectionRange> List=selectedRanges();
     for (int List_Pos=0; List_Pos<List.size(); List_Pos++)
         for (int Pos=List[List_Pos].topRow(); Pos<=List[List_Pos].bottomRow(); Pos++)
-            C->Menu_File_Close_File_FileName_Set(FileName_Before+item(Pos, 0)->text().toUtf8().data());
+            C->Menu_File_Close_File_FileName_Set(FileName_Before+item(Pos, FILENAME_COL)->text().toUtf8().data());
 
     Main->Menu_Update();
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main_xxxx__Common::OnSortIndicatorChanged(int Index, Qt::SortOrder Order)
+{
+    if (Index==0)
+        horizontalHeader()->setSortIndicator(-1, Order);
+    else
+        sortItems(Index, Order);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main_xxxx__Common::OnCloseClicked ()
+{
+    QObject* Sender=sender();
+    if (!Sender)
+        return;
+
+    for (int Row=0; Row<rowCount(); Row++)
+    {
+        if (cellWidget(Row, 0)==Sender)
+        {
+            C->Menu_File_Close_File_FileName_Clear();
+            C->Menu_File_Close_File_FileName_Set(FileName_Before+item(Row, FILENAME_COL)->text().toUtf8().data());
+            Main->OnMenu_File_Close_Files();
+            break;
+        }
+    }
 }
