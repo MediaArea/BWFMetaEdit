@@ -63,6 +63,7 @@ Control {
     ScrollView {
         anchors.fill: parent
         width: parent.width
+        ScrollBar.vertical.policy: contentHeight > height ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
         ListView {
             // With Qt5.9 (only on macOS?) list do not fill width without this element
             header: Rectangle {
