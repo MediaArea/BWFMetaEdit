@@ -30,7 +30,11 @@ void Riff_WAVE_data::Read_Internal ()
     //Real size
     if (Global->ds64 && Global->ds64->dataSize!=(int64u)-1)
         Chunk.Content.Size=Global->ds64->dataSize;
-    
+
+    //Integrity
+    if (Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size>Global->In.Size_Get())
+        throw exception_valid("truncated");
+
     //Filling
     Global->data=new Riff_Base::global::chunk_data;
     Global->data->File_Offset=Global->In.Position_Get();

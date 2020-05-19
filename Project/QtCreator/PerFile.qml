@@ -243,7 +243,6 @@ Control {
                         spacing: 10
                         Row {
                             width: parent.width
-                            visible: Model.valid(file)
                             spacing: 5
                             Text {
                                 font.pointSize: 10
@@ -356,8 +355,6 @@ Control {
                             Column {
                                 width: parent.width
                                 visible: {
-                                    if (!Model.valid(file))
-                                        return false
                                     for (var i = 0; i < fields.count; i++) {
                                         if (Model.visible(file, fields.get(i).name))
                                             return true
