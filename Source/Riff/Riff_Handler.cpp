@@ -860,46 +860,48 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             Message="must not be empty (FADGI recommandations)";
         else if (Rules.OriginatorReference_Rec)
         {
-                 if (Value[0] < 'A' || Value[0] > 'Z')  //Country code
+            if (Value.size()>1 && (Value[0] < 'A' || Value[0] > 'Z'))  //Country code
                 Message="1st character (Country code) must be between 'A' and 'Z' (BWF OriginatorReference recommandations)";
-            else if (Value[1] < 'A' || Value[1] > 'Z')  //Country code
+            else if (Value.size()>1 && (Value[1] < 'A' || Value[1] > 'Z'))  //Country code
                 Message="2nd character (Country code) must be between 'A' and 'Z' (BWF OriginatorReference recommandations)";
-            else if (Value[2] < '0' || (Value[2] > '9' && Value[2] < 'A') || Value[2] > 'Z')  //Organisation code
+            else if (Value.size()>2 && (Value[2] < '0' || (Value[2] > '9' && Value[2] < 'A') || Value[2] > 'Z'))  //Organisation code
                 Message="3rd character (Organisation code) must be between '0' and '9' or 'A' and 'Z' (BWF OriginatorReference recommandations)";
-            else if (Value[3] < '0' || (Value[3] > '9' && Value[3] < 'A') || Value[3] > 'Z')  //Organisation code
+            else if (Value.size()>3 && (Value[3] < '0' || (Value[3] > '9' && Value[3] < 'A') || Value[3] > 'Z'))  //Organisation code
                 Message="4th character (Organisation code) must be between '0' and '9' or 'A' and 'Z' (BWF OriginatorReference recommandations)";
-            else if (Value[4] < '0' || (Value[4] > '9' && Value[4] < 'A') || Value[4] > 'Z')  //Organisation code
+            else if (Value.size()>4 && (Value[4] < '0' || (Value[4] > '9' && Value[4] < 'A') || Value[4] > 'Z'))  //Organisation code
                 Message="5th character (Organisation code) must be between '0' and '9' or 'A' and 'Z' (BWF OriginatorReference recommandations)";
-            else if (Value[17]< '0' || Value[17]> '2')  //OriginationTime
+            else if (Value.size()>17 && (Value[17]< '0' || Value[17]> '2'))  //OriginationTime
                 Message="18th and 19th character (OriginationTime) must be between '00' and '23' (BWF OriginatorReference recommandations)";
-            else if (Value[18]< '0' || (Value[18]> (Value[16]=='2'?'3':'9'))) //Only 00-23 //OriginationTime
+            else if (Value.size()>18 && (Value[18]< '0' || (Value[18]> (Value[16]=='2'?'3':'9')))) //Only 00-23 //OriginationTime
                 Message="18th and 19th character (OriginationTime) must be between '00' and '23' (BWF OriginatorReference recommandations)";
-            else if (Value[19]< '0' || Value[19]> '5')  //OriginationTime 
+            else if (Value.size()>19 && (Value[19]< '0' || Value[19]> '5'))  //OriginationTime
                 Message="20th and 21st character (OriginationTime) must be between '00' and '59' (BWF OriginatorReference recommandations)";
-            else if (Value[20]< '0' || Value[20]> '9')  //OriginationTime 
+            else if (Value.size()>20 && (Value[20]< '0' || Value[20]> '9'))  //OriginationTime
                 Message="20th and 21st character (OriginationTime) must be between '00' and '59' (BWF OriginatorReference recommandations)";
-            else if (Value[21]< '0' || Value[21]> '9')  //OriginationTime 
+            else if (Value.size()>21 && (Value[21]< '0' || Value[21]> '9'))  //OriginationTime
                 Message="22nd and 23rd character (OriginationTime) must be between '00' and '59' (BWF OriginatorReference recommandations)";
-            else if (Value[22]< '0' || Value[22]> '9')  //OriginationTime 
+            else if (Value.size()>22 && (Value[22]< '0' || Value[22]> '9'))  //OriginationTime
                 Message="22nd and 23rd character (OriginationTime) must be between '00' and '59' (BWF OriginatorReference recommandations)";
-            else if (Value[23]< '0' || Value[23]> '9')  //Random Number 
+            else if (Value.size()>23 && (Value[23]< '0' || Value[23]> '9'))  //Random Number
                 Message="24th character (Random Number) must be between '0' and '9' (BWF OriginatorReference recommandations)";
-            else if (Value[24]< '0' || Value[24]> '9')  //Random Number 
+            else if (Value.size()>24 && (Value[24]< '0' || Value[24]> '9'))  //Random Number
                 Message="25th character (Random Number) must be between '0' and '9' (BWF OriginatorReference recommandations)";
-            else if (Value[25]< '0' || Value[25]> '9')  //Random Number 
+            else if (Value.size()>25 && (Value[25]< '0' || Value[25]> '9'))  //Random Number
                 Message="26th character (Random Number) must be between '0' and '9' (BWF OriginatorReference recommandations)";
-            else if (Value[26]< '0' || Value[26]> '9')  //Random Number 
+            else if (Value.size()>26 && (Value[26]< '0' || Value[26]> '9'))  //Random Number
                 Message="27th character (Random Number) must be between '0' and '9' (BWF OriginatorReference recommandations)";
-            else if (Value[27]< '0' || Value[27]> '9')  //Random Number 
+            else if (Value.size()>27 && (Value[27]< '0' || Value[27]> '9'))  //Random Number
                 Message="28th character (Random Number) must be between '0' and '9' (BWF OriginatorReference recommandations)";
-            else if (Value[28]< '0' || Value[28]> '9')  //Random Number 
+            else if (Value.size()>28 && (Value[28]< '0' || Value[28]> '9'))  //Random Number
                 Message="29th character (Random Number) must be between '0' and '9' (BWF OriginatorReference recommandations)";
-            else if (Value[29]< '0' || Value[29]> '9')  //Random Number 
+            else if (Value.size()>29 && (Value[29]< '0' || Value[29]> '9'))  //Random Number
                 Message="30th character (Random Number) must be between '0' and '9' (BWF OriginatorReference recommandations)";
-            else if (Value[30]< '0' || Value[30]> '9')  //Random Number 
+            else if (Value.size()>30 && (Value[30]< '0' || Value[30]> '9'))  //Random Number
                 Message="31st character (Random Number) must be between '0' and '9' (BWF OriginatorReference recommandations)";
-            else if (Value[31]< '0' || Value[31]> '9')  //Random Number 
+            else if (Value.size()>31 && (Value[31]< '0' || Value[31]> '9'))  //Random Number
                 Message="32nd character (Random Number) must be between '0' and '9' (BWF OriginatorReference recommandations)";
+            else if (Value.size()<32)
+                Message="length must be 32 characters long (BWF OriginatorReference recommandations)";
         }
 
         //If error
