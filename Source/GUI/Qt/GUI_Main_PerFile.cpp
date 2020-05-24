@@ -198,6 +198,12 @@ Q_INVOKABLE QString PerFileModel::lastValidationError(const QString& FileName) c
 }
 
 //---------------------------------------------------------------------------
+Q_INVOKABLE QString PerFileModel::lastValidationWarning(const QString& FileName) const
+{
+    return QString::fromUtf8(C->IsValid_LastWarning(FileName.toStdString()).c_str());
+}
+
+//---------------------------------------------------------------------------
 Q_INVOKABLE QString PerFileModel::errors(const QString& FileName) const
 {
     return Get_Technical_Field(FileName, "Errors");

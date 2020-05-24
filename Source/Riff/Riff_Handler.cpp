@@ -737,6 +737,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
 {
     //Reformating
     IsValid_Errors.str(string());
+    IsValid_Warnings.str(string());
     string Field=Field_Get(Field_);
     Ztring Value__=Ztring().From_UTF8(Value_);
     Value__.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
@@ -752,6 +753,30 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         Rules.Tech3285_Req=true;
     if (Rules.INFO_Rec)
         Rules.INFO_Req=true;
+
+    //Encoding (warning only)
+    if (Field!="filename" && Field!="errors" && Field!="information")
+    {
+        bool IsASCII=true;
+        for (size_t i=0; i<Value.size(); i++)
+        {
+            if (((unsigned char)Value[i]) >= 0x80)
+            {
+                IsASCII = false;
+                break;
+            }
+        }
+        if (!IsASCII)
+        {
+            IsValid_Warnings<<"Warning: due to the presence of non ASCII characters, ";
+            if (Field=="description" || Field=="originator" || Field=="originatorreference")
+                IsValid_Warnings<<"which are forbidden by EBU Text 3285 specifications, ";
+            else
+                IsValid_Warnings<<"whose the encoding in files is not specified in WAV documents, ";
+            IsValid_Warnings<<"there is a risk of interoperability issues with other tools (including BWF MetaEdit on other platforms) "
+                            <<"as the content is converted with local codepage";
+        }
+    }
 
     //FileName
     if (Field=="filename")
