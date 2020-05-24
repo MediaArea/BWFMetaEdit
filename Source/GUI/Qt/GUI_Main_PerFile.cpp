@@ -91,7 +91,7 @@ int PerFileModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
 
-    return FileNames.count();
+    return Count;
 }
 
 //---------------------------------------------------------------------------
@@ -111,7 +111,7 @@ QHash<int, QByteArray> PerFileModel::roleNames() const
 QVariant PerFileModel::data(const QModelIndex &index, int role) const
 {
     QVariant toReturn = QVariant();
-    if (index.row()<0 || index.row()>=FileNames.count())
+    if (index.row()<0 || index.row()>=Count)
         return toReturn;
 
 
@@ -142,7 +142,7 @@ bool PerFileModel::setData(const QModelIndex &index, const QVariant &value, int 
 {
     bool toReturn=false;
 
-    if (index.row()<0 || index.row()>=FileNames.count())
+    if (index.row()<0 || index.row()>=Count)
         return toReturn;
 
     switch (role)
@@ -361,9 +361,15 @@ void PerFileModel::Fill()
 
     beginResetModel();
 
+    TechnicalData.clear();
     FileNames.clear();
     Expanded.clear();
     EditMode.clear();
+    Count=0;
+
+    TechnicalData.Separator_Set(0, EOL);
+    TechnicalData.Separator_Set(1, __T(","));
+    TechnicalData.Write(Ztring().From_UTF8(C->Technical_Get().c_str()));
 
     if (List.empty() || List[0].empty())
     {
@@ -386,6 +392,8 @@ void PerFileModel::Fill()
     if (FileNames.size()==1)
          C->Menu_File_Close_File_FileName_Set(FileNames[0].toStdString());
 
+    Count=FileNames.size()<FETCH_COUNT?FileNames.size():FETCH_COUNT;
+
     Main->Menu_Update();
 
     endResetModel();
@@ -397,21 +405,16 @@ QString PerFileModel::Get_Technical_Field(const QString FileName, const QString 
     QString toReturn;
 
     //Showing
-    ZtringListList List;
-    List.Separator_Set(0, EOL);
-    List.Separator_Set(1, __T(","));
-    List.Write(Ztring().From_UTF8(C->Technical_Get().c_str()));
-
-    if (List.empty() || List[0].empty())
+    if (TechnicalData.empty() || TechnicalData[0].empty())
         return toReturn;
 
-    size_t FileIndex=List.Find(Ztring().From_UTF8(FileName.toStdString()), 0, 1);
-    if (FileIndex>List.size())
+    size_t FileIndex=TechnicalData.Find(Ztring().From_UTF8(FileName.toStdString()), 0, 1);
+    if (FileIndex>TechnicalData.size())
         return toReturn;
 
-    size_t FieldIndex=List[0].Find(Ztring().From_UTF8(FieldName.toStdString()));
-    if (FieldIndex<List[FileIndex].size())
-        toReturn+=QString().fromUtf8(List[FileIndex][FieldIndex].To_UTF8().c_str());
+    size_t FieldIndex=TechnicalData[0].Find(Ztring().From_UTF8(FieldName.toStdString()));
+    if (FieldIndex<TechnicalData[FileIndex].size())
+        toReturn+=QString().fromUtf8(TechnicalData[FileIndex][FieldIndex].To_UTF8().c_str());
 
     return toReturn;
 }
@@ -482,6 +485,28 @@ QString PerFileModel::Technical_Info(const QString FileName) const
     }
 
     return toReturn;
+}
+
+//---------------------------------------------------------------------------
+bool PerFileModel::canFetchMore(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+
+    return (Count<FileNames.size());
+}
+
+//---------------------------------------------------------------------------
+void PerFileModel::fetchMore(const QModelIndex &parent)
+{
+    Q_UNUSED(parent);
+
+    int ToFetch=qMin(FETCH_COUNT, FileNames.size()-Count);
+    if (ToFetch<=0)
+        return;
+
+    beginInsertRows(QModelIndex(), Count, Count+ToFetch-1);
+    Count+=ToFetch;
+    endInsertRows();
 }
 
 //***************************************************************************
