@@ -296,7 +296,7 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
     else
     {
         if (C->IsModified(FileName, Field))
-            Item->setBackgroundColor(Qt::green);
+            Item->setBackgroundColor(QColor(144, 238, 144)); //Green
         else
             Item->setBackgroundColor(Qt::white);
 
