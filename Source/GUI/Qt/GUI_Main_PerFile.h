@@ -15,6 +15,7 @@
 #include <QQuickWidget>
 #include <QAbstractListModel>
 #include <QQmlContext>
+#include <QValidator>
 #include <string>
 class QEvent;
 class GUI_Main;
@@ -55,10 +56,13 @@ public:
     Q_INVOKABLE void saveFile(const QString& FileName);
     Q_INVOKABLE void closeFile(const QString& FileName);
     Q_INVOKABLE bool valid(const QString& FileName) const;
+    Q_INVOKABLE bool valid(const QString& FileName, const QString& Field, const QString& Value) const;
+    Q_INVOKABLE QString lastValidationError(const QString& FileName) const;
     Q_INVOKABLE QString errors(const QString& FileName) const;
     Q_INVOKABLE QString informations(const QString& FileName) const;
     Q_INVOKABLE QString unsupportedChunks(const QString& FileName) const;
     Q_INVOKABLE QString value(const QString& FileName, const QString& Field) const;
+    Q_INVOKABLE void setValue(const QString& FileName, const QString& Field, const QString& Value);
     Q_INVOKABLE bool modified(const QString& FileName, const QString& Field) const;
     Q_INVOKABLE bool readonly(const QString& FileName, const QString& Field) const;
     Q_INVOKABLE bool visible(const QString& FileName, const QString& Field) const;

@@ -186,6 +186,18 @@ Q_INVOKABLE bool PerFileModel::valid(const QString& FileName) const
 }
 
 //---------------------------------------------------------------------------
+Q_INVOKABLE bool PerFileModel::valid(const QString& FileName, const QString& Field, const QString& Value) const
+{
+    return C->IsValid(FileName.toStdString(), Field.toStdString(), Value.toStdString(), true);
+}
+
+//---------------------------------------------------------------------------
+Q_INVOKABLE QString PerFileModel::lastValidationError(const QString& FileName) const
+{
+    return QString::fromUtf8(C->IsValid_LastError(FileName.toStdString()).c_str());
+}
+
+//---------------------------------------------------------------------------
 Q_INVOKABLE QString PerFileModel::errors(const QString& FileName) const
 {
     return Get_Technical_Field(FileName, "Errors");
@@ -216,6 +228,16 @@ Q_INVOKABLE QString PerFileModel::value(const QString& FileName, const QString& 
 }
 
 //---------------------------------------------------------------------------
+Q_INVOKABLE void PerFileModel::setValue(const QString& FileName, const QString& Field, const QString& Value)
+{
+    C->Set(FileName.toStdString(), Field.toStdString(), Value.toStdString());
+
+    Q_EMIT dataChanged(index(FileNames.indexOf(FileName)), index(FileNames.indexOf(FileName)));
+
+    Main->Menu_Update();
+}
+
+//---------------------------------------------------------------------------
 Q_INVOKABLE bool PerFileModel::visible(const QString& FileName, const QString& Field) const {
     bool toReturn=true;
 
@@ -224,7 +246,9 @@ Q_INVOKABLE bool PerFileModel::visible(const QString& FileName, const QString& F
    // if (Field=="MD5Stored" && (!C->Get(FileName.toStdString(), Field.toStdString()).empty() &&))
    //     toReturn=true;
 
-    if (!EditMode.value(FileName, false) && C->Get(FileName.toStdString(), Field.toStdString()).empty())
+    if (!EditMode.value(FileName, false) &&
+        C->Get(FileName.toStdString(), Field.toStdString()).empty() &&
+        C->IsValid(FileName.toStdString(), Field.toStdString(), "", true))
         toReturn=false;
 
     return toReturn;
@@ -333,7 +357,6 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
     }
 
     Q_EMIT dataChanged(index(FileNames.indexOf(FileName)), index(FileNames.indexOf(FileName)));
-
 
     Main->Menu_Update();
 }
