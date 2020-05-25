@@ -17,15 +17,21 @@
 #include <QQmlContext>
 #include <QValidator>
 #include <string>
+
+#include "ZenLib/ZtringListList.h"
+
 class QEvent;
 class GUI_Main;
 class Core;
 using namespace std;
+using namespace ZenLib;
 //---------------------------------------------------------------------------
 
 //***************************************************************************
 // PerFileModel
 //***************************************************************************
+
+#define FETCH_COUNT 10
 
 //---------------------------------------------------------------------------
 class PerFileModel : public QAbstractListModel
@@ -43,7 +49,7 @@ public:
     };
 
     //Constructor/Destructor
-    PerFileModel(GUI_Main* Main, Core* _C, QObject *parent=0) : Main(Main), C(_C), QAbstractListModel(parent) {};
+    PerFileModel(GUI_Main* Main, Core* _C, QObject *parent=0) : Main(Main), C(_C), Count(0), QAbstractListModel(parent) {};
     ~PerFileModel() {};
 
     int rowCount(const QModelIndex &parent) const;
@@ -71,13 +77,19 @@ public:
 
     void Fill();
 
+protected:
+    bool canFetchMore(const QModelIndex &parent) const;
+    void fetchMore(const QModelIndex &parent);
+
 private:
     QString Get_Technical_Field(const QString FileName, const QString FieldName) const;
     QString Technical_Info(const QString FileName) const;
 
     Core* C;
     GUI_Main* Main;
+    int Count;
     QStringList FileNames;
+    ZtringListList TechnicalData;
     QHash<QString, bool> Expanded;
     QHash<QString, bool> EditMode;
 };
