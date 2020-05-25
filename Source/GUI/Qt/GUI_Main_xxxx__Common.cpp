@@ -224,6 +224,20 @@ bool GUI_Main_xxxx__Common::event (QEvent* Event)
     return QTableWidget::event(Event);
 }
 
+//***************************************************************************
+// Override
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+QStyleOptionViewItem GUI_Main_xxxx__Common::viewOptions() const
+{
+    QStyleOptionViewItem Options=QTableWidget::viewOptions();
+    Options.decorationAlignment=Qt::AlignCenter;
+    Options.decorationPosition=QStyleOptionViewItem::Right;
+
+    return Options;
+}
+
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) 
 {
@@ -275,20 +289,27 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
 {
     if (!C->IsValid(FileName, Field, C->Get(FileName, Field)))
     {
-			Item->setToolTip(C->IsValid_LastError(FileName).c_str());
-			Item->setBackgroundColor(Qt::red);
-	}
-    else if (C->IsModified(FileName, Field))
-    {
-        if (Item->backgroundColor()==Qt::red)
-            Item->setToolTip(QString());
-        Item->setBackgroundColor(Qt::green);
+        Item->setToolTip(QString("<qt>%1</qt>").arg(QString(C->IsValid_LastError(FileName).c_str()).toHtmlEscaped()));
+        Item->setIcon(QIcon(":/Image/Menu/Error.svg"));
+        Item->setBackgroundColor(Qt::white);
     }
     else
     {
-        if (Item->backgroundColor()==Qt::red)
+        if (C->IsModified(FileName, Field))
+            Item->setBackgroundColor(Qt::green);
+        else
+            Item->setBackgroundColor(Qt::white);
+
+        if(C->IsValid_LastWarning(FileName.c_str()).empty())
+        {
             Item->setToolTip(QString());
-        Item->setBackgroundColor(Qt::white);
+            Item->setIcon(QIcon());
+        }
+        else
+        {
+            Item->setToolTip(QString("<qt>%1</qt>").arg(QString(C->IsValid_LastWarning(FileName).c_str()).toHtmlEscaped()));
+            Item->setIcon(QIcon(":/Image/Menu/Warning.svg"));
+        }
     }
 }
 

@@ -1175,6 +1175,19 @@ string Core::IsValid_LastError (const string &FileName)
 }
 
 //---------------------------------------------------------------------------
+string Core::IsValid_LastWarning (const string &FileName)
+{
+    handlers::iterator Handler=Handlers.find(FileName);
+    if (Handler==Handlers.end())
+        return string(); //file is not registred
+
+    if (Handler->second.Riff)
+        return Handler->second.Riff->IsValid_LastWarning();
+
+    return string();
+}
+
+//---------------------------------------------------------------------------
 string Core::Get (const string &FileName, const string &Field)
 {
     handlers::iterator Handler=Handlers.find(FileName);

@@ -64,6 +64,7 @@ public:
     Q_INVOKABLE bool valid(const QString& FileName) const;
     Q_INVOKABLE bool valid(const QString& FileName, const QString& Field, const QString& Value) const;
     Q_INVOKABLE QString lastValidationError(const QString& FileName) const;
+    Q_INVOKABLE QString lastValidationWarning(const QString& FileName) const;
     Q_INVOKABLE QString errors(const QString& FileName) const;
     Q_INVOKABLE QString informations(const QString& FileName) const;
     Q_INVOKABLE QString unsupportedChunks(const QString& FileName) const;

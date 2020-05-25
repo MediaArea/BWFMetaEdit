@@ -77,6 +77,7 @@ public:
     bool            IsOriginal          (const string &Field, const string &Value);
     bool            IsValid             (const string &Field, const string &Value, rules Rules, bool IgnoreCoherency=false);
     string          IsValid_LastError   () {CriticalSectionLocker(this->CS); return IsValid_Errors.str();}
+    string          IsValid_LastWarning () {CriticalSectionLocker(this->CS); return IsValid_Warnings.str();}
     bool            IsModified          (const string &Field);
     
     //---------------------------------------------------------------------------
@@ -119,6 +120,7 @@ public:
     ostringstream   PerFile_Error;
     ostringstream   PerFile_Information;
     ostringstream   IsValid_Errors;
+    ostringstream   IsValid_Warnings;
 
 private:
     //---------------------------------------------------------------------------

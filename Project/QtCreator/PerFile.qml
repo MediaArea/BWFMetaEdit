@@ -457,11 +457,13 @@ Control {
                                                 }
                                             }
                                             Image {
-                                                property var message: Model.valid(file, name, input.text) ? "" : Model.lastValidationError(file)
-                                                visible: !Model.valid(file, name, input.text)
+                                                id: "status"
+                                                property var valid: Model.valid(file, name, input.text)
+                                                property var message: valid ? Model.lastValidationWarning(file) : Model.lastValidationError(file)
+                                                visible: message.length > 0
                                                 height: 24
                                                 width: 24
-                                                source: "qrc:///Image/Menu/Error.svg"
+                                                source: valid ? "qrc:///Image/Menu/Warning.svg" : "qrc:///Image/Menu/Error.svg"
                                                 anchors.verticalCenter: title.verticalCenter
                                                 MouseArea {
                                                     anchors.fill: parent
@@ -469,9 +471,10 @@ Control {
                                                     ToolTip {
                                                         visible: parent.containsMouse
                                                         delay: 500
-                                                        text: parent.parent.message
+                                                        // Basic wrapping of text since QML ToolTip Doesn't have option for that
+                                                        text: status.message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
                                                         background: Rectangle {
-                                                            border.color: root.red
+                                                            border.color: status.valid ? "orange" : root.red
                                                         }
                                                     }
                                                 }

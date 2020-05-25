@@ -48,6 +48,9 @@ protected:
     bool                    event               (QEvent *Event); 
     void                    dataChanged         (const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> & roles = QVector<int> ());
 
+    //Override
+    QStyleOptionViewItem    viewOptions() const;
+
     //Helpers
     void                    Colors_Update       ();
     void                    Colors_Update       (QTableWidgetItem* Item, const string &FileName, const string &Field);

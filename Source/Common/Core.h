@@ -73,6 +73,7 @@ public:
     string                              History                         (const string &FileName, const string &Field);
     bool                                IsValid                         (const string &FileName, const string &Field, const string &Value, bool IgnoreCoherency=false);
     string                              IsValid_LastError               (const string &FileName);
+    string                              IsValid_LastWarning             (const string &FileName);
     bool                                IsModified                      (const string &FileName, const string &Field);
     string                              FileDate_Get                    (const string &FileName);
     bool                                IsValid_Get                     (const string &FileName);
