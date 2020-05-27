@@ -4,6 +4,12 @@ Notes:
 - Deleted
 x Correction
 
+Version 20.05, 2020-05-28
+-------------
+x Correct variable name spelling (Issue #120)
+x Allow values larger than 32 bits in TimeReference input SpinBox (Issue #70)
++ Transition to year.month-based version numbering
+
 Version 1.3.8, 2019-04-26
 -------------
 

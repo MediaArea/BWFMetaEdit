@@ -4,6 +4,27 @@ Notes:
 - Deleted
 x Correction
 
+Version 20.05, 2020-05-28
+-------------
++ "Fill all open files with this value" option (Issue #110)
++ Toggle md5 value endianness (Issue #78)
++ Show tooltips only over column headers (Issue #99)
++ Incorporate logo (Issue #76)
++ Add single file editor view (Issue #79, #127, #106)
+x Fix compilation issues with non-Unicode on Windows (Issue #135)
+x Improve ASCII support (Issue #29, #63)
+x Add line breaks in FileName field descriptions (Issue #121)
+x Fix duplication of CodingHistory headers (Issue #103)
+x Stop setting BextVersion field twice (Issue #98)
+x Fix occasional crash when saving large number of files (Issue #71)
+x Improve file drag and drop events (Issue #83)
+x Improve CodingHistory dialog (Issue #122, #124)
++ Add icon to close files (Issue #100)
++ Show available info for invalid files (Issue #93)
++ Add warnings and use icons for errors/warnings (Issue #101)
++ Soften color palette (#126)
++ Transition to year.month-based version numbering
+
 Version 1.3.8, 2019-04-26
 -------------
 + Fix crash when saving on close
