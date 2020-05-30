@@ -642,8 +642,12 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
         return Set_Internal("bextversion", Value, Rules);
 
     //Setting it
-    bool ToReturn=Set(Field, Value, *chunk_strings_Get(Field), Chunk_Name2_Get(Field), Chunk_Name3_Get(Field)); 
-    
+    Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
+    if (!Chunk_Strings)
+        return false;
+
+    bool ToReturn=Set(Field, Value, *Chunk_Strings, Chunk_Name2_Get(Field), Chunk_Name3_Get(Field));
+
     //Special cases - After
     if (ToReturn && Field=="originator")
     {
@@ -677,14 +681,24 @@ bool Riff_Handler::Remove(const string &Field)
         for (size_t Fields_Pos=Fields_Bext; Fields_Pos<=Fields_Info; Fields_Pos++) //Only Bext and Info
             for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
             {
-                if (!Set(Field_Get(xxxx_Strings[Fields_Pos][Pos]), string(), *chunk_strings_Get(xxxx_Strings[Fields_Pos][Pos]), Chunk_Name2_Get(xxxx_Strings[Fields_Pos][Pos]), Chunk_Name3_Get(xxxx_Strings[Fields_Pos][Pos])))
+                Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(xxxx_Strings[Fields_Pos][Pos]);
+                if (!Chunk_Strings)
+                {
+                    ToReturn=false;
+                    continue;
+                }
+                if (!Set(Field_Get(xxxx_Strings[Fields_Pos][Pos]), string(), *Chunk_Strings, Chunk_Name2_Get(xxxx_Strings[Fields_Pos][Pos]), Chunk_Name3_Get(xxxx_Strings[Fields_Pos][Pos])))
                     ToReturn=false;
             }
 
         return ToReturn;
     }
 
-    return Set(Field, string(), *chunk_strings_Get(Field), Chunk_Name2_Get(Field), Chunk_Name3_Get(Field)); 
+    Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
+    if (!Chunk_Strings)
+        return false;
+
+    return Set(Field, string(), *Chunk_Strings, Chunk_Name2_Get(Field), Chunk_Name3_Get(Field));
 }
 
 //---------------------------------------------------------------------------
@@ -1853,8 +1867,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
 //---------------------------------------------------------------------------
 bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::global::chunk_strings* &Chunk_Strings, int32u Chunk_Name2, int32u Chunk_Name3)
 {
-    if (!File_IsValid
-     || &Chunk_Strings==NULL) 
+    if (!File_IsValid)
         return false;
     
     if ((Chunk_Strings!=NULL && Value==Chunk_Strings->Strings[Field])
