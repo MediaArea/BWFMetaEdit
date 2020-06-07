@@ -74,6 +74,21 @@ protected:
 };
 
 //***************************************************************************
+// TableWidgetFileNameItem
+//***************************************************************************
+class TableWidgetFileNameItem : public QTableWidgetItem
+{
+public:
+    //Constructors
+    TableWidgetFileNameItem(GUI_Main* main, const QString &text, int type = Type) : QTableWidgetItem(text, type), Main(main) {};
+
+    bool operator<(const QTableWidgetItem &other) const;
+
+    private:
+    GUI_Main* Main;
+};
+
+//***************************************************************************
 // OriginationTimeDelegate
 //***************************************************************************
 

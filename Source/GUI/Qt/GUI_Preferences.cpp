@@ -153,6 +153,16 @@ options Groups[Group_Max]=
             {"DefaultView_Tech_Text", "Technical Metadata (text)", Type_RadioButton, false},
             {"DefaultView_Core_Table", "Core Metadata (table)", Type_RadioButton, false},
             {"DefaultView_Core_Text", "Core Metadata (text)", Type_RadioButton, false},
+            {"DefaultView_PerFile", "File", Type_RadioButton, true},
+        },
+        false,
+    },
+    {
+        "Table views",
+        Option_Tables_Max,
+        {
+            {"Tables_SortByFileName", "Sort by file name instead of full path in table views", Type_CheckBox, false},
+            {"Tables_NaturalFileSorting", "Use natural sort order", Type_CheckBox, true},
         },
         false,
     },
