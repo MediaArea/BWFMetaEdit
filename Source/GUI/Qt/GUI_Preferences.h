@@ -40,6 +40,7 @@ enum group
     Group_File,
     Group_MD5,
     Group_DefaultView,
+    Group_Tables,
     Group_Max
 };
 
@@ -85,6 +86,13 @@ enum option_defaultview
     Option_DefaultView_Core_Table,
     Option_DefaultView_Core_Text,
     Option_DefaultView_Max
+};
+
+enum option_tables
+{
+    Option_Tables_SortByFileName,
+    Option_Tables_NaturalFileSorting,
+    Option_Tables_Max
 };
 
 enum option_directories

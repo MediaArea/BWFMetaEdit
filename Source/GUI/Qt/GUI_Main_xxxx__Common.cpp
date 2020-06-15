@@ -32,6 +32,7 @@
 #include <QPushButton>
 #include <QAction>
 #include <QMenu>
+#include <QCollator>
 using namespace ZenLib;
 using namespace std;
 //---------------------------------------------------------------------------
@@ -146,6 +147,29 @@ void TimeReferenceDelegate::setModelData(QWidget *editor, QAbstractItemModel *mo
 void TimeReferenceDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/* index */) const
 {
     editor->setGeometry(option.rect);
+}
+
+//***************************************************************************
+// TableWidgetFileNameItem
+//***************************************************************************
+bool TableWidgetFileNameItem::operator<(const QTableWidgetItem &other) const
+{
+    const QString& first=text();
+    const QString& second=other.text();
+
+    QCollator collator;
+    collator.setNumericMode(Main->Preferences->Group_Option_Checked_Get(Group_Tables, Option_Tables_NaturalFileSorting));
+
+    if (Main->Preferences->Group_Option_Checked_Get(Group_Tables, Option_Tables_SortByFileName))
+    {
+        int temp=collator.compare(QUrl(first).fileName(), QUrl(second).fileName());
+        if (temp)
+            return temp < 0;
+        else
+            return collator.compare(first, second) < 0;
+    }
+    else
+        return collator.compare(first, second) < 0;
 }
 
 //***************************************************************************
@@ -410,6 +434,8 @@ void GUI_Main_xxxx__Common::Fill ()
         return;
     }
 
+    bool AddingMode=rowCount()>0;
+
     //Forcing reset, else this seems to be some Qt bug in the table display
     setRowCount(0);
     setColumnCount(0);
@@ -471,10 +497,18 @@ void GUI_Main_xxxx__Common::Fill ()
                     if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian) && !Value.empty())
                         Value=Ztring().From_UTF8(Swap_MD5_Endianess(QString::fromUtf8(Value.To_UTF8().c_str())).toStdString());
 
-                    Item=new QTableWidgetItem(QString().fromUtf8(Value.To_UTF8().c_str()));
+                    if (Data_Pos==0)
+                        Item=new TableWidgetFileNameItem(Main, QString().fromUtf8(Value.To_UTF8().c_str()));
+                    else
+                        Item=new QTableWidgetItem(QString().fromUtf8(Value.To_UTF8().c_str()));
                 }
                 else
-                    Item=new QTableWidgetItem(QString());
+                {
+                    if (Data_Pos==0)
+                        Item=new TableWidgetFileNameItem(Main, QString());
+                    else
+                        Item=new QTableWidgetItem(QString());
+                }
 
                 if (!C->IsValid_Get(FileName_Before+List[File_Pos][0].To_UTF8())
                  || (Data_Pos<List[File_Pos].size() && !Fill_Enabled(FileName_Before+List[File_Pos][0].To_UTF8(), List[0][Data_Pos].To_UTF8(), List[File_Pos][Data_Pos].To_UTF8())))
@@ -490,6 +524,10 @@ void GUI_Main_xxxx__Common::Fill ()
     resizeColumnsToContents();
     setColumnWidth(0, rowHeight(0));
     setSortingEnabled(true);
+
+    //Apply default sorting options when adding files to empty table.
+    if (!AddingMode)
+        sortByColumn(FILENAME_COL, Qt::AscendingOrder);
 
     //Preparing
     Updating=false;
