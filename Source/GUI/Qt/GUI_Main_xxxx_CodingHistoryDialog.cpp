@@ -303,7 +303,9 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
      || (Text.size()>=2
       && Text[1]=='='
       && (Text[0]=='A' || Text[0]=='F' || Text[0]=='B' || Text[0]=='W' || Text[0]=='M' || Text[0]=='T')
-      && Text.find("ANALOG,")==string::npos
+      && Text.find("ANALOG,")==string::npos && (Text.size()<8 || Text.find("ANALOG", Text.size()-7)==string::npos)
+      && Text.find("Analog,")==string::npos && (Text.size()<8 || Text.find("Analog", Text.size()-7)==string::npos)
+      && Text.find("analog,")==string::npos && (Text.size()<8 || Text.find("analog", Text.size()-7)==string::npos)
       && Text.find(", ")==string::npos))
         OnCurrentChanged(0); //By default, index=0
     else
@@ -499,14 +501,16 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
                 Ununderstable=true;
             if (Column==Data_Pos)
             {
+                string Header=Value.substr(0, 2);
                 Value.erase(0, 2);
-                if (Value=="ANALOG")
+                if (Value=="ANALOG" || Value=="Analog" || Value=="analog")
                 {
                     Modified=true;
                     Value="ANALOGUE";
+                    List[Line_Pos][Data_Pos]=Ztring().From_UTF8(Header)+Ztring().From_UTF8(Value);
                 }
                 QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(Value.c_str()));
-            
+
                 Table->setItem((int)Line_Pos, Column, Item);
             }
             else if (Column!=-1 || Data_Pos>5)
