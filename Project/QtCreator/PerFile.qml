@@ -1,8 +1,9 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
+import QtQuick.Layouts 1.3
 
 Control {
-    id: "root"
+    id: root
     readonly property color red: "#fc6744"
     readonly property color green: "#90ee90"
     readonly property color darkgreen: "#4ee44e"
@@ -65,29 +66,26 @@ Control {
     }
     ScrollView {
         anchors.fill: parent
-        width: parent.width
         ScrollBar.vertical.policy: contentHeight > height ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
         ListView {
+
             // With Qt5.9 (only on macOS?) list do not fill width without this element
             header: Rectangle {
-                width: parent.width
+                anchors { left: parent.left; right: parent.right }
                 height: 1
                 color: "gray"
             }
             id: fileList
             spacing: 10
-            width: parent.width
+            anchors { left: parent.left; right: parent.right }
             model: Model
             delegate: Column {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 10
-                anchors.rightMargin: 10
-                Row {
+                anchors { left: parent.left; right: parent.right; leftMargin: 10; rightMargin: 10 }
+                // Element title
+                RowLayout {
                     spacing: 5
-                    width: parent.width
+                    anchors { left: parent.left; right: parent.right }
                     Image {
-                        id: expand
                         property var expandSvg: ["data:image/svg+xml;utf8,",
                                                 "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
                                                   "<path d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/>",
@@ -123,13 +121,11 @@ Control {
                         }
                     }
                     Text {
-                        id: title
-                        width: parent.width - expand.width - edit.width - save.width - close.width - parent.spacing * 4
                         text: "<b>" + file + "</b>"
                         elide: Text.ElideMiddle
+                        Layout.fillWidth: true
                     }
                     Image {
-                        id: edit
                         property var editSvg: ["data:image/svg+xml;utf8,",
                                            "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
                                              "<path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/>",
@@ -171,7 +167,6 @@ Control {
                         }
                     }
                     Image {
-                        id: save
                         property var svg: ["data:image/svg+xml;utf8,",
                                            "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
                                              "<path d='M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z'/>",
@@ -208,7 +203,6 @@ Control {
                         }
                     }
                     Image {
-                        id: close
                         property var svg: ["data:image/svg+xml;utf8,",
                                            "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
                                              "<path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/>",
@@ -238,270 +232,268 @@ Control {
                         }
                     }
                 }
-                Pane {
+                Column {
                     visible: expanded
-                    width: parent.width
-                    Column {
-                        width: parent.width
-                        spacing: 10
-                        Row {
-                            width: parent.width
-                            spacing: 5
-                            Text {
-                                font.pointSize: 10
-                                width: parent.width - xmp.width - axml.width - ixml.width - parent.spacing * 2
-                                elide: Text.ElideRight
-                                text: tech
-                            }
-                            Text {
-                                id: xmp
-                                text: "XMP"
-                                color: Model.visible(file, "XMP") ? (Model.modified(file, "XMP") ? root.green : "gray") : "lightgray"
-                                horizontalAlignment: Text.AlignHCenter
-                                MouseArea {
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    acceptedButtons: Qt.LeftButton
-                                    onClicked: {
-                                        if(Model.visible(file, "XMP")) {
-                                            Model.editField(file, "XMP")
-                                            parent.color = Model.modified(file, "XMP") ? root.green : "gray"
-                                        }
-                                    }
-                                    onEntered: {
-                                        if(Model.visible(file, "XMP")) {
-                                            parent.color = Model.modified(file, "XMP") ? root.darkgreen : "dimgray"
-                                        }
-                                    }
-                                    onExited: {
-                                        if(Model.visible(file, "XMP")) {
-                                            parent.color = Model.modified(file, "XMP") ? root.green : "gray"
-                                        }
+                    anchors { left: parent.left; right: parent.right }
+                    height: {
+                        return details.height + messages.height + content._height
+                    }
+                    spacing: 10
+                    // Details text
+                    RowLayout {
+                        id: details
+                        anchors { left: parent.left; right: parent.right }
+                        spacing: 5
+                        Text {
+                            font.pointSize: 10
+                            elide: Text.ElideRight
+                            text: tech
+                            Layout.fillWidth: true
+                        }
+                        Text {
+                            text: "XMP"
+                            color: Model.visible(file, "XMP") ? (Model.modified(file, "XMP") ? root.green : "gray") : "lightgray"
+                            horizontalAlignment: Text.AlignHCenter
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                acceptedButtons: Qt.LeftButton
+                                onClicked: {
+                                    if(Model.visible(file, "XMP")) {
+                                        Model.editField(file, "XMP")
+                                        parent.color = Model.modified(file, "XMP") ? root.green : "gray"
                                     }
                                 }
-                            }
-                            Text {
-                                id: axml
-                                text: "aXML"
-                                color: Model.visible(file, "aXML") ? (Model.modified(file, "aXML") ? root.green : "gray") : "lightgray"
-                                horizontalAlignment: Text.AlignHCenter
-                                MouseArea {
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    acceptedButtons: Qt.LeftButton
-                                    onClicked: {
-                                        if(Model.visible(file, "aXML")) {
-                                            Model.editField(file, "aXML")
-                                            parent.color = Model.modified(file, "aXML") ? root.green : "gray"
-                                        }
-                                    }
-                                    onEntered: {
-                                        if(Model.visible(file, "aXML")) {
-                                            parent.color = Model.modified(file, "aXML") ? root.darkgreen : "dimgray"
-                                        }
-                                    }
-                                    onExited: {
-                                        if(Model.visible(file, "aXML")) {
-                                            parent.color = Model.modified(file, "aXML") ? root.green : "gray"
-                                        }
+                                onEntered: {
+                                    if(Model.visible(file, "XMP")) {
+                                        parent.color = Model.modified(file, "XMP") ? root.darkgreen : "dimgray"
                                     }
                                 }
-                            }
-                            Text {
-                                id: ixml
-                                text: "iXML"
-                                color: Model.visible(file, "iXML") ? (Model.modified(file, "iXML") ? root.green : "gray") : "lightgray"
-                                horizontalAlignment: Text.AlignHCenter
-                                MouseArea {
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    acceptedButtons: Qt.LeftButton
-                                    onClicked: {
-                                        if(Model.visible(file, "iXML")) {
-                                            Model.editField(file, "iXML")
-                                            parent.color = Model.modified(file, "iXML") ? root.green : "gray"
-                                        }
-                                    }
-                                    onEntered: {
-                                        if(Model.visible(file, "iXML")) {
-                                            parent.color = Model.modified(file, "iXML") ? root.darkgreen : "dimgray"
-                                        }
-                                    }
-                                    onExited: {
-                                        if(Model.visible(file, "iXML")) {
-                                            parent.color = Model.modified(file, "iXML") ? root.green : "gray"
-                                        }
+                                onExited: {
+                                    if(Model.visible(file, "XMP")) {
+                                        parent.color = Model.modified(file, "XMP") ? root.green : "gray"
                                     }
                                 }
                             }
                         }
                         Text {
+                            text: "aXML"
+                            color: Model.visible(file, "aXML") ? (Model.modified(file, "aXML") ? root.green : "gray") : "lightgray"
+                            horizontalAlignment: Text.AlignHCenter
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                acceptedButtons: Qt.LeftButton
+                                onClicked: {
+                                    if(Model.visible(file, "aXML")) {
+                                        Model.editField(file, "aXML")
+                                        parent.color = Model.modified(file, "aXML") ? root.green : "gray"
+                                    }
+                                }
+                                onEntered: {
+                                    if(Model.visible(file, "aXML")) {
+                                        parent.color = Model.modified(file, "aXML") ? root.darkgreen : "dimgray"
+                                    }
+                                }
+                                onExited: {
+                                    if(Model.visible(file, "aXML")) {
+                                        parent.color = Model.modified(file, "aXML") ? root.green : "gray"
+                                    }
+                                }
+                            }
+                        }
+                        Text {
+                            text: "iXML"
+                            color: Model.visible(file, "iXML") ? (Model.modified(file, "iXML") ? root.green : "gray") : "lightgray"
+                            horizontalAlignment: Text.AlignHCenter
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                acceptedButtons: Qt.LeftButton
+                                onClicked: {
+                                    if(Model.visible(file, "iXML")) {
+                                        Model.editField(file, "iXML")
+                                        parent.color = Model.modified(file, "iXML") ? root.green : "gray"
+                                    }
+                                }
+                                onEntered: {
+                                    if(Model.visible(file, "iXML")) {
+                                        parent.color = Model.modified(file, "iXML") ? root.darkgreen : "dimgray"
+                                    }
+                                }
+                                onExited: {
+                                    if(Model.visible(file, "iXML")) {
+                                        parent.color = Model.modified(file, "iXML") ? root.green : "gray"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Column {
+                        id: messages
+                        anchors { left: parent.left; right: parent.right }
+                        spacing: 5
+                        Text {
+                           id:errors
                            text: "<h4><font color='" + root.red + "'>Errors:</font></h4>" + "<font color='" + root.red + "'>" + Model.errors(file) + "</font>"
-                           width: parent.width
+                           width: root.width - 20 // Can't refer to parent.with dues to bug,
+                                                  // use widget with instead and give room for the scroll bar
                            visible: Model.errors(file).length > 0
                            wrapMode: Text.Wrap
                         }
                         Text {
+                           id: informations
                            text: "<h4>Informations:</h4>" +  Model.informations(file)
-                           width: parent.width
+                           width: root.width - 20 // Can't refer to parent.with dues to bug,
+                                                  // use widget with instead and give room for the scroll bar
                            visible: Model.informations(file).length > 0
                            wrapMode: Text.Wrap
                         }
                         Text {
+                           id: unsupported
                            text: "<h4><font color='orange'>Unsupported chunks:</font></h4>" + "<font color='orange'>" + Model.unsupportedChunks(file) + "</font>"
-                           width: parent.width
+                           width: root.width - 20 // Can't refer to parent.with dues to bug,
+                                              // use widget with instead and give room for the scroll bar
                            visible: Model.unsupportedChunks(file).length > 0
                            wrapMode: Text.Wrap
                         }
-                        Repeater {
-                            model: sections
-                            Column {
-                                width: parent.width
-                                visible: {
-                                    for (var i = 0; i < fields.count; i++) {
-                                        if (Model.visible(file, fields.get(i).name))
-                                            return true
-                                    }
-                                    return false
+                    }
+                    Repeater {
+                        id: content
+                        property real _height: {
+                            var h = 47; // Add missing line in computed height (bug?) + 10px margin
+                            for (var i = 0; i < count; i++) {
+                                if (itemAt(i).visible)
+                                    h += itemAt(i).height;
+                            }
+                            return h;
+                        }
+                        model: sections
+                        Column {
+                            anchors { left: parent.left; right: parent.right }
+                            visible: {
+                                for (var i = 0; i < fields.count; i++) {
+                                    if (Model.visible(file, fields.get(i).name))
+                                        return true
                                 }
-                                Text {
-                                    text: "<h4>" + section + "</h4>"
-                                }
-                                Flow {
-                                    width: parent.width
-                                    spacing: 5
-                                    Repeater {
-                                        model: fields
-                                        Row {
-                                            visible: Model.visible(file, name)
-                                            Label {
-                                                id: title
-                                                height: fieldHeight
-                                                width: 185
-                                                horizontalAlignment: Text.AlignRight
-                                                verticalAlignment: Text.AlignVCenter
-                                                text: label + ": "
-                                            }
-                                            // Unused, metrics don't works on Qt5.9
-                                            /*TextMetrics {
-                                                id: ruler
-                                                font: input.font
-                                                text: "—".repeat(fieldLength)
-                                            }*/
-                                            ScrollView {
-                                                id: scollarea
-                                                height: fieldHeight
-                                                width: fieldLength
-                                                clip: true
-                                                ScrollBar.vertical.policy: contentHeight > height ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
-                                                ScrollBar.horizontal.policy: contentWidth > width ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
-                                                Component.onCompleted: {
+                                return false
+                            }
+                            Text {
+                                text: "<h4>" + section + "</h4>"
+                            }
+                            Flow {
+                                width: root.width - 20 // Can't refer to parent.with dues to bug,
+                                                       // use widget with instead and give room for the scroll bar
+                                spacing: 5
+                                Repeater {
+                                    model: fields
+                                    Row {
+                                        visible: Model.visible(file, name)
+                                        Label {
+                                            id: title
+                                            height: fieldHeight
+                                            width: 185
+                                            horizontalAlignment: Text.AlignRight
+                                            verticalAlignment: Text.AlignVCenter
+                                            text: label + ": "
+                                        }
+                                        ScrollView {
+                                            id: scollarea
+                                            height: fieldHeight
+                                            width: fieldLength
+                                            clip: true
+                                            ScrollBar.vertical.policy: contentHeight > height ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
+                                            ScrollBar.horizontal.policy: contentWidth > width ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
+                                            Component.onCompleted: {
                                                 ScrollBar.vertical.position = 0
                                                 ScrollBar.horizontal.position = 0
-                                                }
-                                                background: Rectangle {
-                                                   color: Model.readonly(file, name) ? "whitesmoke" : "transparent"
-                                                    border.color: {
-                                                        if (parent.activeFocus) {
-                                                            return "dodgerblue"
-                                                        }
-                                                        else if (!Model.valid(file, name, input.text)) {
-                                                            return root.red
-                                                        }
-                                                        else if (Model.modified(file, name)) {
-                                                            return root.green
-                                                        }
-                                                        else {
-                                                            return "lightgray"
-                                                        }
-                                                    }
-                                                    radius: 2
-                                                }
-                                                TextArea {
-                                                    id: input
-                                                    color: "black"
-                                                    text: Model.value(file, name)
-                                                    readOnly: Model.readonly(file, name)
-                                                    selectByMouse: true
-                                                    onEditingFinished: {
-                                                        if (Model.valid(file, name, text)) {
-                                                            Model.setValue(file, name, text)
-                                                        }
-                                                    }
-                                                    Keys.onPressed: {
-                                                        if (event.key == Qt.Key_Return && !multiline) {
-                                                            event.accepted = true;
-                                                        }
-                                                    }
-                                                    onActiveFocusChanged: {
-                                                        if (activeFocus) {
-                                                            Model.setSelected(file)
-                                                        }
-                                                    }
-                                                /*MouseArea {
-                                                    anchors.fill: parent
-                                                    //hoverEnabled: true
-                                                    acceptedButtons: Qt.LeftButton
-                                                    propagateComposedEvents: true
-                                                    onClicked: {
-                                                        input.forceActiveFocus()
-                                                        //Model.editField(file, name)
-                                                        mouse.accepted = false
-                                                    }
-                                                    onDoubleClicked: {
-                                                        input.forceActiveFocus()
-                                                        Model.editField(file, name)
-                                                        mouse.accepted = false
-                                                    }
-                                                }*/
-                                                }
                                             }
-                                            Image {
-                                                id: "status"
-                                                property var valid: Model.valid(file, name, input.text)
-                                                property var message: valid ? Model.lastValidationWarning(file) : Model.lastValidationError(file)
-                                                visible: message.length > 0
-                                                height: 24
-                                                width: 24
-                                                source: valid ? "qrc:///Image/Menu/Warning.svg" : "qrc:///Image/Menu/Error.svg"
-                                                anchors.verticalCenter: title.verticalCenter
-                                                MouseArea {
-                                                    anchors.fill: parent
-                                                    hoverEnabled: true
-                                                    ToolTip {
-                                                        visible: parent.containsMouse
-                                                        delay: 500
-                                                        // Basic wrapping of text since QML ToolTip Doesn't have option for that
-                                                        text: status.message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
-                                                        background: Rectangle {
-                                                            border.color: status.valid ? "orange" : root.red
-                                                        }
+                                            background: Rectangle {
+                                                color: Model.readonly(file, name) ? "whitesmoke" : "transparent"
+                                                border.color: {
+                                                    if (parent.activeFocus) {
+                                                        return "dodgerblue"
+                                                    }
+                                                    else if (!Model.valid(file, name, input.text)) {
+                                                        return root.red
+                                                    }
+                                                    else if (Model.modified(file, name)) {
+                                                        return root.green
+                                                    }
+                                                    else {
+                                                        return "lightgray"
+                                                    }
+                                                }
+                                                radius: 2
+                                            }
+                                            TextArea {
+                                                id: input
+                                                color: "black"
+                                                text: Model.value(file, name)
+                                                readOnly: Model.readonly(file, name)
+                                                selectByMouse: true
+                                                onEditingFinished: {
+                                                    if (Model.valid(file, name, text)) {
+                                                        Model.setValue(file, name, text)
+                                                    }
+                                                }
+                                                Keys.onPressed: {
+                                                    if (event.key === Qt.Key_Return && !multiline) {
+                                                        event.accepted = true;
+                                                    }
+                                                }
+                                                onActiveFocusChanged: {
+                                                    if (activeFocus) {
+                                                        Model.setSelected(file)
                                                     }
                                                 }
                                             }
-                                            Button {
-                                                height: 24
-                                                width: 24
-                                                anchors.verticalCenter: title.verticalCenter
-                                                flat: true
+                                        }
+                                        Image {
+                                            id: status
+                                            property var valid: Model.valid(file, name, input.text)
+                                            property var message: valid ? Model.lastValidationWarning(file) : Model.lastValidationError(file)
+                                            visible: message.length > 0
+                                            height: 24
+                                            width: 24
+                                            source: valid ? "qrc:///Image/Menu/Warning.svg" : "qrc:///Image/Menu/Error.svg"
+                                            anchors.verticalCenter: title.verticalCenter
+                                            MouseArea {
+                                                anchors.fill: parent
                                                 hoverEnabled: true
-                                                onClicked: Model.editField(file, name)
-                                               Image {
-                                                   property var svg: ["data:image/svg+xml;utf8,",
-                                                       "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
-                                                         "<path d='M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/>",
-                                                         "<path d='M0 0h24v24H0z' fill='none'/>",
-                                                       "</svg>"].join('')
-                                                    source: svg.arg("gray")
-                                                    fillMode: Image.PreserveAspectFit
-                                                    anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
-                                                }
                                                 ToolTip {
-                                                    visible: parent.hovered
-                                                    delay: 1000
-                                                    timeout: 5000
-                                                    text: "Open in field editor"
+                                                    visible: parent.containsMouse
+                                                    delay: 500
+                                                    // Basic wrapping of text since QML ToolTip Doesn't have option for that
+                                                    text: status.message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
+                                                    background: Rectangle {
+                                                        border.color: status.valid ? "orange" : root.red
+                                                    }
                                                 }
+                                            }
+                                        }
+                                        Button {
+                                            height: 24
+                                            width: 24
+                                            anchors.verticalCenter: title.verticalCenter
+                                            flat: true
+                                            hoverEnabled: true
+                                            onClicked: Model.editField(file, name)
+                                            Image {
+                                                property var svg: ["data:image/svg+xml;utf8,",
+                                                    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
+                                                    "<path d='M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/>",
+                                                    "<path d='M0 0h24v24H0z' fill='none'/>",
+                                                    "</svg>"].join('')
+                                                source: svg.arg("gray")
+                                                fillMode: Image.PreserveAspectFit
+                                                anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
+                                            }
+                                            ToolTip {
+                                                visible: parent.hovered
+                                                delay: 1000
+                                                timeout: 5000
+                                                text: "Open in field editor"
                                             }
                                         }
                                     }
@@ -511,7 +503,7 @@ Control {
                     }
                 }
                 Rectangle {
-                    width: parent.width
+                    anchors { left: parent.left; right: parent.right }
                     height: 2
                     color: "gainsboro"
                 }
