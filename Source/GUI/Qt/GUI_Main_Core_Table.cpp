@@ -231,7 +231,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
             for (int Pos=0; Pos<Items.size(); Pos++)
             {
                 QTableWidgetItem* Item=Items[Pos];
-                string FileName=FileName_Before+item(Item->row(), 0)->text().toUtf8().data();
+                string FileName=FileName_Before+item(Item->row(), FILENAME_COL)->text().toUtf8().data();
                 string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
                  for (int Row=0; Row<rowCount(); Row++)
                 {
