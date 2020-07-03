@@ -31,6 +31,8 @@
 #include <QContextMenuEvent>
 #include <QAction>
 #include <QMenu>
+#include <QApplication>
+#include <QClipboard>
 using namespace ZenLib;
 using namespace std;
 //---------------------------------------------------------------------------
@@ -83,6 +85,17 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         //Creating menu
         QMenu menu(this);
 
+        //Copy
+        if (!item(Item->row(), Item->column())->text().isEmpty())
+            menu.addAction(new QAction("Copy", this)); //If you change this, change the test text too
+
+        //Paste
+        if (!QApplication::clipboard()->text().isEmpty() && C->IsValid(FileName, Field, QApplication::clipboard()->text().toStdString()))
+            menu.addAction(new QAction("Paste", this)); //If you change this, change the test text too
+
+        if(menu.actions().count())
+            menu.addSeparator();
+
         //Handling AllFiles display
         {
             menu.addAction(new QAction("Fill all open files with this field value", this)); //If you change this, change the test text too
@@ -128,6 +141,11 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         QString Text=Action->text();
 
         //Special cases
+        if (Text=="Copy")
+        {
+            QApplication::clipboard()->setText(QString::fromUtf8(C->Get(FileName, Field).c_str()));
+            return;
+        }
         if (Text=="Fill all open files with this field value") //If you change this, change the creation text too
         {
             for (int Row=0; Row<rowCount(); Row++)
@@ -143,6 +161,10 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         }
         if (Text=="Clear this value") //If you change this, change the creation text too
             Text.clear();
+
+        //Paste
+        if (Text=="Paste")
+            Text=QApplication::clipboard()->text();
 
         //Filling
         if (Text.contains("&Set ")) //If you change this, change the creation text too
