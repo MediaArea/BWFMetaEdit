@@ -447,6 +447,17 @@ Control {
                                                         Model.setSelected(file)
                                                     }
                                                 }
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true
+                                                    propagateComposedEvents: true
+                                                    acceptedButtons: Qt.RightButton
+                                                    onClicked: {
+                                                        if (Model.valid(file, name, parent.text)) {
+                                                            Model.showCoreMenu(mapToGlobal(mouse.x, mouse.y), file, name);
+                                                        }
+                                                    }
+                                               }
                                             }
                                         }
                                         Image {
