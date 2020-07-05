@@ -24,10 +24,7 @@ bwfmetaedit_SOURCES = \
     ../../../Source/Riff/Riff_Chunks_WAVE_iXML.cpp \
     ../../../Source/Riff/Riff_Chunks_WAVE_MD5_.cpp \
     ../../../Source/Riff/Riff_Handler.cpp \
-    ../../../Source/TinyXml/tinystr.cpp \
-    ../../../Source/TinyXml/tinyxml.cpp \
-    ../../../Source/TinyXml/tinyxmlerror.cpp \
-    ../../../Source/TinyXml/tinyxmlparser.cpp \
+    ../../../Source/TinyXml2/tinyxml2.cpp \
     ../../../Source/ZenLib/Conf.cpp \
     ../../../Source/ZenLib/CriticalSection.cpp \
     ../../../Source/ZenLib/Dir.cpp \

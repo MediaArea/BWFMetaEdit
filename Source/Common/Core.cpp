@@ -22,7 +22,7 @@
 #include "ZenLib/OS_Utils.h"
 #include "Common/Common_About.h"
 #include "Riff/Riff_Handler.h"
-#include "TinyXml/tinyxml.h"
+#include "TinyXml2/tinyxml2.h"
 #include <sstream>
 #include <ctime>
 #include <algorithm>
@@ -33,6 +33,7 @@
 #endif //_WIN32
 using namespace ZenLib;
 using namespace std;
+using namespace tinyxml2;
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -912,24 +913,23 @@ int Core::Menu_File_Import_Core(const string &FileName)
          && Buffer[4]=='l'
         )
         {
-            TiXmlDocument document(FileName);
-            if (document.LoadFile())
+            XMLDocument document;
+            if (document.LoadFile(FileName.c_str())==XML_SUCCESS)
             {
-	            TiXmlElement* Root=document.FirstChildElement("conformance_point_document");
+	            XMLElement* Root=document.FirstChildElement("conformance_point_document");
 	            if (Root)
 	            {
-		            TiXmlElement* File=Root->FirstChildElement("File");
+		            XMLElement* File=Root->FirstChildElement("File");
                     while (File)
 	                {
                         string FileName=File->Attribute("name");
-                        
-                        TiXmlElement* Core=File->FirstChildElement("Core");
+                        XMLElement* Core=File->FirstChildElement("Core");
 		                if (Core)
 		                {
-			                TiXmlElement* Element=Core->FirstChildElement();
+			                XMLElement* Element=Core->FirstChildElement();
 			                while (Element)
 			                {
-                                string Field=Element->ValueStr();
+                                string Field=Element->Name();
                                 const char* Value=Element->GetText();
                                 if (!Field.empty())
                                     In_Core_Add(FileName, Field=="TimeReference_translated"?"TimeReference (translated)":Field.c_str(), Value?string(Value):string());

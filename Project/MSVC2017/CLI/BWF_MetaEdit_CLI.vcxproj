@@ -221,10 +221,7 @@
     <ClCompile Include="..\..\..\Source\ZenLib\ZtringListList.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\ZtringListListF.cpp" />
     <ClCompile Include="..\..\..\Source\MD5\md5.c" />
-    <ClCompile Include="..\..\..\Source\TinyXml\tinystr.cpp" />
-    <ClCompile Include="..\..\..\Source\TinyXml\tinyxml.cpp" />
-    <ClCompile Include="..\..\..\Source\TinyXml\tinyxmlerror.cpp" />
-    <ClCompile Include="..\..\..\Source\TinyXml\tinyxmlparser.cpp" />
+    <ClCompile Include="..\..\..\Source\TinyXml2\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\CLI\CLI_Help.h" />
@@ -259,8 +256,7 @@
     <ClInclude Include="..\..\..\Source\ZenLib\ZtringListList.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\ZtringListListF.h" />
     <ClInclude Include="..\..\..\Source\MD5\md5.h" />
-    <ClInclude Include="..\..\..\Source\TinyXml\tinystr.h" />
-    <ClInclude Include="..\..\..\Source\TinyXml\tinyxml.h" />
+    <ClInclude Include="..\..\..\Source\TinyXml2\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BWF_MetaEdit_CLI.rc" />
