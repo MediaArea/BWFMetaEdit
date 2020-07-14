@@ -45,6 +45,17 @@ void Riff_WAVE_ds64::Read_Internal ()
     Global->ds64->riffSize=riffSize;
     Global->ds64->dataSize=dataSize;
     Global->ds64->sampleCount=sampleCount;
+
+    if (Global->IsRF64 && riffSize+8>Global->In.Size_Get())
+    {
+        if (!Global->TruncatedChunks.str().empty() )
+            Global->TruncatedChunks << " ";
+        Global->TruncatedChunks<< "The RF64 chunk should be "
+                               << riffSize
+                               << " bytes, but is "
+                               << Global->In.Size_Get()-8
+                               << " bytes.";
+    }
 }
 
 //***************************************************************************

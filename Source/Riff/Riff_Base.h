@@ -195,6 +195,7 @@ public:
         int64u              File_Size;
         string              File_Date;
         string              UnsupportedChunks;
+        ostringstream       TruncatedChunks;
         ostringstream       Trace;
         chunk_WAVE         *WAVE;
         chunk_ds64         *ds64;
