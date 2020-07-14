@@ -38,6 +38,7 @@ public:
 protected:
     //Events
     void contextMenuEvent   (QContextMenuEvent* Event);
+    void keyPressEvent      (QKeyEvent* Event);
     bool edit               (const QModelIndex &index, EditTrigger trigger, QEvent *Event); 
 
     //Helpers

@@ -141,6 +141,57 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
 }
 
 //---------------------------------------------------------------------------
+ void GUI_Main_Core_Table::keyPressEvent(QKeyEvent* Event)
+{
+    if (selectedItems().size()==1)
+    {
+        QTableWidgetItem* Item=selectedItems().at(0);
+        string FileName=FileName_Before+item(Item->row(), FILENAME_COL)->text().toUtf8().data();
+        string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
+
+        if (Event->matches(QKeySequence::Copy))
+        {
+            QApplication::clipboard()->setText(QString::fromUtf8(C->Get(FileName, Field).c_str()));
+
+            Event->accept();
+            return;
+        }
+        else if (Event->matches(QKeySequence::Paste))
+        {
+            if (!QApplication::clipboard()->text().isEmpty() && C->IsValid(FileName, Field, QApplication::clipboard()->text().toStdString()))
+            {
+                Ztring NewValue=Ztring().From_UTF8(QApplication::clipboard()->text().toStdString());
+                NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+
+                item(Item->row(), Item->column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+                dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
+
+                update(indexFromItem(item(Item->row(), Item->column())));
+
+                //Special case
+                if (Field=="TimeReference")
+                    SetText(*Item, "TimeReference (translated)");
+                if (Field=="TimeReference (translated)")
+                    SetText(*Item, "TimeReference");
+                if (Field=="OriginationDate")
+                    SetText(*Item, "OriginationTime");
+                if (Field=="OriginationTime")
+                    SetText(*Item, "OriginationDate");
+
+                //Changing BextVersion Enabled value
+                SetText   (*Item, "BextVersion");
+                SetEnabled(*Item, "BextVersion");
+
+                Event->accept();
+                return;
+            }
+        }
+    }
+
+    QTableWidget::keyPressEvent(Event);
+}
+
+//---------------------------------------------------------------------------
 bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, QEvent *Event) 
 {
     //Must we edit or not
