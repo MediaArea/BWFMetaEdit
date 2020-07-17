@@ -125,6 +125,7 @@ struct options
     size_t      Option_Size;
     option      Option[MaxCount];
     bool        InTemporaryPrefs;
+    bool        ViewOptions;
 };
 
 class GUI_Preferences : public QDialog
