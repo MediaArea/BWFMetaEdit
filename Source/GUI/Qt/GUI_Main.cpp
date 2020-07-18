@@ -426,6 +426,19 @@ void GUI_Main::Bext_Toggle_Set(bool Toggle)
 }
 
 //---------------------------------------------------------------------------
+bool GUI_Main::Trace_UseDec_Get()
+{
+    return C->Trace_UseDec;
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::Trace_UseDec_Set(bool UseDec)
+{
+    C->Trace_UseDec=UseDec;
+    C->Menu_File_Options_Update();
+}
+
+//---------------------------------------------------------------------------
 void GUI_Main::BackupDirectory_Set(const string &Value)
 {
     C->ApplicationFolder=Ztring().From_UTF8(Value);

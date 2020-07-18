@@ -2018,6 +2018,7 @@ void Riff_Handler::Options_Update_Internal()
     Chunks->Global->VerifyMD5=VerifyMD5;
     Chunks->Global->EmbedMD5=EmbedMD5;
     Chunks->Global->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;
+    Chunks->Global->Trace_UseDec=Trace_UseDec;
 
     //MD5
     if (Chunks->Global->VerifyMD5)

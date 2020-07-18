@@ -41,6 +41,7 @@ enum group
     Group_MD5,
     Group_DefaultView,
     Group_Tables,
+    Group_Trace,
     Group_Max
 };
 
@@ -93,6 +94,12 @@ enum option_tables
     Option_Tables_SortByFileName,
     Option_Tables_NaturalFileSorting,
     Option_Tables_Max
+};
+
+enum option_trace
+{
+    Option_Trace_UseDec,
+    Option_Trace_Max
 };
 
 enum option_directories

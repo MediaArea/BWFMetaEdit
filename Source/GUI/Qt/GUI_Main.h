@@ -53,6 +53,8 @@ public:
     unsigned short Bext_MaxVersion_Get();
     bool Bext_Toggle_Get();
     void Bext_Toggle_Set(bool Version);
+    bool Trace_UseDec_Get();
+    void Trace_UseDec_Set(bool UseDec);
     void BackupDirectory_Set(const string &Value);
     void LogFile_Set(const string &Value);
 

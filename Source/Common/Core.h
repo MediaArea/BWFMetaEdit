@@ -134,6 +134,7 @@ public:
     Riff_Handler::rules                 Rules;
     Ztring                              ApplicationFolder;
     Ztring                              LogFile;
+    bool                                Trace_UseDec;
 
     //Status
     void                                StdOut(string Text);

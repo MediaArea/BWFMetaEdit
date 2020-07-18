@@ -173,6 +173,15 @@ options Groups[Group_Max]=
         false,
         true,
     },
+    {
+        "Trace view",
+        Option_Trace_Max,
+        {
+            {"Trace_UseDec", "Use decimal instead of hexadecimal numbers for adresses and sizes (Apply only to newly opened files)", Type_CheckBox, false},
+        },
+        false,
+        true,
+    },
 };
 //***************************************************************************
 // Constructor/Destructor
@@ -546,7 +555,7 @@ void GUI_Preferences::OnClicked ()
                                                     CheckBoxes[Group*options::MaxCount+Option2]->setChecked(Main->Menu_Fields_CheckBoxes[Group*options::MaxCount+Option2]->isChecked());
                                             }
                                             break;
-                case Type_RadioButton   :   if (RadioButtons[Group*options::MaxCount+Option]->isChecked()!=Main->Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked())
+                case Type_RadioButton   :   if ((Groups[Group].InTemporaryPrefs || Group==Group_DefaultView) && RadioButtons[Group*options::MaxCount+Option]->isChecked()!=Main->Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked())
                                             {
                                                 //Setting Main view preferences
                                                 Main->Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setChecked(RadioButtons[Group*options::MaxCount+Option]->isChecked());
@@ -554,7 +563,9 @@ void GUI_Preferences::OnClicked ()
                                             break;
                 default                 : ;
             }
-    
+
+    if (CheckBoxes[Group_Trace*options::MaxCount+Option_Trace_UseDec]->isChecked()!=Main->Trace_UseDec_Get())
+        Main->Trace_UseDec_Set(CheckBoxes[Group_Trace*options::MaxCount+Option_Trace_UseDec]->isChecked());
 }
 
 //---------------------------------------------------------------------------
