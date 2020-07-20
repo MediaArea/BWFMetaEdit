@@ -214,6 +214,19 @@ bool Riff_Base::Read_Header (chunk &NewChunk)
         NewChunk.Header.Size=8;
     }
 
+    if (Global->In.Position_Get()+NewChunk.Content.Size>Global->In.Size_Get() && !(NewChunk.Header.List==Elements::RF64 && NewChunk.Content.Size==0xFFFFFFFB))
+    {
+        if (!Global->TruncatedChunks.str().empty())
+            Global->TruncatedChunks << " ";
+        Global->TruncatedChunks<< "The "
+                               << Ztring().From_CC4(NewChunk.Header.List?NewChunk.Header.List:NewChunk.Header.Name).To_UTF8()
+                               << " chunk should be "
+                               << + NewChunk.Content.Size
+                               << " bytes, but is "
+                               << Global->In.Size_Get()-Global->In.Position_Get()
+                               << " bytes.";
+    }
+
     return true;
 }
 
@@ -226,8 +239,9 @@ void Riff_Base::Read_Internal_ReadAllInBuffer ()
     if (Chunk.Content.Size>(size_t)-1)
         throw exception_read_chunk("non-audio data exceeds available memory");
 
+    //Integrity
     if (Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size>Global->In.Size_Get())
-        throw exception_valid("truncated");
+        throw exception_valid(!Global->TruncatedChunks.str().empty()?"truncated ("+Global->TruncatedChunks.str()+")":"truncated");
 
     delete Chunk.Content.Buffer; Chunk.Content.Buffer=NULL;
 

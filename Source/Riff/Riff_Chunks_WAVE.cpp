@@ -38,7 +38,10 @@ void Riff_WAVE::Read_Internal ()
         SUB_ELEMENT(WAVE_MD5_);
     SUBS_END();
 
-    
+    //Integrity
+    if (Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size>Global->In.Size_Get())
+        throw exception_valid(!Global->TruncatedChunks.str().empty()?"truncated ("+Global->TruncatedChunks.str()+")":"truncated");
+
     for (size_t Pos=0; Pos<Subs.size(); Pos++)
         switch (Subs[Pos]->Header_Name_Get())
         {

@@ -33,7 +33,7 @@ void Riff_WAVE_data::Read_Internal ()
 
     //Integrity
     if (Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size>Global->In.Size_Get())
-        throw exception_valid("truncated");
+        throw exception_valid(!Global->TruncatedChunks.str().empty()?"truncated ("+Global->TruncatedChunks.str()+")":"truncated");
 
     //Filling
     Global->data=new Riff_Base::global::chunk_data;
