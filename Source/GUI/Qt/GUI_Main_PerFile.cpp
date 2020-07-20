@@ -19,6 +19,7 @@
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_UmidDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_ContextMenu.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
 #include <QLabel>
@@ -363,6 +364,20 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
     }
 
     Q_EMIT dataChanged(index(FileNames.indexOf(FileName)), index(FileNames.indexOf(FileName)));
+
+    Main->Menu_Update();
+}
+
+Q_INVOKABLE void PerFileModel::showCoreMenu(const QPoint& globalPos, const QString& FileName, const QString& Field)
+{
+    QList<QPair<string, string> > Items;
+    Items.append(qMakePair(FileName.toStdString(), Field.toStdString()));
+
+    int Modified=GUI_Main_xxxx_ContextMenu(Main, C, this).showCoreMenu(globalPos, Items);
+   if (Modified==1)
+        Q_EMIT dataChanged(index(FileNames.indexOf(FileName)), index(FileNames.indexOf(FileName)));
+    else if (Count && Modified>1)
+        Q_EMIT dataChanged(index(0), index(Count-1));
 
     Main->Menu_Update();
 }

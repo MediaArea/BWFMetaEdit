@@ -57,6 +57,7 @@ HEADERS = \
     ../../Source/GUI/Qt/GUI_Main_xxxx_TextEditDialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx_UmidDialog.h \
+    ../../Source/GUI/Qt/GUI_Main_xxxx_ContextMenu.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx__Common.h \
     ../../Source/GUI/Qt/GUI_Preferences.h \
     ../../Source/MD5/md5.h \
@@ -113,6 +114,7 @@ SOURCES = \
     ../../Source/GUI/Qt/GUI_Main_xxxx_TextEditDialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx_UmidDialog.cpp \
+    ../../Source/GUI/Qt/GUI_Main_xxxx_ContextMenu.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx__Common.cpp \
     ../../Source/GUI/Qt/GUI_Preferences.cpp \
     ../../Source/MD5/md5.c \

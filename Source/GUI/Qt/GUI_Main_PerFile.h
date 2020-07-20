@@ -16,6 +16,7 @@
 #include <QAbstractListModel>
 #include <QQmlContext>
 #include <QValidator>
+#include <QPoint>
 #include <string>
 
 #include "ZenLib/ZtringListList.h"
@@ -74,6 +75,7 @@ public:
     Q_INVOKABLE bool readonly(const QString& FileName, const QString& Field) const;
     Q_INVOKABLE bool visible(const QString& FileName, const QString& Field) const;
     Q_INVOKABLE void editField(const QString& FileName, const QString& Field);
+    Q_INVOKABLE void showCoreMenu(const QPoint& globalPos, const QString& FileName, const QString& Field);
     Q_INVOKABLE void setSelected(const QString& FileName);
 
     void Fill();
