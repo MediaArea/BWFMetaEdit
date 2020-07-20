@@ -61,16 +61,27 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
 
     TextEdit=new QTextEdit(this);
     connect(TextEdit, SIGNAL(textChanged()), this, SLOT(OnTextChanged()));
-        
+
     Label=new QLabel(this);
     Label->setOpenExternalLinks(true);
+
+    Message=new QLabel(this);
+    Message->setOpenExternalLinks(true);
     
     QVBoxLayout* L=new QVBoxLayout();
     L->addWidget(TextEdit);
     L->addWidget(Label);
+    L->addWidget(Message);
     L->addWidget(Dialog);
 
     setLayout(L);
+
+    if (Field=="XMP")
+        Message->setText("<html><body>This tool does not validate the contents of the XML chunks against the rules for XMP.<br />Edit at your own risk. For more information see the <a href=\"http://www.adobe.com/products/xmp/\">Adobe XMP website</a><br />Edits to this chunk can not be undone</body></html>");
+    else if (Field=="aXML")
+        Message->setText("<html><body>This tool does not validate the contents of the XML chunks against the rules for aXML.<br />Edit at your own risk. For more information see the <a href=\"http://tech.ebu.ch/docs/tech/tech3285s5.pdf\">BWF aXML chunk specification</a><br />Edits to this chunk can not be undone</body></html>");
+    else if (Field=="iXML")
+        Message->setText("<html><body>This tool does not validate the contents of the XML chunks  against the rules for iXML.<br />Edit at your own risk. For more information see the <a href=\"http://www.gallery.co.uk/ixml/\">iXML Specification</a><br />Edits to this chunk can not be undone</body></html>");
 
     TextEdit->setPlainText(Value);
     TextEdit->setReadOnly(ReadOnly);
@@ -111,13 +122,7 @@ void GUI_Main_xxxx_TextEditDialog::OnAccept ()
 void GUI_Main_xxxx_TextEditDialog::OnTextChanged ()
 {
     std::string Value=TextEdit->toPlainText().toUtf8().data();
-    if (Field=="XMP")
-        Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for XMP.<br />Edit at your own risk. For more information see the <a href=\"http://www.adobe.com/products/xmp/\">Adobe XMP website</a><br />Edits to this chunk can not be undone</body></html>");
-    else if (Field=="aXML")
-        Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for aXML.<br />Edit at your own risk. For more information see the <a href=\"http://tech.ebu.ch/docs/tech/tech3285s5.pdf\">BWF aXML chunk specification</a><br />Edits to this chunk can not be undone</body></html>");
-    else if (Field=="iXML")
-        Label->setText("<html><body>This tool does not validate the contents of the XML chunks as XML nor against the rules for iXML.<br />Edit at your own risk. For more information see the <a href=\"http://www.gallery.co.uk/ixml/\">iXML Specification</a><br />Edits to this chunk can not be undone</body></html>");
-    else if (!C->IsValid(FileName, Field, Value, true))
+    if (!C->IsValid(FileName, Field, Value, true))
     {
         Label->setText(QString::fromUtf8(C->IsValid_LastError(FileName).c_str()));
         Dialog->button(QDialogButtonBox::Ok)->setEnabled(false);

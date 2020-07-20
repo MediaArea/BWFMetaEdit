@@ -250,80 +250,43 @@ Control {
                             text: tech
                             Layout.fillWidth: true
                         }
-                        Text {
-                            text: "XMP"
-                            color: Model.visible(file, "XMP") ? (Model.modified(file, "XMP") ? root.green : "gray") : "lightgray"
-                            horizontalAlignment: Text.AlignHCenter
-                            MouseArea {
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                acceptedButtons: Qt.LeftButton
-                                onClicked: {
-                                    if(Model.visible(file, "XMP")) {
-                                        Model.editField(file, "XMP")
-                                        parent.color = Model.modified(file, "XMP") ? root.green : "gray"
-                                    }
+                        Repeater {
+                            model: ["XMP", "aXML", "iXML"]
+                            delegate: Text {
+                                function buttonColor(hovered = false) {
+                                    if (!Model.valid(file, modelData, Model.value(file, modelData)))
+                                       return hovered?"darkred":root.red
+                                    else if (Model.lastValidationWarning(file).length > 0)
+                                        return hovered?"darkorange":"orange"
+                                    else if (Model.modified(file, modelData))
+                                        return hovered?root.darkgreen:root.green
+                                    else if (Model.visible(file, modelData))
+                                        return hovered?"dimgray":"gray"
+                                    else
+                                        return "lightgray"
                                 }
-                                onEntered: {
-                                    if(Model.visible(file, "XMP")) {
-                                        parent.color = Model.modified(file, "XMP") ? root.darkgreen : "dimgray"
+                                text: modelData
+                                color: buttonColor()
+                                horizontalAlignment: Text.AlignHCenter
+                                MouseArea {
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    acceptedButtons: Qt.LeftButton
+                                    onClicked: {
+                                        if(Model.visible(file, modelData)) {
+                                            Model.editField(file, modelData)
+                                            parent.color = parent.buttonColor()
+                                        }
                                     }
-                                }
-                                onExited: {
-                                    if(Model.visible(file, "XMP")) {
-                                        parent.color = Model.modified(file, "XMP") ? root.green : "gray"
+                                    onEntered: {
+                                        if(Model.visible(file, modelData)) {
+                                            parent.color = parent.buttonColor(true)
+                                        }
                                     }
-                                }
-                            }
-                        }
-                        Text {
-                            text: "aXML"
-                            color: Model.visible(file, "aXML") ? (Model.modified(file, "aXML") ? root.green : "gray") : "lightgray"
-                            horizontalAlignment: Text.AlignHCenter
-                            MouseArea {
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                acceptedButtons: Qt.LeftButton
-                                onClicked: {
-                                    if(Model.visible(file, "aXML")) {
-                                        Model.editField(file, "aXML")
-                                        parent.color = Model.modified(file, "aXML") ? root.green : "gray"
-                                    }
-                                }
-                                onEntered: {
-                                    if(Model.visible(file, "aXML")) {
-                                        parent.color = Model.modified(file, "aXML") ? root.darkgreen : "dimgray"
-                                    }
-                                }
-                                onExited: {
-                                    if(Model.visible(file, "aXML")) {
-                                        parent.color = Model.modified(file, "aXML") ? root.green : "gray"
-                                    }
-                                }
-                            }
-                        }
-                        Text {
-                            text: "iXML"
-                            color: Model.visible(file, "iXML") ? (Model.modified(file, "iXML") ? root.green : "gray") : "lightgray"
-                            horizontalAlignment: Text.AlignHCenter
-                            MouseArea {
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                acceptedButtons: Qt.LeftButton
-                                onClicked: {
-                                    if(Model.visible(file, "iXML")) {
-                                        Model.editField(file, "iXML")
-                                        parent.color = Model.modified(file, "iXML") ? root.green : "gray"
-                                    }
-                                }
-                                onEntered: {
-                                    if(Model.visible(file, "iXML")) {
-                                        parent.color = Model.modified(file, "iXML") ? root.darkgreen : "dimgray"
-                                    }
-                                }
-                                onExited: {
-                                    if(Model.visible(file, "iXML")) {
-                                        parent.color = Model.modified(file, "iXML") ? root.green : "gray"
+                                    onExited: {
+                                        if(Model.visible(file, modelData)) {
+                                            parent.color = parent.buttonColor()
+                                        }
                                     }
                                 }
                             }

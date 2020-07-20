@@ -64,8 +64,7 @@ HEADERS = \
     ../../Source/Riff/Riff_Base.h \
     ../../Source/Riff/Riff_Chunks.h \
     ../../Source/Riff/Riff_Handler.h \
-    ../../Source/TinyXml/tinystr.h \
-    ../../Source/TinyXml/tinyxml.h \
+    ../../Source/TinyXml2/tinyxml2.h \
     ../../Source/ZenLib/BitStream.h \
     ../../Source/ZenLib/BitStream_Fast.h \
     ../../Source/ZenLib/BitStream_LE.h \
@@ -134,10 +133,7 @@ SOURCES = \
     ../../Source/Riff/Riff_Chunks_WAVE_MD5_.cpp \
     ../../Source/Riff/Riff_Chunks_WAVE__PMX.cpp \
     ../../Source/Riff/Riff_Handler.cpp \
-    ../../Source/TinyXml/tinystr.cpp \
-    ../../Source/TinyXml/tinyxml.cpp \
-    ../../Source/TinyXml/tinyxmlerror.cpp \
-    ../../Source/TinyXml/tinyxmlparser.cpp \
+    ../../Source/TinyXml2/tinyxml2.cpp \
     ../../Source/ZenLib/Conf.cpp \
     ../../Source/ZenLib/CriticalSection.cpp \
     ../../Source/ZenLib/Dir.cpp \

@@ -37,6 +37,7 @@ public:
     //Widgets
     QTextEdit*          TextEdit;
     QLabel*             Label;
+    QLabel*             Message;
     QDialogButtonBox*   Dialog;
     QPushButton*        Load;
     QPushButton*        Save;
