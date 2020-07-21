@@ -12,6 +12,7 @@
 #include "Riff/Riff_Chunks.h" //Needed for ds64
 #include <iostream>
 #include <cstring>
+#include <iomanip>
 
 #ifdef MACSTORE
 #include "Common/Mac_Helpers.h"
@@ -140,8 +141,14 @@ void Riff_Base::Read (chunk &Chunk_In)
         else
         {
             if (!Global->NoPadding_Accept)
-                throw exception_valid("padding");
-            
+            {
+                ostringstream message;
+                message << Ztring().From_CC4(Chunk.Header.Name).To_UTF8()
+                        << ", missing padding byte at 0x"
+                        << setw(8) << setfill('0') << hex
+                        << Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size+1;
+                throw exception_valid(message.str());
+            }
             //Log
             Global->NoPadding_IsCorrected=true;
 
