@@ -11,6 +11,7 @@
 #include "Riff/Riff_Base.h"
 #include "Riff/Riff_Chunks.h" //Needed for ds64
 #include <iostream>
+#include <iomanip>
 #include <cstring>
 
 #ifdef MACSTORE
@@ -60,40 +61,11 @@ void Riff_Base::Read (chunk &Chunk_In)
     //Trace
     if (Chunk.Header.Level)
     {
-        //Offset
-        if (Global->In.Position_Get()-Chunk.Header.Size<0x10000000)
-            Global->Trace<<'0';
-        if (Global->In.Position_Get()-Chunk.Header.Size<0x1000000)
-            Global->Trace<<'0';
-        if (Global->In.Position_Get()-Chunk.Header.Size<0x100000)
-            Global->Trace<<'0';
-        if (Global->In.Position_Get()-Chunk.Header.Size<0x10000)
-            Global->Trace<<'0';
-        if (Global->In.Position_Get()-Chunk.Header.Size<0x1000)
-            Global->Trace<<'0';
-        if (Global->In.Position_Get()-Chunk.Header.Size<0x100)
-            Global->Trace<<'0';
-        if (Global->In.Position_Get()-Chunk.Header.Size<0x10)
-            Global->Trace<<'0';
-        Global->Trace<<Ztring::ToZtring(Global->In.Position_Get()-Chunk.Header.Size, 16).To_UTF8()<<' ';
+        Global->Trace<<right<<setfill('0')<<setw(Global->Trace_UseDec?10:8)<<Ztring::ToZtring(Global->In.Position_Get()-Chunk.Header.Size, Global->Trace_UseDec?10:16).To_UTF8()<<' ';
 
         //Size
         int64u Size=Chunk.Content.Size+Chunk.Header.Size-8;
-        if (Size<0x10000000)
-            Global->Trace<<'0';
-        if (Size<0x1000000)
-            Global->Trace<<'0';
-        if (Size<0x100000)
-            Global->Trace<<'0';
-        if (Size<0x10000)
-            Global->Trace<<'0';
-        if (Size<0x1000)
-            Global->Trace<<'0';
-        if (Size<0x100)
-            Global->Trace<<'0';
-        if (Size<0x10)
-            Global->Trace<<'0';
-        Global->Trace<<Ztring::ToZtring(Size, 16).To_UTF8()<<' ';
+        Global->Trace<<right<<setfill('0')<<setw(Global->Trace_UseDec?10:8)<<Ztring::ToZtring(Size, Global->Trace_UseDec?10:16).To_UTF8()<<' ';
 
         //Chunk name
         for (size_t Pos=1; Pos<Chunk.Header.Level; Pos++)

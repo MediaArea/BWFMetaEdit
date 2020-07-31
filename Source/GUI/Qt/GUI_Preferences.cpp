@@ -64,6 +64,7 @@ options Groups[Group_Max]=
             {"Tech_Information", "Information", Type_CheckBox, true},
         },
         true,
+        false,
     },
     {
         "Core Metadata",
@@ -103,6 +104,7 @@ options Groups[Group_Max]=
             {"Core_ITCH", "ITCH", Type_CheckBox, true}, //Technician
         },
         true,
+        false,
     },
     {
         "Rules",
@@ -118,6 +120,7 @@ options Groups[Group_Max]=
             {"Rules_EBU_ISRC_Rec", "EBU recommendations about automatic ISRC filling", Type_CheckBox, true},
         },
         true,
+        false,
     },
     {
         "File management",
@@ -131,6 +134,7 @@ options Groups[Group_Max]=
             {"File_NewChunksAtTheEnd", "Place new or expanded BEXT and LIST-INFO chunks at the end of the file", Type_CheckBox, true},
         },
         true,
+        false,
     },
     {
         "MD5",
@@ -143,6 +147,7 @@ options Groups[Group_Max]=
             {"MD5_SwapEndian", "Use big endian for the display of MD5 values", Type_CheckBox, false},
         },
         true,
+        false,
     },
     {
         "Default view",
@@ -156,6 +161,7 @@ options Groups[Group_Max]=
             {"DefaultView_PerFile", "File", Type_RadioButton, true},
         },
         false,
+        true,
     },
     {
         "Table views",
@@ -165,6 +171,16 @@ options Groups[Group_Max]=
             {"Tables_NaturalFileSorting", "Use natural sort order", Type_CheckBox, true},
         },
         false,
+        true,
+    },
+    {
+        "Trace view",
+        Option_Trace_Max,
+        {
+            {"Trace_UseDec", "Use decimal instead of hexadecimal numbers for adresses and sizes (Apply only to newly opened files)", Type_CheckBox, false},
+        },
+        false,
+        true,
     },
 };
 //***************************************************************************
@@ -539,7 +555,7 @@ void GUI_Preferences::OnClicked ()
                                                     CheckBoxes[Group*options::MaxCount+Option2]->setChecked(Main->Menu_Fields_CheckBoxes[Group*options::MaxCount+Option2]->isChecked());
                                             }
                                             break;
-                case Type_RadioButton   :   if (RadioButtons[Group*options::MaxCount+Option]->isChecked()!=Main->Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked())
+                case Type_RadioButton   :   if ((Groups[Group].InTemporaryPrefs || Group==Group_DefaultView) && RadioButtons[Group*options::MaxCount+Option]->isChecked()!=Main->Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked())
                                             {
                                                 //Setting Main view preferences
                                                 Main->Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setChecked(RadioButtons[Group*options::MaxCount+Option]->isChecked());
@@ -547,7 +563,9 @@ void GUI_Preferences::OnClicked ()
                                             break;
                 default                 : ;
             }
-    
+
+    if (CheckBoxes[Group_Trace*options::MaxCount+Option_Trace_UseDec]->isChecked()!=Main->Trace_UseDec_Get())
+        Main->Trace_UseDec_Set(CheckBoxes[Group_Trace*options::MaxCount+Option_Trace_UseDec]->isChecked());
 }
 
 //---------------------------------------------------------------------------
@@ -582,6 +600,8 @@ void GUI_Preferences::Create()
 {
     CheckBoxes=new QCheckBox*[Group_Max*options::MaxCount];
     RadioButtons=new QRadioButton*[Group_Max*options::MaxCount];
+    QVBoxLayout* ViewsOptions=new QVBoxLayout();
+    ViewsOptions->addStretch();
     
     for (size_t Kind=0; Kind<Group_Max; Kind++)
     {
@@ -603,13 +623,31 @@ void GUI_Preferences::Create()
                 default                         : ;
             }
         }
-        QWidget* Columns_Widget=new QWidget();
-        Columns->addStretch();
-        Columns_Widget->setLayout(Columns);
-        QScrollArea* ScrollArea=new QScrollArea();
-        ScrollArea->setWidget(Columns_Widget);
-        Central->addTab(ScrollArea, tr(Groups[Kind].Name));
+
+        if (Groups[Kind].ViewOptions)
+        {
+            QGroupBox* Box=new QGroupBox(tr(Groups[Kind].Name));
+            Box->setLayout(Columns);
+            ViewsOptions->addWidget(Box);
+        }
+        else
+        {
+            QWidget* Columns_Widget=new QWidget();
+            Columns->addStretch();
+            Columns_Widget->setLayout(Columns);
+            QScrollArea* ScrollArea=new QScrollArea();
+            ScrollArea->setWidget(Columns_Widget);
+            Central->addTab(ScrollArea, tr(Groups[Kind].Name));
+        }
     }
+
+    //Views related options
+    QScrollArea* ScrollArea=new QScrollArea();
+    QWidget* Widget=new QWidget();
+    Widget->setLayout(ViewsOptions);
+
+    ScrollArea->setWidget(Widget);
+    Central->addTab(ScrollArea, "Views options");
 
     //Extra - BackupDirectory
     Extra_BackupDirectory_Default=new QRadioButton("Default backup directory");

@@ -41,6 +41,7 @@ enum group
     Group_MD5,
     Group_DefaultView,
     Group_Tables,
+    Group_Trace,
     Group_Max
 };
 
@@ -95,6 +96,12 @@ enum option_tables
     Option_Tables_Max
 };
 
+enum option_trace
+{
+    Option_Trace_UseDec,
+    Option_Trace_Max
+};
+
 enum option_directories
 {
     Option_Directories_BackupDefault,
@@ -125,6 +132,7 @@ struct options
     size_t      Option_Size;
     option      Option[MaxCount];
     bool        InTemporaryPrefs;
+    bool        ViewOptions;
 };
 
 class GUI_Preferences : public QDialog

@@ -84,6 +84,8 @@ Core::Core()
     Batch_IsBackuping=false;
     Out_Log_cout=false;
 
+    Trace_UseDec=false;
+
     //Status
     Text_stderr_Updated=false;
     Files_Modified_NotWritten_Count=0;
@@ -1665,6 +1667,7 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;
         Handler->second.Riff->Bext_DefaultVersion=Bext_DefaultVersion;
         Handler->second.Riff->Bext_MaxVersion=Bext_MaxVersion;
+        Handler->second.Riff->Trace_UseDec=Trace_UseDec;
 
         bool IsModified_Old=Handler->second.Riff->IsModified_Get();
 
