@@ -23,7 +23,6 @@
 
 using namespace std;
 using namespace ZenLib;
-using namespace tinyxml2;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
@@ -1513,8 +1512,8 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
 
     else if (Field=="axml" || Field=="ixml" || Field=="xmp")
     {
-        XMLDocument Document;
-        if (!Value.empty() && Document.Parse(Value.c_str())!=XML_SUCCESS)
+        tinyxml2::XMLDocument Document;
+        if (!Value.empty() && Document.Parse(Value.c_str())!=tinyxml2::XML_SUCCESS)
             IsValid_Warnings<<"xml validation error "<<Document.ErrorName()<<" at line "<<Ztring().From_Number(Document.ErrorLineNum()).To_UTF8();
     }
 
