@@ -253,7 +253,7 @@ Control {
                         Repeater {
                             model: ["XMP", "aXML", "iXML"]
                             delegate: Text {
-                                function buttonColor(hovered = false) {
+                                function buttonColor(hovered) {
                                     if (!Model.valid(file, modelData, Model.value(file, modelData)))
                                        return hovered?"darkred":root.red
                                     else if (Model.lastValidationWarning(file).length > 0)
@@ -266,7 +266,7 @@ Control {
                                         return "lightgray"
                                 }
                                 text: modelData
-                                color: buttonColor()
+                                color: buttonColor(false)
                                 horizontalAlignment: Text.AlignHCenter
                                 MouseArea {
                                     anchors.fill: parent
@@ -275,7 +275,7 @@ Control {
                                     onClicked: {
                                         if(Model.visible(file, modelData)) {
                                             Model.editField(file, modelData)
-                                            parent.color = parent.buttonColor()
+                                            parent.color = parent.buttonColor(false)
                                         }
                                     }
                                     onEntered: {
@@ -285,7 +285,7 @@ Control {
                                     }
                                     onExited: {
                                         if(Model.visible(file, modelData)) {
-                                            parent.color = parent.buttonColor()
+                                            parent.color = parent.buttonColor(false)
                                         }
                                     }
                                 }
