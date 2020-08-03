@@ -98,7 +98,9 @@ GUI_Main::GUI_Main(Core* _C)
                 default                             : ;
             }
     }
-    
+
+    Trace_UseDec_Set(Preferences->Group_Option_Checked_Get(Group_Trace, Option_Trace_UseDec));
+
     /*
     Menu_View_Technical_Table->setChecked(true);
     emit OnMenu_View_Technical_Table();
