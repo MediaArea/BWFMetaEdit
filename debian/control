@@ -28,7 +28,7 @@ Description: BWF MetaEdit provides:
 Package: bwfmetaedit-gui
 Section: utils
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, qml-module-qtquick2, qml-module-qtquick-layouts, qml-module-qtquick-controls2
 Description: BWF MetaEdit provides:
  .
  (To be filled)
