@@ -33,7 +33,6 @@
 #endif //_WIN32
 using namespace ZenLib;
 using namespace std;
-using namespace tinyxml2;
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -915,20 +914,20 @@ int Core::Menu_File_Import_Core(const string &FileName)
          && Buffer[4]=='l'
         )
         {
-            XMLDocument document;
-            if (document.LoadFile(FileName.c_str())==XML_SUCCESS)
+            tinyxml2::XMLDocument document;
+            if (document.LoadFile(FileName.c_str())==tinyxml2::XML_SUCCESS)
             {
-	            XMLElement* Root=document.FirstChildElement("conformance_point_document");
+	            tinyxml2::XMLElement* Root=document.FirstChildElement("conformance_point_document");
 	            if (Root)
 	            {
-		            XMLElement* File=Root->FirstChildElement("File");
+		            tinyxml2::XMLElement* File=Root->FirstChildElement("File");
                     while (File)
 	                {
                         string FileName=File->Attribute("name");
-                        XMLElement* Core=File->FirstChildElement("Core");
+                        tinyxml2::XMLElement* Core=File->FirstChildElement("Core");
 		                if (Core)
 		                {
-			                XMLElement* Element=Core->FirstChildElement();
+			                tinyxml2::XMLElement* Element=Core->FirstChildElement();
 			                while (Element)
 			                {
                                 string Field=Element->Name();
