@@ -4,6 +4,20 @@ Notes:
 - Deleted
 x Correction
 
+Version 20.08, 2020-08-11
+-------------
+x Fix compilation issues with non Unicode on Windows (Issue #135)
+x Fix crash when scrolling to end of File view (Issue #149)
++ Users can copy/paste between fields (Issue #133)
++ XMP, aXML, iXML is valid XML (Issue #125)
++ Add option to show address and size as decimal values in trace view (Issue #152)
++ Expand verbosity of truncation errors (Issue #95)
++ Expand verbosity of padding errors (Issue #154)
++ Add sorting options for filename column in tables views (Issue #96)
++ Allow numerical table sorting (Issue #97)
++ Handle non-EBU R98 coding history values (Issue #150)
++ Other small codebase improvements
+
 Version 20.05, 2020-05-28
 -------------
 + "Fill all open files with this value" option (Issue #110)
