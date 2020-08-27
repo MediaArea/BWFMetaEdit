@@ -206,7 +206,7 @@ private:
 
     //Helpers
     void View_Refresh(view View_New=View_None);
-    bool Close(const std::string &FileName=std::string());
+    bool Close(const std::string &FileName=std::string(), bool AndExit=false);
     std::string* ToClose_FileName;
     bool Exit;
     enum open_timer_init
