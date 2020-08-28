@@ -261,7 +261,7 @@ void GUI_Main::dropEvent(QDropEvent *Event)
 //---------------------------------------------------------------------------
 void GUI_Main::closeEvent(QCloseEvent *Event)
 {
-    if (Close() || Exit)
+    if (Exit || Close(string(), true))
         Event->accept();
     else
         Event->ignore();
@@ -272,7 +272,7 @@ void GUI_Main::closeEvent(QCloseEvent *Event)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool GUI_Main::Close(const string &FileName)
+bool GUI_Main::Close(const string &FileName, bool AndExit)
 {
     if (FileName.empty())
     {
@@ -294,7 +294,7 @@ bool GUI_Main::Close(const string &FileName)
             {
                 case QMessageBox::Save    : // Save was clicked
                                             OnMenu_File_Save_All();
-                                            Exit=true;
+                                            Exit=AndExit;
                                             return false; // Work in progress in another thread
                                             break;
                 case QMessageBox::Discard : // Don't Save was clicked
