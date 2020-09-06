@@ -30,7 +30,7 @@ GUI_Help::GUI_Help(QWidget * parent)
 : QDialog(parent)
 {
     move(QApplication::desktop()->screenGeometry().width()/10, QApplication::desktop()->screenGeometry().height()/10);
-    resize(QApplication::desktop()->screenGeometry().width()-QApplication::desktop()->screenGeometry().width()/10*2, QApplication::desktop()->screenGeometry().height()/2);
+    resize(QApplication::desktop()->screenGeometry().width()-QApplication::desktop()->screenGeometry().width()/10*6, QApplication::desktop()->screenGeometry().height()/2);
 
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
     setWindowTitle("BWF MetaEdit help");
