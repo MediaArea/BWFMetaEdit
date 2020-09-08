@@ -104,7 +104,7 @@ class CodingHistoryDialog_Delegate : public QItemDelegate
     Q_OBJECT
 
 public:
-    CodingHistoryDialog_Delegate(QObject *parent = 0);
+    CodingHistoryDialog_Delegate(bool Rules_Recommendations, QObject *parent = 0);
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
@@ -115,6 +115,9 @@ public:
 
 protected:
     virtual void Fill(QComboBox* Editor) const {}
+
+private:
+    bool Rules_Recommendations;
 };
 
 //***************************************************************************
@@ -125,7 +128,7 @@ protected:
 class _NAME##Delegate : public CodingHistoryDialog_Delegate \
     { \
     public: \
-        _NAME##Delegate(QObject *parent = 0) : CodingHistoryDialog_Delegate() {} \
+        _NAME##Delegate(bool Rules_Recommendations, QObject *parent = 0) : CodingHistoryDialog_Delegate(Rules_Recommendations, parent) {} \
     \
     protected: \
         void Fill(QComboBox* Editor) const; \

@@ -99,15 +99,17 @@ void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft,
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-CodingHistoryDialog_Delegate::CodingHistoryDialog_Delegate(QObject *parent)
+CodingHistoryDialog_Delegate::CodingHistoryDialog_Delegate(bool Rules_Recommendations_, QObject *parent)
 : QItemDelegate(parent)
 {
+    Rules_Recommendations=Rules_Recommendations_;
 }
 
 //---------------------------------------------------------------------------
 QWidget *CodingHistoryDialog_Delegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/* option */, const QModelIndex &/* index */) const
 {
     QComboBox* Editor=new QComboBox(parent);
+    Editor->setEditable(!Rules_Recommendations);
     Editor->installEventFilter(const_cast<CodingHistoryDialog_Delegate*>(this));
 
     return Editor;
@@ -120,10 +122,17 @@ void CodingHistoryDialog_Delegate::setEditorData(QWidget *editor, const QModelIn
     QComboBox* Editor=static_cast<QComboBox*>(editor);
 
     Fill(Editor);
-    
+
+    bool Found=false;
     for (int Pos=0; Pos<Editor->count(); Pos++)
         if (Value==Editor->itemText(Pos))
+         {
+            Found=true;
             Editor->setCurrentIndex(Pos);
+         }
+
+    if (!Rules_Recommendations && !Value.isEmpty() && !Found)
+        Editor->setCurrentText(Value);
 }
 
 //---------------------------------------------------------------------------
@@ -525,11 +534,11 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
         }
     }
 
-    Table->setItemDelegateForColumn(0, new CodingAlgorithmDelegate);
-    Table->setItemDelegateForColumn(1, new SamplingFrequencyDelegate);
-    Table->setItemDelegateForColumn(2, new BitRateDelegate);
-    Table->setItemDelegateForColumn(3, new WordLengthDelegate);
-    Table->setItemDelegateForColumn(4, new ModeDelegate);
+    Table->setItemDelegateForColumn(0, new CodingAlgorithmDelegate(Rules_Recommendations));
+    Table->setItemDelegateForColumn(1, new SamplingFrequencyDelegate(Rules_Recommendations));
+    Table->setItemDelegateForColumn(2, new BitRateDelegate(Rules_Recommendations));
+    Table->setItemDelegateForColumn(3, new WordLengthDelegate(Rules_Recommendations));
+    Table->setItemDelegateForColumn(4, new ModeDelegate(Rules_Recommendations));
 
     Table->resizeColumnsToContents();
     Table->resizeRowsToContents();
