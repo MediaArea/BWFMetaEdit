@@ -59,6 +59,9 @@ void Riff_WAVE::Read_Internal ()
                                         Subs.erase(Subs.begin()+Pos); //Removing the chunk
                                         Pos--;
                                         break;
+            case Elements::WAVE      :
+                                        throw exception_valid("imbricated WAVE chunk");
+                                        break;
             default                  :  break;
         }
 }
