@@ -299,16 +299,16 @@ Control {
                         Text {
                            id:errors
                            text: "<h4><font color='" + root.red + "'>Errors:</font></h4>" + "<font color='" + root.red + "'>" + Model.errors(file) + "</font>"
-                           width: root.width - 20 // Can't refer to parent.with dues to bug,
-                                                  // use widget with instead and give room for the scroll bar
+                           width: root.width - 20 // Can't refer to parent.width dues to bug,
+                                                  // use widget width instead and give room for the scroll bar
                            visible: Model.errors(file).length > 0
                            wrapMode: Text.Wrap
                         }
                         Text {
                            id: informations
                            text: "<h4>Informations:</h4>" +  Model.informations(file)
-                           width: root.width - 20 // Can't refer to parent.with dues to bug,
-                                                  // use widget with instead and give room for the scroll bar
+                           width: root.width - 20 // Can't refer to parent.width dues to bug,
+                                                  // use widget width instead and give room for the scroll bar
                            visible: Model.informations(file).length > 0
                            wrapMode: Text.Wrap
                         }
@@ -326,8 +326,8 @@ Control {
                                message+="</font>"
                                return message;
                            }
-                           width: root.width - 20 // Can't refer to parent.with dues to bug,
-                                              // use widget with instead and give room for the scroll bar
+                           width: root.width - 20 // Can't refer to parent.width dues to bug,
+                                              // use widget width instead and give room for the scroll bar
                            visible: Model.unsupportedChunks(file).length > 0
                            wrapMode: Text.Wrap
                         }
@@ -356,8 +356,8 @@ Control {
                                 text: "<h4>" + section + "</h4>"
                             }
                             Flow {
-                                width: root.width - 20 // Can't refer to parent.with dues to bug,
-                                                       // use widget with instead and give room for the scroll bar
+                                width: root.width - 20 // Can't refer to parent.width dues to bug,
+                                                       // use widget width instead and give room for the scroll bar
                                 spacing: 5
                                 Repeater {
                                     model: fields
