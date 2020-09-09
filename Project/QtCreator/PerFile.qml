@@ -136,7 +136,7 @@ Control {
                                              "<path d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/>",
                                              "<path d='M0 0h24v24H0z' fill='none'/>",
                                            "</svg>"].join('')
-                        source: Model.valid(file) ? (editMode ? displaySvg.arg("gray") : editSvg.arg("gray")) : editSvg.arg("whitesmoke")
+                        source: Model.valid(file) ? (editMode ? displaySvg.arg("gray") : editSvg.arg("gray")) : editSvg.arg("lightgray")
                         fillMode: Image.PreserveAspectFit
                         MouseArea {
                             anchors.fill: parent
@@ -172,7 +172,7 @@ Control {
                                              "<path d='M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z'/>",
                                              "<path d='M0 0h24v24H0z' fill='none'/>",
                                            "</svg>"].join('')
-                        source: modified ? svg.arg("orange") : svg.arg("gray")
+                        source: modified ? svg.arg("orange") : svg.arg("lightgray")
                         fillMode: Image.PreserveAspectFit
                         MouseArea {
                             anchors.fill: parent
@@ -243,7 +243,7 @@ Control {
                     RowLayout {
                         id: details
                         anchors { left: parent.left; right: parent.right }
-                        spacing: 5
+                        spacing: 10
                         Text {
                             font.pointSize: 10
                             elide: Text.ElideRight
@@ -252,7 +252,7 @@ Control {
                         }
                         Repeater {
                             model: ["XMP", "aXML", "iXML"]
-                            delegate: Text {
+                            delegate: Item {
                                 function buttonColor(hovered) {
                                     if (!Model.valid(file, modelData, Model.value(file, modelData)))
                                        return hovered?"darkred":root.red
@@ -265,9 +265,27 @@ Control {
                                     else
                                         return "lightgray"
                                 }
-                                text: modelData
-                                color: buttonColor(false)
-                                horizontalAlignment: Text.AlignHCenter
+                                width: text.width + icon.width
+                                height: text.height
+                                Text {
+                                    id: text
+                                    text: modelData
+                                    color: parent.buttonColor(false)
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+                                Image {
+                                    property var svg: ["data:image/svg+xml;utf8,",
+                                        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
+                                        "<path d='M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/>",
+                                        "<path d='M0 0h24v24H0z' fill='none'/>",
+                                        "</svg>"].join('')
+                                    id: icon
+                                    width: 16
+                                    height: 16
+                                    source: svg.arg(parent.buttonColor(false))
+                                    fillMode: Image.PreserveAspectFit
+                                    anchors { top: text.top; left: text.right; topMargin: (text.height - height) / 2 }
+                                }
                                 MouseArea {
                                     anchors.fill: parent
                                     hoverEnabled: true
@@ -275,17 +293,31 @@ Control {
                                     onClicked: {
                                         if(Model.visible(file, modelData)) {
                                             Model.editField(file, modelData)
-                                            parent.color = parent.buttonColor(false)
+                                            text.color = parent.buttonColor(false)
+                                            icon.source = icon.svg.arg(parent.buttonColor(false))
                                         }
                                     }
                                     onEntered: {
                                         if(Model.visible(file, modelData)) {
-                                            parent.color = parent.buttonColor(true)
+                                            text.color = parent.buttonColor(true)
+                                            icon.source = icon.svg.arg(parent.buttonColor(true))
                                         }
                                     }
                                     onExited: {
                                         if(Model.visible(file, modelData)) {
-                                            parent.color = parent.buttonColor(false)
+                                            text.color = parent.buttonColor(false)
+                                            icon.source = icon.svg.arg(parent.buttonColor(false))
+                                        }
+                                    }
+                                    ToolTip {
+                                        property var valid: Model.valid(file, modelData, Model.value(file, modelData))
+                                        property var message: valid ? Model.lastValidationWarning(file) : Model.lastValidationError(file)
+                                        visible: message.length > 0 && parent.containsMouse
+                                        delay: 500
+                                        // Basic wrapping of text since QML ToolTip Doesn't have option for that
+                                        text: message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
+                                        background: Rectangle {
+                                            border.color: parent.valid ? "orange" : root.red
                                         }
                                     }
                                 }
