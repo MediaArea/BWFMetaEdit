@@ -55,6 +55,8 @@ public:
     void Bext_Toggle_Set(bool Version);
     bool Trace_UseDec_Get();
     void Trace_UseDec_Set(bool UseDec);
+    bool Trace_Verbose_Get();
+    void Trace_Verbose_Set(bool Verbose);
     void BackupDirectory_Set(const string &Value);
     void LogFile_Set(const string &Value);
 

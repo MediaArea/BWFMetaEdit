@@ -84,6 +84,7 @@ Core::Core()
     Out_Log_cout=false;
 
     Trace_UseDec=false;
+    Trace_Verbose=false;
 
     //Status
     Text_stderr_Updated=false;
@@ -1667,6 +1668,7 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->Bext_DefaultVersion=Bext_DefaultVersion;
         Handler->second.Riff->Bext_MaxVersion=Bext_MaxVersion;
         Handler->second.Riff->Trace_UseDec=Trace_UseDec;
+        Handler->second.Riff->Trace_Verbose=Trace_Verbose;
 
         bool IsModified_Old=Handler->second.Riff->IsModified_Get();
 

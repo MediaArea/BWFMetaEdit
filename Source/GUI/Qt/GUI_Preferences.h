@@ -99,6 +99,7 @@ enum option_tables
 enum option_trace
 {
     Option_Trace_UseDec,
+    Option_Trace_Verbose,
     Option_Trace_Max
 };
 
