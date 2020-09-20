@@ -1883,7 +1883,7 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
         return true; //Nothing to do
 
     //Overwrite_Rejec
-    if (Overwrite_Reject && Chunk_Strings!=NULL && !Chunk_Strings->Strings[Field].empty())
+    if (Overwrite_Reject && Chunk_Strings!=NULL && !Chunk_Strings->Strings[Field].empty() && !IsModified_Internal(Field))
     {
         Errors<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": overwriting is not authorized ("<<Field<<")"<<endl;
         return false;
