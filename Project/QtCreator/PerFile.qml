@@ -407,7 +407,10 @@ Control {
                                                 }
                                                 onActiveFocusChanged: {
                                                     if (activeFocus) {
-                                                        Model.setSelected(file)
+                                                        Model.setSelected(file, name)
+                                                    }
+                                                    else {
+                                                        Model.deselect(file, name)
                                                     }
                                                 }
                                                 MouseArea {
@@ -416,6 +419,7 @@ Control {
                                                     propagateComposedEvents: true
                                                     acceptedButtons: Qt.RightButton
                                                     onClicked: {
+                                                        parent.forceActiveFocus();
                                                         if (Model.valid(file, name, parent.text)) {
                                                             Model.showCoreMenu(mapToGlobal(mouse.x, mouse.y), file, name);
                                                         }
