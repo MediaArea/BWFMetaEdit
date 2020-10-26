@@ -314,7 +314,18 @@ Control {
                         }
                         Text {
                            id: unsupported
-                           text: "<h4><font color='orange'>Unsupported chunks:</font></h4>" + "<font color='orange'>" + Model.unsupportedChunks(file) + "</font>"
+                           text: {
+                               var chunks = Model.unsupportedChunks(file);
+                               var message = "<font color='orange'>";
+                               if (chunks.split(' ').length > 1) {
+                                   message += "Unsupported chunks are found (" + chunks + "), they are ignored but kept when saving the file."
+                               }
+                               else {
+                                   message += "Unsupported chunk found (" + chunks + "), It's ignored but kept when saving the file."
+                               }
+                               message+="</font>"
+                               return message;
+                           }
                            width: root.width - 20 // Can't refer to parent.with dues to bug,
                                               // use widget with instead and give room for the scroll bar
                            visible: Model.unsupportedChunks(file).length > 0
