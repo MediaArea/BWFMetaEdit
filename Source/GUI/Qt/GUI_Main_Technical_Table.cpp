@@ -136,7 +136,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         //User interaction
         QString FileNamesQ = QFileDialog::getSaveFileName(  this,
                                                             tr("Export file..."),
-                                                            "",
+                                                            QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                             "XML files (*.xml);;All files (*.*)");
         if (FileNamesQ.isEmpty())
             return;
@@ -154,7 +154,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         //User interaction
         QString FileNamesQ = QFileDialog::getOpenFileName(  this,
                                                             tr("Import file..."),
-                                                            "",
+                                                            QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                             (Field=="XMP" || Field=="aXML" || Field=="iXML")?"XML files (*.xml);;All files (*.*)":"Text files (*.txt);;All files (*.*)");
         if (FileNamesQ.isEmpty())
             return;

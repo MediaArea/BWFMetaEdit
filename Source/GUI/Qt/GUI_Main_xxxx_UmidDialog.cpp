@@ -998,7 +998,7 @@ void GUI_Main_xxxx_UmidDialog::OnTextChanged (const QString &)
 void GUI_Main_xxxx_UmidDialog::OnMenu_Load()
 {
     //User interaction
-    QString FileNamesQ = QFileDialog::getOpenFileName(this, "", "", "");
+    QString FileNamesQ = QFileDialog::getOpenFileName(this, "", QString::fromUtf8(C->OpenSaveFolder.c_str()), "");
     
     if (FileNamesQ.isEmpty())
         return;
@@ -1045,7 +1045,7 @@ void GUI_Main_xxxx_UmidDialog::OnMenu_Load()
 void GUI_Main_xxxx_UmidDialog::OnMenu_Save()
 {
     //User interaction
-    QString FileNamesQ = QFileDialog::getSaveFileName(this, "", "", "");
+    QString FileNamesQ = QFileDialog::getSaveFileName(this, "", QString::fromUtf8(C->OpenSaveFolder.c_str()), "");
     
     if (FileNamesQ.isEmpty())
         return;

@@ -328,7 +328,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::OnAccept ()
 void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Load()
 {
     //User interaction
-    QString FileNamesQ = QFileDialog::getOpenFileName(this, "", "", "");
+    QString FileNamesQ = QFileDialog::getOpenFileName(this, "", QString::fromUtf8(C->OpenSaveFolder.c_str()), "");
     
     if (FileNamesQ.isEmpty())
         return;
@@ -375,7 +375,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Save()
         List2Text();
 
     //User interaction
-    QString FileNamesQ = QFileDialog::getSaveFileName(this, "", "", "");
+    QString FileNamesQ = QFileDialog::getSaveFileName(this, "", QString::fromUtf8(C->OpenSaveFolder.c_str()), "");
     
     if (FileNamesQ.isEmpty())
         return;

@@ -141,7 +141,7 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Load()
     //User interaction
     QString FileNamesQ = QFileDialog::getOpenFileName(  this,
                                                         tr("Import file..."),
-                                                        "",
+                                                        QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                         (Field=="XMP" || Field=="aXML" || Field=="iXML")?"XML files (*.xml);;All files (*.*)":"Text files (*.txt);;All files (*.*)");
     
     if (FileNamesQ.isEmpty())
@@ -186,7 +186,7 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Save()
     //User interaction
     QString FileNamesQ = QFileDialog::getSaveFileName(  this,
                                                         tr("Export file..."),
-                                                        "",
+                                                        QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                         (Field=="XMP" || Field=="aXML" || Field=="iXML")?"XML files (*.xml);;All files (*.*)":"Text files (*.txt);;All files (*.*)");
     
     if (FileNamesQ.isEmpty())
