@@ -501,11 +501,41 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
      && Value__[5]==__T('/')
      && Value__[6]==__T('/'))
     {
-        if (!Value__.Assign_FromFile(Value__.substr(7, string::npos)))
+        File F;
+        if (!F.Open(Value__.substr(7, string::npos)))
         {
             Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value__.To_UTF8()<<", File does not exist)"<<endl;
             return false;
         }
+
+        int64u F_Size=F.Size_Get();
+        if (F_Size>((size_t)-1)-1)
+        {
+            Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value__.To_UTF8()<<", Unable to open file)"<<endl;
+            return false;
+        }
+
+        //Creating buffer
+        int8u* Buffer=new int8u[(size_t)F_Size+1];
+        size_t Buffer_Offset=0;
+
+        //Reading the file
+        while(Buffer_Offset<F_Size)
+        {
+            size_t BytesRead=F.Read(Buffer+Buffer_Offset, (size_t)F_Size-Buffer_Offset);
+            if (BytesRead==0)
+                break; //Read is finished
+            Buffer_Offset+=BytesRead;
+        }
+        if (Buffer_Offset<F_Size)
+        {
+            Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value__.To_UTF8()<<", Error while reading file)"<<endl;
+            delete[] Buffer;
+            return false;
+        }
+        Buffer[Buffer_Offset]='\0';
+
+        Value__=Ztring().From_UTF8((const char*)Buffer);
     }
     string Value=Value__.To_UTF8();
 
