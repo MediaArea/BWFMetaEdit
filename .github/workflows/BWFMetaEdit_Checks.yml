@@ -1,0 +1,48 @@
+name: Checks
+
+on: [push, pull_request]
+
+jobs:
+  Unix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Dependencies
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            sudo apt-get update -y
+            sudo apt-get install -y libxml2-utils libxml2-dev zlib1g-dev qtbase5-dev qtdeclarative5-dev qtquickcontrols2-5-dev libqt5svg5-dev qt5-qmake qt5-default ffmpeg
+          fi
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            brew install automake qt ffmpeg
+          fi
+      - name: Configure
+        run: |
+          cd Project/GNU/CLI
+          autoreconf -if
+          ./configure
+      - name: Build
+        run: |
+          cd Project/GNU/CLI
+          make
+      - name: Check
+        run: |
+          cd Project/GNU/CLI
+          make check
+      - name: Configure GUI
+        run: |
+          cd Project/QtCreator
+          export PATH=/usr/local/opt/qt/bin:$PATH
+          ./prepare INCLUDEPATH+=/usr/local/include CONFIG+=c++11 -after QMAKE_MACOSX_DEPLOYMENT_TARGET=10.9
+      - name: Build GUI
+        run: |
+          cd Project/QtCreator
+          export PATH=/usr/local/opt/qt/bin:$PATH
+          make
