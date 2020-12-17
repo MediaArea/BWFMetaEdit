@@ -100,6 +100,7 @@ GUI_Main::GUI_Main(Core* _C)
     }
 
     Trace_UseDec_Set(Preferences->Group_Option_Checked_Get(Group_Trace, Option_Trace_UseDec));
+    Trace_Verbose_Set(Preferences->Group_Option_Checked_Get(Group_Trace, Option_Trace_Verbose));
 
     /*
     Menu_View_Technical_Table->setChecked(true);
@@ -437,6 +438,19 @@ bool GUI_Main::Trace_UseDec_Get()
 void GUI_Main::Trace_UseDec_Set(bool UseDec)
 {
     C->Trace_UseDec=UseDec;
+    C->Menu_File_Options_Update();
+}
+
+//---------------------------------------------------------------------------
+bool GUI_Main::Trace_Verbose_Get()
+{
+    return C->Trace_Verbose;
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::Trace_Verbose_Set(bool Verbose)
+{
+    C->Trace_Verbose=Verbose;
     C->Menu_File_Options_Update();
 }
 

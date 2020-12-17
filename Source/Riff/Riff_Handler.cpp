@@ -2057,6 +2057,7 @@ void Riff_Handler::Options_Update_Internal()
     Chunks->Global->EmbedMD5=EmbedMD5;
     Chunks->Global->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;
     Chunks->Global->Trace_UseDec=Trace_UseDec;
+    Chunks->Global->Trace_Verbose=Trace_Verbose;
 
     //MD5
     if (Chunks->Global->VerifyMD5)

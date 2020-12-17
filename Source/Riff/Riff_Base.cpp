@@ -72,7 +72,40 @@ void Riff_Base::Read (chunk &Chunk_In)
         for (size_t Pos=1; Pos<Chunk.Header.Level; Pos++)
             Global->Trace<<"     ";
         Global->Trace<<Ztring().From_CC4(Chunk.Header.Name).To_UTF8();
+
+        if (Global->Trace_Verbose &&
+            Chunk.Header.Name!=Elements::LIST &&
+            Chunk.Header.Name!=Elements::RIFF &&
+            Chunk.Header.Name!=Elements::RF64 &&
+            Chunk.Header.Name!=Elements::WAVE &&
+            Chunk.Header.Name!=Elements::WAVE_data &&
+            Chunk.Header.Name!=Elements::WAVE_INFO &&
+            Chunk.Header.Name!=Elements::WAVE_filr &&
+            Chunk.Header.Name!=Elements::WAVE_FILR &&
+            Chunk.Header.Name!=Elements::WAVE_fllr &&
+            Chunk.Header.Name!=Elements::WAVE_FLLR &&
+            Chunk.Header.Name!=Elements::WAVE_junk &&
+            Chunk.Header.Name!=Elements::WAVE_JUNK &&
+            Chunk.Header.Name!=Elements::WAVE_junq &&
+            Chunk.Header.Name!=Elements::WAVE_JUNQ &&
+            Chunk.Header.Name!=Elements::WAVE_pad_ &&
+            Chunk.Header.Name!=Elements::WAVE_PAD_ &&
+            Chunk.Content.Size)
+        {
         
+            int64u Position_Save=Global->In.Position_Get();
+            for (int64u Offset=0; Offset<(Chunk.Content.Size<256?Chunk.Content.Size:256); Offset++)
+            {
+                int8u Data;
+                if (Chunk.File_In_Position+Chunk.Header.Size+Offset>=Global->In.Size_Get() || Global->In.Read(&Data, 1)==0)
+                    break;
+                if (Offset==0)
+                    Global->Trace<<" ";
+                Global->Trace<<right<<setfill('0')<<setw(2)<<Ztring::ToZtring(Data, 16).To_UTF8();
+            }
+            Global->In.GoTo(Position_Save);
+        }
+
         //Size
         /*
         for (size_t Pos=Chunk.Header.Level; Pos<4; Pos++)

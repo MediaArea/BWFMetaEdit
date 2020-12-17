@@ -135,6 +135,7 @@ public:
     Ztring                              ApplicationFolder;
     Ztring                              LogFile;
     bool                                Trace_UseDec;
+    bool                                Trace_Verbose;
 
     //Status
     void                                StdOut(string Text);

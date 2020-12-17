@@ -178,6 +178,7 @@ options Groups[Group_Max]=
         Option_Trace_Max,
         {
             {"Trace_UseDec", "Use decimal instead of hexadecimal numbers for adresses and sizes (Apply only to newly opened files)", Type_CheckBox, false},
+            {"Trace_Verbose", "Show the first 256 bytes of each non-audio data chunks content (Apply only to newly opened files)", Type_CheckBox, false},
         },
         false,
         true,
@@ -566,6 +567,9 @@ void GUI_Preferences::OnClicked ()
 
     if (CheckBoxes[Group_Trace*options::MaxCount+Option_Trace_UseDec]->isChecked()!=Main->Trace_UseDec_Get())
         Main->Trace_UseDec_Set(CheckBoxes[Group_Trace*options::MaxCount+Option_Trace_UseDec]->isChecked());
+
+    if (CheckBoxes[Group_Trace*options::MaxCount+Option_Trace_Verbose]->isChecked()!=Main->Trace_Verbose_Get())
+        Main->Trace_Verbose_Set(CheckBoxes[Group_Trace*options::MaxCount+Option_Trace_Verbose]->isChecked());
 }
 
 //---------------------------------------------------------------------------

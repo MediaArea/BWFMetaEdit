@@ -219,6 +219,7 @@ public:
         bool                Out_Buffer_File_IsModified;
         bool                IsRF64;
         bool                Trace_UseDec;
+        bool                Trace_Verbose;
 
         CriticalSection     CS;
         float               Progress;
@@ -250,6 +251,7 @@ public:
             Out_Buffer_File_IsModified=false;
             IsRF64=false;
             Trace_UseDec=false;
+            Trace_Verbose=false;
             Progress=0;
             Canceling=false;
         }

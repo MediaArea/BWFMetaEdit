@@ -110,6 +110,7 @@ public:
     bool            EmbedMD5;
     bool            EmbedMD5_AuthorizeOverWritting;
     bool            Trace_UseDec;
+    bool            Trace_Verbose;
     unsigned short  Bext_DefaultVersion;
     unsigned short  Bext_MaxVersion;
     void            Options_Update();
