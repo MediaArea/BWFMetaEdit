@@ -441,6 +441,12 @@ void GUI_Main::Trace_UseDec_Set(bool UseDec)
 }
 
 //---------------------------------------------------------------------------
+void GUI_Main::OpenSaveDirectory_Set(const string &Value)
+{
+    C->OpenSaveFolder=Value;
+}
+
+//---------------------------------------------------------------------------
 void GUI_Main::BackupDirectory_Set(const string &Value)
 {
     C->ApplicationFolder=Ztring().From_UTF8(Value);

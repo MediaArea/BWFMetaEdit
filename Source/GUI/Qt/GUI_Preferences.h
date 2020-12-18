@@ -163,8 +163,12 @@ private:
     void OnRejected();
     void OnDialogClicked(QAbstractButton*);
     void OnClicked();
+    void OnExtra_OpenSaveDirectory_Specific_RadioToggled(bool Checked);
+    void OnExtra_OpenSaveDirectory_Specific_BrowseClicked(bool Checked);
     void OnExtra_BackupDirectory_Specific_RadioToggled(bool Checked);
+    void OnExtra_BackupDirectory_Specific_BrowseClicked(bool Checked);
     void OnExtra_LogFile_Activated_RadioToggled(bool Checked);
+    void OnExtra_LogFile_Activated_BrowseClicked(bool Checked);
 
 private:
     void Create();
@@ -177,12 +181,18 @@ private:
     GUI_Main* Main;
     QDialogButtonBox* Dialog;
 
+    QRadioButton*   Extra_OpenSaveDirectory_Default;
+    QRadioButton*   Extra_OpenSaveDirectory_Specific_Radio;
+    QLineEdit*      Extra_OpenSaveDirectory_Specific;
+    QPushButton*    Extra_OpenSaveDirectory_Specific_Browse;
     QRadioButton*   Extra_BackupDirectory_Default;
     QRadioButton*   Extra_BackupDirectory_Specific_Radio;
     QLineEdit*      Extra_BackupDirectory_Specific;
+    QPushButton*    Extra_BackupDirectory_Specific_Browse;
     QRadioButton*   Extra_LogFile_Deactivated;
     QRadioButton*   Extra_LogFile_Activated_Radio;
     QLineEdit*      Extra_LogFile_Activated;
+    QPushButton*    Extra_LogFile_Activated_Browse;
     QDoubleSpinBox* Extra_Bext_DefaultVersion;
     QDoubleSpinBox* Extra_Bext_MaxVersion;
     QCheckBox*      Extra_Bext_Toggle;

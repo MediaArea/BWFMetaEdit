@@ -335,7 +335,7 @@ void GUI_Main::OnMenu_File_Open_Files()
     //User interaction
     QStringList FileNamesQ = QFileDialog::getOpenFileNames(this,
                                                            "Select one or more files to open",
-                                                           "",
+                                                           QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                            "Wave files (*.wav);;All files (*.*)");
     if (FileNamesQ.empty())
         return;
@@ -370,7 +370,7 @@ void GUI_Main::OnMenu_File_Open_Directory()
     //User interaction
     QString FileNamesQ = QFileDialog::getExistingDirectory( this,
                                                             tr("Open Directory"),
-                                                            "",
+                                                            QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                             QFileDialog::ShowDirsOnly
                                                           | QFileDialog::DontResolveSymlinks);
     if (FileNamesQ.isEmpty())
@@ -550,7 +550,7 @@ void GUI_Main::OnMenu_Import_Core_File()
     //User interaction
     QStringList FileNamesQ = QFileDialog::getOpenFileNames(  this,
                                                             tr("Open Core Document..."),
-                                                            "",
+                                                            QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                             "CSV or XML files (*.csv *.xml);;CSV files (*.csv);;XML files (*.xml);;All files (*.*)");
     if (FileNamesQ.empty())
         return;
@@ -599,7 +599,7 @@ void GUI_Main::OnMenu_Export_Technical_CSV_Global()
     //User interaction
     QString FileNamesQ = QFileDialog::getSaveFileName(  this,
                                                         tr("Save Technical Document..."),
-                                                        "",
+                                                        QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                         "CSV files (*.csv);;All files (*.*)");
     if (FileNamesQ.isEmpty())
     {
@@ -629,7 +629,7 @@ void GUI_Main::OnMenu_Export_Core_CSV_Global()
     //User interaction
     QString FileNamesQ = QFileDialog::getSaveFileName(  this,
                                                         tr("Save Core Document..."),
-                                                        "",
+                                                        QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                         "CSV files (*.csv);;All files (*.*)");
     if (FileNamesQ.isEmpty())
     {
@@ -659,7 +659,7 @@ void GUI_Main::OnMenu_Export_Core_XML_Global()
     //User interaction
     QString FileNamesQ = QFileDialog::getSaveFileName(  this,
                                                         tr("Save Core Document..."),
-                                                        "",
+                                                        QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                         "XML files (*.xml);;All files (*.*)");
     if (FileNamesQ.isEmpty())
     {

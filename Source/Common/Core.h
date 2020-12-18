@@ -132,6 +132,7 @@ public:
     bool                                Batch_IsBackuping; //Does not read modifications, only data from the file
     bool                                Out_Log_cout;
     Riff_Handler::rules                 Rules;
+    string                              OpenSaveFolder;
     Ztring                              ApplicationFolder;
     Ztring                              LogFile;
     bool                                Trace_UseDec;

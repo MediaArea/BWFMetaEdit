@@ -20,8 +20,11 @@
 #include <QTabWidget>
 #include <QCheckBox>
 #include <QRadioButton>
+#include <QPushButton>
 #include <QLineEdit>
 #include <QLabel>
+#include <QCommonStyle>
+#include <QFileDialog>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
 #include <QDesktopServices>
@@ -365,17 +368,34 @@ void GUI_Preferences::OnLoad()
         }
 
     //Extra
+    if (Config("Extra_OpenSaveDirectory").empty())
+    {
+        Extra_OpenSaveDirectory_Default->setChecked(true);
+        Extra_OpenSaveDirectory_Specific->setText("");
+        Extra_OpenSaveDirectory_Specific->setEnabled(false);
+        Extra_OpenSaveDirectory_Specific_Browse->setEnabled(false);
+    }
+    else
+    {
+        Extra_OpenSaveDirectory_Specific_Radio->setChecked(true);
+        Extra_OpenSaveDirectory_Specific->setText(Config("Extra_OpenSaveDirectory").To_UTF8().c_str());
+        Extra_OpenSaveDirectory_Specific->setEnabled(true);
+        Extra_OpenSaveDirectory_Specific_Browse->setEnabled(true);
+    }
+    Main->OpenSaveDirectory_Set(Extra_OpenSaveDirectory_Specific->text().toUtf8().data());
     if (Config("Extra_BackupDirectory").empty())
     {
         Extra_BackupDirectory_Default->setChecked(true);
         Extra_BackupDirectory_Specific->setText(ConfigDirectory_Get().c_str());
         Extra_BackupDirectory_Specific->setEnabled(false);
+        Extra_BackupDirectory_Specific_Browse->setEnabled(false);
     }
     else
     {
         Extra_BackupDirectory_Specific_Radio->setChecked(true);
         Extra_BackupDirectory_Specific->setText(Config("Extra_BackupDirectory").To_UTF8().c_str());
         Extra_BackupDirectory_Specific->setEnabled(true);
+        Extra_BackupDirectory_Specific_Browse->setEnabled(true);
     }
     Main->BackupDirectory_Set(Extra_BackupDirectory_Specific->text().toUtf8().data());
     if (Config("Extra_LogFile").empty())
@@ -383,12 +403,14 @@ void GUI_Preferences::OnLoad()
         Extra_LogFile_Deactivated->setChecked(true);
         Extra_LogFile_Activated->setText(QString());
         Extra_LogFile_Activated->setEnabled(false);
+        Extra_LogFile_Activated_Browse->setEnabled(false);
     }
     else
     {
         Extra_LogFile_Activated_Radio->setChecked(true);
         Extra_LogFile_Activated->setText(Config("Extra_LogFile").To_UTF8().c_str());
         Extra_LogFile_Activated->setEnabled(true);
+        Extra_LogFile_Activated_Browse->setEnabled(true);
     }
     Main->LogFile_Set(Extra_LogFile_Activated->text().toUtf8().data());
     if (Config("Extra_Bext_DefaultVersion").empty())
@@ -456,6 +478,16 @@ void GUI_Preferences::OnSave()
     }
 
     //Extra
+    {
+        Ztring Content;
+        Content+=__T("Extra_OpenSaveDirectory");
+        Content+=__T(" = ");
+        if (Extra_OpenSaveDirectory_Specific_Radio->isChecked())
+            Content+=Ztring().From_UTF8(Extra_OpenSaveDirectory_Specific->text().toUtf8().data());
+        Content+=EOL;
+        Prefs.Write(Content);
+        Main->OpenSaveDirectory_Set(Extra_OpenSaveDirectory_Specific->text().toUtf8().data());
+    }
     {
         Ztring Content;
         Content+=__T("Extra_BackupDirectory");
@@ -569,14 +601,58 @@ void GUI_Preferences::OnClicked ()
 }
 
 //---------------------------------------------------------------------------
+void GUI_Preferences::OnExtra_OpenSaveDirectory_Specific_BrowseClicked (bool)
+{
+    QString Dir = QFileDialog::getExistingDirectory(this,
+                                                    tr("Open Directory..."),
+                                                    Extra_OpenSaveDirectory_Specific->text(),
+                                                    QFileDialog::ShowDirsOnly);
+
+    if (!Dir.isEmpty())
+        Extra_OpenSaveDirectory_Specific->setText(Dir);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Preferences::OnExtra_OpenSaveDirectory_Specific_RadioToggled (bool Checked)
+{
+    if (Checked)
+    {
+        Extra_OpenSaveDirectory_Specific->setEnabled(true);
+        Extra_OpenSaveDirectory_Specific_Browse->setEnabled(true);
+    }
+    else
+    {
+        Extra_OpenSaveDirectory_Specific->setText("");
+        Extra_OpenSaveDirectory_Specific->setEnabled(false);
+        Extra_OpenSaveDirectory_Specific_Browse->setEnabled(false);
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Preferences::OnExtra_BackupDirectory_Specific_BrowseClicked (bool)
+{
+    QString Dir = QFileDialog::getExistingDirectory(this,
+                                                    tr("Open Directory..."),
+                                                    Extra_BackupDirectory_Specific->text(),
+                                                    QFileDialog::ShowDirsOnly);
+
+    if (!Dir.isEmpty())
+        Extra_BackupDirectory_Specific->setText(Dir);
+}
+
+//---------------------------------------------------------------------------
 void GUI_Preferences::OnExtra_BackupDirectory_Specific_RadioToggled (bool Checked)
 {
     if (Checked)
+    {
         Extra_BackupDirectory_Specific->setEnabled(true);
+        Extra_BackupDirectory_Specific_Browse->setEnabled(true);
+    }
     else
     {
         Extra_BackupDirectory_Specific->setText(ConfigDirectory_Get().c_str());
         Extra_BackupDirectory_Specific->setEnabled(false);
+        Extra_BackupDirectory_Specific_Browse->setEnabled(false);
     }
 }
 
@@ -587,12 +663,26 @@ void GUI_Preferences::OnExtra_LogFile_Activated_RadioToggled (bool Checked)
     {
         Extra_LogFile_Activated->setText((ConfigDirectory_Get()+Ztring(&PathSeparator, 1).To_UTF8()+"LogFile.txt").c_str());
         Extra_LogFile_Activated->setEnabled(true);
+        Extra_LogFile_Activated_Browse->setEnabled(true);
     }
     else
     {
         Extra_LogFile_Activated->setText(QString());
         Extra_LogFile_Activated->setEnabled(false);
+        Extra_LogFile_Activated_Browse->setEnabled(false);
     }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Preferences::OnExtra_LogFile_Activated_BrowseClicked (bool)
+{
+    QString File = QFileDialog::getSaveFileName(this,
+                                                    tr("Save File..."),
+                                                    Extra_LogFile_Activated->text(),
+                                                    "Log files (*.log);;All files (*.*)");
+
+    if (!File.isEmpty())
+        Extra_LogFile_Activated->setText(File);
 }
 
 //---------------------------------------------------------------------------
@@ -649,16 +739,37 @@ void GUI_Preferences::Create()
     ScrollArea->setWidget(Widget);
     Central->addTab(ScrollArea, "Views options");
 
+    //Extra - OpenSaveDirectory
+    Extra_OpenSaveDirectory_Default=new QRadioButton("Default open/save directory");
+    Extra_OpenSaveDirectory_Specific_Radio=new QRadioButton("Specific directory: ");
+    connect(Extra_OpenSaveDirectory_Specific_Radio, SIGNAL(toggled(bool)), this, SLOT(OnExtra_OpenSaveDirectory_Specific_RadioToggled(bool)));
+    Extra_OpenSaveDirectory_Specific=new QLineEdit();
+    Extra_OpenSaveDirectory_Specific_Browse=new QPushButton(QCommonStyle().standardIcon(QStyle::SP_DirOpenIcon), "Browse...");
+    connect(Extra_OpenSaveDirectory_Specific_Browse, SIGNAL(clicked(bool)), this, SLOT(OnExtra_OpenSaveDirectory_Specific_BrowseClicked(bool)));
+
+    QGridLayout* Extra_OpenSaveDirectory_Layout=new QGridLayout();
+    Extra_OpenSaveDirectory_Layout->addWidget(Extra_OpenSaveDirectory_Default, 0, 0);
+    Extra_OpenSaveDirectory_Layout->addWidget(Extra_OpenSaveDirectory_Specific_Radio, 1, 0);
+    Extra_OpenSaveDirectory_Layout->addWidget(Extra_OpenSaveDirectory_Specific, 1, 1);
+    Extra_OpenSaveDirectory_Layout->addWidget(Extra_OpenSaveDirectory_Specific_Browse, 1, 2);
+
+    QGroupBox* Extra_OpenSaveDirectory=new QGroupBox("Open directory");
+    Extra_OpenSaveDirectory->setLayout(Extra_OpenSaveDirectory_Layout);
+
     //Extra - BackupDirectory
     Extra_BackupDirectory_Default=new QRadioButton("Default backup directory");
     Extra_BackupDirectory_Specific_Radio=new QRadioButton("Specific directory: ");
     connect(Extra_BackupDirectory_Specific_Radio, SIGNAL(toggled(bool)), this, SLOT(OnExtra_BackupDirectory_Specific_RadioToggled(bool)));
     Extra_BackupDirectory_Specific=new QLineEdit();
+    Extra_BackupDirectory_Specific_Browse=new QPushButton(QCommonStyle().standardIcon(QStyle::SP_DirOpenIcon), "Browse...");
+    connect(Extra_BackupDirectory_Specific_Browse, SIGNAL(clicked(bool)), this, SLOT(OnExtra_BackupDirectory_Specific_BrowseClicked(bool)));
+
 
     QGridLayout* Extra_BackupDirectory_Layout=new QGridLayout();
     Extra_BackupDirectory_Layout->addWidget(Extra_BackupDirectory_Default, 0, 0);
     Extra_BackupDirectory_Layout->addWidget(Extra_BackupDirectory_Specific_Radio, 1, 0);
     Extra_BackupDirectory_Layout->addWidget(Extra_BackupDirectory_Specific, 1, 1);
+    Extra_BackupDirectory_Layout->addWidget(Extra_BackupDirectory_Specific_Browse, 1, 2);
 
     QGroupBox* Extra_BackupDirectory=new QGroupBox("Backup directory");
     Extra_BackupDirectory->setLayout(Extra_BackupDirectory_Layout);
@@ -668,11 +779,14 @@ void GUI_Preferences::Create()
     Extra_LogFile_Activated_Radio=new QRadioButton("Log file is save into: ");
     connect(Extra_LogFile_Activated_Radio, SIGNAL(toggled(bool)), this, SLOT(OnExtra_LogFile_Activated_RadioToggled(bool)));
     Extra_LogFile_Activated=new QLineEdit();
+    Extra_LogFile_Activated_Browse=new QPushButton(QCommonStyle().standardIcon(QStyle::SP_FileIcon), "Browse...");
+    connect(Extra_LogFile_Activated_Browse, SIGNAL(clicked(bool)), this, SLOT(OnExtra_LogFile_Activated_BrowseClicked(bool)));
 
     QGridLayout* Extra_LogFile_Layout=new QGridLayout();
     Extra_LogFile_Layout->addWidget(Extra_LogFile_Deactivated, 0, 0);
     Extra_LogFile_Layout->addWidget(Extra_LogFile_Activated_Radio, 1, 0);
     Extra_LogFile_Layout->addWidget(Extra_LogFile_Activated, 1, 1);
+    Extra_LogFile_Layout->addWidget(Extra_LogFile_Activated_Browse, 1, 2);
 
     QGroupBox* Extra_LogFile=new QGroupBox("Log file");
     Extra_LogFile->setLayout(Extra_LogFile_Layout);
@@ -705,6 +819,7 @@ void GUI_Preferences::Create()
 
     //Extra
     QVBoxLayout* Extra=new QVBoxLayout();
+    Extra->addWidget(Extra_OpenSaveDirectory);
     Extra->addWidget(Extra_BackupDirectory);
     Extra->addWidget(Extra_LogFile);
     Extra->addWidget(Extra_Bext);
