@@ -9,8 +9,8 @@ DATE=$(date -u +'%s')
 
 cp -r ../QtCreator/"$APPNAME.app" . || exit 1
 
-plutil -replace DTSDKName -string "macosx10.7" "$APPNAME.app/Contents/Info.plist"
-plutil -replace LSMinimumSystemVersion -string "10.7" "$APPNAME.app/Contents/Info.plist"
+plutil -replace DTSDKName -string "macosx10.10" "$APPNAME.app/Contents/Info.plist"
+plutil -replace LSMinimumSystemVersion -string "10.10" "$APPNAME.app/Contents/Info.plist"
 
 macdeployqt "$APPNAME.app" -no-strip -appstore-compliant
 rm -rf "$APPNAME.app"/Contents/PlugIns/sqldrivers/{libqsqlmysql.dylib,libqsqlodbc.dylib,libqsqlpsql.dylib}
