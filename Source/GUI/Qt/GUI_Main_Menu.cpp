@@ -79,6 +79,10 @@ void GUI_Main::Menu_Create()
     Menu_File->addSeparator();
     Menu_File->addAction(Menu_File_Quit);
 
+    //Menu Edit
+    Menu_Edit = menuBar()->addMenu(tr("&Edit"));
+    Menu_Edit->setEnabled(false);
+
     //Menu Views
     Menu_Fields_RadioButtons=new QAction*[Preferences->Groups_Count_Get()*options::MaxCount];
 

@@ -61,6 +61,7 @@ public:
 
     //Preferences
     GUI_Preferences* Preferences;
+    QMenu*          Menu_Edit;
     QMenu*          Menu_Fields_Main;
     QMenu**         Menu_Fields_Menus;
     QAction**       Menu_Fields_CheckBoxes;

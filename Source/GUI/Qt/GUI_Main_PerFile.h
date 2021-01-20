@@ -12,6 +12,8 @@
 #define GUI_Main_PerFileH
 //---------------------------------------------------------------------------
 
+#include "GUI/Qt/GUI_Main_xxxx_EditMenu.h"
+
 #include <QQuickWidget>
 #include <QAbstractListModel>
 #include <QQmlContext>
@@ -50,8 +52,8 @@ public:
     };
 
     //Constructor/Destructor
-    PerFileModel(GUI_Main* Main, Core* _C, QObject *parent=0) : Main(Main), C(_C), Count(0), QAbstractListModel(parent) {};
-    ~PerFileModel() {};
+    PerFileModel(GUI_Main* Main, Core* _C, QObject *parent=0);
+    ~PerFileModel();
 
     int rowCount(const QModelIndex &parent) const;
     QHash<int, QByteArray> roleNames() const;
@@ -76,9 +78,13 @@ public:
     Q_INVOKABLE bool visible(const QString& FileName, const QString& Field) const;
     Q_INVOKABLE void editField(const QString& FileName, const QString& Field);
     Q_INVOKABLE void showCoreMenu(const QPoint& globalPos, const QString& FileName, const QString& Field);
-    Q_INVOKABLE void setSelected(const QString& FileName);
+    Q_INVOKABLE void setSelected(const QString& FileName, const QString& Field);
+    Q_INVOKABLE void deselect(const QString& FileName, const QString& Field);
 
     void Fill();
+
+public Q_SLOTS:
+    void onValuesChanged(bool onlySelected);
 
 protected:
     bool canFetchMore(const QModelIndex &parent) const;
@@ -90,11 +96,14 @@ private:
 
     Core* C;
     GUI_Main* Main;
+    GUI_Main_xxxx_EditMenu* MenuHandler;
+
     int Count;
     QStringList FileNames;
     ZtringListList TechnicalData;
     QHash<QString, bool> Expanded;
     QHash<QString, bool> EditMode;
+    QPair<QString, QString> Selection;
 };
 
 //***************************************************************************

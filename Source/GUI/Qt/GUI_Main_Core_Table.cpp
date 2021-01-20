@@ -17,7 +17,6 @@
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_UmidDialog.h"
-#include "GUI/Qt/GUI_Main_xxxx_ContextMenu.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
 #include <QLabel>
@@ -30,6 +29,7 @@
 #include <QStandardItemModel>
 #include <QDate>
 #include <QContextMenuEvent>
+#include <QItemSelectionModel>
 #include <QAction>
 #include <QMenu>
 #include <QApplication>
@@ -46,6 +46,14 @@ using namespace std;
 GUI_Main_Core_Table::GUI_Main_Core_Table(Core* _C, GUI_Main* parent)
 : GUI_Main_xxxx__Common(_C, parent)
 {
+    MenuHandler=new GUI_Main_xxxx_EditMenu(parent, _C);
+    connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(onItemSelectionChanged()));
+    connect(MenuHandler, SIGNAL(valuesChanged(bool)), this, SLOT(onValuesChanged(bool)));
+}
+
+GUI_Main_Core_Table::~GUI_Main_Core_Table()
+{
+    delete MenuHandler; //MenuHandler=NULL;
 }
 
 //***************************************************************************
@@ -55,89 +63,14 @@ GUI_Main_Core_Table::GUI_Main_Core_Table(Core* _C, GUI_Main* parent)
 //---------------------------------------------------------------------------
 void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
 {
-    //Retrieving data
-    QList<QTableWidgetItem*> SelectedItems=selectedItems();
-    if (SelectedItems.size()==1)
-    {
         QTableWidgetItem* Item=itemAt(Event->pos());
-        if (Item==NULL)
-            return;
-        SelectedItems.clear();
-        SelectedItems.append(Item);
-    }
+        if (Item)
+           setCurrentItem(Item, QItemSelectionModel::Select);
 
-    QList<QPair<string, string> > Items;
-    for (int Pos=0; Pos<SelectedItems.size(); Pos++)
-    {
-        QTableWidgetItem* Item=SelectedItems.at(Pos);
-        string FileName=FileName_Before+item(Item->row(), FILENAME_COL)->text().toUtf8().data();
-        string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
-        Items.append(qMakePair(FileName, Field));
-    }
+    //force menu update before opening
+    onItemSelectionChanged();
 
-    int Modified=GUI_Main_xxxx_ContextMenu(Main, C, this).showCoreMenu(Event->globalPos(), Items);
-    if (Modified==SelectedItems.count())
-    {
-        for (int Pos=0; Pos<SelectedItems.size(); Pos++)
-        {
-            QTableWidgetItem* Item=SelectedItems.at(Pos);
-            string FileName=FileName_Before+item(Item->row(), FILENAME_COL)->text().toUtf8().data();
-            string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
-
-            //Updating
-            Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-            NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-
-            item(Item->row(), Item->column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
-            dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
-
-            //Special case
-            if (Field=="TimeReference")
-                SetText(*Item, "TimeReference (translated)");
-            if (Field=="TimeReference (translated)")
-                SetText(*Item, "TimeReference");
-            if (Field=="OriginationDate")
-                SetText(*Item, "OriginationTime");
-            if (Field=="OriginationTime")
-                SetText(*Item, "OriginationDate");
-
-            //Changing BextVersion Enabled value
-            SetText   (*Item, "BextVersion");
-            SetEnabled(*Item, "BextVersion");
-        }
-    }
-    else if (Modified>SelectedItems.count())
-    {
-        for (int Pos=0; Pos<SelectedItems.size(); Pos++)
-        {
-            QTableWidgetItem* Item=SelectedItems.at(Pos);
-            string FileName=FileName_Before+item(Item->row(), FILENAME_COL)->text().toUtf8().data();
-            string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
-
-            for (int Row=0; Row<rowCount(); Row++)
-            {
-                string FileName=FileName_Before+item(Row, FILENAME_COL)->text().toUtf8().data();
-                Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-                NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-
-                item(Row, Item->column())->setText(QString::fromUtf8(C->Get(FileName, Field).c_str()));
-                dataChanged(indexFromItem(item(Row, Item->column())), indexFromItem(item(Row, Item->column())));
-
-                //Special case
-                if (Field=="TimeReference")
-                    SetText(*Item, "TimeReference (translated)");
-                if (Field=="TimeReference (translated)")
-                    SetText(*Item, "TimeReference");
-
-                //Changing BextVersion Enabled value
-                SetText   (*Item, "BextVersion");
-                SetEnabled(*Item, "BextVersion");
-            }
-        }
-    }
-
-    //Menu
-    Main->Menu_Update();
+    MenuHandler->showContextMenu(Event->globalPos());
 }
 
 //---------------------------------------------------------------------------
@@ -417,6 +350,97 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
     }
 
     return QTableWidget::edit(index, trigger, Event); //Normal editing 
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main_Core_Table::onItemSelectionChanged()
+{
+    //Retrieving data
+    QList<QTableWidgetItem*> SelectedItems=selectedItems();
+    QList<QPair<string, string> > Items;
+    for (int Pos=0; Pos<SelectedItems.size(); Pos++)
+    {
+        QTableWidgetItem* Item=SelectedItems.at(Pos);
+        string FileName=FileName_Before+item(Item->row(), FILENAME_COL)->text().toUtf8().data();
+        string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
+        Items.append(qMakePair(FileName, Field));
+    }
+
+    MenuHandler->updateEditMenu(Items);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main_Core_Table::onValuesChanged(bool onlySelected)
+{
+    //Retrieving data
+    QList<QTableWidgetItem*> SelectedItems=selectedItems();
+
+    if (onlySelected)
+    {
+        for (int Pos=0; Pos<SelectedItems.size(); Pos++)
+        {
+            QTableWidgetItem* Item=SelectedItems.at(Pos);
+            string FileName=FileName_Before+item(Item->row(), FILENAME_COL)->text().toUtf8().data();
+            string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
+
+            //Updating
+            Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
+            NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+
+            item(Item->row(), Item->column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+            dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
+
+            //Special case
+            if (Field=="TimeReference")
+                SetText(*Item, "TimeReference (translated)");
+            if (Field=="TimeReference (translated)")
+                SetText(*Item, "TimeReference");
+            if (Field=="OriginationDate")
+                SetText(*Item, "OriginationTime");
+            if (Field=="OriginationTime")
+                SetText(*Item, "OriginationDate");
+
+            //Changing BextVersion Enabled value
+            SetText   (*Item, "BextVersion");
+            SetEnabled(*Item, "BextVersion");
+        }
+    }
+    else
+    {
+        for (int Pos=0; Pos<SelectedItems.size(); Pos++)
+        {
+            QTableWidgetItem* Item=SelectedItems.at(Pos);
+            string FileName=FileName_Before+item(Item->row(), FILENAME_COL)->text().toUtf8().data();
+            string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
+
+            for (int Row=0; Row<rowCount(); Row++)
+            {
+                string FileName=FileName_Before+item(Row, FILENAME_COL)->text().toUtf8().data();
+                Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
+                NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+
+                item(Row, Item->column())->setText(QString::fromUtf8(C->Get(FileName, Field).c_str()));
+                dataChanged(indexFromItem(item(Row, Item->column())), indexFromItem(item(Row, Item->column())));
+
+                //Special case
+                if (Field=="TimeReference")
+                    SetText(*item(Row, Item->column()), "TimeReference (translated)");
+                if (Field=="TimeReference (translated)")
+                    SetText(*item(Row, Item->column()), "TimeReference");
+                if (Field=="OriginationDate")
+                    SetText(*item(Row, Item->column()), "OriginationTime");
+                if (Field=="OriginationTime")
+                SetText(*item(Row, Item->column()), "OriginationDate");
+
+                //Changing BextVersion Enabled value
+                SetText   (*item(Row, Item->column()), "BextVersion");
+                SetEnabled(*item(Row, Item->column()), "BextVersion");
+            }
+        }
+    }
+
+    //Menu
+    Main->Menu_Update();
 }
 
 //***************************************************************************

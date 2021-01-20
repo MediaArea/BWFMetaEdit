@@ -14,6 +14,7 @@
 
 //---------------------------------------------------------------------------
 #include "GUI/Qt/GUI_Main_xxxx__Common.h"
+#include "GUI/Qt/GUI_Main_xxxx_EditMenu.h"
 #include <QTableWidget>
 #include <QItemDelegate>
 #include <string>
@@ -34,17 +35,25 @@ class GUI_Main_Core_Table : public GUI_Main_xxxx__Common
 public:
     //Constructor/Destructor
     GUI_Main_Core_Table(Core* C, GUI_Main* parent);
+    ~GUI_Main_Core_Table();
+
+public Q_SLOTS:
+    void onItemSelectionChanged();
+    void onValuesChanged(bool onlySelected);
 
 protected:
     //Events
     void contextMenuEvent   (QContextMenuEvent* Event);
     void keyPressEvent      (QKeyEvent* Event);
-    bool edit               (const QModelIndex &index, EditTrigger trigger, QEvent *Event); 
+    bool edit               (const QModelIndex &index, EditTrigger trigger, QEvent *Event);
 
     //Helpers
     const string           &Fill_Content        ();
     group                   Fill_Group          ();
     bool                    Fill_Enabled        (const string &FileName, const string &Field, const string &Value);
+
+private:
+    GUI_Main_xxxx_EditMenu* MenuHandler;
 };
 
 #endif

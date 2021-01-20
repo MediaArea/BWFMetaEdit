@@ -19,7 +19,6 @@
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_UmidDialog.h"
-#include "GUI/Qt/GUI_Main_xxxx_ContextMenu.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
 #include <QLabel>
@@ -85,6 +84,28 @@ QString Human_Readable_Rate(QString Rate, QString Suffix)
 
 //***************************************************************************
 // Model
+//***************************************************************************
+
+//***************************************************************************
+// Constructor/Destructor
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+PerFileModel::PerFileModel(GUI_Main* Main, Core* _C, QObject *parent)
+: Main(Main), C(_C), Count(0), QAbstractListModel(parent)
+{
+    MenuHandler=new GUI_Main_xxxx_EditMenu(Main, _C);
+    connect(MenuHandler, SIGNAL(valuesChanged(bool)), this, SLOT(onValuesChanged(bool)));
+}
+
+//---------------------------------------------------------------------------
+PerFileModel::~PerFileModel()
+{
+    delete MenuHandler;
+}
+
+//***************************************************************************
+// Functions
 //***************************************************************************
 
 //---------------------------------------------------------------------------
@@ -370,26 +391,49 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
 
 Q_INVOKABLE void PerFileModel::showCoreMenu(const QPoint& globalPos, const QString& FileName, const QString& Field)
 {
-    QList<QPair<string, string> > Items;
-    Items.append(qMakePair(FileName.toStdString(), Field.toStdString()));
+    MenuHandler->showContextMenu(globalPos);
+}
 
-    int Modified=GUI_Main_xxxx_ContextMenu(Main, C, this).showCoreMenu(globalPos, Items);
-   if (Modified==1)
-        Q_EMIT dataChanged(index(FileNames.indexOf(FileName)), index(FileNames.indexOf(FileName)));
-    else if (Count && Modified>1)
-        Q_EMIT dataChanged(index(0), index(Count-1));
+//---------------------------------------------------------------------------
+Q_INVOKABLE void PerFileModel::setSelected(const QString& FileName, const QString& Field)
+{
+    Selection=qMakePair(FileName, Field);
+
+    C->Menu_File_Close_File_FileName_Clear();
+    C->Menu_File_Close_File_FileName_Set(FileName.toStdString());
+
+    QList<QPair<string, string> > Items;
+    Items.append(qMakePair(FileName.toUtf8(), Field.toUtf8()));
+    MenuHandler->updateEditMenu(Items);
 
     Main->Menu_Update();
 }
 
 //---------------------------------------------------------------------------
-Q_INVOKABLE void PerFileModel::setSelected(const QString& FileName)
+Q_INVOKABLE void PerFileModel::deselect(const QString& FileName, const QString& Field)
 {
-    C->Menu_File_Close_File_FileName_Clear();
-    C->Menu_File_Close_File_FileName_Set(FileName.toStdString());
+    Selection=qMakePair(QString(), QString());
+    if (Selection==qMakePair(FileName, Field))
+    {
+        C->Menu_File_Close_File_FileName_Clear();
+        QList<QPair<string, string> > Items;
+        MenuHandler->updateEditMenu(Items);
+
+        Main->Menu_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void PerFileModel::onValuesChanged(bool onlySelected)
+{
+    if (onlySelected)
+        Q_EMIT dataChanged(index(FileNames.indexOf(Selection.first)), index(FileNames.indexOf(Selection.first)));
+    else
+        Q_EMIT dataChanged(index(0), index(Count-1));
 
     Main->Menu_Update();
 }
+
 
 //---------------------------------------------------------------------------
 void PerFileModel::Fill()
@@ -554,6 +598,10 @@ void PerFileModel::fetchMore(const QModelIndex &parent)
 }
 
 //***************************************************************************
+// Widget
+//***************************************************************************
+
+//***************************************************************************
 // Constructor/Destructor
 //***************************************************************************
 
@@ -578,7 +626,7 @@ GUI_Main_PerFile::~GUI_Main_PerFile()
 }
 
 //***************************************************************************
-// Widget
+// Functions
 //***************************************************************************
 
 //---------------------------------------------------------------------------

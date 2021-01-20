@@ -8,8 +8,8 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------
-#ifndef GUI_Main_xxxx_ContextMenuH
-#define GUI_Main_xxxx_ContextMenuH
+#ifndef GUI_Main_xxxx_EditMenuH
+#define GUI_Main_xxxx_EditMenuH
 //---------------------------------------------------------------------------
 
 #include <QPair>
@@ -23,18 +23,26 @@ class Core;
 using namespace std;
 
 //---------------------------------------------------------------------------
-class GUI_Main_xxxx_ContextMenu : public QObject
+class GUI_Main_xxxx_EditMenu : public QObject
 {
     Q_OBJECT
 
 public:
     //Constructor/Destructor
-    GUI_Main_xxxx_ContextMenu(GUI_Main* Main, Core* C, QObject *parent=0) : QObject(parent), C(C), Main(Main) {};
-    ~GUI_Main_xxxx_ContextMenu() {};
+    GUI_Main_xxxx_EditMenu(GUI_Main* Main, Core* C, QObject *parent=0) : QObject(parent), C(C), Main(Main) {};
+    ~GUI_Main_xxxx_EditMenu() {};
 
-    int showCoreMenu(const QPoint& globalPos, QList<QPair<string, string> > forItems);
+    void updateEditMenu(QList<QPair<string, string> > forItems);
+    void showContextMenu(const QPoint& globalPos);
+
+public Q_SLOTS:
+    void onActionTriggered();
+
+Q_SIGNALS:
+    void valuesChanged(bool selectedOnly);
 
 private:
+    QList<QPair<string, string> > Items;
     Core* C;
     GUI_Main* Main;
 };
