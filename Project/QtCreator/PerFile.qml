@@ -438,8 +438,8 @@ Control {
                                                 text: Model.value(file, name)
                                                 readOnly: Model.readonly(file, name)
                                                 selectByMouse: true
-                                                onEditingFinished: {
-                                                    if (Model.valid(file, name, text)) {
+                                                onTextChanged: {
+                                                    if (focus && Model.valid(file, name, text)) {
                                                         Model.setValue(file, name, text)
                                                     }
                                                 }
