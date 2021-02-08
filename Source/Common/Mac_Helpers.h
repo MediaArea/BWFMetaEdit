@@ -21,4 +21,5 @@ using namespace ZenLib;
 Ztring makeUniqueFileName();
 Ztring makeTemporaryDirectoryForFile(const Ztring& path);
 bool deleteTemporaryDirectory(const Ztring& path);
+void clearNSMenu(void* menu);
 #endif

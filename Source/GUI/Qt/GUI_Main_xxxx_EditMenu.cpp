@@ -19,6 +19,10 @@
 #include <QEvent>
 #include <QMenu>
 
+#ifdef __MACOSX__
+#include "Common/Mac_Helpers.h"
+#endif //__MACOSX__
+
 using namespace ZenLib;
 using namespace std;
 //---------------------------------------------------------------------------
@@ -30,6 +34,10 @@ using namespace std;
 //---------------------------------------------------------------------------
 void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forItems)
 {
+    if (Updating)
+        return;
+    Updating=true;
+
     Items=forItems;
 
     if (!Main || !Main->Menu_Edit)
@@ -42,10 +50,14 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
     if (!FileList.empty())
        FileList.erase(FileList.begin()); //Remove headers
 
+    Main->Menu_Edit->clear();
+    #ifdef __MACOSX__
+    //QMenu::clear() alone causes crashes on macOS
+    clearNSMenu((void*)Main->Menu_Edit->toNSMenu());
+    #endif //__MACOSX__
+
     if (Items.count()==1)
     {
-        Main->Menu_Edit->clear();
-
         string FileName=Items.first().first;
         string Field=Items.first().second;
 
@@ -134,8 +146,6 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
     }
     else if (Items.count()>1)
     {
-        Main->Menu_Edit->clear();
-
         //Clear data
         bool ShowClear=false;
         for (int Pos=0; Pos<Items.size(); Pos++)
@@ -154,7 +164,6 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
             QAction* Action=new QAction("Fill all open files with these fields values");
             Action->setProperty("Action", "Fill");
             Main->Menu_Edit->addAction(Action);
-            Main->Menu_Edit->addSeparator();
             connect(Action, SIGNAL(triggered(bool)), this, SLOT(onActionTriggered()));
         }
 
@@ -167,10 +176,9 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
             connect(Action, SIGNAL(triggered(bool)), this, SLOT(onActionTriggered()));
         }
     }
-    else
-        Main->Menu_Edit->clear();
 
     Main->Menu_Edit->setEnabled(Main->Menu_Edit->actions().count());
+    Updating=false;
 }
 
 //---------------------------------------------------------------------------
