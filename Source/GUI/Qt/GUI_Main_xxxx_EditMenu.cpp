@@ -237,13 +237,6 @@ void GUI_Main_xxxx_EditMenu::onActionTriggered()
         }
         Q_EMIT valuesChanged(false);
     }
-    else if (Action->property("Action")=="Clear")
-    {
-        string FileName=Items.first().first;
-        string Field=Items.first().second;
-        C->Set(FileName, Field, string());
-        Q_EMIT valuesChanged(true);
-    }
     else if (Action->property("Action")=="Date")
     {
         string FileName=Items.first().first;
