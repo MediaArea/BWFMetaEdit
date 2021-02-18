@@ -29,7 +29,7 @@ class GUI_Main_xxxx_EditMenu : public QObject
 
 public:
     //Constructor/Destructor
-    GUI_Main_xxxx_EditMenu(GUI_Main* Main, Core* C, QObject *parent=0) : QObject(parent), C(C), Main(Main) {};
+    GUI_Main_xxxx_EditMenu(GUI_Main* Main, Core* C, QObject *parent=0) : QObject(parent), C(C), Main(Main), Updating(false) {};
     ~GUI_Main_xxxx_EditMenu() {};
 
     void updateEditMenu(QList<QPair<string, string> > forItems);
@@ -45,6 +45,7 @@ private:
     QList<QPair<string, string> > Items;
     Core* C;
     GUI_Main* Main;
+    bool Updating;
 };
 
 #endif

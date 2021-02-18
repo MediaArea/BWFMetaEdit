@@ -46,7 +46,7 @@ using namespace std;
 GUI_Main_Core_Table::GUI_Main_Core_Table(Core* _C, GUI_Main* parent)
 : GUI_Main_xxxx__Common(_C, parent)
 {
-    MenuHandler=new GUI_Main_xxxx_EditMenu(parent, _C);
+    MenuHandler=new GUI_Main_xxxx_EditMenu(parent, _C, this);
     connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(onItemSelectionChanged()));
     connect(MenuHandler, SIGNAL(valuesChanged(bool)), this, SLOT(onValuesChanged(bool)));
 }
@@ -441,6 +441,8 @@ void GUI_Main_Core_Table::onValuesChanged(bool onlySelected)
 
     //Menu
     Main->Menu_Update();
+
+    viewport()->update();
 }
 
 //***************************************************************************

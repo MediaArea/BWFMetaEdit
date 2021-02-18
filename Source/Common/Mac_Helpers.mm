@@ -13,6 +13,7 @@
 
 //---------------------------------------------------------------------------
 #import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 //---------------------------------------------------------------------------
 
 Ztring makeUniqueFileName()
@@ -69,4 +70,9 @@ bool deleteTemporaryDirectory(const Ztring& path)
     toReturn = [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 
     return toReturn;
+}
+
+void clearNSMenu(void* menu)
+{
+    [(NSMenu*)menu removeAllItems];
 }
