@@ -312,6 +312,19 @@ void Riff_Base::Modify_Internal_Subs (int32u Chunk_Name_1, int32u Chunk_Name_2, 
 //---------------------------------------------------------------------------
 void Riff_Base::Write ()
 {
+
+    if (Chunk.Header.Level==0)
+    {
+        //Reset buffers and states
+        if(Global->Out_Buffer_Begin.Data)
+            delete[] Global->Out_Buffer_Begin.Data;
+        Global->Out_Buffer_Begin=global::buffer();
+        if(Global->Out_Buffer_End.Data)
+            delete[] Global->Out_Buffer_End.Data;
+        Global->Out_Buffer_End=global::buffer();
+        Global->Out_Buffer_WriteAtEnd=false;
+    }
+
     //Header
     if (Chunk.Header.Level)
     {

@@ -373,6 +373,7 @@ bool Riff_Handler::Save()
     }
     catch (exception &e)
     {
+        Chunks->Global->Out.Close();
         Errors<<Chunks->Global->File_Name.To_UTF8()<<": "<<e.what()<<endl;
         return false;
     }
