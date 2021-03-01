@@ -6,6 +6,7 @@ bwfmetaedit_SOURCES = \
     ../../../Source/CLI/CLI_Main.cpp \
     ../../../Source/CLI/CommandLine_Parser.cpp \
     ../../../Source/Common/Common_About.cpp \
+    ../../../Source/Common/Codes.cpp \
     ../../../Source/Common/Core.cpp \
     ../../../Source/MD5/md5.c \
     ../../../Source/Riff/Riff_Base.cpp \
@@ -23,6 +24,11 @@ bwfmetaedit_SOURCES = \
     ../../../Source/Riff/Riff_Chunks_WAVE_INFO_xxxx.cpp \
     ../../../Source/Riff/Riff_Chunks_WAVE_iXML.cpp \
     ../../../Source/Riff/Riff_Chunks_WAVE_MD5_.cpp \
+    ../../../Source/Riff/Riff_Chunks_WAVE_cue_.cpp \
+    ../../../Source/Riff/Riff_Chunks_WAVE_adtl.cpp \
+    ../../../Source/Riff/Riff_Chunks_WAVE_adtl_labl.cpp \
+    ../../../Source/Riff/Riff_Chunks_WAVE_adtl_note.cpp \
+    ../../../Source/Riff/Riff_Chunks_WAVE_adtl_ltxt.cpp \
     ../../../Source/Riff/Riff_Handler.cpp \
     ../../../Source/TinyXml2/tinyxml2.cpp \
     ../../../Source/ZenLib/Conf.cpp \

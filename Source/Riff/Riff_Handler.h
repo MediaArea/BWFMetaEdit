@@ -135,6 +135,9 @@ private:
     string    Core_Get_Internal          (bool IsBackuping=false);
     bool      IsModified_Get_Internal    ();
     void      Options_Update_Internal    ();
+    string    Cue_Xml_Get                ();
+    bool      Cue_Xml_Set                (const string& Xml, rules Rules);
+    bool      Cue_Xml_To_Fields          (const string& Xml, string& cue_, string& labl, string& note, string& ltxt);
 
     //---------------------------------------------------------------------------
     //Helpers - Per item

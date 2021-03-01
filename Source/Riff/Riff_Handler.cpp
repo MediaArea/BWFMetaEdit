@@ -10,8 +10,10 @@
 //---------------------------------------------------------------------------
 #include "Riff/Riff_Handler.h"
 #include "Riff/Riff_Chunks.h"
+#include "Common/Codes.h"
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 #include "ZenLib/ZtringListList.h"
 #include "ZenLib/File.h"
 #include "ZenLib/Dir.h"
@@ -38,14 +40,16 @@ enum xxxx_Fields
     Fields_Tech,
     Fields_Bext,
     Fields_Info,
+    Fields_Adtl,
     Fields_Max,
 };
 
 size_t xxxx_Strings_Size[]=
 {
-    4,  //Tech
+    5,  //Tech
     15,  //Bext
     17, //Info
+    3, //Adtl
 };
 
 const char* xxxx_Strings[][17]=
@@ -55,7 +59,7 @@ const char* xxxx_Strings[][17]=
         "aXML",
         "iXML",
         "MD5Stored",
-        "",
+        "cue",
         "",
         "",
         "",
@@ -107,6 +111,25 @@ const char* xxxx_Strings[][17]=
         "ISRC", //Source
         "ISRF", //Source Form
         "ITCH", //Technician
+    },
+    {
+        "labl",
+        "note",
+        "ltxt",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
     },
 };
 
@@ -434,8 +457,18 @@ string Riff_Handler::Get(const string &Field)
 //---------------------------------------------------------------------------
 string Riff_Handler::Get_Internal(const string &Field)
 {
+    //Special case - Technical fields
     if (Field=="SampleRate")
         return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      ).To_UTF8()));
+    else if (Field=="CodecID")
+        return Chunks->Global->fmt_==NULL                                               ?"":Ztring().From_CC2(Chunks->Global->fmt_->formatType     ).To_UTF8();
+    else if (Field=="BitsPerSample")
+        return Chunks->Global->fmt_==NULL                                               ?"":Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample    ).To_UTF8();
+
+
+    //Special case - CueXml
+    if (Field=="cuexml")
+        return Cue_Xml_Get();
 
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
@@ -672,6 +705,10 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
     if (Field=="bext")
         return Set_Internal("bextversion", Value, Rules);
 
+    //Special case - CueXml
+    if (Field=="cuexml")
+        return Cue_Xml_Set(Value, Rules);
+
     //Setting it
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings)
@@ -725,6 +762,10 @@ bool Riff_Handler::Remove(const string &Field)
         return ToReturn;
     }
 
+    //Special case: CueXml
+    if (Ztring().From_UTF8(Field).MakeLowerCase()==__T("cuexml"))
+        return Cue_Xml_Set("", rules());
+
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings)
         return false;
@@ -762,7 +803,17 @@ bool Riff_Handler::IsModified_Internal(const string &Field)
                  ToReturn=true;
         return ToReturn;
     }
-    
+    if (Field_Get(Field)=="cuexml")
+    {
+        bool ToReturn=false;
+        ToReturn|=IsModified_Internal("cue");
+        ToReturn|=IsModified_Internal("labl");
+        ToReturn|=IsModified_Internal("note");
+        ToReturn|=IsModified_Internal("ltxt");
+        return ToReturn;
+    }
+
+
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return false;
@@ -1547,6 +1598,254 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             IsValid_Warnings<<"xml validation error "<<Document.ErrorName()<<" at line "<<Ztring().From_Number(Document.ErrorLineNum()).To_UTF8();
     }
 
+    else if (Field=="cuexml")
+    {
+        string cue_;
+        string labl;
+        string note;
+        string ltxt;
+
+        Cue_Xml_To_Fields(Value, cue_, labl, note, ltxt);
+
+        ZtringListList Cues(Ztring().From_UTF8(cue_));
+        ZtringListList Labels(Ztring().From_UTF8(labl));
+        ZtringListList Notes(Ztring().From_UTF8(note));
+        ZtringListList Texts(Ztring().From_UTF8(ltxt));
+
+        //cue_
+        {
+            ZtringList Points;
+            ZtringList Duplicates;
+            for (size_t Pos=0; Pos<Cues.size(); Pos++)
+            {
+                Ztring Point=Cues[Pos](0);
+                if (find(Points.begin(), Points.end(), Point)!=Points.end())
+                {
+                    Duplicates.push_back(Point);
+                    continue;
+                }
+                Points.push_back(Point);
+            }
+            if (!Duplicates.empty())
+            {
+                IsValid_Errors<<"Errors: duplicate cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
+                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+            }
+        }
+
+        //labl
+        {
+            ZtringList Points;
+            ZtringList Missing;
+            ZtringList Duplicates;
+            for (size_t Pos=0; Pos<Labels.size(); Pos++)
+            {
+                Ztring Point=Labels[Pos](0);
+
+                if (Cues.Find(Point, 0, 0)==Error)
+                    Missing.push_back(Point);
+                else if (Points.Find(Point)!=Error)
+                    Duplicates.push_back(Point);
+                else
+                    Points.push_back(Point);
+            }
+            if (!Missing.empty())
+            {
+                if (!IsValid_Errors.str().empty())
+                    IsValid_Errors<<endl;
+                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0].To_UTF8();
+                for (size_t Pos=1; Pos<Missing.size(); Pos++)
+                    IsValid_Errors<<", "<<Missing[Pos].To_UTF8();
+                IsValid_Errors<<(Missing.size()>1?" are":" is")<<" referenced by labl "<<(Missing.size()>1?"entries":"entry");
+            }
+            if (!Duplicates.empty())
+            {
+                if (!IsValid_Errors.str().empty())
+                    IsValid_Errors<<endl;
+                IsValid_Errors<<"Error: multiple labl entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
+                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+            }
+        }
+
+        //note
+        {
+            ZtringList Points;
+            ZtringList Missing;
+            ZtringList Duplicates;
+            for (size_t Pos=0; Pos<Notes.size(); Pos++)
+            {
+                Ztring Point=Notes[Pos](0);
+                if (Cues.Find(Point, 0, 0)==Error)
+                    Missing.push_back(Point);
+                else if (Points.Find(Point)!=Error)
+                    Duplicates.push_back(Point);
+                else
+                    Points.push_back(Point);
+            }
+            if (!Missing.empty())
+            {
+                if (!IsValid_Errors.str().empty())
+                    IsValid_Errors<<endl;
+                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0].To_UTF8();
+                for (size_t Pos=1; Pos<Missing.size(); Pos++)
+                    IsValid_Errors<<", "<<Missing[Pos].To_UTF8();
+                IsValid_Errors<<(Missing.size()>1?" are":" is")<<" referenced by note "<<(Missing.size()>1?"entries":"entry");
+            }
+            if (!Duplicates.empty())
+            {
+                if (!IsValid_Errors.str().empty())
+                    IsValid_Errors<<endl;
+                IsValid_Errors<<"Error: multiple note entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
+                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+            }
+        }
+
+        //ltxt
+        {
+            ZtringList Points;
+            ZtringList Missing;
+            ZtringList Duplicates;
+            ostringstream IsValid_Errors_Save(IsValid_Errors.str());
+            ostringstream IsValid_Warnings_Save(IsValid_Warnings.str());
+            for (size_t Pos=0; Pos<Texts.size(); Pos++)
+            {
+                Ztring Point=Texts[Pos](0);
+                if (Cues.Find(Point, 0, 0)==Error)
+                    Missing.push_back(Point);
+                else if (Points.Find(Point)!=Error)
+                    Duplicates.push_back(Point);
+                else
+                    Points.push_back(Point);
+
+                if (!IgnoreCoherency)
+                {
+                    string Purpose=Texts[Pos](2).To_UTF8();
+                    string Country=Texts[Pos](3).To_UTF8();
+                    string Language=Texts[Pos](4).To_UTF8();
+                    string Dialect=Texts[Pos](5).To_UTF8();
+
+                    IsValid_Internal("cue_ltxt_purpose", Purpose, Rules, IgnoreCoherency);
+
+                    if (!IsValid_Errors.str().empty() && !IsValid_Errors_Save.str().empty())
+                        IsValid_Errors_Save<<endl;
+                    IsValid_Errors_Save<<IsValid_Errors.str();
+
+                    if (!IsValid_Warnings.str().empty() && !IsValid_Warnings_Save.str().empty())
+                        IsValid_Warnings_Save<<endl;
+                    IsValid_Warnings_Save<<IsValid_Warnings.str();
+
+
+                    IsValid_Internal("cue_ltxt_country", Country, Rules, IgnoreCoherency);
+
+                    if (!IsValid_Errors.str().empty() && !IsValid_Errors_Save.str().empty())
+                        IsValid_Errors_Save<<endl;
+                    IsValid_Errors_Save<<IsValid_Errors.str();
+
+                    if (!IsValid_Warnings.str().empty() && !IsValid_Warnings_Save.str().empty())
+                        IsValid_Warnings_Save<<endl;
+                    IsValid_Warnings_Save<<IsValid_Warnings.str();
+
+                    IsValid_Internal("cue_ltxt_language", Language, Rules, IgnoreCoherency);
+
+                    if (!IsValid_Errors.str().empty() && !IsValid_Errors_Save.str().empty())
+                        IsValid_Errors_Save<<endl;
+                    IsValid_Errors_Save<<IsValid_Errors.str();
+
+                    if (!IsValid_Warnings.str().empty() && !IsValid_Warnings_Save.str().empty())
+                        IsValid_Warnings_Save<<endl;
+                    IsValid_Warnings_Save<<IsValid_Warnings.str();
+
+                    IsValid_Internal("cue_ltxt_language_dialect", Language + ";" + Dialect, Rules, IgnoreCoherency);
+
+                    if (!IsValid_Errors.str().empty() && !IsValid_Errors_Save.str().empty())
+                        IsValid_Errors_Save<<endl;
+                    IsValid_Errors_Save<<IsValid_Errors.str();
+
+                    if (!IsValid_Warnings.str().empty() && !IsValid_Warnings_Save.str().empty())
+                        IsValid_Warnings_Save<<endl;
+                    IsValid_Warnings_Save<<IsValid_Warnings.str();
+                }
+                IsValid_Errors.str(IsValid_Errors_Save.str());
+                IsValid_Warnings.str(IsValid_Warnings_Save.str());
+            }
+            if (!Missing.empty())
+            {
+                if (!IsValid_Errors.str().empty())
+                    IsValid_Errors<<endl;
+                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0].To_UTF8();
+                for (size_t Pos=1; Pos<Missing.size(); Pos++)
+                    IsValid_Errors<<", "<<Missing[Pos].To_UTF8();
+                IsValid_Errors<<(Missing.size()>1?" are":" is")<<" referenced by ltxt "<<(Missing.size()>1?"entries":"entry");
+            }
+            if (!Duplicates.empty())
+            {
+                if (!IsValid_Errors.str().empty())
+                    IsValid_Errors<<endl;
+                IsValid_Errors<<"Error: multiple ltxt entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
+                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+            }
+        }
+    }
+
+    else if (Field=="cue_labl")
+    {
+        if (Rules.FADGI_Rec && Value.empty())
+            IsValid_Errors<<"Label is mandatory for each cue point (FADGI recommandations)";
+    }
+
+    else if (Field=="cue_ltxt_purpose")
+    {
+        int32u PurposeID=Ztring().From_UTF8(Value).To_int32u(16);
+        if (Rules.FADGI_Rec && PurposeID!=0)
+            if (PurposeID!=0x73706561 && PurposeID!=0x656E7669 && PurposeID!=0x6E6F7465 && PurposeID!=0x7472616E && PurposeID!=0x6F746872)
+                IsValid_Errors<<"Purpose ID must be one of: 0, spea, envi, note, tran, othr (FADGI recommandations)";
+    }
+
+    else if (Field=="cue_ltxt_country")
+    {
+        int16u Code=Ztring().From_UTF8(Value).To_int16u();
+        if (Rules.FADGI_Rec && Code!=0)
+        {
+            if (IsISOCountry(Code))
+                IsValid_Warnings<<"ISO 3366-1 for country is not officialy supported by FADGI recommandations";
+            else if (!IsCSETCountry(Code))
+                IsValid_Errors<<"Country must be a valid CSET country code (FADGI recommandations)";
+        }
+    }
+
+    else if (Field=="cue_ltxt_language")
+    {
+        int16u Code=Ztring().From_UTF8(Value).To_int16u();
+        if (Rules.FADGI_Rec && Code!=0)
+        {
+            if (IsISOLanguage(Code))
+                IsValid_Warnings<<"ISO 639-1 for language is not officialy supported by FADGI recommandations";
+            else if (!IsCSETLanguage(Code))
+                IsValid_Errors<<"Language must be a valid CSET language code (FADGI recommandations)";
+        }
+    }
+
+    else if (Field=="cue_ltxt_language_dialect")
+    {
+        ZtringList Codes=ZtringList(Ztring().From_UTF8(Value));
+        int16u Language=Codes(0).To_int16u();
+        int16u Code=Codes(1).To_int16u();
+        if (Rules.FADGI_Rec && (Language || Code))
+        {
+            if (IsISOLanguage(Language))
+            {
+                if (Code)
+                    IsValid_Errors<<"Dialect must be set to zero with ISO 639-1 language code";
+            }
+            else if (!IsCSETDialect(Language, Code))
+                IsValid_Errors<<"Dialect must be a valid CSET dialect code for the given language (FADGI recommandations)";
+        }
+    }
+
     else if (Field=="errors")
     {
         return PerFile_Error.str().empty();
@@ -1577,6 +1876,26 @@ bool Riff_Handler::IsOriginal(const string &Field, const string &Value)
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsOriginal_Internal(const string &Field, const string &Value)
 {
+    //Special case: CueXml
+    if (Field=="cuexml")
+    {
+        string cue_;
+        string labl;
+        string note;
+        string ltxt;
+
+        if (!Cue_Xml_To_Fields(Value, cue_, labl, note, ltxt))
+            return false;
+
+        bool ToReturn=true;
+        ToReturn&=IsOriginal_Internal("cue", cue_);
+        ToReturn&=IsOriginal_Internal("labl", cue_);
+        ToReturn&=IsOriginal_Internal("note", cue_);
+        ToReturn&=IsOriginal_Internal("ltxt", cue_);
+
+        return ToReturn;
+    }
+
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return true;
@@ -1588,6 +1907,10 @@ bool Riff_Handler::IsOriginal_Internal(const string &Field, const string &Value)
 string Riff_Handler::History(const string &Field)
 {
     CriticalSectionLocker CSL(CS);
+
+    //Special case: CueXml
+    if(Field=="cuexml")
+        return string();
 
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
@@ -1661,6 +1984,7 @@ string Riff_Handler::Technical_Header()
     ToReturn<<"UnsupportedChunks"<<",";
     ToReturn<<"bext"<<',';
     ToReturn<<"INFO"<<',';
+    ToReturn<<"Cue"<<',';
     ToReturn<<"XMP"<<',';
     ToReturn<<"aXML"<<',';
     ToReturn<<"iXML"<<',';
@@ -1694,6 +2018,7 @@ string Riff_Handler::Technical_Get()
     else
         List.push_back(__T("No"));
     List.push_back(Get_Internal("INFO").empty()?__T("No"):__T("Yes"));
+    List.push_back(Get_Internal("cuexml").empty()?__T("No"):__T("Yes"));
     List.push_back(Get_Internal("XMP").empty()?__T("No"):__T("Yes"));
     List.push_back(Get_Internal("aXML").empty()?__T("No"):__T("Yes"));
     List.push_back(Get_Internal("iXML").empty()?__T("No"):__T("Yes"));
@@ -2097,6 +2422,288 @@ void Riff_Handler::Options_Update_Internal()
 }
 
 //***************************************************************************
+// Helpers - Cues
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+string Riff_Handler::Cue_Xml_Get()
+{
+    ZtringListList Points(Ztring().From_UTF8(Get_Internal("cue").c_str()));
+    ZtringListList Labels=(Ztring().From_UTF8(Get_Internal("labl").c_str()));
+    ZtringListList Notes=(Ztring().From_UTF8(Get_Internal("note").c_str()));
+    ZtringListList Texts=(Ztring().From_UTF8(Get_Internal("ltxt").c_str()));
+
+    if (Points.empty())
+        return string();
+
+    tinyxml2::XMLPrinter Printer;
+    Printer.PushHeader(false, true);
+
+    Printer.OpenElement("Cues");
+    for (size_t Pos=0; Pos<Points.size(); Pos++)
+    {
+        Ztring Id=Points[Pos](0);
+
+        Printer.OpenElement("Cue");
+            Printer.OpenElement("ID");
+                Printer.PushText(Id.To_UTF8().c_str());
+            Printer.CloseElement();
+            Printer.OpenElement("Position");
+                Printer.PushText(Points[Pos](1).To_UTF8().c_str());
+            Printer.CloseElement();
+            Printer.OpenElement("DataChunkID");
+                Printer.PushText(Points[Pos](2).To_UTF8().c_str());
+            Printer.CloseElement();
+            Printer.OpenElement("ChunkStart");
+                Printer.PushText(Points[Pos](3).To_UTF8().c_str());
+            Printer.CloseElement();
+            Printer.OpenElement("BlockStart");
+                Printer.PushText(Points[Pos](4).To_UTF8().c_str());
+            Printer.CloseElement();
+            Printer.OpenElement("SampleOffset");
+                Printer.PushText(Points[Pos](5).To_UTF8().c_str());
+            Printer.CloseElement();
+        for (size_t Label_Pos=Labels.Find(Id, 0, 0); Label_Pos!=Error; Label_Pos=Labels.Find(Id, 0, 0))
+        {
+            Printer.OpenElement("Label");
+                Ztring Label=Labels[Label_Pos](1);
+                Label.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
+                Printer.PushText(Label.To_UTF8().c_str());
+            Printer.CloseElement();
+            Labels.erase(Labels.begin()+Label_Pos);
+        }
+        for (size_t Note_Pos=Notes.Find(Id, 0, 0); Note_Pos!=Error; Note_Pos=Notes.Find(Id, 0, 0))
+        {
+            Printer.OpenElement("Note");
+                Ztring Note=Notes[Note_Pos](1);
+                Note.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
+                Printer.PushText(Note.To_UTF8().c_str());
+            Printer.CloseElement();
+            Notes.erase(Notes.begin()+Note_Pos);
+        }
+        for (size_t Text_Pos=Texts.Find(Id, 0, 0); Text_Pos!=Error; Text_Pos=Texts.Find(Id, 0, 0))
+        {
+            Printer.OpenElement("LabeledText");
+                Printer.OpenElement("SampleLength");
+                    Printer.PushText(Texts[Text_Pos](1).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("PurposeID");
+                    Printer.PushText(Texts[Text_Pos](2).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("Country");
+                    Printer.PushText(Texts[Text_Pos](3).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("Language");
+                    Printer.PushText(Texts[Text_Pos](4).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("Dialect");
+                    Printer.PushText(Texts[Text_Pos](5).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("CodePage");
+                    Printer.PushText(Texts[Text_Pos](6).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("Text");
+                    Ztring Text=Texts[Text_Pos](7);
+                    Text.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
+                    Printer.PushText(Text.To_UTF8().c_str());
+                Printer.CloseElement();
+            Printer.CloseElement();
+            Texts.erase(Texts.begin()+Text_Pos);
+        }
+        Printer.CloseElement();
+    }
+
+    for (size_t Label_Pos=0; Label_Pos<Labels.size(); Label_Pos++)
+    {
+        Printer.OpenElement("Cue");
+            Printer.OpenElement("ID");
+                Printer.PushAttribute("Missing", "true");
+                Printer.PushText(Labels[Label_Pos](0).To_UTF8().c_str());
+            Printer.CloseElement();
+            Printer.OpenElement("Label");
+                Ztring Label=Labels[Label_Pos](1);
+                Label.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
+                Printer.PushText(Label.To_UTF8().c_str());
+            Printer.CloseElement();
+        Printer.CloseElement();
+    }
+
+    for (size_t Note_Pos=0; Note_Pos<Notes.size(); Note_Pos++)
+    {
+        Printer.OpenElement("Cue");
+            Printer.OpenElement("ID");
+                Printer.PushAttribute("Missing", "true");
+                Printer.PushText(Notes[Note_Pos](0).To_UTF8().c_str());
+            Printer.CloseElement();
+            Printer.OpenElement("Note");
+                Ztring Note=Notes[Note_Pos](1);
+                Note.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
+                Printer.PushText(Note.To_UTF8().c_str());
+            Printer.CloseElement();
+        Printer.CloseElement();
+    }
+
+    for (size_t Text_Pos=0; Text_Pos<Texts.size(); Text_Pos++)
+    {
+        Printer.OpenElement("Cue");
+            Printer.OpenElement("ID");
+                Printer.PushAttribute("Missing", "true");
+                Printer.PushText(Texts[Text_Pos](0).To_UTF8().c_str());
+            Printer.CloseElement();
+            Printer.OpenElement("LabeledText");
+                Printer.OpenElement("SampleLength");
+                    Printer.PushText(Texts[Text_Pos](1).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("PurposeID");
+                    Printer.PushText(Texts[Text_Pos](2).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("Country");
+                    Printer.PushText(Texts[Text_Pos](3).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("Language");
+                    Printer.PushText(Texts[Text_Pos](4).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("Dialect");
+                    Printer.PushText(Texts[Text_Pos](5).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("CodePage");
+                    Printer.PushText(Texts[Text_Pos](6).To_UTF8().c_str());
+                Printer.CloseElement();
+                Printer.OpenElement("Text");
+                    Ztring Text=Texts[Text_Pos](7);
+                    Text.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
+                    Printer.PushText(Text.To_UTF8().c_str());
+                Printer.CloseElement();
+            Printer.CloseElement();
+        Printer.CloseElement();
+    }
+
+    Printer.CloseElement();
+
+    return string(Printer.CStr());
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::Cue_Xml_Set (const string& Xml, rules Rules)
+{
+    string Points;
+    string Labels;
+    string Notes;
+    string Texts;
+
+    if(!Cue_Xml_To_Fields(Xml, Points, Labels, Notes, Texts))
+        return false;
+
+    Set_Internal("cue", Points, Rules);
+    Set_Internal("labl", Labels, Rules);
+    Set_Internal("note", Notes, Rules);
+    Set_Internal("ltxt", Texts, Rules);
+
+    return true;
+}
+
+bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, string& cue_, string& labl, string& note, string& ltxt)
+{
+    cue_ = string();
+    labl = string();
+    note = string();
+    ltxt = string();
+
+    if (Xml.empty())
+        return true;
+
+    ZtringListList Points;
+    ZtringListList Labels;
+    ZtringListList Notes;
+    ZtringListList Texts;
+
+    tinyxml2::XMLDocument Document;
+    if (Document.Parse(Xml.c_str())!=tinyxml2::XML_SUCCESS)
+        return false;
+
+    tinyxml2::XMLElement* Root=Document.FirstChildElement("Cues")->ToElement();
+
+    if (!Root)
+        return false;
+
+    for(tinyxml2::XMLNode* Node=Root->FirstChildElement("Cue"); Node; Node=Node->NextSibling())
+    {
+        ZtringList Point, Label, Note, Text;
+        Ztring Id;
+
+        tinyxml2::XMLElement* Element=NULL;
+
+        Element=Node->FirstChildElement("ID");
+        if (!Element)
+            continue;
+
+        Id=Ztring().From_Number(Element->UnsignedText(0));
+        if (!Element->BoolAttribute("Missing"))
+        {
+            Point.push_back(Id);
+            Element=Node->FirstChildElement("Position");
+            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Element=Node->FirstChildElement("DataChunkID");
+            Point.push_back(Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"0x64617461"));
+            Element=Node->FirstChildElement("ChunkStart");
+            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Element=Node->FirstChildElement("BlockStart");
+            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Element=Node->FirstChildElement("SampleOffset");
+            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Points.push_back(Point);
+        }
+        for (Element=Node->FirstChildElement("Label"); Element; Element=Element->NextSiblingElement("Label"))
+        {
+            Ztring Value=Ztring().From_UTF8(Element->GetText()?Element->GetText():"");
+            Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+            Value.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
+            Label.push_back(Id);
+            Label.push_back(Value);
+            Labels.push_back(Label);
+        }
+        for (Element=Node->FirstChildElement("Note"); Element; Element=Element->NextSiblingElement("Note"))
+        {
+            Ztring Value=Ztring().From_UTF8(Element->GetText()?Element->GetText():"");
+            Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+            Value.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
+            Note.push_back(Id);
+            Note.push_back(Value);
+            Notes.push_back(Note);
+        }
+        for (tinyxml2::XMLElement* LabeledTextElement=Node->FirstChildElement("LabeledText"); LabeledTextElement; LabeledTextElement=LabeledTextElement->NextSiblingElement("LabeledText"))
+        {
+            Text.push_back(Id);
+            Element=LabeledTextElement->FirstChildElement("SampleLength");
+            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Element=LabeledTextElement->FirstChildElement("PurposeID");
+            Text.push_back(Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"0x00000000"));
+            Element=LabeledTextElement->FirstChildElement("Country");
+            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Element=LabeledTextElement->FirstChildElement("Language");
+            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Element=LabeledTextElement->FirstChildElement("Dialect");
+            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Element=LabeledTextElement->FirstChildElement("CodePage");
+            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Element=LabeledTextElement->FirstChildElement("Text");
+            Ztring Value=Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"");
+            Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+            Value.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
+            Text.push_back(Value);
+            Texts.push_back(Text);
+        }
+    }
+
+    cue_ = Points.Read().To_UTF8();
+    labl = Labels.Read().To_UTF8();
+    note = Notes.Read().To_UTF8();
+    ltxt = Texts.Read().To_UTF8();
+
+    return true;
+}
+
+//***************************************************************************
 // Helpers - Retrieval of chunks info
 //***************************************************************************
 
@@ -2140,7 +2747,11 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
     //iXML
     else if (Field_Lowered=="ixml")
         return &Chunks->Global->iXML;
-    
+
+    //cue
+    else if (Field_Lowered=="cue")
+        return &Chunks->Global->cue_;
+
     //MD5Stored
     else if (Field_Lowered=="md5stored")
         return &Chunks->Global->MD5Stored;
@@ -2148,7 +2759,13 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
     //MD5Stored
     else if (Field_Lowered=="md5generated")
         return &Chunks->Global->MD5Generated;
-    
+
+    //adtl
+    else if (Field_Lowered=="labl"
+          || Field_Lowered=="note"
+          || Field_Lowered=="ltxt")
+        return &Chunks->Global->adtl;
+
     //INFO
     else if (Field.size()==4)
         return &Chunks->Global->INFO;
@@ -2185,6 +2802,10 @@ string Riff_Handler::Field_Get(const string &Field)
      || Field_Lowered=="xmp"
      || Field_Lowered=="axml"
      || Field_Lowered=="ixml"
+     || Field_Lowered=="cue"
+     || Field_Lowered=="labl"
+     || Field_Lowered=="note"
+     || Field_Lowered=="ltxt"
      || Field_Lowered=="md5stored"
      || Field_Lowered=="md5generated")
         return Field_Lowered; 
@@ -2233,7 +2854,11 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
 
     //iXML
     else if (Field_Lowered=="ixml")
-        return Elements::WAVE_iXML; 
+        return Elements::WAVE_iXML;
+
+    //cue
+    else if (Field_Lowered=="cue")
+        return Elements::WAVE_cue_;
 
     //MD5Stored
     else if (Field_Lowered=="md5stored")
@@ -2242,6 +2867,11 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
     //MD5Generated
     else if (Field_Lowered=="md5generated")
         return Elements::WAVE_MD5_; 
+
+    else if (Field_Lowered=="labl"
+          || Field_Lowered=="note"
+          || Field_Lowered=="ltxt")
+        return Elements::WAVE_adtl;
 
     //INFO
     else if (Field.size()==4)
@@ -2257,7 +2887,10 @@ int32u Riff_Handler::Chunk_Name3_Get(const string &Field)
     //INFO
     if (Chunk_Name2_Get(Field)==Elements::WAVE_INFO)
         return Ztring().From_UTF8(Field).MakeUpperCase().To_CC4();
-    
+
+    if (Chunk_Name2_Get(Field)==Elements::WAVE_adtl)
+        return Ztring().From_UTF8(Field).MakeLowerCase().To_CC4();
+
     //Unknown / not needed
     return 0x00000000;
 }

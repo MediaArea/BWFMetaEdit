@@ -36,6 +36,8 @@ void Riff_WAVE::Read_Internal ()
         SUB_ELEMENT(WAVE_axml);
         SUB_ELEMENT(WAVE_iXML);
         SUB_ELEMENT(WAVE_MD5_);
+        SUB_ELEMENT(WAVE_cue_);
+        SUB_ELEMENT(WAVE_adtl);
     SUBS_END();
 
     //Integrity
@@ -76,6 +78,8 @@ size_t Riff_WAVE::Insert_Internal (int32u Chunk_Name_Insert)
         case Elements::WAVE_axml :  NewChunk=new Riff_WAVE_axml(Global); break;
         case Elements::WAVE_iXML :  NewChunk=new Riff_WAVE_iXML(Global); break;
         case Elements::WAVE_MD5_ :  NewChunk=new Riff_WAVE_MD5_(Global); break;
+        case Elements::WAVE_cue_ :  NewChunk=new Riff_WAVE_cue_(Global); break;
+        case Elements::WAVE_adtl :  NewChunk=new Riff_WAVE_adtl(Global); break;
         default                  :  return Subs.size();
     }
 
@@ -89,6 +93,8 @@ size_t Riff_WAVE::Insert_Internal (int32u Chunk_Name_Insert)
         case Elements::WAVE_axml :  Subs_Pos=(size_t)-1                                                            ; break;
         case Elements::WAVE_iXML :  Subs_Pos=(size_t)-1                                                            ; break;
         case Elements::WAVE_MD5_ :  Subs_Pos=(size_t)-1                                                            ; break;
+        case Elements::WAVE_cue_ :  Subs_Pos=(size_t)-1                                                            ; break;
+        case Elements::WAVE_adtl :  Subs_Pos=(size_t)-1                                                            ; break;
         default                  :  return Subs.size();
     }
 

@@ -227,6 +227,7 @@
     <ClCompile Include="_Automated\qrc_GUI_Main.cpp" />
     <ClCompile Include="..\..\..\Source\Common\Common_About.cpp" />
     <ClCompile Include="..\..\..\Source\Common\Core.cpp" />
+    <ClCompile Include="..\..\..\Source\Common\Codes.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Base.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Base_Streams.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_.cpp" />
@@ -241,6 +242,11 @@
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_INFO_xxxx.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_iXML.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_MD5_.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_cue_.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_adtl.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_adtl_labl.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_adtl_note.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_adtl_ltxt.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Handler.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\Conf.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\CriticalSection.cpp" />
@@ -288,6 +294,7 @@
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Preferences.h" />
     <ClInclude Include="..\..\..\Source\Common\Common_About.h" />
     <ClInclude Include="..\..\..\Source\Common\Core.h" />
+    <ClInclude Include="..\..\..\Source\Common\Codes.h" />
     <ClInclude Include="..\..\..\Source\Riff\Riff_Base.h" />
     <ClInclude Include="..\..\..\Source\Riff\Riff_Chunks.h" />
     <ClInclude Include="..\..\..\Source\Riff\Riff_Handler.h" />

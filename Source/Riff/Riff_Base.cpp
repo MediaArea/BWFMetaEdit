@@ -271,6 +271,64 @@ void Riff_Base::Modify (int32u Chunk_Name_1, int32u Chunk_Name_2, int32u Chunk_N
 //---------------------------------------------------------------------------
 void Riff_Base::Modify_Internal_Subs (int32u Chunk_Name_1, int32u Chunk_Name_2, int32u Chunk_Name_3)
 {
+   //Special case: multiples chunks
+   if (Global->adtl && (Chunk_Name_1==Elements::WAVE_adtl_labl
+                     || Chunk_Name_1==Elements::WAVE_adtl_note
+                     || Chunk_Name_1==Elements::WAVE_adtl_ltxt))
+   {
+        //ZtringListList Fields;
+        std::string Fields;
+        std::string Fields_Backup;
+        std::vector<Riff_Base*> Chunks;
+
+        if (Chunk_Name_1==Elements::WAVE_adtl_labl)
+           Fields="labl";
+        else if (Chunk_Name_1==Elements::WAVE_adtl_note)
+           Fields="note";
+        else if (Chunk_Name_1==Elements::WAVE_adtl_ltxt)
+           Fields="ltxt";
+        Fields_Backup=Global->adtl->Strings[Fields];
+
+        bool Adding=true;
+        for (size_t Sub_Pos=0; Sub_Pos<Subs.size(); Sub_Pos++)
+        {
+            if (Subs[Sub_Pos]->Chunk.Header.Name!=Chunk_Name_1)
+                continue;
+
+            Subs[Sub_Pos]->Modify(Chunk_Name_2, Chunk_Name_3, 0x00000000);
+            if (Subs[Sub_Pos]->Chunk.Content.IsModified)
+                Chunk.Content.IsModified=true;
+            if (Subs[Sub_Pos]->Chunk.Content.Size_IsModified)
+                Chunk.Content.Size_IsModified=true;
+            if (Subs[Sub_Pos]->Chunk.Content.IsRemovable)
+            {
+                Chunk.Content.IsModified=true;
+                Chunk.Content.Size_IsModified=true;
+                Subs.erase(Subs.begin()+Sub_Pos);
+                Sub_Pos--;
+                Adding=false; //No more data
+            }
+        }
+
+        while(Adding)
+        {
+            size_t Pos=Insert_Internal(Chunk_Name_1);
+            if (Pos>=Subs.size()) //No more data
+            {
+                Adding=false;
+                break;
+            }
+            Chunk.Content.IsModified=true;
+            Chunk.Content.Size_IsModified=true;
+        }
+
+        if (Subs.empty())
+            Chunk.Content.IsRemovable=true;
+
+        Global->adtl->Strings[Fields]=Fields_Backup;
+        return;
+   }
+
     //Parsing subs
     bool Sub_IsFound=false;
     size_t Sub_Pos=0;
