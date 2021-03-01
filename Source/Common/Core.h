@@ -128,6 +128,10 @@ public:
     bool                                In_iXML_XML;
     bool                                In_iXML_Remove;
     bool                                Out_iXML_XML;
+    string                              In_cue__FileName;
+    bool                                In_cue__XML;
+    bool                                In_cue__Remove;
+    bool                                Out_cue__XML;
     bool                                Batch_Enabled;
     bool                                Batch_IsBackuping; //Does not read modifications, only data from the file
     bool                                Out_Log_cout;
@@ -161,6 +165,9 @@ protected:
         bool                In_iXML_Remove;
         bool                In_iXML_XML;
         string              In_iXML_FileName;
+        bool                In_cue__Remove;
+        bool                In_cue__XML;
+        string              In_cue__FileName;
 
         handler()
         {
@@ -172,6 +179,8 @@ protected:
             In_aXML_XML=false;
             In_iXML_Remove=false;
             In_iXML_XML=false;
+            In_cue__Remove=false;
+            In_cue__XML=false;
         }
 
         ~handler()
@@ -198,6 +207,7 @@ protected:
     void Batch_Launch_PMX               (handlers::iterator &Handler);
     void Batch_Launch_aXML              (handlers::iterator &Handler);
     void Batch_Launch_iXML              (handlers::iterator &Handler);
+    void Batch_Launch_cue_              (handlers::iterator &Handler);
     void Batch_Launch_Write             (handlers::iterator &Handler);
     void Options_Update                 (handlers::iterator &Handler);
     void Entry();
