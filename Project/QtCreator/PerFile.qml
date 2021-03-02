@@ -187,7 +187,7 @@ Control {
                             onClicked: {
                                 if (modified) {
                                     Model.saveFile(file)
-                                    parent.source = modified ? parent.svg.arg("orange") : parent.svg.arg("gray")
+                                    parent.source = parent.svg.arg("orange")
                                 }
                             }
                             onEntered: {
@@ -251,16 +251,17 @@ Control {
                             Layout.fillWidth: true
                         }
                         Repeater {
-                            model: ["XMP", "aXML", "iXML"]
+                            model: ["Cue", "XMP", "aXML", "iXML"]
                             delegate: Item {
                                 function buttonColor(hovered) {
-                                    if (!Model.valid(file, modelData, Model.value(file, modelData)))
+                                    var field = modelData==="Cue"?"cuexml":modelData
+                                    if (!Model.valid(file, field, Model.value(file, field)))
                                        return hovered?"darkred":root.red
                                     else if (Model.lastValidationWarning(file).length > 0)
                                         return hovered?"darkorange":"orange"
-                                    else if (Model.modified(file, modelData))
+                                    else if (Model.modified(file, field))
                                         return hovered?root.darkgreen:root.green
-                                    else if (Model.visible(file, modelData))
+                                    else if (Model.visible(file, field))
                                         return hovered?"dimgray":"gray"
                                     else
                                         return "lightgray"
@@ -310,7 +311,7 @@ Control {
                                         }
                                     }
                                     ToolTip {
-                                        property var valid: Model.valid(file, modelData, Model.value(file, modelData))
+                                        property var valid: Model.valid(file, modelData=="Cue"?"cuexml":modelData, Model.value(file, modelData=="Cue"?"cuexml":modelData))
                                         property var message: valid ? Model.lastValidationWarning(file) : Model.lastValidationError(file)
                                         visible: message.length > 0 && parent.containsMouse
                                         delay: 500

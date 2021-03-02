@@ -101,6 +101,7 @@ private:
     QAction*        Menu_Export__PMX_XML_PerFile;
     QAction*        Menu_Export_aXML_XML_PerFile;
     QAction*        Menu_Export_iXML_XML_PerFile;
+    QAction*        Menu_Export_cue__XML_PerFile;
     QMenu*          Menu_Options;
     QAction*        Menu_Options_ResetFieldSizes;
     QAction*        Menu_Options_Preferences;
@@ -140,6 +141,7 @@ public Q_SLOTS:
     void OnMenu_Export__PMX_XML_PerFile             ();
     void OnMenu_Export_aXML_XML_PerFile             ();
     void OnMenu_Export_iXML_XML_PerFile             ();
+    void OnMenu_Export_cue__XML_PerFile             ();
     void OnMenu_Rules_Tech3285_Req                  (bool);
     void OnMenu_Rules_Tech3285_Rec                  (bool);
     void OnMenu_Rules_CodingHistory_Rec             (bool);

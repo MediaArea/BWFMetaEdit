@@ -276,7 +276,7 @@ void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QMo
     string ModifiedContent=topLeft.model()->data(topLeft.model()->index(topLeft.row(), topLeft.column(), rootIndex())).toString().toUtf8().data();
     
     //Filling
-    if (!(Field=="XMP" || Field=="aXML" || Field=="iXML" || Field =="bext")) //this is special cases
+    if (!(Field=="Cue" || Field=="XMP" || Field=="aXML" || Field=="iXML" || Field =="bext")) //this is special cases
         C->Set(FileName, Field, ModifiedContent);
 
     //Configuring
@@ -311,7 +311,7 @@ void GUI_Main_xxxx__Common::Colors_Update ()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string &FileName, const string &Field) 
 {
-    if (!C->IsValid(FileName, Field, C->Get(FileName, Field)))
+    if (!C->IsValid(FileName, Field=="Cue"?"cuexml":Field, C->Get(FileName, Field=="Cue"?"cuexml":Field)))
     {
         Item->setToolTip(QString("<qt>%1</qt>").arg(QString(C->IsValid_LastError(FileName).c_str()).toHtmlEscaped()));
         Item->setIcon(QIcon(":/Image/Menu/Error.svg"));
@@ -319,7 +319,7 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
     }
     else
     {
-        if (C->IsModified(FileName, Field))
+        if (C->IsModified(FileName, Field=="Cue"?"cuexml":Field))
             Item->setBackgroundColor(QColor(144, 238, 144)); //Green
         else
             Item->setBackgroundColor(Qt::white);

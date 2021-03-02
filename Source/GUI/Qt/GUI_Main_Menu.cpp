@@ -226,6 +226,10 @@ void GUI_Main::Menu_Create()
     Menu_Export_iXML_XML_PerFile->setStatusTip(tr(""));
     connect(Menu_Export_iXML_XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_iXML_XML_PerFile()));
 
+    Menu_Export_cue__XML_PerFile = new QAction(tr("cue (one XML file per WAV file)"), this);
+    Menu_Export_cue__XML_PerFile->setStatusTip(tr(""));
+    connect(Menu_Export_cue__XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_cue__XML_PerFile()));
+
     Menu_Export = menuBar()->addMenu(tr("&Export"));
     Menu_Export->addAction(Menu_Export_Technical_CSV_Global);
     Menu_Export->addSeparator();
@@ -238,6 +242,8 @@ void GUI_Main::Menu_Create()
     Menu_Export->addAction(Menu_Export_aXML_XML_PerFile);
     Menu_Export->addSeparator();
     Menu_Export->addAction(Menu_Export_iXML_XML_PerFile);
+    Menu_Export->addSeparator();
+    Menu_Export->addAction(Menu_Export_cue__XML_PerFile);
 
     //Options (dynamic)
     Menu_Options_Preferences = new QAction(QIcon(":/Image/Menu/Options_Prefs.png"), tr("Preferences..."), this);
@@ -760,6 +766,21 @@ void GUI_Main::OnMenu_Export_iXML_XML_PerFile()
     
     //Clearing
     C->Out_iXML_XML=false;
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Export_cue__XML_PerFile()
+{
+    //Configuring
+    C->Out_cue__XML=true;
+
+    //Running
+    C->Simulation_Enabled=true;
+    C->Batch_Launch();
+    C->Simulation_Enabled=false;
+
+    //Clearing
+    C->Out_cue__XML=false;
 }
 
 //---------------------------------------------------------------------------

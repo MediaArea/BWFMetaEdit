@@ -14,11 +14,13 @@
 
 //---------------------------------------------------------------------------
 #include "ZenLib/Utils.h"
+#include <utility>
 #include <string>
 #include <map>
 
 //---------------------------------------------------------------------------
-typedef std::map<ZenLib::int16u, std::string> codes;
+typedef std::pair<std::string, bool> codes_entries;
+typedef std::map<ZenLib::int16u, codes_entries> codes;
 
 bool IsCSETCountry(ZenLib::int16u Code);
 bool IsCSETLanguage(ZenLib::int16u Code);
@@ -29,11 +31,11 @@ bool IsISOLanguage(ZenLib::int16u Code);
 std::string Country_Get(ZenLib::int16u Code);
 std::string Language_Get(ZenLib::int16u Code);
 std::string Dialect_Get(ZenLib::int16u Language, ZenLib::int16u Code);
-codes CSETCountries_Get();
-codes CSETLanguages_Get();
 
-codes CSETDialects_Get();
-codes ISOCountries_Get();
-codes ISOLanguages_Get();
+const codes* CSETCountries_Get();
+const codes* CSETLanguages_Get();
+const codes* CSETDialects_Get();
+const codes* ISOCountries_Get();
+const codes* ISOLanguages_Get();
 
 #endif

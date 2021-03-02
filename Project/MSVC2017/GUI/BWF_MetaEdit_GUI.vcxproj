@@ -202,6 +202,7 @@
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_DateDialog.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TextEditDialog.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TimeReferenceDialog.cpp" />
+    <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CueDialog.cpp" />
     <ClCompile Include="..\..\..\Source\GUI\Qt\GUI_Preferences.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_aXML.cpp" />
     <ClCompile Include="_Automated\moc_GUI_About.cpp" />
@@ -291,6 +292,7 @@
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_DateDialog.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TextEditDialog.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_TimeReferenceDialog.h" />
+    <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Main_xxxx_CueDialog.h" />
     <ClInclude Include="..\..\..\Source\GUI\Qt\GUI_Preferences.h" />
     <ClInclude Include="..\..\..\Source\Common\Common_About.h" />
     <ClInclude Include="..\..\..\Source\Common\Core.h" />
