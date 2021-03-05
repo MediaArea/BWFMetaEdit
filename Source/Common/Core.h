@@ -78,6 +78,7 @@ public:
     string                              FileDate_Get                    (const string &FileName);
     bool                                IsValid_Get                     (const string &FileName);
     bool                                IsModified_Get                  (const string &FileName);
+    bool                                IsReadOnly_Get                  (const string &FileName);
 
     //Actions
     const string                       &Technical_Get                   ();

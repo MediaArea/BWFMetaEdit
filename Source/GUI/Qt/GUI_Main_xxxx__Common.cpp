@@ -324,16 +324,31 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
         else
             Item->setBackgroundColor(Qt::white);
 
-        if(C->IsValid_LastWarning(FileName.c_str()).empty())
-        {
-            Item->setToolTip(QString());
-            Item->setIcon(QIcon());
-        }
-        else
+        if(!C->IsValid_LastWarning(FileName.c_str()).empty())
         {
             Item->setToolTip(QString("<qt>%1</qt>").arg(QString(C->IsValid_LastWarning(FileName).c_str()).toHtmlEscaped()));
             Item->setIcon(QIcon(":/Image/Menu/Warning.svg"));
         }
+        else
+        {
+            Item->setToolTip(QString());
+            Item->setIcon(QIcon());
+        }
+    }
+
+    if (C->IsReadOnly_Get(FileName))
+    {
+        if(Field=="FileName" && Item->icon().isNull())
+            Item->setIcon(QIcon(":/Image/Menu/Warning.svg"));
+
+        QString Message;
+        if (!Item->toolTip().isEmpty())
+        {
+            Message+=Item->toolTip();
+            Message+="\n\n";
+        }
+        Message+="Edit mode disabled, file is read only!";
+        Item->setToolTip(Message);
     }
 }
 
@@ -511,6 +526,7 @@ void GUI_Main_xxxx__Common::Fill ()
                 }
 
                 if (!C->IsValid_Get(FileName_Before+List[File_Pos][0].To_UTF8())
+                 || C->IsReadOnly_Get(FileName_Before+List[File_Pos][0].To_UTF8())
                  || (Data_Pos<List[File_Pos].size() && !Fill_Enabled(FileName_Before+List[File_Pos][0].To_UTF8(), List[0][Data_Pos].To_UTF8(), List[File_Pos][Data_Pos].To_UTF8())))
                     Item->setFlags(Item->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
                 setItem((int)File_Pos-1, (int)(FILENAME_COL+Data_Pos-ColumnMissing_Count), Item);

@@ -98,6 +98,8 @@ public:
     void            Cancel();
     bool            IsValid_Get();
     bool            IsModified_Get();
+    bool            IsReadOnly_Get();
+
 
     //---------------------------------------------------------------------------
     //Configuration
@@ -135,6 +137,7 @@ private:
     bool      IsModified_Internal        (const string &Field);
     string    Core_Get_Internal          (bool IsBackuping=false);
     bool      IsModified_Get_Internal    ();
+    bool      IsReadOnly_Get_Internal    ();
     void      Options_Update_Internal    (bool Update=true);
     string    Cue_Xml_Get                ();
     bool      Cue_Xml_Set                (const string& Xml, rules Rules);

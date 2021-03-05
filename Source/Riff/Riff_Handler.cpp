@@ -235,6 +235,14 @@ bool Riff_Handler::Open_Internal(const string &FileName)
     //Cleanup
     Chunks->Global->In.Close();
 
+    //ReadOnly check
+    if (!File().Open(Ztring().From_UTF8(FileName), File::Access_Write))
+    {
+        Chunks->Global->Read_Only=true;
+            Information<<Chunks->Global->File_Name.To_UTF8()<<": Is read only"<<endl;
+            PerFile_Information<<"File is read only"<<endl;
+    }
+
     if (File_IsValid)
     {
         //Log
@@ -335,6 +343,12 @@ bool Riff_Handler::Save()
     if (Chunks==NULL)
     {
         Errors<<"(No file name): Internal error"<<endl;
+        return false;
+    }
+
+    if (IsReadOnly_Get_Internal())
+    {
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": Is read only"<<endl;
         return false;
     }
 
@@ -2165,6 +2179,24 @@ bool Riff_Handler::IsModified_Get_Internal()
 
     return ToReturn;
 }
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::IsReadOnly_Get()
+{
+    CriticalSectionLocker CSL(CS);
+
+    return IsReadOnly_Get_Internal();
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::IsReadOnly_Get_Internal()
+{
+    if (Chunks==NULL || Chunks->Global==NULL)
+        return false;
+
+    return Chunks->Global->Read_Only;
+}
+
 
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsValid_Get()
