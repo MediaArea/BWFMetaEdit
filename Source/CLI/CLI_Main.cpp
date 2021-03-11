@@ -136,6 +136,9 @@ int main(int argc, char* argv[])
     else
         std::cerr<<C.Text_stderr.str()<<std::endl;
 
+    if (C.Text_stderr_Updated_Get())
+        return 1;
+
     return 0;
 }
 //---------------------------------------------------------------------------
