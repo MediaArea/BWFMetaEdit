@@ -101,6 +101,7 @@ public:
     bool                                NewChunksAtTheEnd;
     bool                                GenerateMD5;
     bool                                VerifyMD5;
+    bool                                VerifyMD5_Force;
     bool                                EmbedMD5;
     bool                                EmbedMD5_AuthorizeOverWritting;
     int8u                               Bext_DefaultVersion;

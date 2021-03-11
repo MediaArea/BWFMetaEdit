@@ -215,6 +215,7 @@ public:
         bool                NewChunksAtTheEnd;
         bool                GenerateMD5;
         bool                VerifyMD5;
+        bool                VerifyMD5_Force;
         bool                EmbedMD5;
         bool                EmbedMD5_AuthorizeOverWritting;
         bool                Out_Buffer_File_TryModification;
@@ -247,6 +248,7 @@ public:
             NewChunksAtTheEnd=false;
             GenerateMD5=false;
             VerifyMD5=false;
+            VerifyMD5_Force=false;
             EmbedMD5=false;
             EmbedMD5_AuthorizeOverWritting=false;
             Out_Buffer_WriteAtEnd=false;

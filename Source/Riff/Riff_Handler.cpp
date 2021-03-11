@@ -147,6 +147,7 @@ Riff_Handler::Riff_Handler ()
     NewChunksAtTheEnd=false;
     GenerateMD5=false;
     VerifyMD5=false;
+    VerifyMD5_Force=false;
     EmbedMD5=false;
     EmbedMD5_AuthorizeOverWritting=false;
     Bext_DefaultVersion=0;
@@ -204,7 +205,7 @@ bool Riff_Handler::Open_Internal(const string &FileName)
     //Base
     Riff_Base::chunk Chunk;
     Chunk.Content.Size=Chunks->Global->File_Size;
-    Options_Update_Internal();
+    Options_Update_Internal(false);
 
     //Parsing
     try
@@ -247,11 +248,12 @@ bool Riff_Handler::Open_Internal(const string &FileName)
         Core_FromFile=Ztring().From_UTF8(Core_Get_Internal());
 
         //MD5
-        if (Chunks->Global->VerifyMD5)
+        if (Chunks->Global->VerifyMD5 || Chunks->Global->VerifyMD5_Force)
         {
             //Removing all MD5 related info
             Ztring PerFile_Error_Temp=Ztring().From_UTF8(PerFile_Error.str());
             PerFile_Error_Temp.FindAndReplace(Ztring("MD5, failed verification\n"), Ztring());
+            PerFile_Error_Temp.FindAndReplace(Ztring("MD5, no existing MD5 chunk\n"), Ztring());
             PerFile_Error.str(PerFile_Error_Temp.To_UTF8());
             Ztring PerFile_Information_Temp=Ztring().From_UTF8(PerFile_Information.str());
             PerFile_Information_Temp.FindAndReplace(Ztring("MD5, no existing MD5 chunk\n"), Ztring());
@@ -261,8 +263,17 @@ bool Riff_Handler::Open_Internal(const string &FileName)
             //Checking
             if (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()))
             {
-                Information<<Chunks->Global->File_Name.To_UTF8()<<": MD5, no existing MD5 chunk"<<endl;
-                PerFile_Information<<"MD5, no existing MD5 chunk"<<endl;
+                if (Chunks->Global->VerifyMD5_Force)
+                {
+                    Errors<<Chunks->Global->File_Name.To_UTF8()<<": MD5, no existing MD5 chunk"<<endl;
+                    PerFile_Error.str(string());
+                    PerFile_Error<<"MD5, no existing MD5 chunk"<<endl;
+                }
+                else
+                {
+                    Information<<Chunks->Global->File_Name.To_UTF8()<<": MD5, no existing MD5 chunk"<<endl;
+                    PerFile_Information<<"MD5, no existing MD5 chunk"<<endl;
+                }
             }
             else if (Chunks->Global->MD5Generated && Chunks->Global->MD5Generated->Strings["md5generated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
             {
@@ -2374,7 +2385,7 @@ void Riff_Handler::Options_Update()
     Options_Update_Internal();
 }
 
-void Riff_Handler::Options_Update_Internal()
+void Riff_Handler::Options_Update_Internal(bool Update)
 {
     if (Chunks==NULL || Chunks->Global==NULL)
         return;
@@ -2383,16 +2394,18 @@ void Riff_Handler::Options_Update_Internal()
     Chunks->Global->NewChunksAtTheEnd=NewChunksAtTheEnd;
     Chunks->Global->GenerateMD5=GenerateMD5;
     Chunks->Global->VerifyMD5=VerifyMD5;
+    Chunks->Global->VerifyMD5_Force=VerifyMD5_Force;
     Chunks->Global->EmbedMD5=EmbedMD5;
     Chunks->Global->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;
     Chunks->Global->Trace_UseDec=Trace_UseDec;
 
     //MD5
-    if (Chunks->Global->VerifyMD5)
+    if (Update && (Chunks->Global->VerifyMD5 || Chunks->Global->VerifyMD5_Force))
     {
         //Removing all MD5 related info
         Ztring PerFile_Error_Temp=Ztring().From_UTF8(PerFile_Error.str());
         PerFile_Error_Temp.FindAndReplace(Ztring("MD5, failed verification\n"), Ztring());
+        PerFile_Error_Temp.FindAndReplace(Ztring("MD5, no existing MD5 chunk\n"), Ztring());
         PerFile_Error.str(PerFile_Error_Temp.To_UTF8());
         Ztring PerFile_Information_Temp=Ztring().From_UTF8(PerFile_Information.str());
         PerFile_Information_Temp.FindAndReplace(Ztring("MD5, no existing MD5 chunk\n"), Ztring());
@@ -2402,8 +2415,17 @@ void Riff_Handler::Options_Update_Internal()
         //Checking
         if (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()))
         {
-            Information<<Chunks->Global->File_Name.To_UTF8()<<": MD5, no existing MD5 chunk"<<endl;
-            PerFile_Information<<"MD5, no existing MD5 chunk"<<endl;
+                if (Chunks->Global->VerifyMD5_Force)
+                {
+                    Errors<<Chunks->Global->File_Name.To_UTF8()<<": MD5, no existing MD5 chunk"<<endl;
+                    PerFile_Error.str(string());
+                    PerFile_Error<<"MD5, no existing MD5 chunk"<<endl;
+                }
+                else
+                {
+                    Information<<Chunks->Global->File_Name.To_UTF8()<<": MD5, no existing MD5 chunk"<<endl;
+                    PerFile_Information<<"MD5, no existing MD5 chunk"<<endl;
+                }
         }
         else if (Chunks->Global->MD5Generated && Chunks->Global->MD5Generated->Strings["md5generated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
         {
