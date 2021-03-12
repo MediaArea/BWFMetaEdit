@@ -37,7 +37,7 @@ GUI_About::GUI_About(QWidget * parent)
     #else
         resize(840, 540);
     #endif
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("About BWF MetaEdit");
 
     Close=new QPushButton("&Close");

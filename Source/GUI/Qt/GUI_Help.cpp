@@ -15,7 +15,7 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QTabWidget>
 #include <QDesktopServices>
 //---------------------------------------------------------------------------
@@ -29,10 +29,14 @@
 GUI_Help::GUI_Help(QWidget * parent)
 : QDialog(parent)
 {
-    move(QApplication::desktop()->screenGeometry().width()/10, QApplication::desktop()->screenGeometry().height()/10);
-    resize(QApplication::desktop()->screenGeometry().width()-QApplication::desktop()->screenGeometry().width()/10*6, QApplication::desktop()->screenGeometry().height()/2);
+    QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+    if (Screen)
+    {
+        move(Screen->availableGeometry().width()/10, Screen->availableGeometry().height()/10);
+        resize(Screen->availableGeometry().width()-Screen->availableGeometry().width()/10*6, Screen->availableGeometry().height()/2);
+    }
 
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("BWF MetaEdit help");
 
     Close=new QPushButton("&Close");

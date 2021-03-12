@@ -18,7 +18,6 @@
 #include <QDoubleSpinBox>
 #include <QGridLayout>
 #include <QDialogButtonBox>
-#include <QDesktopWidget>
 #include <QApplication>
 #include <QMessageBox>
 #include <QIcon>

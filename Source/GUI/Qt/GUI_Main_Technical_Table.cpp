@@ -280,7 +280,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
     if (trigger==AnyKeyPressed)
     {
         ModifiedContentQ=((QKeyEvent*)Event)->text(); //What the user has pressed
-        if (!ModifiedContentQ.isEmpty() && ModifiedContentQ[0]==127)
+        if (!ModifiedContentQ.isEmpty() && ModifiedContentQ[0]==QChar(127))
             ModifiedContentQ.clear();
     }
     else

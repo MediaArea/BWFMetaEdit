@@ -21,11 +21,10 @@
 #include <QListWidget>
 #include <QFileDialog>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QComboBox>
 #include <QTextEdit>
 #include <QMessageBox>
-#include <QDesktopWidget>
+#include <QScreen>
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -40,7 +39,7 @@ GUI_Main_UndoDialog::GUI_Main_UndoDialog(Core* _C, QWidget* parent)
     C=_C;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("Undo last save oprerations");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -62,7 +61,9 @@ GUI_Main_UndoDialog::GUI_Main_UndoDialog(Core* _C, QWidget* parent)
 
     setLayout(L);
 
-    resize(QApplication::desktop()->screenGeometry().width()/2, QApplication::desktop()->screenGeometry().height()/3);
+    QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+    if (Screen)
+        resize(Screen->availableGeometry().width()/2, Screen->availableGeometry().height()/3);
 
     //Fill
     ZtringList List=C->Menu_File_Undo_ListBackupFiles();

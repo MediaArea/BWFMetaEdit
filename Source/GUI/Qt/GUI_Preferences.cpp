@@ -16,7 +16,7 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QTabWidget>
 #include <QCheckBox>
 #include <QRadioButton>
@@ -278,14 +278,17 @@ GUI_Preferences::GUI_Preferences(GUI_Main* parent)
     OnLoad();
 
     Central->setCurrentIndex(Group_Rules);
-
-    resize(width(), QApplication::desktop()->screenGeometry().height()*3/4);
+    QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+    if (Screen)
+        resize(width(), Screen->availableGeometry().height()*3/4);
 }
 
 //---------------------------------------------------------------------------
 void GUI_Preferences::showEvent(QShowEvent* Event)
 {
-    move((QApplication::desktop()->screenGeometry().width()-780)/2, 80);
+    QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+    if (Screen)
+        move((Screen->availableGeometry().width()-780)/2, 80);
     resize(780, height());
 
     OnClicked();

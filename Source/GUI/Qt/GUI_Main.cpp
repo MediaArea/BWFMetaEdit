@@ -29,7 +29,7 @@
 #include <QDropEvent>
 #include <QDragEnterEvent>
 #include <QMessageBox>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QProgressDialog>
 #include <QThread>
 #include <QTimer>
@@ -78,8 +78,12 @@ GUI_Main::GUI_Main(Core* _C)
 
     //CenterOnScreen();
     setStatusBar(new QStatusBar());
-    move(40, (QApplication::desktop()->screenGeometry().height()-440)/2);
-    resize(QApplication::desktop()->screenGeometry().width()-80, 440);
+    QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+    if (Screen)
+    {
+        move(40, (Screen->availableGeometry().height()-440)/2);
+        resize(Screen->availableGeometry().width()-80, 440);
+    }
 
     //Drag n drop
     setAcceptDrops(true);

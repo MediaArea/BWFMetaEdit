@@ -21,11 +21,10 @@
 #include <QTableWidget>
 #include <QFileDialog>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QComboBox>
 #include <QTextEdit>
 #include <QMessageBox>
-#include <QDesktopWidget>
+#include <QScreen>
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -326,7 +325,9 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
 
     setLayout(L);
 
-    resize(QApplication::desktop()->screenGeometry().width()/2, QApplication::desktop()->screenGeometry().height()/3);
+    QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+    if (Screen)
+        resize(Screen->availableGeometry().width()/2, Screen->availableGeometry().height()/3);
 
     if (Rules.CodingHistory_Rec && !Rules.CodingHistory_Rec_Ex_Comma)
         AddComma->setEnabled(false);

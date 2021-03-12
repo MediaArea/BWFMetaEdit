@@ -21,11 +21,10 @@
 #include <QTableWidget>
 #include <QFileDialog>
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QMessageBox>
-#include <QDesktopWidget>
 #include <QGroupBox>
 #include <QCheckBox>
 #include <QDateEdit>
@@ -35,7 +34,6 @@
 #include <QComboBox>
 #include <QValidator>
 #include <QScrollArea>
-#include <QMessageBox>
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -70,7 +68,7 @@ public :
     State validate (QString &input, int &pos) const
     {
         for (pos=0; pos<input.size(); pos++)
-            if (input[pos]<0x20 || input[pos]>0x7F)
+            if (input[pos]<QChar(0x20) || input[pos]>QChar(0x7F))
                 return Invalid;
 
         return Acceptable;
@@ -914,11 +912,14 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     show();
     if (size().width()<Smpte330_SA->Smpte330->size().width())
     {
-        int ScreenNumber=QApplication::desktop()->screenNumber(this);
-        int Extra_x=frameGeometry().width()-geometry().width();
-        int Extra_y=frameGeometry().height()-geometry().height();
-        move(QApplication::desktop()->screenGeometry(ScreenNumber).left()+40, QApplication::desktop()->screenGeometry(ScreenNumber).top()+40);
-        resize(QApplication::desktop()->screenGeometry(ScreenNumber).width()-80-Extra_x, QApplication::desktop()->screenGeometry(ScreenNumber).height()-80-Extra_y);
+        QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+        if (Screen)
+        {
+            int Extra_x=frameGeometry().width()-geometry().width();
+            int Extra_y=frameGeometry().height()-geometry().height();
+            move(Screen->availableGeometry().left()+40, Screen->availableGeometry().top()+40);
+            resize(Screen->availableGeometry().width()-80-Extra_x, Screen->availableGeometry().height()-80-Extra_y);
+        }
     }
 
     //Filling

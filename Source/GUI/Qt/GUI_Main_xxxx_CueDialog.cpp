@@ -26,7 +26,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QFontMetrics>
-#include <QDesktopWidget>
+#include <QScreen>
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -697,7 +697,11 @@ GUI_Main_xxxx_CueDialog::GUI_Main_xxxx_CueDialog(Core* C, const string& FileName
     setLayout(L);
 
     Dialog->button(QDialogButtonBox::Ok)->setEnabled(ReadOnly || C->IsValid(FileName, "cuexml", Xml));
-    resize(QApplication::desktop()->screenGeometry().width()/2, QApplication::desktop()->screenGeometry().height()/3);
+    QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+    if (Screen)
+    {
+        resize(Screen->availableGeometry().width()/2, Screen->availableGeometry().height()/3);
+    }
 }
 
 //***************************************************************************

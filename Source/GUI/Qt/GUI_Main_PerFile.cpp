@@ -430,7 +430,7 @@ Q_INVOKABLE void PerFileModel::setSelected(const QString& FileName, const QStrin
     C->Menu_File_Close_File_FileName_Set(FileName.toStdString());
 
     QList<QPair<string, string> > Items;
-    Items.append(qMakePair(FileName.toUtf8(), Field.toUtf8()));
+    Items.append(qMakePair(FileName.toStdString(), Field.toStdString()));
     MenuHandler->updateEditMenu(Items);
 
     Main->Menu_Update();

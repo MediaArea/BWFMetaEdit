@@ -14,7 +14,6 @@
 #include <QEvent>
 #include <QGridLayout>
 #include <QDialogButtonBox>
-#include <QDesktopWidget>
 #include <QApplication>
 #include <QIcon>
 //---------------------------------------------------------------------------

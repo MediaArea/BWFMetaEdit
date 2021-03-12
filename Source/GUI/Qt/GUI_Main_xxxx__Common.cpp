@@ -253,14 +253,25 @@ bool GUI_Main_xxxx__Common::event (QEvent* Event)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
+#if QT_VERSION >= 0x060000
+void GUI_Main_xxxx__Common::initViewItemOption (QStyleOptionViewItem* option) const
+{
+    if (option)
+    {
+        option->decorationAlignment=Qt::AlignCenter;
+        option->decorationPosition=QStyleOptionViewItem::Right;
+    }
+    QTableWidget::initViewItemOption(option);
+}
+#else
 QStyleOptionViewItem GUI_Main_xxxx__Common::viewOptions() const
 {
     QStyleOptionViewItem Options=QTableWidget::viewOptions();
     Options.decorationAlignment=Qt::AlignCenter;
     Options.decorationPosition=QStyleOptionViewItem::Right;
-
     return Options;
 }
+#endif
 
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) 
