@@ -147,15 +147,31 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
     else if (Items.count()>1)
     {
         //Clear data
+        bool ShowOriginationDate=true;
+        bool ShowICRDDate=true;
         bool ShowClear=false;
         for (int Pos=0; Pos<Items.size(); Pos++)
         {
             string FileName=Items.at(Pos).first;
             string Field=Items.at(Pos).second;
+
             if (!C->Get(FileName, Field).empty() && C->IsValid(FileName, Field, string()) && Field!="BextVersion")
-            {
                 ShowClear=true;
-                break;
+
+            if (Field!="OriginationDate" && Field!="OriginationTime")
+                ShowOriginationDate=false;
+
+            if (Field!="ICRD")
+                ShowICRDDate=false;
+
+            if (ShowOriginationDate || ShowICRDDate)
+            {
+                string Date=C->FileDate_Get(FileName);
+                if (Date.size()<10+1+8)
+                {
+                    ShowOriginationDate=false;
+                    ShowICRDDate=false;
+                }
             }
         }
 
@@ -175,6 +191,27 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
             Main->Menu_Edit->addAction(Action);
             connect(Action, SIGNAL(triggered(bool)), this, SLOT(onActionTriggered()));
         }
+
+        //Handling origination date display
+        if (ShowOriginationDate)
+        {
+            QAction* Action=new QAction("Set originationDate and Time to files creation timestamp");
+            Action->setProperty("Action", "Date");
+            Main->Menu_Edit->addSeparator();
+            Main->Menu_Edit->addAction(Action);
+            connect(Action, SIGNAL(triggered(bool)), this, SLOT(onActionTriggered()));
+        }
+
+        //Handling ICRD date display
+        if (ShowICRDDate)
+        {
+            QAction* Action=new QAction("Set ICRD to files creation timestamp");
+            Main->Menu_Edit->addSeparator();
+            Action->setProperty("Action", "Date");
+            Main->Menu_Edit->addAction(Action);
+            connect(Action, SIGNAL(triggered(bool)), this, SLOT(onActionTriggered()));
+        }
+
     }
 
     Main->Menu_Edit->setEnabled(Main->Menu_Edit->actions().count());
@@ -239,28 +276,17 @@ void GUI_Main_xxxx_EditMenu::onActionTriggered()
     }
     else if (Action->property("Action")=="Date")
     {
-        string FileName=Items.first().first;
-        string Field=Items.first().second;
-
-        string Date=C->FileDate_Get(FileName);
-        if (Date.size()>=10+1+8)
-            Date.resize(10+1+8);
-        else
-            Date.clear();
-
-        if (Field=="ICRD")
-            C->Set(FileName, Field, Date);
-        else
+        for (int Pos=0; Pos<Items.size(); Pos++)
         {
-            string OriginationDate=Date;
-            OriginationDate.erase(10, 1+12);
-
-            string OriginationTime=Date;
-            OriginationTime.erase(0, 10+1);
-            OriginationTime.erase(8, 4);
-
-            C->Set(FileName, "OriginationDate", OriginationDate);
-            C->Set(FileName, "OriginationTime", OriginationTime);
+            string FileName=Items.at(Pos).first;
+            string Field=Items.at(Pos).second;
+            if (Field=="OriginationDate" || Field=="OriginationTime")
+            {
+                C->Set(FileName, "OriginationDate", "TIMESTAMP");
+                C->Set(FileName, "OriginationTime", "TIMESTAMP");
+            }
+            else
+                C->Set(FileName, Field, "TIMESTAMP");
         }
         Q_EMIT valuesChanged(true);
     }
