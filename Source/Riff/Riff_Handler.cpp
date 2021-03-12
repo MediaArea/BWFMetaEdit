@@ -589,6 +589,23 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
           ||  Value[Value.size()- 1]< '0' || Value[Value.size()- 1]> '9')) 
         Field="timereference (translated)";
 
+    // Use file timestamp
+    if ((Field=="originationdate" || Field=="originationtime" || Field=="ICRD") && Value=="TIMESTAMP")
+    {
+        Value=Chunks->Global?Chunks->Global->File_Date:string();
+        if (Value.size()<10+1+8)
+            return false;
+
+        Value.resize(10+1+8);
+        if (Field=="originationdate")
+            Value.erase(10, 1+12);
+        else if (Field=="originationtime")
+        {
+            Value.erase(0, 10+1);
+            Value.erase(8, 4);
+        }
+    }
+
     // EBU ISRC recommandations, link aXML ISRC and INFO ISRC
     string FieldToFill, ValueToFill;
     if (Rules.EBU_ISRC_Rec)
