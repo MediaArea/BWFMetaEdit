@@ -18,6 +18,7 @@ class Core;
 #include "ZenLib/ZtringListList.h"
 #include <QItemDelegate>
 #include <QTableWidget>
+#include "Common/Core.h"
 class QEvent;
 class QComboBox;
 class QTextEdit;
@@ -56,7 +57,7 @@ class GUI_Main_xxxx_CodingHistoryDialog : public QDialog
 
 public:
     //Constructor/Destructor
-    GUI_Main_xxxx_CodingHistoryDialog(Core* C, const std::string &FileName_, const std::string &Field_, const QString &OldText, bool Rules_Recommendations, QWidget* parent=NULL);
+    GUI_Main_xxxx_CodingHistoryDialog(Core* C, const std::string &FileName_, const std::string &Field_, const QString &OldText, Riff_Handler::rules Rules, QWidget* parent=NULL);
 
     //Widgets
     QTabWidget*                         Central;
@@ -85,7 +86,7 @@ private:
     Core*   C;
     std::string FileName;
     std::string Field;
-    bool    Rules_Recommendations;
+    Riff_Handler::rules Rules;
     ZtringListList List;
     bool   IsAccepted;
 
@@ -104,7 +105,7 @@ class CodingHistoryDialog_Delegate : public QItemDelegate
     Q_OBJECT
 
 public:
-    CodingHistoryDialog_Delegate(bool Rules_Recommendations, QObject *parent = 0);
+    CodingHistoryDialog_Delegate(Riff_Handler::rules Rules, QObject *parent = 0);
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
@@ -115,9 +116,7 @@ public:
 
 protected:
     virtual void Fill(QComboBox* Editor) const {}
-
-private:
-    bool Rules_Recommendations;
+    Riff_Handler::rules Rules;
 };
 
 //***************************************************************************
@@ -128,7 +127,7 @@ private:
 class _NAME##Delegate : public CodingHistoryDialog_Delegate \
     { \
     public: \
-        _NAME##Delegate(bool Rules_Recommendations, QObject *parent = 0) : CodingHistoryDialog_Delegate(Rules_Recommendations, parent) {} \
+        _NAME##Delegate(Riff_Handler::rules Rules, QObject *parent = 0) : CodingHistoryDialog_Delegate(Rules, parent) {} \
     \
     protected: \
         void Fill(QComboBox* Editor) const; \

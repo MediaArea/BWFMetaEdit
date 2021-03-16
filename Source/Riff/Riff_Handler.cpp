@@ -1085,8 +1085,8 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         {
             if (Value.empty())
                 Message="must not be empty (FADGI recommandations)";
-            else if (Value.size()!=4 && Value.size()!=7 && Value.size()!=10)
-                Message="must be YYYY, YYYY-MM, or YYYY-MM-DD (FADGI recommandations)";
+            else if (Value.size()!=4 && Value.size()!=7 && Value.size()!=9 && Value.size()!=10)
+                Message="must be YYYY, YYYY--YYYY, YYYY/YYYY, YYYY-MM, or YYYY-MM-DD (FADGI recommandations)";
 			else
             {
                      if (Value[0]< '0' || Value[0]> '9') //Year
@@ -1097,6 +1097,18 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                     Message="1st to 4th characters (Year) must be between '0000' and '9999' (BWF requirements)";
                 else if (Value[3]< '0' || Value[3]> '9') //Year
                     Message="1st to 4th characters (Year) must be between '0000' and '9999' (BWF requirements)";
+                else if ((Value.size()==9 && Value[4]=='/') || (Value.size()==10 && Value[4]=='-' && Value[5]=='-')) //Year range
+                {
+                     size_t Start=Value[4]=='/'?5:6;
+                     if (Value[Start]< '0' || Value[Start]> '9') //Year
+                        Message=string(Start==5?"5th to 8th":"6th to 10th")+" characters (Year) must be between '0000' and '9999' (FADGI recommandations)";
+                    else if (Value[Start+1]< '0' || Value[Start+1]> '9') //Year
+                        Message=string(Start==5?"5th to 8th":"6th to 10th")+" characters (Year) must be between '0000' and '9999' (FADGI recommandations)";
+                    else if (Value[Start+2]< '0' || Value[Start+2]> '9') //Year
+                        Message=string(Start==5?"5th to 8th":"6th to 10th")+" characters (Year) must be between '0000' and '9999' (FADGI recommandations)";
+                    else if (Value[Start+3]< '0' || Value[Start+3]> '9') //Year
+                        Message=string(Start==5?"5th to 8th":"6th to 10th")+" characters (Year) must be between '0000' and '9999' (FADGI recommandations)";
+                }
                 else if (Value.size()>=7) //YYYY-DD
                 {
                          if (Value[4]!='-') //Hyphen
@@ -1387,21 +1399,23 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
     {
         //Test
         string Message;
-        if (Rules.CodingHistory_Rec)
+        if (Rules.CodingHistory_Rec || Rules.FADGI_Rec)
         {
             //Loading
             bool Wrong=false;
-            ZtringListList List;
-            List.Separator_Set(0, __T("\r\n"));
-            List.Separator_Set(1, __T(","));
-            List.Write(Ztring().From_UTF8(Value));
 
-            for (size_t Line_Pos=0; Line_Pos<List.size(); Line_Pos++)
+            ZtringList Lines;
+            Lines.Separator_Set(0, __T("\r\n"));
+            Lines.Write(Ztring().From_UTF8(Value));
+            for (size_t Line_Pos=0; Line_Pos<Lines.size(); Line_Pos++)
             {
-                for (size_t Data_Pos=0; Data_Pos<List[Line_Pos].size(); Data_Pos++)
+                ZtringList Data;
+                Data.Separator_Set(0, __T(","));
+                Data.Write(Lines[Line_Pos]);
+                for (size_t Data_Pos=0; Data_Pos<Data.size(); Data_Pos++)
                 {
                     int Column=-1;
-                    Ztring &Value=List[Line_Pos][Data_Pos];
+                    Ztring &Value=Data[Data_Pos];
                     if (Value.size()>=2 && Value[1]==__T('='))
                     {
                         switch (Value[0])
@@ -1444,7 +1458,12 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                                          && Value!=__T("48000")
                                          && Value!=__T("64000")
                                          && Value!=__T("88200")
-                                         && Value!=__T("96000"))
+                                         && ((!Rules.FADGI_Rec || Rules.CodingHistory_Rec)
+                                         || (Value!=__T("96000")
+                                         &&  Value!=__T("176400")
+                                         &&  Value!=__T("192000")
+                                         &&  Value!=__T("384000")
+                                         &&  Value!=__T("768000"))))
                                         Wrong=true;
                                         break;
 
@@ -1484,7 +1503,8 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                                          && Value!=__T("20")
                                          && Value!=__T("22")
                                          && Value!=__T("24")
-                                         && Value!=__T("32"))
+                                         && ((!Rules.FADGI_Rec || Rules.CodingHistory_Rec)
+                                         || (Value!=__T("32"))))
                                         Wrong=true;
                                         break;
 
@@ -1492,7 +1512,12 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                                          && Value!=__T("mono")
                                          && Value!=__T("stereo")
                                          && Value!=__T("dual-mono")
-                                         && Value!=__T("joint-stereo"))
+                                         && Value!=__T("joint-stereo")
+                                         && ((!Rules.FADGI_Rec || Rules.CodingHistory_Rec)
+                                         || (Value!=__T("multitrack")
+                                         &&  Value!=__T("multichannel")
+                                         &&  Value!=__T("surround")
+                                         &&  Value!=__T("other"))))
                                         Wrong=true;
                                         break;
                             default :   ;
@@ -1500,14 +1525,16 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                     }
                     else if (Column!=-1 || Data_Pos>5)
                     {
-                        List[Line_Pos].insert(List[Line_Pos].begin()+Data_Pos, Ztring());
-                        if (List[Line_Pos].size()>6)
+                        Data.insert(Data.begin()+Data_Pos, Ztring());
+                        if (Data.size()>6)
                         {
                             Wrong=true;
                             break;
                         }
                     }
                 }
+                if (Lines[Line_Pos].size()>0 && Lines[Line_Pos][Lines[Line_Pos].size()-1]==__T(','))
+                    Message="comma at the end of line";
             }
             
             if (Wrong)
@@ -1556,38 +1583,51 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
     {
         //Test
         string Message;
-        if (Rules.INFO_Rec)
+        if (Rules.INFO_Rec || Rules.FADGI_Rec)
         {
+            string Rule = Rules.INFO_Rec ? "(INFO Recommandations)" : "(FADGI Recommandations)";
             if (Value.empty())
                 {}
-            else if (Value.size()<=10 && Value.size()!=4 && Value.size()!=7 && Value.size()!=10)
-                Message="must be YYYY, YYYY-MM, or YYYY-MM-DD or YYYY-MM-DD+junk (INFO Recommandations)";
+            else if (Value.size()<=10 && Value.size()!=4 && Value.size()!=7 && Value.size()!=9 && Value.size()!=10)
+                Message="must be YYYY, YYYY--YYYY, YYYY/YYYY, YYYY-MM, or YYYY-MM-DD or YYYY-MM-DD+junk " + Rule;
             else
             {
                      if (Value[0]< '0' || Value[0]> '9') //Year
-                    Message="1st to 4th characters (Year) must be between '0000' and '9999' (INFO Recommandations)";
+                    Message="1st to 4th characters (Year) must be between '0000' and '9999' " + Rule;
                 else if (Value[1]< '0' || Value[1]> '9') //Year
-                    Message="1st to 4th characters (Year) must be between '0000' and '9999' (INFO Recommandations)";
+                    Message="1st to 4th characters (Year) must be between '0000' and '9999' " + Rule;
                 else if (Value[2]< '0' || Value[2]> '9') //Year
-                    Message="1st to 4th characters (Year) must be between '0000' and '9999' (INFO Recommandations)";
+                    Message="1st to 4th characters (Year) must be between '0000' and '9999' " + Rule;
                 else if (Value[3]< '0' || Value[3]> '9') //Year
-                    Message="1st to 4th characters (Year) must be between '0000' and '9999' (INFO Recommandations)";
+                    Message="1st to 4th characters (Year) must be between '0000' and '9999' " + Rule;
+                else if (Rules.FADGI_Rec && ((Value.size()>=9 && Value[4]=='/') || (Value.size()>=10 && Value[4]=='-' && Value[5]=='-'))) //Year range
+                {
+                     size_t Start=Value[4]=='/'?5:6;
+                     if (Value[Start]< '0' || Value[Start]> '9') //Year
+                        Message=string(Start==5?"5th to 8th":"6th to 10th")+" characters (Year) must be between '0000' and '9999' " + Rule;
+                    else if (Value[Start+1]< '0' || Value[Start+1]> '9') //Year
+                        Message=string(Start==5?"5th to 8th":"6th to 10th")+" characters (Year) must be between '0000' and '9999' " + Rule;
+                    else if (Value[Start+2]< '0' || Value[Start+2]> '9') //Year
+                        Message=string(Start==5?"5th to 8th":"6th to 10th")+" characters (Year) must be between '0000' and '9999' " + Rule;
+                    else if (Value[Start+3]< '0' || Value[Start+3]> '9') //Year
+                        Message=string(Start==5?"5th to 8th":"6th to 10th")+" characters (Year) must be between '0000' and '9999' " + Rule;
+                }
                 else if (Value.size()>=7) //YYYY-DD
                 {
                          if (Value[4]!='-') //Hyphen
-                        Message="5th character must be '-' (INFO Recommandations)";
+                        Message="5th character must be '-' " + Rule;
                     else if (Value[5]< '0' || Value[5]> '1') //Month
-                        Message="6th and 7th characters (Month) must be between '01' and '12' (INFO Recommandations)";
+                        Message="6th and 7th characters (Month) must be between '01' and '12' " + Rule;
                     else if ((Value[6]< (Value[5]=='0'?'1':'0')) || (Value[6]> (Value[5]=='1'?'2':'9'))) //Only 01-12 //Month
-                        Message="6th and 7th characters (Month) must be between '01' and '12' (INFO Recommandations)";
+                        Message="6th and 7th characters (Month) must be between '01' and '12' " + Rule;
                     else if (Value.size()>=10) //YYYY-DD-MM
                     {
                              if (Value[7]!='-') //Hyphen
-                            Message="8th character must be '-' (INFO Recommandations)";
+                            Message="8th character must be '-' " + Rule;
                         else if (Value[8]< '0' || Value[8]> '3') //Day
-                            Message="9th and 10th characters (Day) must be between '01' and '23' (INFO Recommandations)";
+                            Message="9th and 10th characters (Day) must be between '01' and '23' " + Rule;
                         else if ((Value[9]< (Value[8]=='0'?'1':'0')) || (Value[9]> (Value[8]=='3'?'1':'9'))) //Only 01-31 //Day
-                            Message="9th and 10th characters (Day) must be between '01' and '23' (INFO Recommandations)";
+                            Message="9th and 10th characters (Day) must be between '01' and '23' " + Rule;
                     }
                 }
             }
