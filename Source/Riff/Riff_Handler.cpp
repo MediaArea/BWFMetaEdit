@@ -1408,7 +1408,10 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                     {
                         List[Line_Pos].insert(List[Line_Pos].begin()+Data_Pos, Ztring());
                         if (List[Line_Pos].size()>6)
+                        {
                             Wrong=true;
+                            break;
+                        }
                     }
                 }
             }
