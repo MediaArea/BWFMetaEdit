@@ -27,13 +27,26 @@ void Riff_WAVE_fmt_::Read_Internal ()
     
     //Parsing
     int32u sampleRate, bytesPerSecond;
-    int16u formatType, channelCount, blockAlignment, bitsPerSample;
+    int16u formatType, channelCount, blockAlignment, bitsPerSample, cbSize=0;
+    int128u subFormat=0;
     Get_L2    (formatType);
     Get_L2    (channelCount);
     Get_L4    (sampleRate);
     Get_L4    (bytesPerSecond);
     Get_L2    (blockAlignment);
     Get_L2    (bitsPerSample);
+
+    if (Chunk.Content.Buffer_Offset+2<Chunk.Content.Size)
+        Get_L2(cbSize);
+
+    if (cbSize==22 && formatType==0xFFFE)
+    {
+        Skip_XX(2); //validBitsPerSample
+        Skip_XX(4); //channelMask
+        Get_UUID(subFormat);
+        if ((subFormat.hi&0x0000FFFFFFFFFFFFLL)==0x0000000000001000LL && subFormat.lo==0x800000AA00389B71LL)
+            formatType=(int16u)((((subFormat.hi>>48)&0xFF)<<8) | (subFormat.hi>>56)); // It is Little Endian
+    }
 
     //Integrity
     if (formatType==1 && bitsPerSample!=0 && channelCount*sampleRate*bitsPerSample!=bytesPerSecond*8) //if PCM
