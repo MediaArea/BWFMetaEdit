@@ -12,6 +12,7 @@
 #include "GUI/Qt/GUI_Main.h"
 #include "GUI/Qt/GUI_Main_xxxx_Bext.h"
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_CueDialog.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
 #include <QLabel>
@@ -58,7 +59,8 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     Ztring Remove;
     if (Field=="XMP"
      || Field=="aXML"
-     || Field=="iXML")
+     || Field=="iXML"
+     || Field=="Cue")
     {
         Import="Import..."; //If you change this, change at the end of method too
         if (!C->Get(FileName, Field).empty())
@@ -99,7 +101,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
 
     //Handling history display
     size_t Pos=History.size();
-    if (!History.empty() && !(Field=="MD5Stored" && !Fill_Enabled(FileName, Field, C->Get(FileName, "MD5Stored"))))
+    if (!History.empty() && Field!="Cue" && !(Field=="MD5Stored" && !Fill_Enabled(FileName, Field, C->Get(FileName, "MD5Stored"))))
         do
         {
             Pos--;
@@ -145,8 +147,11 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         File F;
         if (!F.Create(ZenLib::Ztring().From_UTF8(FileNamesQ.toUtf8().data())))
             return;
-        F.Write(Ztring().From_UTF8(C->Get(FileName, Field)));
-        
+        if (Field=="Cue")
+            F.Write(Ztring().From_UTF8(C->Get("cuexml", Field)));
+        else
+            F.Write(Ztring().From_UTF8(C->Get(FileName, Field)));
+
         return;
     }
     if (ModifiedContent=="Import...") //If you change this, change the creation text too
@@ -155,7 +160,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         QString FileNamesQ = QFileDialog::getOpenFileName(  this,
                                                             tr("Import file..."),
                                                             QString::fromUtf8(C->OpenSaveFolder.c_str()),
-                                                            (Field=="XMP" || Field=="aXML" || Field=="iXML")?"XML files (*.xml);;All files (*.*)":"Text files (*.txt);;All files (*.*)");
+                                                            (Field=="XMP" || Field=="aXML" || Field=="iXML"|| Field=="Cue")?"XML files (*.xml);;All files (*.*)":"Text files (*.txt);;All files (*.*)");
         if (FileNamesQ.isEmpty())
             return;
 
@@ -187,7 +192,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         delete[] Buffer;
         Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
         Value.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
-        if (!C->IsValid(FileName, Field, Value.To_UTF8()))
+        if (!C->IsValid(FileName, Field=="Cue"?"cuexml":Field, Value.To_UTF8()))
         {
             QMessageBox MessageBox;
             MessageBox.setWindowTitle("BWF MetaEdit");
@@ -207,9 +212,13 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     //Filling
     if (Field=="XMP"
      || Field=="aXML"
-     || Field=="iXML")
+     || Field=="iXML"
+     || Field=="Cue")
     {
-        C->Set(FileName, Field, ModifiedContent);
+        if (Field=="Cue")
+            C->Set(FileName, "cuexml", ModifiedContent);
+        else
+            C->Set(FileName, Field, ModifiedContent);
         item(Item->row(), Item->column())->setText(C->Get(FileName, Field).empty()?"No":"Yes");
     }
     else if (Field=="MD5Stored" && ModifiedContent=="Fill with MD5Generated")
@@ -330,7 +339,25 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         dataChanged(indexFromItem(item(index.row(), index.column())), indexFromItem(item(index.row(), index.column())));
         return false;
     }
- 
+
+    //Cue
+    if (Field=="Cue")
+    {
+        //User interaction
+        GUI_Main_xxxx_CueDialog* Edit=new GUI_Main_xxxx_CueDialog(C, FileName);
+        if (Edit->exec()!=QDialog::Accepted)
+        {
+            delete Edit; //Edit=NULL;
+            return false; //No change
+        }
+        delete Edit; //Edit=NULL;
+
+        //Updating
+        item(index.row(), index.column())->setText(C->Get(FileName, Field).empty()?"No":"Yes");
+        dataChanged(indexFromItem(item(index.row(), index.column())), indexFromItem(item(index.row(), index.column())));
+        return false;
+    }
+
     //MD5Stored
     if (Field=="MD5Stored") 
     {
@@ -373,7 +400,8 @@ group GUI_Main_Technical_Table::Fill_Group ()
 //---------------------------------------------------------------------------
 bool GUI_Main_Technical_Table::Fill_Enabled (const string &FileName, const string &Field, const string &Value)
 {
-    if (Field!="XMP"
+    if (Field!="Cue"
+     && Field!="XMP"
      && Field!="aXML"
      && Field!="iXML"
      && Field!="bext"
@@ -391,7 +419,8 @@ bool GUI_Main_Technical_Table::Fill_Enabled (const string &FileName, const strin
     if (!C->Overwrite_Reject)
         return true;
 
-    if (Field=="XMP"
+    if (Field=="Cue"
+     || Field=="XMP"
      || Field=="aXML"
      || Field=="iXML")
         return Value!="Yes";

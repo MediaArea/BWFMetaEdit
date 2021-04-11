@@ -88,6 +88,11 @@ int Parse(Core &C, string &Argument)
     OPTION("--in-ixml-xml",                                 In_iXML_XML)
     OPTION("--out-ixml-xml",                                Out_iXML_XML)
 
+    OPTION("--in-cue=",                                     In_cue__File)
+    OPTION("--in-cue-remove",                               In_cue__Remove)
+    OPTION("--in-cue-xml",                                  In_cue__XML)
+    OPTION("--out-cue-xml",                                 Out_cue__XML)
+
     OPTION("--md5-generate",                                MD5_Generate)
     OPTION("--md5-verify",                                  MD5_Verify)
     OPTION("--md5-embed-overwrite",                         MD5_Embed_Overwrite)
@@ -384,6 +389,43 @@ CL_OPTION(In_iXML_XML)
 CL_OPTION(Out_iXML_XML)
 {
     C.Out_iXML_XML=true;
+
+    return -2; //Continue
+}
+
+//***************************************************************************
+// Options - cue
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+CL_OPTION(In_cue__File)
+{
+    //Form : --in-cue=(FileName)
+    C.In_cue__FileName.assign(Argument, 10, std::string::npos);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(In_cue__Remove)
+{
+    C.In_cue__Remove=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(In_cue__XML)
+{
+    C.In_cue__XML=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_cue__XML)
+{
+    C.Out_cue__XML=true;
 
     return -2; //Continue
 }

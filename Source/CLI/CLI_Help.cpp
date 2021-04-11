@@ -113,6 +113,13 @@ std::string Help()
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;
+    ToDisplay<<"--in-cue=               Insert cue metadata from the specified file"<<std::endl;
+    ToDisplay<<"--in-cue-remove         Remove cue and adlt metadata"<<std::endl;
+    ToDisplay<<"--in-cue-xml            Insert cue metadata from filename.cue.xml"<<std::endl;
+    ToDisplay<<"--out-cue-xml           Save cue related metadata in filename.cue.xml"<<std::endl;
+    ToDisplay<<""<<std::endl;
+    ToDisplay<<"*******************************************************************************"<<std::endl;
+    ToDisplay<<""<<std::endl;
     ToDisplay<<"--MD5-Generate          Generate MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Verify            Verify MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Embed             Embed MD5 for audio data"<<std::endl;

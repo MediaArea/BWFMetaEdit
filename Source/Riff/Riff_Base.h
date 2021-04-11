@@ -208,6 +208,8 @@ public:
         chunk_strings      *iXML;
         chunk_strings      *MD5Stored;
         chunk_strings      *MD5Generated;
+        chunk_strings      *cue_;
+        chunk_strings      *adtl;
         bool                NoPadding_Accept;
         bool                NoPadding_IsCorrected;
         bool                NewChunksAtTheEnd;
@@ -236,6 +238,8 @@ public:
              XMP=NULL;
             aXML=NULL;
             iXML=NULL;
+            cue_=NULL;
+            adtl=NULL;
             MD5Stored=NULL;
             MD5Generated=NULL;
             NoPadding_Accept=false;
@@ -263,6 +267,8 @@ public:
             delete  XMP; // XMP=NULL;
             delete aXML; //aXML=NULL;
             delete iXML; //iXML=NULL;
+            delete cue_; //cue_=NULL;
+            delete adtl; //cue_=NULL;
         }
     };
 

@@ -45,7 +45,7 @@ options Groups[Group_Max]=
 {
     {
         "Technical Metadata",
-        18,
+        19,
         {
             {"Tech_FileSize", "FileSize", Type_CheckBox, true},
             {"Tech_Format", "Format", Type_CheckBox, true},
@@ -58,6 +58,7 @@ options Groups[Group_Max]=
             {"Tech_UnsupportedChunks", "UnsupportedChunks", Type_CheckBox, true},
             {"Tech_bext", "bext", Type_CheckBox, true},
             {"Tech_INFO", "INFO", Type_CheckBox, true},
+            {"Tech_Cue", "Cue", Type_CheckBox, true},
             {"Tech_XMP", "XMP", Type_CheckBox, true},
             {"Tech_aXML", "aXML", Type_CheckBox, true},
             {"Tech_iXML", "iXML", Type_CheckBox, true},

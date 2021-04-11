@@ -79,6 +79,10 @@ Core::Core()
     In_iXML_Remove=false;
     Out_iXML_XML=false;
 
+    In_cue__XML=false;
+    In_cue__Remove=false;
+    Out_cue__XML=false;
+
     Batch_Enabled=false;
     Batch_IsBackuping=false;
     Out_Log_cout=false;
@@ -229,7 +233,10 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
             Handler->second.In_iXML_Remove=In_iXML_Remove;
             Handler->second.In_iXML_XML=In_iXML_XML;
             Handler->second.In_iXML_FileName=In_iXML_FileName;
-            
+            Handler->second.In_cue__Remove=In_cue__Remove;
+            Handler->second.In_cue__XML=In_cue__XML;
+            Handler->second.In_cue__FileName=In_cue__FileName;
+
             //Settings - Adding default Core values if the Core value does not exist yet (from --xxx=)
             for (map<string, Ztring>::iterator In_Core_Item=Handler_Default.In_Core.begin(); In_Core_Item!=Handler_Default.In_Core.end(); In_Core_Item++)
             {
@@ -339,6 +346,52 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
         else if (Handler->second.In_iXML_Remove)
         {
             Handler->second.Riff->Remove("ixml");
+            StdAll(Handler);
+        }
+        if (Handler->second.In_cue__XML || !Handler->second.In_cue__FileName.empty())
+        {
+            Ztring File_Name=Ztring().From_UTF8(Handler->first+".cue.xml");
+            if (!Handler->second.In_cue__FileName.empty())
+                File_Name=Ztring().From_UTF8(Handler->second.In_cue__FileName);
+
+            Ztring Value;
+            File F;
+            int64u F_Size;
+
+            if (!F.Open(File_Name))
+                Handler->second.Riff->Errors<<Handler->first<<": Malformed input (cue="<<File_Name.To_UTF8()<< ", File does not exist)"<<endl;
+            else if ((F_Size=F.Size_Get())>((size_t)-1)-1)
+                Handler->second.Riff->Errors<<Handler->first<<": Malformed input (cue="<<File_Name.To_UTF8()<< ", Unable to open file)"<<endl;
+            else
+            {
+                //Creating buffer
+                int8u* Buffer=new int8u[(size_t)F_Size+1];
+                size_t Buffer_Offset=0;
+
+                //Reading the file
+                while(Buffer_Offset<F_Size)
+                {
+                    size_t BytesRead=F.Read(Buffer+Buffer_Offset, (size_t)F_Size-Buffer_Offset);
+                    if (BytesRead==0)
+                        break; //Read is finished
+                    Buffer_Offset+=BytesRead;
+                }
+                if (Buffer_Offset<F_Size)
+                    Handler->second.Riff->Errors<<Handler->first<<": Malformed input (cue="<<File_Name.To_UTF8()<< ", Unable to read file)"<<endl;
+                else
+                {
+                    Buffer[Buffer_Offset]='\0';
+                    Value.From_UTF8((const char*)Buffer, (size_t)F_Size);
+                    if (!Handler->second.Riff->Set("cuexml", Value.To_UTF8(), Rules))
+                        Handler->second.Riff->Errors<<Handler->first<<": Malformed input (cue="<<File_Name.To_UTF8()<< ", Unable to parse file)"<<endl;
+                }
+                delete[] Buffer;
+            }
+            StdAll(Handler);
+        }
+        else if (Handler->second.In_cue__Remove)
+        {
+            Handler->second.Riff->Set("cuexml", "", Rules);
             StdAll(Handler);
         }
 
@@ -1415,6 +1468,10 @@ void Core::Batch_Launch(handlers::iterator &Handler)
     if (Out_iXML_XML)
         Batch_Launch_iXML(Handler);
 
+    //cue_ related metadata
+    if (Out_cue__XML)
+        Batch_Launch_cue_(Handler);
+
     //Write
     if (!Simulation_Enabled)
         Batch_Launch_Write(Handler);
@@ -1627,6 +1684,30 @@ void Core::Batch_Launch_iXML(handlers::iterator &Handler)
                 throw "--out-iXML-XML: error during file creation";
             if (!F.Write(Ztring().From_UTF8(Content)))
                 throw "--out-iXML-XML: error during file writing";
+        }
+        catch (const char *Message)
+        {
+            StdErr(Message);
+        }
+        catch (...) {}
+    }
+}
+
+//---------------------------------------------------------------------------
+void Core::Batch_Launch_cue_(handlers::iterator &Handler)
+{
+    string Content=(Handler->second.Riff->Get("cuexml"));
+
+    if (!Content.empty())
+    {
+        //Saving file
+        try
+        {
+            File F;
+            if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".cue.xml")))
+                throw "--out-cue-XML: error during file creation";
+            if (!F.Write(Ztring().From_UTF8(Content)))
+                throw "--out-cue-XML: error during file writing";
         }
         catch (const char *Message)
         {

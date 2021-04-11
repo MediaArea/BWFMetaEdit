@@ -68,6 +68,11 @@ namespace Elements
     const int32u WAVE_INFO_IARL=0x4941524C;
     const int32u WAVE_INFO_xxxx=0xFFFFFFFF;
     const int32u WAVE_MD5_=0x4D443520;
+    const int32u WAVE_cue_=0x63756520;
+    const int32u WAVE_adtl=0x6164746C;
+    const int32u WAVE_adtl_labl=0x6C61626C;
+    const int32u WAVE_adtl_note=0x6E6F7465;
+    const int32u WAVE_adtl_ltxt=0x6C747874;
 }
 
 //***************************************************************************
@@ -119,5 +124,10 @@ CHUNK_I(2, WAVE_INFO);
 CHUNK_W(3, WAVE_INFO_xxxx);
 CHUNK_W(2, WAVE_iXML);
 CHUNK_W(2, WAVE_MD5_);
+CHUNK_W(2, WAVE_cue_);
+CHUNK_I(2, WAVE_adtl);
+CHUNK_W(3, WAVE_adtl_labl);
+CHUNK_W(3, WAVE_adtl_note);
+CHUNK_W(3, WAVE_adtl_ltxt);
 
 #endif

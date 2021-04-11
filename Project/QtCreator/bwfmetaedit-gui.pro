@@ -37,6 +37,7 @@ DEFINES += TIXML_USE_STL UNICODE _UNICODE _LARGE_FILES _FILE_OFFSET_BITS=64
 
 HEADERS = \
     ../../Source/Common/Common_About.h \
+    ../../Source/Common/Codes.h \
     ../../Source/Common/Core.h \
     ../../Source/GUI/Qt/App.h \
     ../../Source/GUI/Qt/GUI_About.h \
@@ -58,6 +59,7 @@ HEADERS = \
     ../../Source/GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx_UmidDialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx_EditMenu.h \
+    ../../Source/GUI/Qt/GUI_Main_xxxx_CueDialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx__Common.h \
     ../../Source/GUI/Qt/GUI_Preferences.h \
     ../../Source/MD5/md5.h \
@@ -92,6 +94,7 @@ HEADERS = \
 
 SOURCES = \
     ../../Source/Common/Common_About.cpp \
+    ../../Source/Common/Codes.cpp \
     ../../Source/Common/Core.cpp \
     ../../Source/GUI/Qt/App.cpp \
     ../../Source/GUI/Qt/GUI_About.cpp \
@@ -114,6 +117,7 @@ SOURCES = \
     ../../Source/GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx_UmidDialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx_EditMenu.cpp \
+    ../../Source/GUI/Qt/GUI_Main_xxxx_CueDialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx__Common.cpp \
     ../../Source/GUI/Qt/GUI_Preferences.cpp \
     ../../Source/MD5/md5.c \
@@ -132,6 +136,11 @@ SOURCES = \
     ../../Source/Riff/Riff_Chunks_WAVE_iXML.cpp \
     ../../Source/Riff/Riff_Chunks_WAVE_MD5_.cpp \
     ../../Source/Riff/Riff_Chunks_WAVE__PMX.cpp \
+    ../../Source/Riff/Riff_Chunks_WAVE_cue_.cpp \
+    ../../Source/Riff/Riff_Chunks_WAVE_adtl.cpp \
+    ../../Source/Riff/Riff_Chunks_WAVE_adtl_labl.cpp \
+    ../../Source/Riff/Riff_Chunks_WAVE_adtl_note.cpp \
+    ../../Source/Riff/Riff_Chunks_WAVE_adtl_ltxt.cpp \
     ../../Source/Riff/Riff_Handler.cpp \
     ../../Source/TinyXml2/tinyxml2.cpp \
     ../../Source/ZenLib/Conf.cpp \

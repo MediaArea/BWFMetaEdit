@@ -19,6 +19,8 @@
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_UmidDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_CueDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_EditMenu.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
 #include <QLabel>
@@ -210,7 +212,7 @@ Q_INVOKABLE bool PerFileModel::valid(const QString& FileName) const
 //---------------------------------------------------------------------------
 Q_INVOKABLE bool PerFileModel::valid(const QString& FileName, const QString& Field, const QString& Value) const
 {
-    return C->IsValid(FileName.toStdString(), Field.toStdString(), Value.toStdString(), true);
+    return C->IsValid(FileName.toStdString(), Field.toStdString(), Value.toStdString());
 }
 
 //---------------------------------------------------------------------------
@@ -312,7 +314,11 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
         if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian) && !ModifiedContent.empty())
             ModifiedContent=Ztring().From_UTF8(Swap_MD5_Endianess(QString::fromUtf8(ModifiedContent.To_UTF8().c_str())).toStdString());
 
-        GUI_Main_xxxx_TextEditDialog* Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()), true);
+        QDialog* Edit=NULL;
+        if (Field=="Cue")
+            Edit=new GUI_Main_xxxx_CueDialog(C, FileName.toStdString(), true);
+        else
+            Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()), true);
         Edit->exec();
         delete Edit; //Edit=NULL;
         return;
@@ -374,6 +380,11 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
     else if (Field=="LoudnessValue" || Field=="LoudnessRange" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
     {
         GUI_Main_xxxx_Loudness* Edit=new GUI_Main_xxxx_Loudness(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()), C->Rules.Tech3285_Req);
+        Edit->exec();
+        delete Edit; //Edit=NULL;
+    }
+    else if (Field=="Cue") {
+        GUI_Main_xxxx_CueDialog* Edit=new GUI_Main_xxxx_CueDialog(C, FileName.toStdString(), false);
         Edit->exec();
         delete Edit; //Edit=NULL;
     }
