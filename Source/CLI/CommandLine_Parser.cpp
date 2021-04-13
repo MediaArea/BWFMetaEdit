@@ -447,6 +447,7 @@ CL_OPTION(MD5_Verify)
 {
     C.GenerateMD5=true;
     C.VerifyMD5=true;
+    C.VerifyMD5_Force=true;
 
     return -2; //Continue
 }

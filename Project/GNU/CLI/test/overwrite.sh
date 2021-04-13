@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO: make bwfmetaedit returns error ?
-
 script_path="${PWD}/test"
 . ${script_path}/helpers.sh
 
@@ -19,7 +17,7 @@ if [ "${?}" -ne 0 ] ; then
 fi
 
 run_bwfmetaedit --reject-overwrite --Description="overwrite" "${test}/${testfile}"
-check_success
+check_failure
 if [ "${?}" -ne 0 ] ; then
     error "${test}/overwrite" "command failed"
 fi

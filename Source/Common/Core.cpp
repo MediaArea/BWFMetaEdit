@@ -52,6 +52,7 @@ Core::Core()
     NewChunksAtTheEnd=false;
     GenerateMD5=false;
     VerifyMD5=false;
+    VerifyMD5_Force=false;
     EmbedMD5=false;
     EmbedMD5_AuthorizeOverWritting=false;
     Bext_DefaultVersion=0;
@@ -1743,6 +1744,7 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->NewChunksAtTheEnd=NewChunksAtTheEnd;
         Handler->second.Riff->GenerateMD5=GenerateMD5;
         Handler->second.Riff->VerifyMD5=VerifyMD5;
+        Handler->second.Riff->VerifyMD5_Force=VerifyMD5_Force;
         Handler->second.Riff->EmbedMD5=EmbedMD5;
         Handler->second.Riff->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;
         Handler->second.Riff->Bext_DefaultVersion=Bext_DefaultVersion;
