@@ -246,6 +246,24 @@ bool Riff_Handler::Open_Internal(const string &FileName)
         //Saving initial values
         Core_FromFile=Ztring().From_UTF8(Core_Get_Internal());
 
+        //Data size check
+        if (Chunks->Global->data && Chunks->Global->fmt_ && Chunks->Global->fmt_->formatType==0x0001)
+        {
+            int16u channelCount=Chunks->Global->fmt_->channelCount;
+            int32u bytesPerSample=Chunks->Global->fmt_->bitsPerSample*8;
+            if (Chunks->Global->data->Size%(channelCount*bytesPerSample)!=0)
+            {
+
+                ostringstream Message;
+                Message <<"The audio is "<<channelCount<<" channels and " <<bytesPerSample<<" bytes per sample; "
+                        <<"however, the data chunk is not aligned to a multiple of "
+                        <<channelCount*bytesPerSample<<" ("<<channelCount<<"*"<<bytesPerSample << ").";
+                Errors<<Chunks->Global->File_Name.To_UTF8()<<": "<<Message.str()<<endl;
+                PerFile_Error.str(string());
+                PerFile_Error<<Message.str()<<endl;
+            }
+        }
+
         //MD5
         if (Chunks->Global->VerifyMD5)
         {
