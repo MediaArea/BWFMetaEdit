@@ -236,7 +236,7 @@ Q_INVOKABLE QString PerFileModel::errors(const QString& FileName) const
 //---------------------------------------------------------------------------
 Q_INVOKABLE QString PerFileModel::informations(const QString& FileName) const
 {
-    return Get_Technical_Field(FileName, "Informations");
+    return Get_Technical_Field(FileName, "Information");
 }
 
 //---------------------------------------------------------------------------
@@ -282,15 +282,15 @@ Q_INVOKABLE bool PerFileModel::visible(const QString& FileName, const QString& F
         toReturn=false;
 
     return toReturn;
-};
+}
 
 //---------------------------------------------------------------------------
 Q_INVOKABLE bool PerFileModel::modified(const QString& FileName, const QString& Field) const {
     return C->IsModified(FileName.toStdString(), Field.toStdString());
-};
+}
 
 //---------------------------------------------------------------------------
-Q_INVOKABLE bool PerFileModel::readonly(const QString& FileName, const QString& Field) const {
+Q_INVOKABLE bool PerFileModel::readOnly(const QString& FileName, const QString& Field) const {
     bool toReturn=false;
 
     if (Field=="MD5Generated")
@@ -305,12 +305,23 @@ Q_INVOKABLE bool PerFileModel::readonly(const QString& FileName, const QString& 
 };
 
 //---------------------------------------------------------------------------
+Q_INVOKABLE bool PerFileModel::readOnly(const QString& FileName) const {
+    return C->IsReadOnly_Get(FileName.toStdString());
+}
+
+//---------------------------------------------------------------------------
+Q_INVOKABLE bool PerFileModel::isWritable(const QString& FileName) const {
+    return valid(FileName) && !readOnly(FileName);
+}
+
+
+//---------------------------------------------------------------------------
 Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString& Field)
 {
     Ztring ModifiedContent=Ztring().From_UTF8(C->Get(FileName.toStdString(), Field.toStdString()));
     ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
 
-    if (readonly(FileName, Field)) {
+    if (readOnly(FileName, Field)) {
         if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian) && !ModifiedContent.empty())
             ModifiedContent=Ztring().From_UTF8(Swap_MD5_Endianess(QString::fromUtf8(ModifiedContent.To_UTF8().c_str())).toStdString());
 

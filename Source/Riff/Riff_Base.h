@@ -222,6 +222,7 @@ public:
         bool                Out_Buffer_File_IsModified;
         bool                IsRF64;
         bool                Trace_UseDec;
+        bool                Read_Only;
 
         CriticalSection     CS;
         float               Progress;
@@ -256,6 +257,7 @@ public:
             Out_Buffer_File_IsModified=false;
             IsRF64=false;
             Trace_UseDec=false;
+            Read_Only=false;
             Progress=0;
             Canceling=false;
         }

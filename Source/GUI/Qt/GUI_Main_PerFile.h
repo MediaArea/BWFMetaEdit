@@ -74,7 +74,9 @@ public:
     Q_INVOKABLE QString value(const QString& FileName, const QString& Field) const;
     Q_INVOKABLE void setValue(const QString& FileName, const QString& Field, const QString& Value);
     Q_INVOKABLE bool modified(const QString& FileName, const QString& Field) const;
-    Q_INVOKABLE bool readonly(const QString& FileName, const QString& Field) const;
+    Q_INVOKABLE bool readOnly(const QString& FileName, const QString& Field) const;
+    Q_INVOKABLE bool readOnly(const QString& FileName) const;
+    Q_INVOKABLE bool isWritable(const QString& FileName) const;
     Q_INVOKABLE bool visible(const QString& FileName, const QString& Field) const;
     Q_INVOKABLE void editField(const QString& FileName, const QString& Field);
     Q_INVOKABLE void showCoreMenu(const QPoint& globalPos, const QString& FileName, const QString& Field);

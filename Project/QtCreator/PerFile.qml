@@ -136,7 +136,7 @@ Control {
                                              "<path d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/>",
                                              "<path d='M0 0h24v24H0z' fill='none'/>",
                                            "</svg>"].join('')
-                        source: Model.valid(file) ? (editMode ? displaySvg.arg("gray") : editSvg.arg("gray")) : editSvg.arg("lightgray")
+                        source: Model.isWritable(file) ? (editMode ? displaySvg.arg("gray") : editSvg.arg("gray")) : editSvg.arg("lightgray")
                         fillMode: Image.PreserveAspectFit
                         MouseArea {
                             anchors.fill: parent
@@ -145,22 +145,22 @@ Control {
                                 visible: parent.containsMouse && Model.valid(file)
                                 timeout: 5000
                                 delay: 1000
-                                text: editMode ? "Display Mode" : "Edit Mode"
+                                text: Model.readOnly(file) ? "Edit mode disabled, file is read only!" : (editMode ? "Display Mode" : "Edit Mode")
                             }
                             acceptedButtons: Qt.LeftButton
                             onClicked: {
-                                if (Model.valid(file)) {
+                                if (Model.isWritable(file)) {
                                     editMode = !editMode
                                     parent.source = editMode ? parent.displaySvg.arg("gray") : parent.editSvg.arg("gray")
                                 }
                             }
                             onEntered: {
-                                if (Model.valid(file)) {
+                                if (Model.isWritable(file)) {
                                     parent.source = editMode ? parent.displaySvg.arg("dimgray") : parent.editSvg.arg("dimgray")
                                 }
                             }
                             onExited: {
-                                if (Model.valid(file)) {
+                                if (Model.isWritable(file)) {
                                     parent.source = editMode ? parent.displaySvg.arg("gray") : parent.editSvg.arg("gray")
                                 }
                             }
@@ -416,7 +416,7 @@ Control {
                                                 ScrollBar.horizontal.position = 0
                                             }
                                             background: Rectangle {
-                                                color: Model.readonly(file, name) ? "whitesmoke" : "transparent"
+                                                color: Model.readOnly(file, name) ? "whitesmoke" : "transparent"
                                                 border.color: {
                                                     if (parent.activeFocus) {
                                                         return "dodgerblue"
@@ -437,7 +437,7 @@ Control {
                                                 id: input
                                                 color: "black"
                                                 text: Model.value(file, name)
-                                                readOnly: Model.readonly(file, name)
+                                                readOnly: Model.readOnly(file, name)
                                                 selectByMouse: true
                                                 onTextChanged: {
                                                     if (focus && Model.valid(file, name, text)) {

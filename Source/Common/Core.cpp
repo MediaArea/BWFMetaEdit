@@ -1204,6 +1204,18 @@ bool Core::IsModified_Get (const string &FileName)
 }
 
 //---------------------------------------------------------------------------
+bool Core::IsReadOnly_Get (const string &FileName)
+{
+    handlers::iterator Handler=Handlers.find(FileName);
+    if (Handler==Handlers.end())
+        return false; //File is not registred
+
+    if (Handler->second.Riff)
+        return Handler->second.Riff->IsReadOnly_Get();
+
+    return false;
+}
+//---------------------------------------------------------------------------
 bool Core::IsValid (const string &FileName, const string &Field, const string &Value, bool IgnoreCoherency)
 {
     handlers::iterator Handler=Handlers.find(FileName);
