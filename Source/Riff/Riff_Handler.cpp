@@ -182,6 +182,7 @@ bool Riff_Handler::Open_Internal(const string &FileName)
 {
     //Init
     PerFile_Error.str(string());
+    PerFile_Warning.str(string());
     File_IsValid=false;
     File_IsCanceled=false;
     bool ReturnValue=true;
@@ -344,6 +345,7 @@ bool Riff_Handler::Save()
     
     //Init
     PerFile_Error.str(string());
+    PerFile_Warning.str(string());
 
     //Integrity
     if (Chunks==NULL)
@@ -565,6 +567,7 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
     if (Field=="filename"
      || Field=="version"
      || Field=="errors"
+     || Field=="warnings"
      || Field=="information"
      || Value_=="NOCHANGE")
         return true;
@@ -918,7 +921,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         Rules.INFO_Req=true;
 
     //Encoding (warning only)
-    if (Field!="filename" && Field!="errors" && Field!="information")
+    if (Field!="filename" && Field!="errors" && Field!="warnings" && Field!="information")
     {
         bool IsASCII=true;
         for (size_t i=0; i<Value.size(); i++)
@@ -2101,6 +2104,7 @@ string Riff_Handler::Technical_Header()
     ToReturn<<"MD5Stored"<<',';
     ToReturn<<"MD5Generated"<<',';
     ToReturn<<"Errors"<<',';
+    ToReturn<<"Warnings"<<',';
     ToReturn<<"Information";
 
     return ToReturn.str();
@@ -2138,6 +2142,10 @@ string Riff_Handler::Technical_Get()
     if (!Errors_Temp.empty())
         Errors_Temp.resize(Errors_Temp.size()-1);
     List.push_back(Ztring().From_UTF8(Errors_Temp));
+    string Warnings_Temp=PerFile_Warning.str();
+    if (!Warnings_Temp.empty())
+        Warnings_Temp.resize(Warnings_Temp.size()-1);
+    List.push_back(Ztring().From_UTF8(Warnings_Temp));
     string Information_Temp=PerFile_Information.str();
     if (!Information_Temp.empty())
         Information_Temp.resize(Information_Temp.size()-1);
@@ -2278,6 +2286,8 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
 {
     if (Field=="errors")
         return PerFile_Error.str();
+    if (Field=="warnings")
+        return PerFile_Warning.str();
     if (Field=="information")
         return PerFile_Information.str();
     if (Field=="sample rate" ||Field=="samplerate")

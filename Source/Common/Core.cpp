@@ -1807,6 +1807,21 @@ void Core::StdAll(handlers::iterator &Handler)
         }
         Handler->second.Riff->Information.str(string());
     }
+    if (!Handler->second.Riff->Warnings.str().empty())
+    {
+        Text_stdout<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Warnings.str();
+        Text_stdall<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Warnings.str();
+        if (!LogFile.empty())
+        {
+            Ztring Data;
+            Data+=TimeS;
+            Data+=__T(" ");
+            Data+=Ztring().From_UTF8(Handler->second.Riff->Warnings.str());
+            File F(LogFile, File::Access_Write_Append);
+            F.Write(Data);
+        }
+        Handler->second.Riff->Warnings.str(string());
+    }
     if (!Handler->second.Riff->Errors.str().empty())
     {
         Text_stderr<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Errors.str();

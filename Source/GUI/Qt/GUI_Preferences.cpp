@@ -45,7 +45,7 @@ options Groups[Group_Max]=
 {
     {
         "Technical Metadata",
-        19,
+        20,
         {
             {"Tech_FileSize", "FileSize", Type_CheckBox, true},
             {"Tech_Format", "Format", Type_CheckBox, true},
@@ -65,6 +65,7 @@ options Groups[Group_Max]=
             {"Tech_MD5Stored", "MD5Stored", Type_CheckBox, true},
             {"Tech_MD5Generated", "MD5Generated", Type_CheckBox, true},
             {"Tech_Errors", "Errors", Type_CheckBox, true},
+            {"Tech_Warnings", "Warnings", Type_CheckBox, true},
             {"Tech_Information", "Information", Type_CheckBox, true},
         },
         true,

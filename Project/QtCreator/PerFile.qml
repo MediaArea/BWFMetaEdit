@@ -338,6 +338,14 @@ Control {
                            wrapMode: Text.Wrap
                         }
                         Text {
+                           id:warnings
+                           text: "<h4><font color='darkorange'>Warnings:</font></h4>" + "<font color='darkorange'>" + Model.warnings(file) + "</font>"
+                           width: root.width - 20 // Can't refer to parent.width dues to bug,
+                                                  // use widget width instead and give room for the scroll bar
+                           visible: Model.warnings(file).length > 0
+                           wrapMode: Text.Wrap
+                        }
+                        Text {
                            id: informations
                            text: "<h4>Informations:</h4>" +  Model.informations(file)
                            width: root.width - 20 // Can't refer to parent.width dues to bug,
