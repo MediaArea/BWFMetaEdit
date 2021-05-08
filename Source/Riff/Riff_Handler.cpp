@@ -274,9 +274,9 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                 Message <<"The audio is "<<channelCount<<" channels and " <<bitsPerSample<<" bits per sample; "
                         <<"however, the data chunk is not aligned to a multiple of "
                         <<channelCount*bitsPerSample<<" ("<<channelCount<<"*"<<bitsPerSample << ").";
-                Errors<<Chunks->Global->File_Name.To_UTF8()<<": "<<Message.str()<<endl;
-                PerFile_Error.str(string());
-                PerFile_Error<<Message.str()<<endl;
+                Warnings<<Chunks->Global->File_Name.To_UTF8()<<": "<<Message.str()<<endl;
+                PerFile_Warning.str(string());
+                PerFile_Warning<<Message.str()<<endl;
             }
         }
 
