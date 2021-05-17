@@ -133,7 +133,7 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
     TextEdit->setPlainText(Value);
     string ValueS=Value.toUtf8().data();
     if (C->IsValid(FileName, Field, ValueS)
-     && (ValueS.empty() || ValueS.size()==(Field=="OriginationDate" || Field=="ICRD")?10:8)
+     && (ValueS.empty() || ValueS.size()==((Field=="OriginationDate" || Field=="ICRD")?10:8))
      && (ValueS.empty() || QDate::fromString(Value, Qt::ISODate)!=QDate() || (Field=="OriginationTime" && QTime::fromString(Value, Qt::ISODate)!=QTime())))
         OnMenu_Calendar();
     else
@@ -214,7 +214,7 @@ void GUI_Main_xxxx_DateDialog::OnMenu_Calendar ()
 {
     QString PlainText=TextEdit->toPlainText();
     if (Calendar) Calendar->setSelectedDate(QDate::fromString(PlainText, Qt::ISODate));
-    Ztring Value=PlainText.toUtf8().data();
+    Ztring Value=Ztring().From_UTF8(PlainText.toStdString());
     if ((Field=="OriginationDate" || Field=="OriginationTime"))
     {
         if (Field=="OriginationDate")
