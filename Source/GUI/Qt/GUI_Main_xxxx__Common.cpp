@@ -540,10 +540,7 @@ void GUI_Main_xxxx__Common::Fill ()
     resizeColumnsToContents();
     setColumnWidth(0, rowHeight(0));
     setSortingEnabled(true);
-
-    //Apply default sorting options when adding files to empty table.
-    if (!AddingMode)
-        sortByColumn(FILENAME_COL, Qt::AscendingOrder);
+    sortByColumn(Sort_Column_Get(), Sort_Order_Get());
 
     //Preparing
     Updating=false;
@@ -570,9 +567,14 @@ void GUI_Main_xxxx__Common::OnItemSelectionChanged ()
 void GUI_Main_xxxx__Common::OnSortIndicatorChanged(int Index, Qt::SortOrder Order)
 {
     if (Index==0)
-        horizontalHeader()->setSortIndicator(-1, Order);
+        horizontalHeader()->setSortIndicator(Sort_Column_Get(), Sort_Order_Get());
     else
+    {
+        horizontalHeader()->setSortIndicator(Index, Order);
+        Sort_Column_Set(Index);
+        Sort_Order_Set(Order);
         sortItems(Index, Order);
+    }
 }
 
 //---------------------------------------------------------------------------

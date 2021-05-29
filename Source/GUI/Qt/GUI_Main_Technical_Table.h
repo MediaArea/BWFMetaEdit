@@ -43,6 +43,14 @@ protected:
     const string           &Fill_Content        ();
     group                   Fill_Group          ();
     bool                    Fill_Enabled        (const string &FileName, const string &Field, const string &Value);
+    int                     Sort_Column_Get     () { return SortColumn; };
+    void                    Sort_Column_Set     (int Column) { SortColumn=Column; };
+    Qt::SortOrder           Sort_Order_Get      () { return SortOrder; };
+    void                    Sort_Order_Set      (Qt::SortOrder Order) { Order=Order; };
+
+private:
+    static int           SortColumn;
+    static Qt::SortOrder SortOrder;
 };
 
 #endif
