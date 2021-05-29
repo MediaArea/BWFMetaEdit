@@ -252,6 +252,12 @@ bool Riff_Handler::Open_Internal(const string &FileName)
             PerFile_Information<<"no-padding correction"<<endl;
         }
 
+        if (Chunks->Global->RF64DataSize_IsCorrected)
+        {
+            Information<<Chunks->Global->File_Name.To_UTF8()<<": rf64 data size correction"<<endl;
+            PerFile_Information<<"rf64 data size correction"<<endl;
+        }
+
         //Saving initial values
         Core_FromFile=Ztring().From_UTF8(Core_Get_Internal());
 

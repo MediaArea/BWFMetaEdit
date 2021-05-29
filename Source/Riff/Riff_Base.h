@@ -212,6 +212,7 @@ public:
         chunk_strings      *adtl;
         bool                NoPadding_Accept;
         bool                NoPadding_IsCorrected;
+        bool                RF64DataSize_IsCorrected;
         bool                NewChunksAtTheEnd;
         bool                GenerateMD5;
         bool                VerifyMD5;
@@ -246,6 +247,7 @@ public:
             MD5Generated=NULL;
             NoPadding_Accept=false;
             NoPadding_IsCorrected=false;
+            RF64DataSize_IsCorrected=false;
             NewChunksAtTheEnd=false;
             GenerateMD5=false;
             VerifyMD5=false;
