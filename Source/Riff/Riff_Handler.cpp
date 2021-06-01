@@ -259,14 +259,14 @@ bool Riff_Handler::Open_Internal(const string &FileName)
         if (Chunks->Global->data && Chunks->Global->fmt_ && Chunks->Global->fmt_->formatType==0x0001)
         {
             int16u channelCount=Chunks->Global->fmt_->channelCount;
-            int32u bytesPerSample=Chunks->Global->fmt_->bitsPerSample*8;
-            if (Chunks->Global->data->Size%(channelCount*bytesPerSample)!=0)
+            int32u bitsPerSample=Chunks->Global->fmt_->bitsPerSample;
+            int128u sizeInBits=Chunks->Global->data->Size*8;
+            if (sizeInBits%(channelCount*bitsPerSample)!=0)
             {
-
                 ostringstream Message;
-                Message <<"The audio is "<<channelCount<<" channels and " <<bytesPerSample<<" bytes per sample; "
+                Message <<"The audio is "<<channelCount<<" channels and " <<bitsPerSample<<" bits per sample; "
                         <<"however, the data chunk is not aligned to a multiple of "
-                        <<channelCount*bytesPerSample<<" ("<<channelCount<<"*"<<bytesPerSample << ").";
+                        <<channelCount*bitsPerSample<<" ("<<channelCount<<"*"<<bitsPerSample << ").";
                 Errors<<Chunks->Global->File_Name.To_UTF8()<<": "<<Message.str()<<endl;
                 PerFile_Error.str(string());
                 PerFile_Error<<Message.str()<<endl;
