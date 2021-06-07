@@ -384,7 +384,7 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
     }
     else if (Field=="CodingHistory")
     {
-        GUI_Main_xxxx_CodingHistoryDialog* Edit=new GUI_Main_xxxx_CodingHistoryDialog(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()), C->Rules.CodingHistory_Rec);
+        GUI_Main_xxxx_CodingHistoryDialog* Edit=new GUI_Main_xxxx_CodingHistoryDialog(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()), C->Rules);
         Edit->exec();
         delete Edit; //Edit=NULL;
     }

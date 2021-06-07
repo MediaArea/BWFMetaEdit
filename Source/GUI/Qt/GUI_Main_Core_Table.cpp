@@ -305,7 +305,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
     if (Field=="CodingHistory") 
     {
         //User interaction
-        GUI_Main_xxxx_CodingHistoryDialog* Edit=new GUI_Main_xxxx_CodingHistoryDialog(C, FileName, Field, ModifiedContentQ, C->Rules.CodingHistory_Rec);
+        GUI_Main_xxxx_CodingHistoryDialog* Edit=new GUI_Main_xxxx_CodingHistoryDialog(C, FileName, Field, ModifiedContentQ, C->Rules);
         if (Edit->exec()!=QDialog::Accepted)
         {
             delete Edit; //Edit=NULL;

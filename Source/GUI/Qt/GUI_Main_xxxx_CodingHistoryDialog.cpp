@@ -99,17 +99,17 @@ void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft,
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-CodingHistoryDialog_Delegate::CodingHistoryDialog_Delegate(bool Rules_Recommendations_, QObject *parent)
+CodingHistoryDialog_Delegate::CodingHistoryDialog_Delegate( Riff_Handler::rules Rules_, QObject *parent)
 : QItemDelegate(parent)
 {
-    Rules_Recommendations=Rules_Recommendations_;
+    Rules=Rules_;
 }
 
 //---------------------------------------------------------------------------
 QWidget *CodingHistoryDialog_Delegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/* option */, const QModelIndex &/* index */) const
 {
     QComboBox* Editor=new QComboBox(parent);
-    Editor->setEditable(!Rules_Recommendations);
+    Editor->setEditable(!Rules.CodingHistory_Rec && !Rules.FADGI_Rec);
     Editor->installEventFilter(const_cast<CodingHistoryDialog_Delegate*>(this));
 
     return Editor;
@@ -131,7 +131,7 @@ void CodingHistoryDialog_Delegate::setEditorData(QWidget *editor, const QModelIn
             Editor->setCurrentIndex(Pos);
          }
 
-    if (!Rules_Recommendations && !Value.isEmpty() && !Found)
+    if (!Rules.CodingHistory_Rec && !Rules.FADGI_Rec && !Value.isEmpty() && !Found)
         Editor->setCurrentText(Value);
 }
 
@@ -185,7 +185,14 @@ void SamplingFrequencyDelegate::Fill(QComboBox* Editor) const
     Editor->addItem("48000");
     Editor->addItem("64000");
     Editor->addItem("88200");
-    Editor->addItem("96000");
+    if (!Rules.CodingHistory_Rec && Rules.FADGI_Rec)
+    {
+        Editor->addItem("96000");
+        Editor->addItem("176400");
+        Editor->addItem("192000");
+        Editor->addItem("384000");
+        Editor->addItem("768000");
+    }
 }
 
 //***************************************************************************
@@ -237,7 +244,10 @@ void WordLengthDelegate::Fill(QComboBox* Editor) const
     Editor->addItem("20");
     Editor->addItem("22");
     Editor->addItem("24");
-    Editor->addItem("32");
+    if (!Rules.CodingHistory_Rec && Rules.FADGI_Rec)
+    {
+        Editor->addItem("32");
+    }
 }
 
 //***************************************************************************
@@ -252,6 +262,13 @@ void ModeDelegate::Fill(QComboBox* Editor) const
     Editor->addItem("stereo");
     Editor->addItem("dual-mono");
     Editor->addItem("joint-stereo");
+    if (!Rules.CodingHistory_Rec && Rules.FADGI_Rec)
+    {
+        Editor->addItem("multitrack");
+        Editor->addItem("multichannel");
+        Editor->addItem("surround");
+        Editor->addItem("other");
+    }
 }
 
 //***************************************************************************
@@ -259,14 +276,14 @@ void ModeDelegate::Fill(QComboBox* Editor) const
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, const std::string &FileName_, const std::string &Field_, const QString &OldText, bool Rules_Recommendations_, QWidget* parent)
+GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, const std::string &FileName_, const std::string &Field_, const QString &OldText, Riff_Handler::rules Rules_, QWidget* parent)
 : QDialog(parent)
 {
     //Internal
     C=C_;
     FileName=FileName_;
     Field=Field_;
-    Rules_Recommendations=Rules_Recommendations_;
+    Rules=Rules_;
     IsAccepted=false;
 
     //Configuration
@@ -534,11 +551,11 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
         }
     }
 
-    Table->setItemDelegateForColumn(0, new CodingAlgorithmDelegate(Rules_Recommendations));
-    Table->setItemDelegateForColumn(1, new SamplingFrequencyDelegate(Rules_Recommendations));
-    Table->setItemDelegateForColumn(2, new BitRateDelegate(Rules_Recommendations));
-    Table->setItemDelegateForColumn(3, new WordLengthDelegate(Rules_Recommendations));
-    Table->setItemDelegateForColumn(4, new ModeDelegate(Rules_Recommendations));
+    Table->setItemDelegateForColumn(0, new CodingAlgorithmDelegate(Rules));
+    Table->setItemDelegateForColumn(1, new SamplingFrequencyDelegate(Rules));
+    Table->setItemDelegateForColumn(2, new BitRateDelegate(Rules));
+    Table->setItemDelegateForColumn(3, new WordLengthDelegate(Rules));
+    Table->setItemDelegateForColumn(4, new ModeDelegate(Rules));
 
     Table->resizeColumnsToContents();
     Table->resizeRowsToContents();
