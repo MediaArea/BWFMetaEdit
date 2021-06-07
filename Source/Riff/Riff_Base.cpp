@@ -168,6 +168,7 @@ bool Riff_Base::Read_Header (chunk &NewChunk)
     NewChunk.Content.Size=LittleEndian2int32u(Temp);
     if (Global->IsRF64 && Global->ds64 && NewChunk.Header.Level==2 && NewChunk.Header.Name==Elements::WAVE_data && NewChunk.Content.Size==Global->ds64->dataSize%0x100000000LL)
     {
+        Global->RF64DataSize_IsCorrected=true;
         NewChunk.Content.Size=0xFFFFFFFF; //Bug in previous versions, chunk size was not the right one
         NewChunk.Content.IsModified=true; //Forcing write of the write file
         NewChunk.Content.Size_IsModified=true; //Forcing write of the write file
