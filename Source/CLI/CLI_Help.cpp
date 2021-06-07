@@ -71,7 +71,9 @@ std::string Help()
     ToDisplay<<"--Originator=           specified bext originator"<<std::endl;
     ToDisplay<<"--OriginatorReference=  specified bext originator reference"<<std::endl;
     ToDisplay<<"--OriginationDate=      specified bext origination date"<<std::endl;
+    ToDisplay<<"                        Set to \"TIMESTAMP\" to use file creation date"<<std::endl;
     ToDisplay<<"--OriginationTime=      specified bext origination time"<<std::endl;
+    ToDisplay<<"                        Set to \"TIMESTAMP\" to use file creation time"<<std::endl;
     ToDisplay<<"--Timereference=        specified bext time reference"<<std::endl;
     ToDisplay<<"--UMID=                 specified bext umid"<<std::endl;
     ToDisplay<<"--LoudnessValue=        specified bext loudness value"<<std::endl;
