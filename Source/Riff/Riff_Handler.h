@@ -120,8 +120,10 @@ public:
     //---------------------------------------------------------------------------
     //Stdxxx
     ostringstream   Errors;
+    ostringstream   Warnings;
     ostringstream   Information;
     ostringstream   PerFile_Error;
+    ostringstream   PerFile_Warning;
     ostringstream   PerFile_Information;
     ostringstream   IsValid_Errors;
     ostringstream   IsValid_Warnings;

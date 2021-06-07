@@ -234,6 +234,11 @@ Q_INVOKABLE QString PerFileModel::errors(const QString& FileName) const
 }
 
 //---------------------------------------------------------------------------
+Q_INVOKABLE QString PerFileModel::warnings(const QString& FileName) const
+{
+    return Get_Technical_Field(FileName, "Warnings");
+}
+//---------------------------------------------------------------------------
 Q_INVOKABLE QString PerFileModel::informations(const QString& FileName) const
 {
     return Get_Technical_Field(FileName, "Information");
