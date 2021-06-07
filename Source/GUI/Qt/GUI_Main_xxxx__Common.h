@@ -65,6 +65,10 @@ protected:
     virtual const string   &Fill_Content        ()=0;
     virtual group           Fill_Group          ()=0;
     virtual bool            Fill_Enabled        (const string &FileName, const string &Field, const string &Value)=0;
+    virtual int             Sort_Column_Get     ()=0;
+    virtual void            Sort_Column_Set     (int Column)=0;
+    virtual Qt::SortOrder   Sort_Order_Get      ()=0;
+    virtual void            Sort_Order_Set      (Qt::SortOrder Order)=0;
 
     //Internal
     Core*       C;
