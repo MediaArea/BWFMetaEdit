@@ -1,7 +1,7 @@
 Source: bwfmetaedit
 Priority: optional
 Maintainer: Jerome Martinez <info@mediaarea.net>
-Build-Depends: debhelper (>= 5), tofrodos, qtbase5-dev, qtdeclarative5-dev, qtquickcontrols2-5-dev, libqt5svg5-dev, qt5-default, pkg-config, automake, autoconf, libtool
+Build-Depends: debhelper (>= 5), tofrodos, qtbase5-dev, qtdeclarative5-dev, qtquickcontrols2-5-dev, libqt5svg5-dev, qtchooser, qt5-qmake, qtbase5-dev-tools, pkg-config, automake, autoconf, libtool
 Standards-Version: 3.7.3
 Section: libs
 Homepage: http://mediainfo.sourceforge.net
