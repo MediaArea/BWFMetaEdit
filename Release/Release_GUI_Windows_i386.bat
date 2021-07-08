@@ -17,7 +17,7 @@ mkdir BWFMetaEdit_GUI_Windows_i386
 
 
 @rem --- Copying : Exe ---
-copy  "..\Project\QtCreator\i386\BWF MetaEdit.exe" BWFMetaEdit_GUI_Windows_i386\bwfmetaedit-gui.exe
+copy  "..\Project\QtCreator\Win32\BWF MetaEdit.exe" BWFMetaEdit_GUI_Windows_i386\bwfmetaedit-gui.exe
 
 @rem --- Copying : Information files ---
 copy ..\License.html BWFMetaEdit_GUI_Windows_i386\
