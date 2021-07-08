@@ -5,7 +5,7 @@ RequestExecutionLevel admin
 !define PRODUCT_NAME "BWF MetaEdit"
 !define PRODUCT_NAME_EXE "${PRODUCT_NAME}.exe"
 !define PRODUCT_PUBLISHER "FADGI"
-!define PRODUCT_VERSION "20.08"
+!define PRODUCT_VERSION "21.07"
 !define PRODUCT_VERSION4 "${PRODUCT_VERSION}.0.0"
 !define PRODUCT_WEB_SITE "http://www.digitizationguidelines.gov"
 !define COMPANY_REGISTRY "Software\FADGI"

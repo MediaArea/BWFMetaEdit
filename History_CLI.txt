@@ -4,6 +4,13 @@ Notes:
 - Deleted
 x Correction
 
+Version 21.07, 2020-07-09
+-------------
++ Support of last version of FADGI rules
++ Check if PCM data size is channel count*sample length aligned
+x CLI: non-zero return code on errors
+x CLI: Print error if MD5 verification is requested and field is missing
+
 Version 20.08, 2020-08-11
 -------------
 x Fix compilation issues with non Unicode on Windows (Issue #135)
