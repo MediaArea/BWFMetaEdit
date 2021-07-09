@@ -4,6 +4,24 @@ Notes:
 - Deleted
 x Correction
 
+Version 21.07, 2020-07-09
+-------------
++ Cue chunks editor
++ Support of last version of FADGI rules
++ Preserve sort order in table views
++ Switch to free edit if IRCD field is not standard
++ Menu option to set timestamps for multiples files
++ Custom values input in coding history table dialog
++ "Clear" menu option with multiple fields selected
++ Provide an option to set default open/save directory
++ Check if PCM data size is channel count*sample length aligned
+x Show message when fixing buggy rf64 data size
+x Show error log (if present) after file save operation
+x Fix incoherent state after failed save operation (e.g. read only files)
+x Fix save all and prevent crash when saving multiples files on exit
+x Fix infinite loop with invalid coding history
+x Also check fmt_ extension for format
+
 Version 20.08, 2020-08-11
 -------------
 x Fix compilation issues with non Unicode on Windows (Issue #135)
