@@ -557,8 +557,14 @@ void GUI_Main_xxxx__Common::OnItemSelectionChanged ()
 
     QList<QTableWidgetSelectionRange> List=selectedRanges();
     for (int List_Pos=0; List_Pos<List.size(); List_Pos++)
+    {
         for (int Pos=List[List_Pos].topRow(); Pos<=List[List_Pos].bottomRow(); Pos++)
-            C->Menu_File_Close_File_FileName_Set(FileName_Before+item(Pos, FILENAME_COL)->text().toUtf8().data());
+        {
+            QTableWidgetItem* Item=item(Pos, FILENAME_COL);
+            if (Item)
+                C->Menu_File_Close_File_FileName_Set(FileName_Before+Item->text().toUtf8().data());
+        }
+    }
 
     Main->Menu_Update();
 }
