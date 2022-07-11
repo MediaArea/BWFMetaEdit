@@ -155,6 +155,17 @@ options Groups[Group_Max]=
         false,
     },
     {
+        "Encoding",
+        Option_Encoding_Max,
+        {
+            {"Encoding_Local", "Read/Write texts using system default encoding", Type_RadioButton, true},
+            {"Encoding_8859_1", "Read/Write texts using 8859-1 encoding", Type_RadioButton, false},
+            {"Encoding_8859_2", "Read/Write texts using 8859-2 encoding", Type_RadioButton, false},
+        },
+        true,
+        false,
+    },
+    {
         "Default view",
         Option_DefaultView_Max,
         {
@@ -258,6 +269,12 @@ size_t GUI_Preferences::Group_Options_Count_Get(group Group, bool ForTemporaryPr
 }
 
 //---------------------------------------------------------------------------
+type GUI_Preferences::Group_Option_Type_Get(group Group, size_t Option)
+{
+    return Groups[Group].Option[Option].Type;
+}
+
+//---------------------------------------------------------------------------
 string GUI_Preferences::Group_Option_Description_Get(group Group, size_t Option)
 {
     return Groups[Group].Option[Option].Description;
@@ -268,8 +285,8 @@ bool GUI_Preferences::Group_Option_Checked_Get(group Group, size_t Option)
 {
     switch (Groups[Group].Option[Option].Type)
     {
-        case Type_CheckBox      : return CheckBoxes  [Group*options::MaxCount+Option]->isChecked();
-        case Type_RadioButton   : return RadioButtons[Group*options::MaxCount+Option]->isChecked();
+        case Type_CheckBox      : return CheckBoxes  [Group*options::MaxCount+Option]->isChecked(); break;
+        case Type_RadioButton   : return RadioButtons[Group*options::MaxCount+Option]->isChecked(); break;
         default                 : return false;
     }
 }
@@ -279,8 +296,8 @@ bool GUI_Preferences::Group_Option_Checked_Set(group Group, size_t Option, bool 
 {
     switch (Groups[Group].Option[Option].Type)
     {
-        case Type_CheckBox      : CheckBoxes  [Group*options::MaxCount+Option]->setChecked(Value);
-        case Type_RadioButton   : break; //RadioButtons[Group*options::MaxCount+Option]->isChecked();
+        case Type_CheckBox      : CheckBoxes  [Group*options::MaxCount+Option]->setChecked(Value); break;
+        case Type_RadioButton   : RadioButtons[Group*options::MaxCount+Option]->setChecked(Value); break;
         default                 : ;
     }
 

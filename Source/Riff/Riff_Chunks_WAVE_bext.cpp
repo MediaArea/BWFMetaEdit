@@ -162,10 +162,15 @@ void Riff_WAVE_bext::Read_Internal ()
     int64u TimeReference;
     int16u Version, LoudnessValue=0, LoudnessRange=0, MaxTruePeakLevel=0, MaxMomentaryLoudness=0, MaxShortTermLoudness=0;
     Get_String(256, Description);
+    Decode(Description);
     Get_String( 32, Originator);
+    Decode(Originator);
     Get_String( 32, OriginatorReference);
+    Decode(OriginatorReference);
     Get_String( 10, OriginationDate);
+    Decode(OriginationDate);
     Get_String(  8, OriginationTime);
+    Decode(OriginationTime);
     Get_L8    (     TimeReference); //To be divided by SamplesPerSec
     Get_L2    (     Version);
     if (Version>=1)
@@ -180,7 +185,10 @@ void Riff_WAVE_bext::Read_Internal ()
     }
     Skip_XX   (602-Chunk.Content.Buffer_Offset);
     if (Chunk.Content.Buffer_Offset<Chunk.Content.Size)
+    {
         Get_String(Chunk.Content.Size-Chunk.Content.Buffer_Offset, CodingHistory);
+        Decode(CodingHistory);
+    }
 
     //Filling
     Global->bext=new Riff_Base::global::chunk_strings;
@@ -261,12 +269,25 @@ void Riff_WAVE_bext::Modify_Internal ()
         return;
     }
 
+    string Description=Global->bext->Strings["description"];
+    Encode(Description);
+    string Originator=Global->bext->Strings["originator"];
+    Encode(Originator);
+    string OriginatorReference=Global->bext->Strings["originatorreference"];
+    Encode(OriginatorReference);
+    string OriginationDate=Global->bext->Strings["originationdate"];
+    Encode(OriginationDate);
+    string OriginationTime=Global->bext->Strings["originationtime"];
+    Encode(OriginationTime);
+    string CodingHistory=Global->bext->Strings["codinghistory"];
+    Encode(CodingHistory);
+
     //Calculating size
     int64u TargetedSize=858;
     if (Chunk.Content.Size)
         TargetedSize=Chunk.Content.Size;
-    if (TargetedSize<=602+Global->bext->Strings["codinghistory"].size())
-        TargetedSize=602+Global->bext->Strings["codinghistory"].size();
+    if (TargetedSize<=602+CodingHistory.size())
+        TargetedSize=602+CodingHistory.size();
     if (TargetedSize>=0x100000000LL)
         return; //TODO: error
 
@@ -306,11 +327,13 @@ void Riff_WAVE_bext::Modify_Internal ()
         BextVersion=1;
     if (BextVersion<2 && (LoudnessValue!=0x7FFF || LoudnessRange!=0x7FFF || MaxTruePeakLevel!=0x7FFF || MaxMomentaryLoudness!=0x7FFF || MaxShortTermLoudness!=0x7FFF))
         BextVersion=2;
-    Put_String(256, Global->bext->Strings["description"]);
-    Put_String( 32, Global->bext->Strings["originator"]);
-    Put_String( 32, Global->bext->Strings["originatorreference"]);
-    Put_String( 10, Global->bext->Strings["originationdate"]);
-    Put_String(  8, Global->bext->Strings["originationtime"]);
+
+
+    Put_String(256, Description);
+    Put_String( 32, Originator);
+    Put_String( 32, OriginatorReference);
+    Put_String( 10, OriginationDate);
+    Put_String(  8, OriginationTime);
     Put_L8    (     TimeReference);
     Put_L2    (     BextVersion);
     if (Global->bext->Strings["umid"].find(__T('-'))!=string::npos)
@@ -346,7 +369,7 @@ void Riff_WAVE_bext::Modify_Internal ()
     else
         Skip_XX   (602-Chunk.Content.Buffer_Offset); //Keeping old data
     if (Chunk.Content.Buffer_Offset<Chunk.Content.Size)
-        Put_String(Chunk.Content.Size-Chunk.Content.Buffer_Offset, Global->bext->Strings["codinghistory"]);
+        Put_String(Chunk.Content.Size-Chunk.Content.Buffer_Offset, CodingHistory);
 
     Chunk.Content.IsModified=true;
     Chunk.Content.Size_IsModified=true;

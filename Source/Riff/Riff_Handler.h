@@ -113,6 +113,7 @@ public:
     bool            EmbedMD5;
     bool            EmbedMD5_AuthorizeOverWritting;
     bool            Trace_UseDec;
+    Riff_Encoding   Encoding;
     unsigned short  Bext_DefaultVersion;
     unsigned short  Bext_MaxVersion;
     void            Options_Update();

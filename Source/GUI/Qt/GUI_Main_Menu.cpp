@@ -281,15 +281,31 @@ void GUI_Main::Menu_Create()
     Preferences=new GUI_Preferences(this);
     Menu_Fields_Menus=new QMenu*[Preferences->Groups_Count_Get()];
     Menu_Fields_CheckBoxes=new QAction*[Preferences->Groups_Count_Get()*options::MaxCount];
+    Menu_Fields_ActionGroups=new QActionGroup*[Preferences->Groups_Count_Get()];
+
     for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
     {
         if (Preferences->Group_Options_Count_Get((group)Group, true))
+        {
+            Menu_Fields_ActionGroups[Group]=new QActionGroup(this);
             Menu_Fields_Menus[Group]=Menu_Fields_Main->addMenu(QString().fromUtf8(Preferences->Group_Name_Get((group)Group).c_str()));
+        }
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
         {
-            Menu_Fields_CheckBoxes[Group*options::MaxCount+Option] = new QAction(QString().fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
-            Menu_Fields_Menus[Group]->addAction(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]);
-            Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setCheckable(true);
+            switch (Preferences->Group_Option_Type_Get((group)Group, Option))
+            {
+            case Type_CheckBox:
+                Menu_Fields_CheckBoxes[Group*options::MaxCount+Option] = new QAction(QString().fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
+                Menu_Fields_Menus[Group]->addAction(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]);
+                Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setCheckable(true);
+            break;
+            case Type_RadioButton:
+                Menu_Fields_RadioButtons[Group*options::MaxCount+Option] = new QAction(QString().fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
+                Menu_Fields_ActionGroups[Group]->addAction(Menu_Fields_RadioButtons[Group*options::MaxCount+Option]);
+                Menu_Fields_Menus[Group]->addAction(Menu_Fields_RadioButtons[Group*options::MaxCount+Option]);
+                Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setCheckable(true);
+            break;
+            }
         }
     }
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_Tech3285_Req              ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_Tech3285_Req(bool)));
@@ -311,13 +327,24 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5(bool)));
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)));
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_SwapEndian ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_SwapMD5Endianness(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_Local ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingLocal(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_8859_1 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Encoding8859_1(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_8859_2 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Encoding8859_2(bool)));
     for (size_t Group=Group_Tech; Group<=Group_Core; Group++)
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
             connect(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_TechCore(bool)));
 
     for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
-            Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setChecked(Preferences->Group_Option_Checked_Get((group)Group, Option));
+            switch (Preferences->Group_Option_Type_Get((group)Group, Option))
+            {
+            case Type_CheckBox:
+                Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setChecked(Preferences->Group_Option_Checked_Get((group)Group, Option));
+            break;
+            case Type_RadioButton:
+                Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setChecked(Preferences->Group_Option_Checked_Get((group)Group, Option));
+            break;
+            }
 
     //Menu Help
     Menu_Help_Help = new QAction(QIcon(":/Image/Menu/Help.png"), tr("Help..."), this);
@@ -985,6 +1012,36 @@ void GUI_Main::OnMenu_Rules_EBU_ISRC_Rec(bool)
 }
 
 //---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingLocal(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_Local]->isChecked() && C->Encoding!=Encoding_Local)
+    {
+        C->Encoding=Encoding_Local;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_Encoding8859_1(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_8859_1]->isChecked() && C->Encoding!=Encoding_8859_1)
+    {
+        C->Encoding=Encoding_8859_1;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_Encoding8859_2(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_8859_2]->isChecked() && C->Encoding!=Encoding_8859_2)
+    {
+        C->Encoding=Encoding_8859_2;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Options_TechCore(bool)
 {
     if (View==NULL)
@@ -1270,8 +1327,18 @@ void GUI_Main::OnMenu_Options_Preferences()
     bool HasChanged=false;
     for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
-            if (Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->isChecked()!=Preferences->Group_Option_Checked_Get((group)Group, Option))
-                HasChanged=true;
+            switch (Preferences->Group_Option_Type_Get((group)Group, Option))
+            {
+            case Type_CheckBox:
+                if (Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->isChecked()!=Preferences->Group_Option_Checked_Get((group)Group, Option))
+                    HasChanged=true;
+            break;
+            case Type_RadioButton:
+                if (Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked()!=Preferences->Group_Option_Checked_Get((group)Group, Option))
+                    HasChanged=true;
+            break;
+            }
+
     if (HasChanged)
     {
         QMessageBox MessageBox;
@@ -1291,7 +1358,15 @@ void GUI_Main::OnMenu_Options_Preferences()
             case QMessageBox::Yes     : // Yes was clicked
                                         for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
                                             for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
-                                                Preferences->Group_Option_Checked_Set((group)Group, Option, Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->isChecked());
+                                                switch (Preferences->Group_Option_Type_Get((group)Group, Option))
+                                                {
+                                                case Type_CheckBox:
+                                                    Preferences->Group_Option_Checked_Set((group)Group, Option, Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->isChecked());
+                                                break;
+                                                case Type_RadioButton:
+                                                    Preferences->Group_Option_Checked_Set((group)Group, Option, Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked());
+                                                break;
+                                                }
                                         break;
             case QMessageBox::No      : // Yes was clicked
                                         break;

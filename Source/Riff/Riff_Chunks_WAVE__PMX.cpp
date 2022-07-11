@@ -27,7 +27,10 @@ void Riff_WAVE__PMX::Read_Internal ()
     
     //Filling
     Global->XMP=new Riff_Base::global::chunk_strings;
-    Get_String(Chunk.Content.Size, Global->XMP->Strings["xmp"]);
+    string Temp;
+    Get_String(Chunk.Content.Size, Temp);
+    Decode(Temp);
+    Global->XMP->Strings["xmp"]=Temp;
 }
 
 //***************************************************************************
@@ -45,7 +48,8 @@ void Riff_WAVE__PMX::Modify_Internal ()
     }
 
     //Calculating size
-    const string &Value=Global->XMP->Strings["xmp"];
+    string Value=Global->XMP->Strings["xmp"];
+    Encode(Value);
     if (Value.size()>=0xFFFFFFFF)
         return; //TODO: error
 

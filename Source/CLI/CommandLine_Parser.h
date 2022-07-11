@@ -49,6 +49,10 @@ CL_OPTION(Append);
 CL_OPTION(Log_cout);
 CL_OPTION(Simulate);
 CL_OPTION(SpecialChars);
+CL_OPTION(Encoding);
+
+//---------------------------------------------------------------------------
+
 
 //---------------------------------------------------------------------------
 CL_OPTION(Out_XML_cout);

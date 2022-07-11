@@ -54,6 +54,8 @@ std::string Help()
     ToDisplay<<""<<std::endl;
     ToDisplay<<"--specialchars          \\ is considered as an escape char (e.g. \\r and \\n)"<<std::endl;
     ToDisplay<<""<<std::endl;
+    ToDisplay<<"--encoding=             Read/Write texts using encoding (local, 8859-1 or 8829-2)"<<std::endl;
+    ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"                        Extract all data combined into one xml to:"<<std::endl;

@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cctype>
 #include <fstream>
 #ifdef __BORLANDC__
     #pragma hdrstop
@@ -61,6 +62,7 @@ int Parse(Core &C, string &Argument)
     OPTION("-s",                                            Simulate)
 
     OPTION("--specialchars",                                SpecialChars)
+    OPTION("--encoding=",                                   Encoding)
 
     OPTION("--out-xml=",                                    Out_XML_File)
     OPTION("--out-xml",                                     Out_XML_cout)
@@ -187,6 +189,25 @@ CL_OPTION(Append)
 CL_OPTION(Simulate)
 {
     C.Simulation_Enabled=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Encoding)
+{
+    std::string Value=Argument.substr(11);
+    if (Value.size()==5 && std::tolower(Value[0])=='l' && std::tolower(Value[1])=='o' && std::tolower(Value[2])=='c' && std::tolower(Value[3])=='a' && std::tolower(Value[4])=='l')
+        C.Encoding=Encoding_Local;
+    else if (Value=="8859-1")
+        C.Encoding=Encoding_8859_1;
+    else if (Value=="8859-2")
+        C.Encoding=Encoding_8859_2;
+    else
+    {
+        std::cout<<Value<<" unknown encoding"<<std::endl;
+        return 0;
+    }
 
     return -2; //Continue
 }

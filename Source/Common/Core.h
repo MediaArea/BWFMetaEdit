@@ -164,6 +164,7 @@ public:
     Ztring                              ApplicationFolder;
     Ztring                              LogFile;
     bool                                Trace_UseDec;
+    Riff_Encoding                       Encoding;
 
     //Status
     void                                StdOut(string Text);

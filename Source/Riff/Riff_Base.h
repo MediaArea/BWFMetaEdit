@@ -27,7 +27,38 @@ using namespace std;
 //---------------------------------------------------------------------------
 const int64u RIFF_Size_Limit=0xFFFFFFFF; //Limit about when we implement ds64
 const int64u RIFF_WAVE_FLLR_DefaultSise=16*1024; //Default size of FLLR at the beginning of a file
+const vector<wchar_t> ISO_8859_2=
+{
+    0x00A0,0x0104,0x02D8,0x0141,0x00A4,0x013D,
+    0x015A,0x00A7,0x00A8,0x0160,0x015E,0x0164,
+    0x0179,0x00AD,0x017D,0x017B,0x00B0,0x0105,
+    0x02DB,0x0142,0x00B4,0x013E,0x015B,0x02C7,
+    0x00B8,0x0161,0x015F,0x0165,0x017A,0x02DD,
+    0x017E,0x017C,0x0154,0x00C1,0x00C2,0x0102,
+    0x00C4,0x0139,0x0106,0x00C7,0x010C,0x00C9,
+    0x0118,0x00CB,0x011A,0x00CD,0x00CE,0x010E,
+    0x0110,0x0143,0x0147,0x00D3,0x00D4,0x0150,
+    0x00D6,0x00D7,0x0158,0x016E,0x00DA,0x0170,
+    0x00DC,0x00DD,0x0162,0x00DF,0x0155,0x00E1,
+    0x00E2,0x0103,0x00E4,0x013A,0x0107,0x00E7,
+    0x010D,0x00E9,0x0119,0x00EB,0x011B,0x00ED,
+    0x00EE,0x010F,0x0111,0x0144,0x0148,0x00F3,
+    0x00F4,0x0151,0x00F6,0x00F7,0x0159,0x016F,
+    0x00FA,0x0171,0x00FC,0x00FD,0x0163,0x02D9,
+};
+
 //---------------------------------------------------------------------------
+
+//***************************************************************************
+// Enums
+//***************************************************************************
+
+enum Riff_Encoding
+{
+    Encoding_Local=0,
+    Encoding_8859_1,
+    Encoding_8859_2,
+};
 
 //***************************************************************************
 // Exceptions
@@ -224,6 +255,7 @@ public:
         bool                IsRF64;
         bool                Trace_UseDec;
         bool                Read_Only;
+        Riff_Encoding       Encoding;
 
         CriticalSection     CS;
         float               Progress;
@@ -260,6 +292,7 @@ public:
             IsRF64=false;
             Trace_UseDec=false;
             Read_Only=false;
+            Encoding=Encoding_Local;
             Progress=0;
             Canceling=false;
         }
@@ -361,6 +394,15 @@ public:
     void   Header_Name_Set      (int32u Name)                                   {Chunk.Header.Name=Name;};
 
 protected :
+    //***************************************************************************
+    // Helpers
+    //***************************************************************************
+
+    //---------------------------------------------------------------------------
+    //Encoding
+    void Encode                 (std::string& Str);
+    void Decode                 (std::string& Str);
+
     //***************************************************************************
     // Buffer handling (virtual)
     //***************************************************************************

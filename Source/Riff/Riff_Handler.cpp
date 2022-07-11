@@ -150,6 +150,8 @@ Riff_Handler::Riff_Handler ()
     VerifyMD5_Force=false;
     EmbedMD5=false;
     EmbedMD5_AuthorizeOverWritting=false;
+    Trace_UseDec=false;
+    Encoding=Encoding_Local;
     Bext_DefaultVersion=0;
     Bext_MaxVersion=2;
 
@@ -920,16 +922,35 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
     if (Rules.INFO_Rec)
         Rules.INFO_Req=true;
 
-    //Encoding (warning only)
+    //Encoding
     if (Field!="filename" && Field!="errors" && Field!="warnings" && Field!="information")
     {
         bool IsASCII=true;
-        for (size_t i=0; i<Value.size(); i++)
+        wstring Unicode=Value__.To_Unicode();
+        for (size_t i=0; i<Unicode.size(); i++)
         {
-            if (((unsigned char)Value[i]) >= 0x80)
+            if (((int32u)Unicode[i]) >= 0x80)
             {
                 IsASCII = false;
-                break;
+                if (Encoding==Encoding_8859_1)
+                {
+                    if (Unicode[i] > 0xFF)
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for ISO 8859-1 encoding";
+                        break;
+                    }
+                }
+                else if (Encoding==Encoding_8859_2)
+                {
+                    vector<wchar_t>::const_iterator It=find(ISO_8859_2.begin(), ISO_8859_2.end(), Unicode[i]);
+                    if (It==ISO_8859_2.end())
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for ISO 8859-2 encoding";
+                        break;
+                    }
+                }
+                else
+                    break;
             }
         }
         if (!IsASCII)
@@ -2521,6 +2542,7 @@ void Riff_Handler::Options_Update_Internal(bool Update)
     Chunks->Global->EmbedMD5=EmbedMD5;
     Chunks->Global->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;
     Chunks->Global->Trace_UseDec=Trace_UseDec;
+    Chunks->Global->Encoding=Encoding;
 
     //MD5
     if (Update && (Chunks->Global->VerifyMD5 || Chunks->Global->VerifyMD5_Force))

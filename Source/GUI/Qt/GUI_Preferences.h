@@ -39,6 +39,7 @@ enum group
     Group_Rules,
     Group_File,
     Group_MD5,
+    Group_Encoding,
     Group_DefaultView,
     Group_Tables,
     Group_Trace,
@@ -77,6 +78,14 @@ enum option_md5
     Option_MD5_Embed_AuthorizeOverWritting,
     Option_MD5_SwapEndian,
     Option_MD5_Max
+};
+
+enum option_encoding
+{
+    Option_Encoding_Local,
+    Option_Encoding_8859_1,
+    Option_Encoding_8859_2,
+    Option_Encoding_Max
 };
 
 enum option_defaultview
@@ -145,6 +154,7 @@ public:
     size_t      Groups_Count_Get();
     std::string Group_Name_Get(group Group);
     size_t      Group_Options_Count_Get(group Group, bool ForTemporaryPrefs=false);
+    type        Group_Option_Type_Get(group Group, size_t Option);
     std::string Group_Option_Description_Get(group Group, size_t Option);
     bool        Group_Option_Checked_Get(group Group, size_t Option);
     bool        Group_Option_Checked_Set(group Group, size_t Option, bool Value);
