@@ -30,7 +30,7 @@ unix {
     INSTALLS += target
 }
 
-CONFIG += qt release
+CONFIG += qt release c++11
 CONFIG += no_keywords
 
 DEFINES += TIXML_USE_STL UNICODE _UNICODE _LARGE_FILES _FILE_OFFSET_BITS=64

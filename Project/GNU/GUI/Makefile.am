@@ -84,5 +84,6 @@ bwfmetaedit_gui_SOURCES = \
     _Automated/qrc_GUI_Main.cpp
 
 #bwfmetaedit_gui_LDFLAGS     = -no-undefined -version-info 0:0:0
+AM_CXXFLAGS = -std=c++11
 
 AM_CPPFLAGS = -I../../../Source
