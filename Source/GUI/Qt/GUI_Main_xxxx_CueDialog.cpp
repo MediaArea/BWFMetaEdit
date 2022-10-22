@@ -116,7 +116,7 @@ string SamplesToTimeStamp(int64u Samples, int32u Rate)
 string HexToCC4(string Id)
 {
     Ztring Value=Ztring().From_UTF8(Id);
-    if (Value.size()>2 && Value.find(__T("0x")==0))
+    if (Value.size()>2 && Value.find(__T("0x"))==0)
         Value.erase(0, 2);
 
     if (Value.To_int32u(16)==0)
