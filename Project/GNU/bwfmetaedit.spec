@@ -17,16 +17,10 @@ Source0:		bwfmetaedit_%{version}-1.tar.gz
 Prefix:		%{_prefix}
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:	dos2unix
-BuildRequires: 	gcc-c++
 BuildRequires:	pkgconfig
-%if 0%{?suse_version}
-BuildRequires:	update-desktop-files
-%endif
-BuildRequires:  automake
-BuildRequires:  autoconf
-%if 0%{?rhel_version} >= 800 || 0%{?centos_version} >= 800
-BuildRequires:  gdb
-%endif
+BuildRequires:	automake
+BuildRequires:	autoconf
+BuildRequires:	gcc-c++
 
 %description
 bwfmetaedit CLI (Command Line Interface)
@@ -39,36 +33,13 @@ BWF MetaEdit provides this service:
 Summary:	Supplies technical and tag information about a video or audio file (GUI)
 Group:		Productivity/Multimedia/Other
 
-%if 0%{?fedora_version} || 0%{?centos} >= 7
-BuildRequires:  pkgconfig(Qt5)
-BuildRequires:  pkgconfig(Qt5QuickControls2)
-BuildRequires:  pkgconfig(Qt5Svg)
-%endif
+BuildRequires:	pkgconfig(Qt5Gui)
+BuildRequires:	pkgconfig(Qt5Svg)
+BuildRequires:	pkgconfig(Qt5QuickWidgets)
+BuildRequires:	pkgconfig(Qt5QuickControls2)
 
-%if 0%{?mageia}
-%ifarch x86_64
-BuildRequires:  lib64qt5base5-devel
-BuildRequires:  lib64qt5quicktemplates2-devel
-BuildRequires:  lib64qt5quicktemplates2_5
-BuildRequires:  lib64qt5quickcontrols2-devel
-BuildRequires:  lib64qt5quickcontrols2_5
-BuildRequires:  lib64qt5quickwidgets-devel
-BuildRequires:  lib64qt5svg-devel
-%else
-BuildRequires:  libqt5base5-devel
-BuildRequires:  libqt5quicktemplates2-devel
-BuildRequires:  libqt5quicktemplates2_5
-BuildRequires:  libqt5quickcontrols2-devel
-BuildRequires:  libqt5quickcontrols2_5
-BuildRequires:  libqt5quickwidgets-devel
-BuildRequires:  libqt5svg-devel
-%endif
-%endif
-
-%if 0%{?suse_version} >= 1200
-BuildRequires:  libqt5-qtbase-devel
-BuildRequires:  libqt5-qtsvg-devel
-BuildRequires:  libQt5QuickControls2-devel
+%if 0%{?suse_version}
+BuildRequires:	update-desktop-files
 %endif
 
 %description gui
@@ -88,16 +59,13 @@ dos2unix     *.txt Release/*.txt conformance_point_document.xsd
 %build
 export CFLAGS="-g $RPM_OPT_FLAGS"
 export CXXFLAGS="-g $RPM_OPT_FLAGS"
+export QMAKEOPTS="CONFIG+=force_debug_info"
 
 # build CLI
 pushd Project/GNU/CLI
 	%__chmod +x autogen
 	./autogen
-	%if 0%{?mageia} >= 6
-		%configure --disable-dependency-tracking
-	%else
-		%configure
-	 %endif
+	%configure
 
 	%__make %{?jobs:-j%{jobs}}
 popd
@@ -105,7 +73,7 @@ popd
 # now build GUI
 pushd Project/QtCreator
 	%__chmod +x prepare
-	./prepare BINDIR=%{_bindir}
+	./prepare $QMAKEOPTS BINDIR=%{_bindir}
 
 	%__make %{?jobs:-j%{jobs}}
 popd
@@ -150,12 +118,12 @@ popd
   %suse_update_desktop_file -n %{buildroot}/%{_datadir}/kde4/services/ServiceMenus/bwfmetaedit-gui.desktop AudioVideo AudioVideoEditing
   %suse_update_desktop_file -n %{buildroot}/%{_datadir}/kservices5/ServiceMenus/bwfmetaedit-gui.desktop AudioVideo AudioVideoEditing
 %endif
-%if %{undefined fedora_version} || 0%{?fedora_version} < 26
-install -dm 755 %{buildroot}%{_datadir}/appdata/
-install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datadir}/appdata/bwfmetaedit-gui.appdata.xml
-%else
+%if 0%{?fedora_version}
 install -dm 755 %{buildroot}%{_datadir}/metainfo/
 install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datadir}/metainfo/bwfmetaedit-gui.metainfo.xml
+%else
+install -dm 755 %{buildroot}%{_datadir}/appdata/
+install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datadir}/appdata/bwfmetaedit-gui.appdata.xml
 %endif
 
 %clean
@@ -189,7 +157,7 @@ install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datad
 %dir %{_datadir}/kservices5
 %dir %{_datadir}/kservices5/ServiceMenus
 %{_datadir}/kservices5/ServiceMenus/*.desktop
-%if 0%{?fedora_version} && 0%{?fedora_version} >= 26
+%if 0%{?fedora_version}
 %dir %{_datadir}/metainfo
 %{_datadir}/metainfo/*.xml
 %else
@@ -198,5 +166,5 @@ install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datad
 %endif
 
 %changelog
-* Tue Jan 01 2010 Jerome Martinez <info@mediaarea.net> - 1.2.0-0
+* Tue Jan 01 2010 Jerome Martinez <info@mediaarea.net> - 21.07-0
 - See History.txt for more info and real dates
