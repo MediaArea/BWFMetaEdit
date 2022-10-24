@@ -330,6 +330,41 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                 Set_Internal("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
     }
 
+    // Encoding
+    if (Encoding==Encoding_Local)
+    {
+        if (Chunks->Global->INFO)
+        {
+            for (map<string, string>::iterator It=Chunks->Global->INFO->Strings.begin(); It!=Chunks->Global->INFO->Strings.end(); It++)
+            {
+                if (It->second.size() != Ztring().From_UTF8(It->second).To_UTF8().size())
+                    Warnings << Chunks->Global->File_Name.To_UTF8() << ": " << It->first << " Field contains invalids characters for the given encoding." << endl;
+                    PerFile_Warning << It->first << " Field contains invalids characters for the given encoding." << endl;
+            }
+        }
+
+        if (Chunks->Global->XMP && Chunks->Global->XMP->Strings.find("xmp")!=Chunks->Global->XMP->Strings.end())
+        {
+                if (Chunks->Global->XMP->Strings["xmp"].size() != Ztring().From_UTF8(Chunks->Global->XMP->Strings["xmp"]).To_UTF8().size())
+                    Warnings << Chunks->Global->File_Name.To_UTF8() << ": XMP Field contains invalids characters for the given encoding." << endl;
+                    PerFile_Warning << "XMP Field contains invalids characters for the given encoding." << endl;
+        }
+
+        if (Chunks->Global->aXML && Chunks->Global->aXML->Strings.find("axml")!=Chunks->Global->aXML->Strings.end())
+        {
+                if (Chunks->Global->aXML->Strings["axml"].size() != Ztring().From_UTF8(Chunks->Global->aXML->Strings["axml"]).To_UTF8().size())
+                    Warnings << Chunks->Global->File_Name.To_UTF8() << ": aXML Field contains invalids characters for the given encoding." << endl;
+                    PerFile_Warning << "XMP Field contains invalids characters for the given encoding." << endl;
+        }
+
+        if (Chunks->Global->iXML && Chunks->Global->iXML->Strings.find("ixml")!=Chunks->Global->iXML->Strings.end())
+        {
+                if (Chunks->Global->iXML->Strings["ixml"].size() != Ztring().From_UTF8(Chunks->Global->iXML->Strings["ixml"]).To_UTF8().size())
+                    Warnings << Chunks->Global->File_Name.To_UTF8() << ": iXML Field contains invalids characters for the given encoding." << endl;
+                    PerFile_Warning << "XMP Field contains invalids characters for the given encoding." << endl;
+        }
+    }
+
     CriticalSectionLocker(Chunks->Global->CS);
     Chunks->Global->Progress=1;
     
