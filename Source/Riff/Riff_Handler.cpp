@@ -2513,7 +2513,7 @@ string Riff_Handler::Cue_Xml_Get()
         return string();
 
     tinyxml2::XMLPrinter Printer;
-    Printer.PushHeader(false, true);
+    Printer.PushHeader(false, false);
 
     Printer.OpenElement("Cues");
     for (size_t Pos=0; Pos<Points.size(); Pos++)

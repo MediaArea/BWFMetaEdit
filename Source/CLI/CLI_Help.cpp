@@ -56,9 +56,18 @@ std::string Help()
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;
+    ToDisplay<<"                        Extract all data combined into one xml to:"<<std::endl;
+    ToDisplay<<"--out-xml               Display (disable others displays)"<<std::endl;
+    ToDisplay<<"--out-xml=              specified file"<<std::endl;
+    ToDisplay<<""<<std::endl;
+    ToDisplay<<"*******************************************************************************"<<std::endl;
+    ToDisplay<<"*******************************************************************************"<<std::endl;
+    ToDisplay<<""<<std::endl;
     ToDisplay<<"                        Extract Technical Metadata to:"<<std::endl;
-    ToDisplay<<"--out-tech              Display technical data"<<std::endl;
+    ToDisplay<<"--out-tech              Display technical data (disable others displays)"<<std::endl;
     ToDisplay<<"--out-tech=             specified file in CSV format"<<std::endl;
+    ToDisplay<<"--out-tech-xml          filename.tech.xml (1 ouput per file) in XML format"<<std::endl;
+    ToDisplay<<"--out-tech-xml=         specified file in XML format"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;
@@ -85,7 +94,7 @@ std::string Help()
     ToDisplay<<"--xxxx=                 specified INFO xxxx..."<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"                        Extract Core Document to:"<<std::endl;
-    ToDisplay<<"--out-core              current display (std::cout) in CSV format"<<std::endl;
+    ToDisplay<<"--out-core              current display in CSV format  (disable others displays)"<<std::endl;
     ToDisplay<<"--out-core=             specified file in CSV format"<<std::endl;
     ToDisplay<<"--out-core-xml          filename.core.xml (1 ouput per file) in XML format"<<std::endl;
     ToDisplay<<"--out-core-xml=         specified file in XML format"<<std::endl;
@@ -95,6 +104,8 @@ std::string Help()
     ToDisplay<<"--in-XMP=               Insert XMP from the specified file"<<std::endl;
     ToDisplay<<"--in-XMP-remove         Remove XMP"<<std::endl;
     ToDisplay<<"--in-XMP-xml            Insert XMP from filename._PMX.xml"<<std::endl;
+    ToDisplay<<"--out-XMP               Display XMP  (disable others displays, allows only one input file)"<<std::endl;
+    ToDisplay<<"--out-XMP=              Save XMP in specified file (allows only one input file)"<<std::endl;
     ToDisplay<<"--out-XMP-xml           Save XMP in filename._PMX.xml"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
@@ -102,6 +113,8 @@ std::string Help()
     ToDisplay<<"--in-aXML=              Insert aXML from the specified file"<<std::endl;
     ToDisplay<<"--in-aXML-remove        Remove aXML"<<std::endl;
     ToDisplay<<"--in-aXML-xml           Insert aXML from filename.aXML.xml"<<std::endl;
+    ToDisplay<<"--out-aXML              Display aXML (disable others displays, allows only one input file)"<<std::endl;
+    ToDisplay<<"--out-aXML=             Save aXML in specified file (allows only one input file)"<<std::endl;
     ToDisplay<<"--out-aXML-xml          Save aXML in filename.aXML.xml"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
@@ -109,6 +122,8 @@ std::string Help()
     ToDisplay<<"--in-iXML=              Insert iXML from the specified file"<<std::endl;
     ToDisplay<<"--in-iXML-remove        Remove iXML"<<std::endl;
     ToDisplay<<"--in-iXML-xml           Insert iXML from filename.iXML.xml"<<std::endl;
+    ToDisplay<<"--out-iXML              Display iXML (disable others displays, allows only one input file)"<<std::endl;
+    ToDisplay<<"--out-iXML=             Save iXML in specified file (allows only one input file)"<<std::endl;
     ToDisplay<<"--out-iXML-xml          Save iXML in filename.iXML.xml"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
@@ -116,6 +131,8 @@ std::string Help()
     ToDisplay<<"--in-cue=               Insert cue metadata from the specified file"<<std::endl;
     ToDisplay<<"--in-cue-remove         Remove cue and adlt metadata"<<std::endl;
     ToDisplay<<"--in-cue-xml            Insert cue metadata from filename.cue.xml"<<std::endl;
+    ToDisplay<<"--out-cue               Display cue xml (disable others displays, allows only one input file)"<<std::endl;
+    ToDisplay<<"--out-cue=              Save cue related metadata in specified file (allows only one input file)"<<std::endl;
     ToDisplay<<"--out-cue-xml           Save cue related metadata in filename.cue.xml"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
