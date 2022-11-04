@@ -12,24 +12,32 @@
 //---------------------------------------------------------------------------
 
 //***************************************************************************
-// WAVE aXML
+// Read
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void Riff_WAVE_axml::Read_Internal ()
+void Riff_WAVE_CSET::Read_Internal ()
 {
     //Integrity
-    if (Global->aXML)
-        throw exception_valid("2 aXML chunks");
+    if (Global->CSET)
+        throw exception_valid("2 CSET chunks");
 
     //Reading
     Read_Internal_ReadAllInBuffer();
-    
+
+    //Parsing
+    int16u codePage, countryCode, languageCode, dialectCode;
+    Get_L2(codePage);
+    Get_L2(countryCode);
+    Get_L2(languageCode);
+    Get_L2(dialectCode);
+
     //Filling
-    Global->aXML=new Riff_Base::global::chunk_strings;
-    string Temp;
-    Get_String(Chunk.Content.Size, Temp);
-    Global->aXML->Strings["axml"]=Temp;
+    Global->CSET=new Riff_Base::global::chunk_CSET;
+    Global->CSET->codePage=codePage;
+    Global->CSET->countryCode=countryCode;
+    Global->CSET->languageCode=languageCode;
+    Global->CSET->dialectCode=dialectCode;
 }
 
 //***************************************************************************
@@ -37,26 +45,27 @@ void Riff_WAVE_axml::Read_Internal ()
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void Riff_WAVE_axml::Modify_Internal ()
+void Riff_WAVE_CSET::Modify_Internal ()
 {
-    if (Global->aXML==NULL
-     || Global->aXML->Strings["axml"].empty())
+    if (!Global->CSET)
     {
         Chunk.Content.IsRemovable=true;
         return;
     }
 
-    //Calculating size
-    string Value=Global->aXML->Strings["axml"];
-    if (Value.size()>=0xFFFFFFFF)
-        return; //TODO: error
-
     //Creating buffer
     Chunk.Content.Buffer_Offset=0;
-    Chunk.Content.Size=Value.size();
-    delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[Value.size()];
+    if (Chunk.Content.Size<8)
+    {
+        Chunk.Content.Size=8;
+        delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[8];
+    }
+    memset(Chunk.Content.Buffer, '\0', 8);
 
-    Put_String(Value.size(), Value);
+    Put_L2(Global->CSET->codePage);
+    Put_L2(Global->CSET->countryCode);
+    Put_L2(Global->CSET->languageCode);
+    Put_L2(Global->CSET->dialectCode);
 
     Chunk.Content.IsModified=true;
     Chunk.Content.Size_IsModified=true;
@@ -67,8 +76,9 @@ void Riff_WAVE_axml::Modify_Internal ()
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void Riff_WAVE_axml::Write_Internal ()
+void Riff_WAVE_CSET::Write_Internal ()
 {
     Riff_Base::Write_Internal(Chunk.Content.Buffer, (size_t)Chunk.Content.Size);
 }
+
 

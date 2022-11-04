@@ -160,6 +160,8 @@ public Q_SLOTS:
     void OnMenu_Options_EncodingLocal               (bool);
     void OnMenu_Options_Encoding8859_1              (bool);
     void OnMenu_Options_Encoding8859_2              (bool);
+    void OnMenu_Options_Ignore_File_Encoding        (bool);
+    void OnMenu_Options_Write_Encoding              (bool);
     void OnMenu_Options_TechCore                    (bool);
     void OnMenu_Options_riff2rf64_Reject            (bool);
     void OnMenu_Options_Overwrite_Reject            (bool);

@@ -50,6 +50,8 @@ CL_OPTION(Log_cout);
 CL_OPTION(Simulate);
 CL_OPTION(SpecialChars);
 CL_OPTION(Encoding);
+CL_OPTION(Write_Encoding);
+CL_OPTION(Ignore_File_Encoding);
 
 //---------------------------------------------------------------------------
 

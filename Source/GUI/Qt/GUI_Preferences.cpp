@@ -45,7 +45,7 @@ options Groups[Group_Max]=
 {
     {
         "Technical Metadata",
-        20,
+        21,
         {
             {"Tech_FileSize", "FileSize", Type_CheckBox, true},
             {"Tech_Format", "Format", Type_CheckBox, true},
@@ -64,6 +64,7 @@ options Groups[Group_Max]=
             {"Tech_iXML", "iXML", Type_CheckBox, true},
             {"Tech_MD5Stored", "MD5Stored", Type_CheckBox, true},
             {"Tech_MD5Generated", "MD5Generated", Type_CheckBox, true},
+            {"Tech_Encoding", "Encoding", Type_CheckBox, true},
             {"Tech_Errors", "Errors", Type_CheckBox, true},
             {"Tech_Warnings", "Warnings", Type_CheckBox, true},
             {"Tech_Information", "Information", Type_CheckBox, true},
@@ -161,6 +162,8 @@ options Groups[Group_Max]=
             {"Encoding_Local", "Read/Write texts using system default encoding", Type_RadioButton, true},
             {"Encoding_8859_1", "Read/Write texts using 8859-1 encoding", Type_RadioButton, false},
             {"Encoding_8859_2", "Read/Write texts using 8859-2 encoding", Type_RadioButton, false},
+            {"Ignore_File_Encoding", "Ignore encoding stored in the CSET chunk when reading the file", Type_CheckBox, false},
+            {"Write_Encoding", "Write encoding into CSET chunk", Type_CheckBox, false},
         },
         true,
         false,
@@ -603,7 +606,8 @@ void GUI_Preferences::OnClicked ()
 
                                                 //Loading new config
                                                 for (size_t Option2=0; Option2<Groups[Group].Option_Size; Option2++)
-                                                    CheckBoxes[Group*options::MaxCount+Option2]->setChecked(Main->Menu_Fields_CheckBoxes[Group*options::MaxCount+Option2]->isChecked());
+                                                    if (Groups[Group].Option[Option2].Type==Type_CheckBox)
+                                                        CheckBoxes[Group*options::MaxCount+Option2]->setChecked(Main->Menu_Fields_CheckBoxes[Group*options::MaxCount+Option2]->isChecked());
                                             }
                                             break;
                 case Type_RadioButton   :   if ((Groups[Group].InTemporaryPrefs || Group==Group_DefaultView) && RadioButtons[Group*options::MaxCount+Option]->isChecked()!=Main->Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked())

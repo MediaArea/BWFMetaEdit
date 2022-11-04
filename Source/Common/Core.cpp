@@ -183,6 +183,8 @@ Core::Core()
     Trace_UseDec=false;
 
     Encoding=Encoding_Local;
+    Write_Encoding=false;
+    Ignore_File_Encoding=false;
 
     //Status
     Text_stderr_Updated=false;
@@ -2154,6 +2156,8 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->Bext_MaxVersion=Bext_MaxVersion;
         Handler->second.Riff->Trace_UseDec=Trace_UseDec;
         Handler->second.Riff->Encoding=Encoding;
+        Handler->second.Riff->Write_Encoding=Write_Encoding;
+        Handler->second.Riff->Ignore_File_Encoding=Ignore_File_Encoding;
 
         bool IsModified_Old=Handler->second.Riff->IsModified_Get();
 

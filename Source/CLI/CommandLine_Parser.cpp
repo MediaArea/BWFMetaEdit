@@ -213,6 +213,22 @@ CL_OPTION(Encoding)
 }
 
 //---------------------------------------------------------------------------
+CL_OPTION(Write_Encoding)
+{
+    C.Write_Encoding=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Ignore_File_Encoding)
+{
+    C.Ignore_File_Encoding=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
 CL_OPTION(SpecialChars)
 {
     C.SpecialChars_Enabled=true;

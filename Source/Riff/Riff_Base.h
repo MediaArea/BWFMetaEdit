@@ -193,6 +193,21 @@ public:
                 bitsPerSample=0;
             }
         };
+        struct chunk_CSET
+        {
+            int16u          codePage;
+            int16u          countryCode;
+            int16u          languageCode;
+            int16u          dialectCode;
+
+            chunk_CSET()
+            {
+                codePage=0;
+                countryCode=0;
+                languageCode=0;
+                dialectCode=0;
+            }
+        };
         struct chunk_strings
         {
             map<string, string> Strings;
@@ -232,6 +247,7 @@ public:
         chunk_ds64         *ds64;
         chunk_fmt_         *fmt_;
         chunk_data         *data;
+        chunk_CSET         *CSET;
         chunk_strings      *bext;
         chunk_strings      *INFO;
         chunk_strings      * XMP;
@@ -255,7 +271,6 @@ public:
         bool                IsRF64;
         bool                Trace_UseDec;
         bool                Read_Only;
-        Riff_Encoding       Encoding;
 
         CriticalSection     CS;
         float               Progress;
@@ -268,6 +283,7 @@ public:
             ds64=NULL;
             fmt_=NULL;
             data=NULL;
+            CSET=NULL;
             bext=NULL;
             INFO=NULL;
              XMP=NULL;
@@ -292,7 +308,6 @@ public:
             IsRF64=false;
             Trace_UseDec=false;
             Read_Only=false;
-            Encoding=Encoding_Local;
             Progress=0;
             Canceling=false;
         }
@@ -302,6 +317,7 @@ public:
             delete ds64; //ds64=NULL;
             delete fmt_; //fmt_=NULL;
             delete bext; //bext=NULL;
+            delete CSET; //CSET=NULL;
             delete INFO; //INFO=NULL;
             delete  XMP; // XMP=NULL;
             delete aXML; //aXML=NULL;
@@ -352,7 +368,7 @@ public:
             ~content()
             {
                 delete[] Buffer; //Buffer=NULL;
-            }   
+            }
         };
 
         int64u  File_In_Position;
@@ -394,15 +410,6 @@ public:
     void   Header_Name_Set      (int32u Name)                                   {Chunk.Header.Name=Name;};
 
 protected :
-    //***************************************************************************
-    // Helpers
-    //***************************************************************************
-
-    //---------------------------------------------------------------------------
-    //Encoding
-    void Encode                 (std::string& Str);
-    void Decode                 (std::string& Str);
-
     //***************************************************************************
     // Buffer handling (virtual)
     //***************************************************************************

@@ -165,6 +165,8 @@ public:
     Ztring                              LogFile;
     bool                                Trace_UseDec;
     Riff_Encoding                       Encoding;
+    bool                                Write_Encoding;
+    bool                                Ignore_File_Encoding;
 
     //Status
     void                                StdOut(string Text);

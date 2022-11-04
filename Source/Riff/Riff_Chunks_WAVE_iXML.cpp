@@ -29,7 +29,6 @@ void Riff_WAVE_iXML::Read_Internal ()
     Global->iXML=new Riff_Base::global::chunk_strings;
     string Temp;
     Get_String(Chunk.Content.Size, Temp);
-    Decode(Temp);
     Global->iXML->Strings["ixml"]=Temp;
 }
 
@@ -49,7 +48,6 @@ void Riff_WAVE_iXML::Modify_Internal ()
 
     //Calculating size
     string Value=Global->iXML->Strings["ixml"];
-    Encode(Value);
     if (Value.size()>=0xFFFFFFFF)
         return; //TODO: error
 

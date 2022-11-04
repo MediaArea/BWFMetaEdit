@@ -85,6 +85,8 @@ enum option_encoding
     Option_Encoding_Local,
     Option_Encoding_8859_1,
     Option_Encoding_8859_2,
+    Option_Ignore_File_Encoding,
+    Option_Write_Encoding,
     Option_Encoding_Max
 };
 

@@ -40,10 +40,7 @@ void Riff_WAVE_adtl_ltxt::Read_Internal ()
     Get_L2(Dialect);
     Get_L2(CodePage);
     if (Chunk.Content.Size>20)
-    {
         Get_String(Chunk.Content.Size-20, Value);
-        Decode(Value);
-    }
 
     //Filling
     ZtringList Item;
@@ -91,7 +88,6 @@ void Riff_WAVE_adtl_ltxt::Modify_Internal ()
     Text.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
     Text.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
     string Value=Text.To_UTF8();
-    Encode(Value);
 
     //Calculating size
     if (Value.size()>=0xFFFFFFEA)

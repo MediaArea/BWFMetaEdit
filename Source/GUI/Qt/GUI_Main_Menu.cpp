@@ -326,10 +326,12 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Verify                      ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyMD5(bool)));
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5(bool)));
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_SwapEndian ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_SwapMD5Endianness(bool)));
-    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_Local ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingLocal(bool)));
-    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_8859_1 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Encoding8859_1(bool)));
-    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_8859_2 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Encoding8859_2(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_SwapEndian                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_SwapMD5Endianness(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_Local           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingLocal(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_8859_1          ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Encoding8859_1(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_8859_2          ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Encoding8859_2(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Encoding  *options::MaxCount+Option_Ignore_File_Encoding       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Ignore_File_Encoding(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Encoding  *options::MaxCount+Option_Write_Encoding             ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Write_Encoding(bool)));
     for (size_t Group=Group_Tech; Group<=Group_Core; Group++)
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
             connect(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_TechCore(bool)));
@@ -1037,6 +1039,26 @@ void GUI_Main::OnMenu_Options_Encoding8859_2(bool)
     if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_8859_2]->isChecked() && C->Encoding!=Encoding_8859_2)
     {
         C->Encoding=Encoding_8859_2;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_Ignore_File_Encoding(bool)
+{
+    if (C->Ignore_File_Encoding!=Menu_Fields_CheckBoxes[Group_Encoding*options::MaxCount+Option_Ignore_File_Encoding]->isChecked())
+    {
+        C->Ignore_File_Encoding=Menu_Fields_CheckBoxes[Group_Encoding*options::MaxCount+Option_Ignore_File_Encoding]->isChecked();
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_Write_Encoding(bool)
+{
+    if (C->Write_Encoding!=Menu_Fields_CheckBoxes[Group_Encoding*options::MaxCount+Option_Write_Encoding]->isChecked())
+    {
+        C->Write_Encoding=Menu_Fields_CheckBoxes[Group_Encoding*options::MaxCount+Option_Write_Encoding]->isChecked();
         C->Menu_File_Options_Update();
     }
 }

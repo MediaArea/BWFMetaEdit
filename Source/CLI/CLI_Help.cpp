@@ -54,7 +54,11 @@ std::string Help()
     ToDisplay<<""<<std::endl;
     ToDisplay<<"--specialchars          \\ is considered as an escape char (e.g. \\r and \\n)"<<std::endl;
     ToDisplay<<""<<std::endl;
+    ToDisplay<<"*******************************************************************************"<<std::endl;
+    ToDisplay<<""<<std::endl;
     ToDisplay<<"--encoding=             Read/Write texts using encoding (local, 8859-1 or 8829-2)"<<std::endl;
+    ToDisplay<<"--write-encoding        Write selected ISO encoding in the CSET chunk"<<std::endl;
+    ToDisplay<<"--ignore-file-encoding  Ignore encoding specified in the CSET chunk when reading"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;

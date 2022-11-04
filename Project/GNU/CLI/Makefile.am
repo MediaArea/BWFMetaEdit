@@ -29,6 +29,7 @@ bwfmetaedit_SOURCES = \
     ../../../Source/Riff/Riff_Chunks_WAVE_adtl_labl.cpp \
     ../../../Source/Riff/Riff_Chunks_WAVE_adtl_note.cpp \
     ../../../Source/Riff/Riff_Chunks_WAVE_adtl_ltxt.cpp \
+    ../../../Source/Riff/Riff_Chunks_WAVE_CSET.cpp \
     ../../../Source/Riff/Riff_Handler.cpp \
     ../../../Source/TinyXml2/tinyxml2.cpp \
     ../../../Source/ZenLib/Conf.cpp \

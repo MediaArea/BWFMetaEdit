@@ -72,8 +72,7 @@ void Riff_WAVE_INFO_xxxx::Read_Internal ()
     //Parsing
     string Value;
     Get_String(Chunk.Content.Size, Value);
-    Decode(Value);
-        
+
     //Filling
     string Field=Ztring().From_CC4(Chunk.Header.Name).To_UTF8();
     Global->INFO->Strings[Field]=Value;
@@ -115,7 +114,6 @@ void Riff_WAVE_INFO_xxxx::Modify_Internal ()
     delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[Chunk.Content.Size];
 
     string Temp=Global->INFO->Strings[Field];
-    Encode(Temp);
     Put_String(Temp.size(), Temp);
     Put_L1(0x00); //ZSTR i.e. null terminated text string
 

@@ -32,10 +32,7 @@ void Riff_WAVE_adtl_note::Read_Internal ()
     string Value;
     Get_L4(CuePointId);
     if (Chunk.Content.Size>4)
-    {
         Get_String(Chunk.Content.Size-4, Value);
-        Decode(Value);
-    }
 
     //Filling
     ZtringList Item;
@@ -72,7 +69,6 @@ void Riff_WAVE_adtl_note::Modify_Internal ()
     Note.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
     Note.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
     string Value=Note.To_UTF8();
-    Encode(Value);
 
     //Calculating size
     if (Value.size()>=0xFFFFFFFA)

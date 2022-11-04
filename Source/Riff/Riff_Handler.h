@@ -61,7 +61,12 @@ public:
     //Constructor/Destructor
     Riff_Handler();
     ~Riff_Handler();
-    
+
+    //---------------------------------------------------------------------------
+    //Encoding
+    std::string     Encode          (const std::string& Str);
+    std::string     Decode          (const std::string& Str);
+
     //---------------------------------------------------------------------------
     //I/O
     bool            Open            (const string &FileName);
@@ -114,6 +119,8 @@ public:
     bool            EmbedMD5_AuthorizeOverWritting;
     bool            Trace_UseDec;
     Riff_Encoding   Encoding;
+    bool            Write_Encoding;
+    bool            Ignore_File_Encoding;
     unsigned short  Bext_DefaultVersion;
     unsigned short  Bext_MaxVersion;
     void            Options_Update();

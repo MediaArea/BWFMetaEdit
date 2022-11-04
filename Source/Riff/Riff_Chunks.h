@@ -73,6 +73,7 @@ namespace Elements
     const int32u WAVE_adtl_labl=0x6C61626C;
     const int32u WAVE_adtl_note=0x6E6F7465;
     const int32u WAVE_adtl_ltxt=0x6C747874;
+    const int32u WAVE_CSET=0x43534554;
 }
 
 //***************************************************************************
@@ -129,5 +130,6 @@ CHUNK_I(2, WAVE_adtl);
 CHUNK_W(3, WAVE_adtl_labl);
 CHUNK_W(3, WAVE_adtl_note);
 CHUNK_W(3, WAVE_adtl_ltxt);
+CHUNK_W(2, WAVE_CSET);
 
 #endif
