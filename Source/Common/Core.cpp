@@ -1690,6 +1690,7 @@ void Core::Batch_Launch_iXML(handlers::iterator &Handler)
     if (!Content.empty())
     {
         //Saving file
+	cout << Content; // stdout
         try
         {
             File F;
