@@ -90,27 +90,22 @@ int main(int argc, char* argv[])
             {
                 bool Comma=false;
                 std::cerr<<"Only one input file is allowed for the output(s):";
-                if (!C.Out__PMX_FileName.empty())
+                if (!C.Out__PMX_FileName.empty() || C.Cout==Core::Cout__PMX)
                 {
                     std::cerr<<" --out-xmp=";
                     Comma=true;
                 }
-                if (!C.Out_iXML_FileName.empty())
+                if (!C.Out_iXML_FileName.empty() || C.Cout==Core::Cout_iXML)
                 {
                     std::cerr<<(Comma?",":"")<<" --out-ixml=";
                     Comma=true;
                 }
-                if (!C.Out_aXML_FileName.empty())
+                if (!C.Out_aXML_FileName.empty() || C.Cout==Core::Cout_aXML)
                 {
                     std::cerr<<(Comma?",":"")<<" --out-axml=";
                     Comma=true;
                 }
-                if (!C.Out_iXML_FileName.empty())
-                {
-                    std::cerr<<(Comma?",":"")<<" --out-ixml=";
-                    Comma=true;
-                }
-                if (!C.Out_cue__FileName.empty())
+                if (!C.Out_cue__FileName.empty() || C.Cout==Core::Cout_cue_)
                     std::cerr<<(Comma?",":"")<<" --out-cue=";
                 std::cerr<<std::endl;
 

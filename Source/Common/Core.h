@@ -36,7 +36,9 @@ public:
     {
         Cout_None=0,
         Cout_Tech,
+        Cout_Tech_XML,
         Cout_Core,
+        Cout_Core_XML,
         Cout__PMX,
         Cout_aXML,
         Cout_iXML,
@@ -216,14 +218,16 @@ protected:
     string                              Text;
 
     //Internal routines
-    string                              Out_XML_Buff;
+    string                              Out_XML_Buf;
     tinyxml2::XMLDocument*              Out_XML_Doc;
     File                                Out_Tech_File;
     ZtringList                          Out_Tech_CSV_File_Header;
     tinyxml2::XMLDocument*              Out_Tech_XML_Doc;
+    string                              Out_Tech_XML_Buf;
     File                                Out_Core_CSV_File;
     ZtringList                          Out_Core_CSV_File_Header;
     tinyxml2::XMLDocument*              Out_Core_XML_Doc;
+    string                              Out_Core_XML_Buf;
     void Batch_Begin                    ();
     void Batch_Finish                   ();
     void Batch_Launch                   (handlers::iterator &Handler);

@@ -1175,6 +1175,9 @@ const string& Core::Cout_Get ()
             if (Handler->second.Riff)
                 Text+=Handler->second.Riff->Technical_Get()+Ztring(EOL).To_UTF8();
         break;
+    case Cout_Tech_XML:
+        Text=Out_Tech_XML_Buf;
+        break;
     case Cout_Core:
         List.Separator_Set(0, EOL);
         List.Separator_Set(1, __T(","));
@@ -1183,6 +1186,9 @@ const string& Core::Cout_Get ()
             if (Handler->second.Riff)
                 List.push_back(Ztring().From_UTF8(Handler->second.Riff->Core_Get(Batch_IsBackuping)));
         Text=List.Read().To_UTF8();
+        break;
+    case Cout_Core_XML:
+        Text=Out_Core_XML_Buf;
         break;
     case Cout__PMX:
         for (handlers::iterator Handler=Handlers.begin(); Handler!=Handlers.end(); Handler++)
@@ -1205,7 +1211,7 @@ const string& Core::Cout_Get ()
                 Text+=Handler->second.Riff->Get("cuexml")+Ztring(EOL).To_UTF8();
         break;
     case Cout_XML:
-        Text=Out_XML_Buff;
+        Text=Out_XML_Buf;
         break;
     default:
         break;
@@ -1437,7 +1443,7 @@ string Core::FileDate_Get (const string &FileName)
 void Core::Batch_Begin()
 {
     //--out-technical-file out-technical-XML preparation
-    if (!Out_Tech_CSV_FileName.empty()  || !Out_Tech_XML_FileName.empty() || Out_Tech_XML || !Out_XML_FileName.empty() || Cout==Cout_XML)
+    if (!Out_Tech_CSV_FileName.empty()  || !Out_Tech_XML_FileName.empty() || Out_Tech_XML || !Out_XML_FileName.empty() || Cout==Cout_XML || Cout==Cout_Tech_XML)
     {
         Out_Tech_CSV_File_Header.Separator_Set(0, __T(","));
         Out_Tech_CSV_File_Header.Write(Ztring().From_UTF8(Riff_Handler::Technical_Header()));
@@ -1462,7 +1468,7 @@ void Core::Batch_Begin()
             catch (...) {}
         }
 
-        if (!Out_Tech_XML_FileName.empty()) //--out-Core-XML=file preparation
+        if (!Out_Tech_XML_FileName.empty() || Cout==Cout_Tech_XML) //--out-Tech-XML=file preparation
         {
             Out_Tech_XML_Doc=new tinyxml2::XMLDocument();
             Out_Tech_XML_Doc->InsertEndChild(Out_Tech_XML_Doc->NewDeclaration());
@@ -1471,7 +1477,7 @@ void Core::Batch_Begin()
     }
 
     //--out-Core-CSV=file and --out-Core-XML=file and out-Core-XML preparation
-    if (!Out_Core_CSV_FileName.empty() || !Out_Core_XML_FileName.empty() || Out_Core_XML || !Out_XML_FileName.empty() || Cout==Cout_XML)
+    if (!Out_Core_CSV_FileName.empty() || !Out_Core_XML_FileName.empty() || Out_Core_XML || !Out_XML_FileName.empty() || Cout==Cout_XML || Cout==Cout_Core_XML)
     {
         Out_Core_CSV_File_Header.Separator_Set(0, __T(","));
         Out_Core_CSV_File_Header.Write(Ztring().From_UTF8(Riff_Handler::Core_Header()));
@@ -1497,7 +1503,7 @@ void Core::Batch_Begin()
             catch (...) {}
         }
 
-        if (!Out_Core_XML_FileName.empty()) //--out-Core-XML=file preparation
+        if (!Out_Core_XML_FileName.empty() || Cout==Cout_Core_XML) //--out-Core-XML=file preparation
         {
             Out_Core_XML_Doc=new tinyxml2::XMLDocument();
             Out_Core_XML_Doc->InsertEndChild(Out_Core_XML_Doc->NewDeclaration());
@@ -1527,8 +1533,18 @@ void Core::Batch_Finish()
     //--out-Tech-XML=file
     if (Out_Tech_XML_Doc)
     {
-        if (Out_Tech_XML_Doc->SaveFile(Out_Tech_XML_FileName.c_str())!=tinyxml2::XML_SUCCESS)
-            StdErr("--out-Tech-XML=file: error during file writing");
+        if (Cout==Cout_Tech_XML)
+        {
+            tinyxml2::XMLPrinter Printer;
+            Out_Tech_XML_Doc->Print(&Printer);
+            Out_Tech_XML_Buf=Printer.CStr();
+        }
+
+        if (!Out_Tech_XML_FileName.empty())
+        {
+            if (Out_Tech_XML_Doc->SaveFile(Out_Tech_XML_FileName.c_str())!=tinyxml2::XML_SUCCESS)
+                StdErr("--out-Tech-XML=file: error during file writing");
+        }
 
         Out_Tech_XML_Doc->Clear();
         delete Out_Tech_XML_Doc; Out_Tech_XML_Doc=NULL;
@@ -1537,8 +1553,18 @@ void Core::Batch_Finish()
     //--out-Core-XML=file
     if (Out_Core_XML_Doc)
     {
-        if (Out_Core_XML_Doc->SaveFile(Out_Core_XML_FileName.c_str())!=tinyxml2::XML_SUCCESS)
-            StdErr("--out-Core-XML=file: error during file writing");
+        if (Cout==Cout_Core_XML)
+        {
+            tinyxml2::XMLPrinter Printer;
+            Out_Core_XML_Doc->Print(&Printer);
+            Out_Core_XML_Buf=Printer.CStr();
+        }
+
+        if (!Out_Core_XML_FileName.empty())
+        {
+            if (Out_Core_XML_Doc->SaveFile(Out_Core_XML_FileName.c_str())!=tinyxml2::XML_SUCCESS)
+                StdErr("--out-Core-XML=file: error during file writing");
+        }
 
         Out_Core_XML_Doc->Clear();
         delete Out_Core_XML_Doc; Out_Core_XML_Doc=NULL;
@@ -1549,14 +1575,14 @@ void Core::Batch_Finish()
     {
         tinyxml2::XMLPrinter Printer;
         Out_XML_Doc->Print(&Printer);
-        Out_XML_Buff=Printer.CStr();
+        Out_XML_Buf=Printer.CStr();
 
-        for(size_t Pos=Out_XML_Buff.find("\n            <PLACEHOLDER><![CDATA["); Pos!=string::npos; Pos=Out_XML_Buff.find("\n            <PLACEHOLDER><![CDATA[", Pos))
+        for(size_t Pos=Out_XML_Buf.find("\n            <PLACEHOLDER><![CDATA["); Pos!=string::npos; Pos=Out_XML_Buf.find("\n            <PLACEHOLDER><![CDATA[", Pos))
         {
-            Out_XML_Buff.erase(Pos, 35);
-            Pos=Out_XML_Buff.find("]]></PLACEHOLDER>\n        ", Pos);
+            Out_XML_Buf.erase(Pos, 35);
+            Pos=Out_XML_Buf.find("]]></PLACEHOLDER>\n        ", Pos);
             if (Pos!=string::npos)
-                Out_XML_Buff.erase(Pos, 26);
+                Out_XML_Buf.erase(Pos, 26);
         }
 
         if (!Out_XML_FileName.empty())
@@ -1566,7 +1592,7 @@ void Core::Batch_Finish()
                 File F;
                 if (!F.Create(Ztring().From_UTF8(Out_XML_FileName)))
                     throw "--out-XML: error during file creation";
-                if (!F.Write(Ztring().From_UTF8(Out_XML_Buff)))
+                if (!F.Write(Ztring().From_UTF8(Out_XML_Buf)))
                     throw "--out-XML: error during file writing";
             }
             catch (const char *Message)
@@ -1577,7 +1603,7 @@ void Core::Batch_Finish()
         }
 
         if (Cout!=Cout_XML)
-            Out_XML_Buff.clear();
+            Out_XML_Buf.clear();
 
         Out_XML_Doc->Clear();
         delete Out_XML_Doc; Out_XML_Doc=NULL;
@@ -1654,11 +1680,11 @@ void Core::Batch_Launch(handlers::iterator &Handler)
     }
 
     //Technical
-    if (!Out_Tech_CSV_FileName.empty() || !Out_Tech_XML_FileName.empty() || Out_Tech_XML || Out_XML_Doc)
+    if (!Out_Tech_CSV_FileName.empty() || Out_Tech_XML || Out_Tech_XML_Doc || Out_XML_Doc)
         Batch_Launch_Technical(Handler);
 
     //Bext chunk
-    if (!Out_Core_CSV_FileName.empty() || !Out_Core_XML_FileName.empty() || Out_Core_XML || Out_XML_Doc)
+    if (!Out_Core_CSV_FileName.empty() || Out_Core_XML || Out_Core_XML_Doc || Out_XML_Doc)
         Batch_Launch_Core(Handler);
 
     //XMP chunk
@@ -1687,9 +1713,7 @@ void Core::Batch_Launch(handlers::iterator &Handler)
 //---------------------------------------------------------------------------
 void Core::Batch_Launch_Technical(handlers::iterator &Handler)
 {
-    Ztring Technical;
-    if (!Out_Tech_CSV_FileName.empty() || !Out_Tech_XML_FileName.empty() || Out_Tech_XML || !Out_XML_FileName.empty() || Cout==Cout_XML)
-        Technical=Ztring().From_UTF8(Handler->second.Riff->Technical_Get())+EOL;
+    Ztring Technical=Ztring().From_UTF8(Handler->second.Riff->Technical_Get())+EOL;
 
     //Technical chunk (with a Conformance Point Document)
     if (!Out_Tech_CSV_FileName.empty())
@@ -1700,7 +1724,7 @@ void Core::Batch_Launch_Technical(handlers::iterator &Handler)
             Out_Tech_CSV_FileName.clear();
         }
 
-    if (!Out_Tech_XML_FileName.empty() || Out_Tech_XML || !Out_XML_FileName.empty() || Cout==Cout_XML)
+    if (Out_Tech_XML || Out_Tech_XML_Doc || Out_XML_Doc)
     {
         //Retrieving content
         ZtringList List_Content;
@@ -1781,7 +1805,7 @@ void Core::Batch_Launch_Core(handlers::iterator &Handler)
             Out_Core_CSV_FileName.clear();
         }
 
-    if (!Out_Core_XML_FileName.empty() || Out_Core_XML || !Out_XML_FileName.empty() || Cout==Cout_XML)
+    if (Out_Core_XML || Out_Core_XML_Doc || Out_XML_Doc)
     {
         //Retrieving content
         ZtringList List_Content;
@@ -1953,74 +1977,8 @@ void Core::Batch_Launch_aXML(handlers::iterator &Handler)
 
         if (Out_XML_Doc)
         {
-            bool UseCDATA=false;
-
-            tinyxml2::XMLDocument aXML;
-            if (aXML.Parse(Content.c_str())==tinyxml2::XML_SUCCESS)
+            if (Prepare_Xml_For_Nesting(Content))
             {
-                // check if xml declaration is present
-                if (Content.size()>=5 && Content[0]=='<' && Content[1]=='?' && tolower(Content[2])=='x' && tolower(Content[3])=='m' && tolower(Content[4])=='l')
-                {
-                    size_t End=Content.find("?>");
-                    if (End!=string::npos)
-                    {
-                        // check encoding
-                        string XmlDecl=Content.substr(0, End+2);
-                        XmlDecl.replace(End, 1, "/");
-                        XmlDecl.erase(1, 1);
-
-                        tinyxml2::XMLDocument Doc;
-                        if (Doc.Parse(XmlDecl.c_str())==tinyxml2::XML_SUCCESS && Doc.RootElement())
-                        {
-                            const char* Enc=NULL;
-                            if (Doc.RootElement()->QueryStringAttribute("encoding", &Enc)==tinyxml2::XML_SUCCESS)
-                            {
-                                if (!(strlen(Enc)==8
-                                      && tolower(Enc[0])=='u'
-                                      && tolower(Enc[1])=='s'
-                                      && tolower(Enc[2])=='-'
-                                      && tolower(Enc[3])=='a'
-                                      && tolower(Enc[4])=='s'
-                                      && tolower(Enc[5])=='c'
-                                      && tolower(Enc[6])=='i'
-                                      && tolower(Enc[7])=='i') &&
-                                    !(strlen(Enc)==5
-                                      && tolower(Enc[0])=='u'
-                                      && tolower(Enc[1])=='t'
-                                      && tolower(Enc[2])=='f'
-                                      && tolower(Enc[3])=='-'
-                                      && tolower(Enc[4])=='8'))
-                                UseCDATA=true;
-                            }
-                        }
-
-                        if (!UseCDATA)
-                        {
-                            //comment out declaration for xml nesting
-                            Content.insert(End+2, "-->");
-                            Content.insert(0, "<!--");
-                        }
-                    }
-                    else
-                        UseCDATA=true;
-                }
-            }
-            else
-                UseCDATA=true;
-
-            if (UseCDATA)
-            {
-                // invalid xml, put it into a CDATA
-                for(size_t Pos=Content.find("]]>"); Pos!=string::npos; Pos=Content.find("]]>", Pos))
-                {
-                    // Escape inner CDATA
-                    Content.replace(Pos, 3, "]]]]><![CDATA[>");
-                    Pos+=15;
-                }
-
-                Content.insert(0, "<![CDATA[");
-                Content.append("]]>");
-
                 string Message="Invalid aXML xml for file: ";Message+=Handler->second.Riff->FileName_Get();
                 StdErr(Message);
             }
@@ -2080,74 +2038,8 @@ void Core::Batch_Launch_iXML(handlers::iterator &Handler)
 
         if (Out_XML_Doc)
         {
-            bool UseCDATA=false;
-
-            tinyxml2::XMLDocument iXML;
-            if (iXML.Parse(Content.c_str())==tinyxml2::XML_SUCCESS)
+            if (Prepare_Xml_For_Nesting(Content))
             {
-                // check if xml declaration is present
-                if (Content.size()>=5 && Content[0]=='<' && Content[1]=='?' && tolower(Content[2])=='x' && tolower(Content[3])=='m' && tolower(Content[4])=='l')
-                {
-                    size_t End=Content.find("?>");
-                    if (End!=string::npos)
-                    {
-                        // check encoding
-                        string XmlDecl=Content.substr(0, End+2);
-                        XmlDecl.replace(End, 1, "/");
-                        XmlDecl.erase(1, 1);
-
-                        tinyxml2::XMLDocument Doc;
-                        if (Doc.Parse(XmlDecl.c_str())==tinyxml2::XML_SUCCESS && Doc.RootElement())
-                        {
-                            const char* Enc=NULL;
-                            if (Doc.RootElement()->QueryStringAttribute("encoding", &Enc)==tinyxml2::XML_SUCCESS)
-                            {
-                                if (!(strlen(Enc)==8
-                                      && tolower(Enc[0])=='u'
-                                      && tolower(Enc[1])=='s'
-                                      && tolower(Enc[2])=='-'
-                                      && tolower(Enc[3])=='a'
-                                      && tolower(Enc[4])=='s'
-                                      && tolower(Enc[5])=='c'
-                                      && tolower(Enc[6])=='i'
-                                      && tolower(Enc[7])=='i') &&
-                                    !(strlen(Enc)==5
-                                      && tolower(Enc[0])=='u'
-                                      && tolower(Enc[1])=='t'
-                                      && tolower(Enc[2])=='f'
-                                      && tolower(Enc[3])=='-'
-                                      && tolower(Enc[4])=='8'))
-                                UseCDATA=true;
-                            }
-                        }
-
-                        if (!UseCDATA)
-                        {
-                            //comment out declaration for xml nesting
-                            Content.insert(End+2, "-->");
-                            Content.insert(0, "<!--");
-                        }
-                    }
-                    else
-                        UseCDATA=true;
-                }
-            }
-            else
-                UseCDATA=true;
-
-            if (UseCDATA)
-            {
-                // invalid xml, put it into a CDATA
-                for(size_t Pos=Content.find("]]>"); Pos!=string::npos; Pos=Content.find("]]>", Pos))
-                {
-                    // Escape inner CDATA
-                    Content.replace(Pos, 3, "]]]]><![CDATA[>");
-                    Pos+=15;
-                }
-
-                Content.insert(0, "<![CDATA[");
-                Content.append("]]>");
-
                 string Message="Invalid iXML xml for file: ";Message+=Handler->second.Riff->FileName_Get();
                 StdErr(Message);
             }
