@@ -1206,6 +1206,9 @@ void GUI_Main_xxxx_CueDialog::List2Xml()
     Printer.PushHeader(false, true);
     Printer.OpenElement("Cues");
 
+    if (SampleRate)
+        Printer.PushAttribute("SampleRate", SampleRate);
+
     for (int Pos=0;Pos<Table->rowCount(); Pos++)
     {
         bool IsEmpty=true, LabelIsEmpty=true, NoteIsEmpty=true, TextIsEmpty=true;
