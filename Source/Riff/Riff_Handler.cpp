@@ -2590,7 +2590,7 @@ string Riff_Handler::Cue_Xml_Get()
 
     Printer.OpenElement("Cues");
     if (!Get_Internal("SampleRate").empty())
-        Printer.PushAttribute("SampleRate", Get_Internal("SampleRate").c_str());
+        Printer.PushAttribute("samplerate", Get_Internal("SampleRate").c_str());
 
     for (size_t Pos=0; Pos<Points.size(); Pos++)
     {
@@ -2669,7 +2669,7 @@ string Riff_Handler::Cue_Xml_Get()
     {
         Printer.OpenElement("Cue");
             Printer.OpenElement("ID");
-                Printer.PushAttribute("Missing", "true");
+                Printer.PushAttribute("missing", "true");
                 Printer.PushText(Labels[Label_Pos](0).To_UTF8().c_str());
             Printer.CloseElement();
             Printer.OpenElement("Label");
@@ -2684,7 +2684,7 @@ string Riff_Handler::Cue_Xml_Get()
     {
         Printer.OpenElement("Cue");
             Printer.OpenElement("ID");
-                Printer.PushAttribute("Missing", "true");
+                Printer.PushAttribute("missing", "true");
                 Printer.PushText(Notes[Note_Pos](0).To_UTF8().c_str());
             Printer.CloseElement();
             Printer.OpenElement("Note");
@@ -2699,7 +2699,7 @@ string Riff_Handler::Cue_Xml_Get()
     {
         Printer.OpenElement("Cue");
             Printer.OpenElement("ID");
-                Printer.PushAttribute("Missing", "true");
+                Printer.PushAttribute("missing", "true");
                 Printer.PushText(Texts[Text_Pos](0).To_UTF8().c_str());
             Printer.CloseElement();
             Printer.OpenElement("LabeledText");
@@ -2790,7 +2790,7 @@ bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, string& cue_, string& l
             continue;
 
         Id=Ztring().From_Number(Element->UnsignedText(0));
-        if (!Element->BoolAttribute("Missing"))
+        if (!Element->BoolAttribute("missing"))
         {
             Point.push_back(Id);
             Element=Node->FirstChildElement("Position");

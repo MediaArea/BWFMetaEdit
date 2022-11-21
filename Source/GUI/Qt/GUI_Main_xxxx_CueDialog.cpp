@@ -1207,7 +1207,7 @@ void GUI_Main_xxxx_CueDialog::List2Xml()
     Printer.OpenElement("Cues");
 
     if (SampleRate)
-        Printer.PushAttribute("SampleRate", SampleRate);
+        Printer.PushAttribute("samplerate", SampleRate);
 
     for (int Pos=0;Pos<Table->rowCount(); Pos++)
     {
