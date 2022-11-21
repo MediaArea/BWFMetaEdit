@@ -2589,6 +2589,9 @@ string Riff_Handler::Cue_Xml_Get()
     Printer.PushHeader(false, true);
 
     Printer.OpenElement("Cues");
+    if (!Get_Internal("SampleRate").empty())
+        Printer.PushAttribute("SampleRate", Get_Internal("SampleRate").c_str());
+
     for (size_t Pos=0; Pos<Points.size(); Pos++)
     {
         Ztring Id=Points[Pos](0);
