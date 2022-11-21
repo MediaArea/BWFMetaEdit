@@ -94,7 +94,10 @@ private:
     QAction*        Menu_Import__PMX_XML;
     QAction*        Menu_Import_iXML_XML;
     QMenu*          Menu_Export;
+    QAction*        Menu_Export_Unified_XML_Global;
     QAction*        Menu_Export_Technical_CSV_Global;
+    QAction*        Menu_Export_Technical_XML_PerFile;
+    QAction*        Menu_Export_Technical_XML_Global;
     QAction*        Menu_Export_Core_CSV_Global;
     QAction*        Menu_Export_Core_XML_PerFile;
     QAction*        Menu_Export_Core_XML_Global;
@@ -134,7 +137,10 @@ public Q_SLOTS:
     void OnMenu_Import_aXML_XML                     ();
     void OnMenu_Import__PMX_XML                     ();
     void OnMenu_Import_iXML_XML                     ();
+    void OnMenu_Export_Unified_XML_Global           ();
     void OnMenu_Export_Technical_CSV_Global         ();
+    void OnMenu_Export_Technical_XML_Global         ();
+    void OnMenu_Export_Technical_XML_PerFile        ();
     void OnMenu_Export_Core_CSV_Global              ();
     void OnMenu_Export_Core_XML_Global              ();
     void OnMenu_Export_Core_XML_PerFile             ();

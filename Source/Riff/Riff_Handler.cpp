@@ -2586,7 +2586,7 @@ string Riff_Handler::Cue_Xml_Get()
         return string();
 
     tinyxml2::XMLPrinter Printer;
-    Printer.PushHeader(false, true);
+    Printer.PushHeader(false, false);
 
     Printer.OpenElement("Cues");
     if (!Get_Internal("SampleRate").empty())

@@ -51,8 +51,14 @@ CL_OPTION(Simulate);
 CL_OPTION(SpecialChars);
 
 //---------------------------------------------------------------------------
+CL_OPTION(Out_XML_cout);
+CL_OPTION(Out_XML_File);
+
+//---------------------------------------------------------------------------
 CL_OPTION(Out_Tech_cout);
 CL_OPTION(Out_Tech_File);
+CL_OPTION(Out_Tech_XML);
+CL_OPTION(Out_Tech_XML_File);
 
 //---------------------------------------------------------------------------
 CL_OPTION(In_Core_File);
@@ -67,24 +73,32 @@ CL_OPTION(Out_Core_XML_File);
 CL_OPTION(In__PMX_File);
 CL_OPTION(In__PMX_Remove);
 CL_OPTION(In__PMX_XML);
+CL_OPTION(Out__PMX_cout);
+CL_OPTION(Out__PMX_File);
 CL_OPTION(Out__PMX_XML);
 
 //---------------------------------------------------------------------------
 CL_OPTION(In_aXML_File);
 CL_OPTION(In_aXML_Remove);
 CL_OPTION(In_aXML_XML);
+CL_OPTION(Out_aXML_cout);
+CL_OPTION(Out_aXML_File);
 CL_OPTION(Out_aXML_XML);
 
 //---------------------------------------------------------------------------
 CL_OPTION(In_iXML_File);
 CL_OPTION(In_iXML_Remove);
 CL_OPTION(In_iXML_XML);
+CL_OPTION(Out_iXML_cout);
+CL_OPTION(Out_iXML_File);
 CL_OPTION(Out_iXML_XML);
 
 //---------------------------------------------------------------------------
 CL_OPTION(In_cue__File);
 CL_OPTION(In_cue__Remove);
 CL_OPTION(In_cue__XML);
+CL_OPTION(Out_cue__cout);
+CL_OPTION(Out_cue__File);
 CL_OPTION(Out_cue__XML);
 
 //---------------------------------------------------------------------------

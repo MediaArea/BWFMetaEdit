@@ -197,9 +197,22 @@ void GUI_Main::Menu_Create()
     //Menu_Import->addAction(Menu_Import_iXML_XML);
 
     //Menu Export
+    Menu_Export_Unified_XML_Global = new QAction(tr("Unified XML Metadata (one global XML file)..."), this);
+    Menu_Export_Unified_XML_Global->setStatusTip(tr("Save All Metadata in a global XML file"));
+    connect(Menu_Export_Unified_XML_Global, SIGNAL(triggered()), this, SLOT(OnMenu_Export_Unified_XML_Global()));
+
     Menu_Export_Technical_CSV_Global = new QAction(tr("Technical Metadata (one global CSV file)..."), this);
     Menu_Export_Technical_CSV_Global->setStatusTip(tr("Save Technical Metadata in a global CSV file"));
     connect(Menu_Export_Technical_CSV_Global, SIGNAL(triggered()), this, SLOT(OnMenu_Export_Technical_CSV_Global()));
+
+    Menu_Export_Technical_XML_Global = new QAction(tr("Technical Metadata (one global XML file)..."), this);
+    Menu_Export_Technical_XML_Global->setStatusTip(tr("Save Technical Metadata in a global XML file"));
+    connect(Menu_Export_Technical_XML_Global, SIGNAL(triggered()), this, SLOT(OnMenu_Export_Technical_XML_Global()));
+
+    Menu_Export_Technical_XML_PerFile = new QAction(tr("Technical Metadata (one XML file per WAV file)"), this);
+    Menu_Export_Technical_XML_PerFile->setStatusTip(tr(""));
+    Menu_Export_Technical_XML_PerFile->setVisible(true);
+    connect(Menu_Export_Technical_XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_Technical_XML_PerFile()));
 
     Menu_Export_Core_CSV_Global = new QAction(tr("Core Document (one global CSV file)..."), this);
     Menu_Export_Core_CSV_Global->setStatusTip(tr("Save Core data in a global CSV file"));
@@ -231,7 +244,11 @@ void GUI_Main::Menu_Create()
     connect(Menu_Export_cue__XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_cue__XML_PerFile()));
 
     Menu_Export = menuBar()->addMenu(tr("&Export"));
+    Menu_Export->addAction(Menu_Export_Unified_XML_Global);
+    Menu_Export->addSeparator();
     Menu_Export->addAction(Menu_Export_Technical_CSV_Global);
+    Menu_Export->addAction(Menu_Export_Technical_XML_Global);
+    Menu_Export->addAction(Menu_Export_Technical_XML_PerFile);
     Menu_Export->addSeparator();
     Menu_Export->addAction(Menu_Export_Core_CSV_Global);
     Menu_Export->addAction(Menu_Export_Core_XML_Global);
@@ -611,6 +628,36 @@ void GUI_Main::OnMenu_Import_iXML_XML()
 }
 
 //---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Export_Unified_XML_Global()
+{
+    //User interaction
+    QString FileNamesQ = QFileDialog::getSaveFileName(  this,
+                                                        tr("Save Metadata Document..."),
+                                                        QString::fromUtf8(C->OpenSaveFolder.c_str()),
+                                                        "XML files (*.xml);;All files (*.*)");
+    if (FileNamesQ.isEmpty())
+    {
+        //Configuring
+        C->Out_XML_FileName.clear();
+
+        //Display
+        Menu_Export_Unified_XML_Global->setChecked(false);
+        return;
+    }
+
+    //Configuring
+    C->Out_XML_FileName=FileNamesQ.toUtf8().data();
+
+    //Running
+    C->Simulation_Enabled=true;
+    C->Batch_Launch();
+    C->Simulation_Enabled=false;
+
+    //Clearing
+    C->Out_XML_FileName.clear();
+}
+
+//---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Export_Technical_CSV_Global()
 {
     //User interaction
@@ -638,6 +685,51 @@ void GUI_Main::OnMenu_Export_Technical_CSV_Global()
     
     //Clearing
     C->Out_Tech_CSV_FileName.clear();
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Export_Technical_XML_Global()
+{
+    //User interaction
+    QString FileNamesQ = QFileDialog::getSaveFileName(  this,
+                                                        tr("Save Technical Metadata..."),
+                                                        QString::fromUtf8(C->OpenSaveFolder.c_str()),
+                                                        "XML files (*.xml);;All files (*.*)");
+    if (FileNamesQ.isEmpty())
+    {
+        //Configuring
+        C->Out_Tech_XML_FileName.clear();
+
+        //Display
+        Menu_Export_Technical_XML_Global->setChecked(false);
+        return;
+    }
+
+    //Configuring
+    C->Out_Tech_XML_FileName=FileNamesQ.toUtf8().data();
+
+    //Running
+    C->Simulation_Enabled=true;
+    C->Batch_Launch();
+    C->Simulation_Enabled=false;
+
+    //Clearing
+    C->Out_Tech_XML_FileName.clear();
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Export_Technical_XML_PerFile()
+{
+    //Configuring
+    C->Out_Tech_XML=true;
+
+    //Running
+    C->Simulation_Enabled=true;
+    C->Batch_Launch();
+    C->Simulation_Enabled=false;
+
+    //Clearing
+    C->Out_Tech_XML=false;
 }
 
 //---------------------------------------------------------------------------

@@ -19,6 +19,7 @@
 #include "ZenLib/File.h"
 #include "ZenLib/Thread.h"
 #include "ZenLib/CriticalSection.h"
+#include "TinyXml2/tinyxml2.h"
 using namespace std;
 using namespace ZenLib;
 //---------------------------------------------------------------------------
@@ -30,6 +31,21 @@ using namespace ZenLib;
 class Core : public Thread
 {
 public:
+    // Types
+    enum Cout_Type
+    {
+        Cout_None=0,
+        Cout_Tech,
+        Cout_Tech_XML,
+        Cout_Core,
+        Cout_Core_XML,
+        Cout__PMX,
+        Cout_aXML,
+        Cout_iXML,
+        Cout_cue_,
+        Cout_XML, //All
+    };
+
     //Constructor/Destructor
     Core();
     ~Core();
@@ -83,6 +99,7 @@ public:
     //Actions
     const string                       &Technical_Get                   ();
     const string                       &Core_Get                        ();
+    const string                       &Cout_Get                        ();
     const string                       &Output_Trace_Get                ();
     void                                Batch_Launch                    ();
     bool                                Batch_Launch_Start              (); //Detailed version
@@ -109,30 +126,35 @@ public:
     int8u                               Bext_MaxVersion;
     bool                                Simulation_Enabled;
     bool                                SpecialChars_Enabled;
-    bool                                Out_Tech_cout;
+    string                              Out_XML_FileName;
+    Cout_Type                           Cout;
     string                              Out_Tech_CSV_FileName;
+    string                              Out_Tech_XML_FileName;
     bool                                Out_Tech_XML;
     bool                                In_Core_Remove;
     bool                                In_Core_XML;
-    bool                                Out_Core_cout;
     string                              Out_Core_CSV_FileName;
     string                              Out_Core_XML_FileName;
     bool                                Out_Core_XML;
     string                              In__PMX_FileName;
     bool                                In__PMX_XML;
     bool                                In__PMX_Remove;
+    string                              Out__PMX_FileName;
     bool                                Out__PMX_XML;
     string                              In_aXML_FileName;
     bool                                In_aXML_Remove;
     bool                                In_aXML_XML;
+    string                              Out_aXML_FileName;
     bool                                Out_aXML_XML;
     string                              In_iXML_FileName;
     bool                                In_iXML_XML;
     bool                                In_iXML_Remove;
+    string                              Out_iXML_FileName;
     bool                                Out_iXML_XML;
     string                              In_cue__FileName;
     bool                                In_cue__XML;
     bool                                In_cue__Remove;
+    string                              Out_cue__FileName;
     bool                                Out_cue__XML;
     bool                                Batch_Enabled;
     bool                                Batch_IsBackuping; //Does not read modifications, only data from the file
@@ -196,11 +218,16 @@ protected:
     string                              Text;
 
     //Internal routines
+    string                              Out_XML_Buf;
+    tinyxml2::XMLDocument*              Out_XML_Doc;
     File                                Out_Tech_File;
-    ZtringList                          Out_Tech_File_Header;
+    ZtringList                          Out_Tech_CSV_File_Header;
+    tinyxml2::XMLDocument*              Out_Tech_XML_Doc;
+    string                              Out_Tech_XML_Buf;
     File                                Out_Core_CSV_File;
     ZtringList                          Out_Core_CSV_File_Header;
-    File                                Out_Core_XML_File;
+    tinyxml2::XMLDocument*              Out_Core_XML_Doc;
+    string                              Out_Core_XML_Buf;
     void Batch_Begin                    ();
     void Batch_Finish                   ();
     void Batch_Launch                   (handlers::iterator &Handler);

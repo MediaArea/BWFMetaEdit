@@ -55,6 +55,7 @@ int main(int argc, char* argv[])
     Core C;
 
     //Retrieve command line (mainly for Unicode) and parse it
+    bool OneFileMode=false;
     ZtringList Files;
     #ifdef _WIN32
     for (int Pos=1; Pos<ArgcW; Pos++)
@@ -80,12 +81,46 @@ int main(int argc, char* argv[])
             #endif
             return Return; //no more tasks to do
         }
-        if (Return==-1)
-            #ifdef _WIN32
-            Files.push_back(Ztring().From_Unicode(ArgvW[Pos]));
-            #else
-            Files.push_back(Ztring().From_Local(argv[Pos]));
-            #endif
+        if (Return==-1 || Return==-3)
+        {
+            if (Return==-3)
+                OneFileMode=true;
+
+            if (OneFileMode && Files.size())
+            {
+                bool Comma=false;
+                std::cerr<<"Only one input file is allowed for the output(s):";
+                if (!C.Out__PMX_FileName.empty() || C.Cout==Core::Cout__PMX)
+                {
+                    std::cerr<<" --out-xmp=";
+                    Comma=true;
+                }
+                if (!C.Out_iXML_FileName.empty() || C.Cout==Core::Cout_iXML)
+                {
+                    std::cerr<<(Comma?",":"")<<" --out-ixml=";
+                    Comma=true;
+                }
+                if (!C.Out_aXML_FileName.empty() || C.Cout==Core::Cout_aXML)
+                {
+                    std::cerr<<(Comma?",":"")<<" --out-axml=";
+                    Comma=true;
+                }
+                if (!C.Out_cue__FileName.empty() || C.Cout==Core::Cout_cue_)
+                    std::cerr<<(Comma?",":"")<<" --out-cue=";
+                std::cerr<<std::endl;
+
+                return 1;
+            }
+
+            if (Return==-1)
+            {
+                #ifdef _WIN32
+                Files.push_back(Ztring().From_Unicode(ArgvW[Pos]));
+                #else
+                Files.push_back(Ztring().From_Local(argv[Pos]));
+                #endif
+            }
+        }
     }
 
     #ifdef _WIN32
@@ -122,19 +157,15 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    //Technical
-    if (C.Out_Tech_cout)
-        std::cout<<C.Technical_Get()<<std::endl;
-
-    //Core
-    if (C.Out_Core_cout)
-        std::cout<<C.Core_Get()<<std::endl;
+    //Cout
+    if (C.Cout!=Core::Cout_None)
+        std::cout<<C.Cout_Get();
 
     //Log and errors
     if (C.Out_Log_cout)
-        std::cout<<C.Text_stdall.str()<<std::endl;
+        std::cerr<<C.Text_stdall.str();
     else
-        std::cerr<<C.Text_stderr.str()<<std::endl;
+        std::cerr<<C.Text_stderr.str();
 
     if (C.Text_stderr_Updated_Get())
         return 1;

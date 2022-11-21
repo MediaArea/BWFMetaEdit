@@ -62,7 +62,12 @@ int Parse(Core &C, string &Argument)
 
     OPTION("--specialchars",                                SpecialChars)
 
+    OPTION("--out-xml=",                                    Out_XML_File)
+    OPTION("--out-xml",                                     Out_XML_cout)
+
     OPTION("--out-tech=",                                   Out_Tech_File)
+    OPTION("--out-tech-xml=",                               Out_Tech_XML_File)
+    OPTION("--out-tech-xml",                                Out_Tech_XML)
     OPTION("--out-tech",                                    Out_Tech_cout)
 
     OPTION("--in-core=",                                    In_Core_File)
@@ -77,20 +82,28 @@ int Parse(Core &C, string &Argument)
     OPTION("--in-xmp-remove",                               In__PMX_Remove)
     OPTION("--in-xmp-xml",                                  In__PMX_XML)
     OPTION("--out-xmp-xml",                                 Out__PMX_XML)
+    OPTION("--out-xmp=",                                    Out__PMX_File)
+    OPTION("--out-xmp",                                     Out__PMX_cout)
 
     OPTION("--in-axml=",                                    In_aXML_File)
     OPTION("--in-axml-remove",                              In_aXML_Remove)
     OPTION("--in-axml-xml",                                 In_aXML_XML)
     OPTION("--out-axml-xml",                                Out_aXML_XML)
+    OPTION("--out-axml=",                                   Out_aXML_File)
+    OPTION("--out-axml",                                    Out_aXML_cout)
 
     OPTION("--in-ixml=",                                    In_iXML_File)
     OPTION("--in-ixml-remove",                              In_iXML_Remove)
     OPTION("--in-ixml-xml",                                 In_iXML_XML)
     OPTION("--out-ixml-xml",                                Out_iXML_XML)
+    OPTION("--out-ixml=",                                   Out_iXML_File)
+    OPTION("--out-ixml",                                    Out_iXML_cout)
 
     OPTION("--in-cue=",                                     In_cue__File)
     OPTION("--in-cue-remove",                               In_cue__Remove)
     OPTION("--in-cue-xml",                                  In_cue__XML)
+    OPTION("--out-cue=",                                    Out_cue__File)
+    OPTION("--out-cue",                                     Out_cue__cout)
     OPTION("--out-cue-xml",                                 Out_cue__XML)
 
     OPTION("--md5-generate",                                MD5_Generate)
@@ -195,13 +208,51 @@ CL_OPTION(Log_cout)
 }
 
 //***************************************************************************
+// Options - XML
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_XML_cout)
+{
+    if (C.Cout!=Core::Cout_None)
+    {
+        std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+        return 1;
+    }
+
+    C.Cout=Core::Cout_XML;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_XML_File)
+{
+    //Form : --out-xml=(FileName)
+    string FileName=string().assign(Argument, 10, std::string::npos);
+
+    if (FileName=="-")
+        return CL_Out_XML_cout(C, Argument);
+    else
+        C.Out_XML_FileName.assign(FileName);
+
+    return -2; //Continue
+}
+
+//***************************************************************************
 // Options - Technical
 //***************************************************************************
 
 //---------------------------------------------------------------------------
 CL_OPTION(Out_Tech_cout)
 {
-    C.Out_Tech_cout=true;
+    if (C.Cout!=Core::Cout_None)
+    {
+        std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+        return 1;
+    }
+
+    C.Cout=Core::Cout_Tech;
 
     return -2; //Continue
 }
@@ -210,7 +261,41 @@ CL_OPTION(Out_Tech_cout)
 CL_OPTION(Out_Tech_File)
 {
     //Form : --out-Tech=(FileName)
-    C.Out_Tech_CSV_FileName.assign(Argument, 11, std::string::npos);
+    string FileName=string().assign(Argument, 11, std::string::npos);
+
+    if (FileName=="-")
+        return CL_Out_Tech_cout(C, Argument);
+    else
+        C.Out_Tech_CSV_FileName.assign(FileName);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_Tech_XML)
+{
+    C.Out_Tech_XML=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_Tech_XML_File)
+{
+    //Form : --out-Core-XML=(FileName)
+    string FileName=string().assign(Argument, 15, std::string::npos);
+
+    if (FileName=="-")
+    {
+        if (C.Cout!=Core::Cout_None)
+        {
+            std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+            return 1;
+        }
+        C.Cout=Core::Cout_Tech_XML;
+    }
+    else
+        C.Out_Tech_XML_FileName.assign(FileName);
 
     return -2; //Continue
 }
@@ -251,7 +336,13 @@ CL_OPTION(In_Core_XML)
 //---------------------------------------------------------------------------
 CL_OPTION(Out_Core_cout)
 {
-    C.Out_Core_cout=true;
+    if (C.Cout!=Core::Cout_None)
+    {
+        std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+        return 1;
+    }
+
+    C.Cout=Core::Cout_Core;
 
     return -2; //Continue
 }
@@ -260,7 +351,13 @@ CL_OPTION(Out_Core_cout)
 CL_OPTION(Out_Core_File)
 {
     //Form : --out-Core=(FileName)
-    C.Out_Core_CSV_FileName.assign(Argument, 11, std::string::npos);
+    //Form : --out-Tech=(FileName)
+    string FileName=string().assign(Argument, 11, std::string::npos);
+
+    if (FileName=="-")
+        return CL_Out_Core_cout(C, Argument);
+    else
+        C.Out_Core_CSV_FileName.assign(FileName);
 
     return -2; //Continue
 }
@@ -277,7 +374,19 @@ CL_OPTION(Out_Core_XML)
 CL_OPTION(Out_Core_XML_File)
 {
     //Form : --out-Core-XML=(FileName)
-    C.Out_Core_XML_FileName.assign(Argument, 15, std::string::npos);
+    string FileName=string().assign(Argument, 15, std::string::npos);
+
+    if (FileName=="-")
+    {
+        if (C.Cout!=Core::Cout_None)
+        {
+            std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+            return 1;
+        }
+        C.Cout=Core::Cout_Core_XML;
+    }
+    else
+        C.Out_Core_XML_FileName.assign(FileName);
 
     return -2; //Continue
 }
@@ -312,11 +421,38 @@ CL_OPTION(In__PMX_XML)
 }
 
 //---------------------------------------------------------------------------
+CL_OPTION(Out__PMX_cout)
+{
+    if (C.Cout!=Core::Cout_None)
+    {
+        std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+        return 1;
+    }
+
+    C.Cout=Core::Cout__PMX;
+
+    return -3; //Continue, one file mode
+}
+
+//---------------------------------------------------------------------------
 CL_OPTION(Out__PMX_XML)
 {
     C.Out__PMX_XML=true;
 
     return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out__PMX_File)
+{
+    string FileName=string().assign(Argument, 10, std::string::npos);
+
+    if (FileName=="-")
+        return CL_Out__PMX_cout(C, Argument);
+    else
+        C.Out__PMX_FileName.assign(FileName);
+
+    return -3; //Continue, one file mode
 }
 
 //***************************************************************************
@@ -349,11 +485,38 @@ CL_OPTION(In_aXML_XML)
 }
 
 //---------------------------------------------------------------------------
+CL_OPTION(Out_aXML_cout)
+{
+    if (C.Cout!=Core::Cout_None)
+    {
+        std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+        return 1;
+    }
+
+    C.Cout=Core::Cout_aXML;
+
+    return -3; //Continue, one file mode
+}
+
+//---------------------------------------------------------------------------
 CL_OPTION(Out_aXML_XML)
 {
     C.Out_aXML_XML=true;
 
     return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_aXML_File)
+{
+    string FileName=string().assign(Argument, 11, std::string::npos);
+
+    if (FileName=="-")
+        return CL_Out_aXML_cout(C, Argument);
+    else
+        C.Out_aXML_FileName.assign(FileName);
+
+    return -3; //Continue, one file mode
 }
 
 //***************************************************************************
@@ -386,12 +549,40 @@ CL_OPTION(In_iXML_XML)
 }
 
 //---------------------------------------------------------------------------
+CL_OPTION(Out_iXML_cout)
+{
+    if (C.Cout!=Core::Cout_None)
+    {
+        std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+        return 1;
+    }
+
+    C.Cout=Core::Cout_iXML;
+
+    return -3; //Continue, one file mode
+}
+
+//---------------------------------------------------------------------------
 CL_OPTION(Out_iXML_XML)
 {
     C.Out_iXML_XML=true;
 
     return -2; //Continue
 }
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_iXML_File)
+{
+    string FileName=string().assign(Argument, 11, std::string::npos);
+
+    if (FileName=="-")
+        return CL_Out_iXML_cout(C, Argument);
+    else
+        C.Out_iXML_FileName.assign(FileName);
+
+    return -3; //Continue, one file mode
+}
+
 
 //***************************************************************************
 // Options - cue
@@ -401,7 +592,7 @@ CL_OPTION(Out_iXML_XML)
 CL_OPTION(In_cue__File)
 {
     //Form : --in-cue=(FileName)
-    C.In_cue__FileName.assign(Argument, 10, std::string::npos);
+    C.In_cue__FileName.assign(Argument, 9, std::string::npos);
 
     return -2; //Continue
 }
@@ -423,11 +614,38 @@ CL_OPTION(In_cue__XML)
 }
 
 //---------------------------------------------------------------------------
+CL_OPTION(Out_cue__cout)
+{
+    if (C.Cout!=Core::Cout_None)
+    {
+        std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+        return 1;
+    }
+
+    C.Cout=Core::Cout_cue_;
+
+    return -3; //Continue, one file mode
+}
+
+//---------------------------------------------------------------------------
 CL_OPTION(Out_cue__XML)
 {
     C.Out_cue__XML=true;
 
     return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_cue__File)
+{
+    string FileName=string().assign(Argument, 10, std::string::npos);
+
+    if (FileName=="-")
+        return CL_Out_cue__cout(C, Argument);
+    else
+        C.Out_cue__FileName.assign(FileName);
+
+    return -3; //Continue, one file mode
 }
 
 //***************************************************************************
@@ -485,8 +703,8 @@ CL_OPTION(Default)
         Egal_Pos=Argument.find('=');
     if (Egal_Pos==string::npos)
     {
-        std::cout<<Argument<<" is unknown"<<std::endl;
-        return 0;
+        std::cerr<<Argument<<" is unknown"<<std::endl;
+        return 1;
     }
 
     #ifdef _WIN32
@@ -513,8 +731,8 @@ CL_OPTION(Default)
      && Field!=__T("ixml")
      && Field.size()!=4) //All INFO sub-chunks
     {
-        std::cout<<Argument<<" is unknown"<<std::endl;
-        return 0;
+        std::cerr<<Argument<<" is unknown"<<std::endl;
+        return 1;
     }
 
     string Value=string(Argument, Egal_Pos+1, std::string::npos);

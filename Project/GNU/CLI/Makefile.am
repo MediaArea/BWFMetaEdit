@@ -53,6 +53,6 @@ bwfmetaedit_SOURCES = \
 
 AM_TESTS_FD_REDIRECT = 9>&2
 
-TESTS = test/version.sh test/metadata.sh test/overwrite.sh test/null.sh test/gap.sh
+TESTS = test/version.sh test/metadata.sh test/overwrite.sh test/null.sh test/gap.sh test/xmloutput.sh
 
 AM_CPPFLAGS = -I../../../Source
