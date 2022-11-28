@@ -185,7 +185,7 @@ void SamplingFrequencyDelegate::Fill(QComboBox* Editor) const
     Editor->addItem("48000");
     Editor->addItem("64000");
     Editor->addItem("88200");
-    if (!Rules.CodingHistory_Rec && Rules.FADGI_Rec)
+    if (!Rules.CodingHistory_Rec)
     {
         Editor->addItem("96000");
         Editor->addItem("176400");
@@ -244,7 +244,7 @@ void WordLengthDelegate::Fill(QComboBox* Editor) const
     Editor->addItem("20");
     Editor->addItem("22");
     Editor->addItem("24");
-    if (!Rules.CodingHistory_Rec && Rules.FADGI_Rec)
+    if (!Rules.CodingHistory_Rec)
     {
         Editor->addItem("32");
     }
@@ -262,7 +262,7 @@ void ModeDelegate::Fill(QComboBox* Editor) const
     Editor->addItem("stereo");
     Editor->addItem("dual-mono");
     Editor->addItem("joint-stereo");
-    if (!Rules.CodingHistory_Rec && Rules.FADGI_Rec)
+    if (!Rules.CodingHistory_Rec)
     {
         Editor->addItem("multitrack");
         Editor->addItem("multichannel");
