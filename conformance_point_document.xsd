@@ -11,6 +11,49 @@
         <xsd:element maxOccurs="unbounded" minOccurs="0" name="File">
           <xsd:complexType>
             <xsd:sequence>
+              <xsd:element maxOccurs="1" minOccurs="0" name="Technical">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="FileSize" type="xsd:nonNegativeInteger"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="Format" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="CodecID">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:maxLength value="4"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="Channels" type="xsd:nonNegativeInteger"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="SampleRate" type="xsd:nonNegativeInteger"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="BitRate" type="xsd:nonNegativeInteger"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="BitPerSample" type="xsd:nonNegativeInteger"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="Duration" type="xsd:time"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="UnsupportedChunks" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="bext" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="INFO" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="Cue" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="XMP" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="aXML" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="iXML" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="MD5Stored">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:pattern value="[A-F0-9]{32}"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="MD5Generated">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:pattern value="[A-F0-9]{32}"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="Errors" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="Information" type="xsd:string"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
               <xsd:element maxOccurs="1" minOccurs="0" name="Core">
                 <xsd:complexType>
                   <xsd:sequence>
@@ -91,6 +134,74 @@
                     <xsd:element maxOccurs="1" minOccurs="0" name="ISRF" type="xsd:string"/>
                     <xsd:element maxOccurs="1" minOccurs="0" name="ITCH" type="xsd:string"/>
                   </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element maxOccurs="1" minOccurs="0" name="XMP">
+                <xsd:complexType mixed="true">
+                  <xsd:sequence>
+                    <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element maxOccurs="1" minOccurs="0" name="aXML">
+                <xsd:complexType mixed="true">
+                  <xsd:sequence>
+                    <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element maxOccurs="1" minOccurs="0" name="iXML">
+                <xsd:complexType mixed="true">
+                  <xsd:sequence>
+                    <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element maxOccurs="1" minOccurs="0" name="Cues">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" minOccurs="0" name="Cue">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element maxOccurs="1" minOccurs="0" name="ID" type="xsd:nonNegativeInteger"/>
+                          <xsd:element maxOccurs="1" minOccurs="0" name="Position" type="xsd:nonNegativeInteger"/>
+                          <xsd:element maxOccurs="1" minOccurs="0" name="DataChunkID">
+                            <xsd:simpleType>
+                              <xsd:restriction base="xsd:string">
+                                <xsd:pattern value="0x[A-F0-9]{1,8}"/>
+                              </xsd:restriction>
+                            </xsd:simpleType>
+                          </xsd:element>
+                          <xsd:element maxOccurs="1" minOccurs="0" name="ChunkStart" type="xsd:nonNegativeInteger"/>
+                          <xsd:element maxOccurs="1" minOccurs="0" name="BlockStart" type="xsd:nonNegativeInteger"/>
+                          <xsd:element maxOccurs="1" minOccurs="0" name="SampleOffset" type="xsd:nonNegativeInteger"/>
+                          <xsd:element maxOccurs="unbounded" minOccurs="0" name="Label" type="xsd:string"/>
+                          <xsd:element maxOccurs="unbounded" minOccurs="0" name="Note" type="xsd:string"/>
+                          <xsd:element maxOccurs="unbounded" minOccurs="0" name="LabeledText">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element maxOccurs="1" minOccurs="0" name="SampleLength" type="xsd:nonNegativeInteger"/>
+                                <xsd:element maxOccurs="1" minOccurs="0" name="PurposeID">
+                                  <xsd:simpleType>
+                                    <xsd:restriction base="xsd:string">
+                                      <xsd:pattern value="0x[A-F0-9]{1,8}"/>
+                                    </xsd:restriction>
+                                  </xsd:simpleType>
+                                </xsd:element>
+                                <xsd:element maxOccurs="1" minOccurs="0" name="Country" type="xsd:nonNegativeInteger"/>
+                                <xsd:element maxOccurs="1" minOccurs="0" name="Language" type="xsd:nonNegativeInteger"/>
+                                <xsd:element maxOccurs="1" minOccurs="0" name="Dialect" type="xsd:nonNegativeInteger"/>
+                                <xsd:element maxOccurs="1" minOccurs="0" name="CodePage" type="xsd:nonNegativeInteger"/>
+                                <xsd:element maxOccurs="1" minOccurs="0" name="Text" type="xsd:string"/>
+                              </xsd:sequence>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                        <xsd:attribute name="missing" type="xsd:boolean" use="optional"/>
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                  <xsd:attribute name="samplerate" type="xsd:string" use="optional"/>
                 </xsd:complexType>
               </xsd:element>
             </xsd:sequence>
