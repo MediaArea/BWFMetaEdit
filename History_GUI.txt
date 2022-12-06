@@ -4,9 +4,31 @@ Notes:
 - Deleted
 x Correction
 
-Version 21.07, 2020-07-09
+Version 22.11, 2022-12-06
 -------------
-+ Cue chunks editor
++ Option to export all file metadata in a single xml (Issues #51, #196, #238)
++ Add sample rate data to cue xml (Issue #232)
+x Add additional coding history dropdown values conditionally based on selected rules (Issue #223)
+x Fix crashes in table view (Issue #226)
+
+Version 21.07, 2021-07-09
+-------------
++ Add copy/paste to context menu in file table
++ Add warning if data entry to an xml-based field is not valid xml
++ Give more diagnosis details when data is truncated or contains padding errors.
++ Offer options for either decimal or hexadecimal display in the trace view
++ Support custom values in coding history table (Issue #123)
++ Design improves to XML buttons (Issue #105)
++ Editor for CUE chunks (Issue #107)
++ Option to set a default open/save directory (Issue #186)
++ Updated dialog for unsupported chunks warning (Issue #163)
++ Synchronization between toolbar menu and right-click menu (Issue #187)
++ Reject files with >1 WAVE chunk (Issue #109)
++ Preserve order in table view (Issue #182)
++ Updates to FADGI rules (Issue #211)
++ Support setting timestamps on multiple files (Issue #183, #185)
++ Added checks to data chunk size coherency (Issue #156)
++ Additional dialog during MD5 verification (Issue #203, #204)
 + Support of last version of FADGI rules
 + Preserve sort order in table views
 + Switch to free edit if IRCD field is not standard
@@ -15,7 +37,12 @@ Version 21.07, 2020-07-09
 + "Clear" menu option with multiple fields selected
 + Provide an option to set default open/save directory
 + Check if PCM data size is channel count*sample length aligned
-x Show message when fixing buggy rf64 data size
+x Fixes for import of XML fields with UNICODE=1
+x Fixes to data size validation (Issue #214)
+x Fixes to Debian and Ubuntu packages.
+x Fix a crash when saving multiple files on exit (Issue #172)
+x Fixes to behavior when overwriting data is ok
+x Show message when fixing buggy rf64 data size (Issue #193)
 x Show error log (if present) after file save operation
 x Fix incoherent state after failed save operation (e.g. read only files)
 x Fix save all and prevent crash when saving multiples files on exit

@@ -80,7 +80,7 @@ apt-get install git automake autoconf libtool pkg-config make g++ zlib1g-dev
 *GUI only dependencies*
 
 ```sh
-apt-get install qtbase5-dev qtdeclarative5-dev qtquickcontrols2-5-dev libqt5svg5-dev qt5-default
+apt-get install qtbase5-dev qtdeclarative5-dev qtquickcontrols2-5-dev libqt5svg5-dev
 ```
 
 #### Fedora
