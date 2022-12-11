@@ -159,11 +159,12 @@ options Groups[Group_Max]=
         "Encoding",
         Option_Encoding_Max,
         {
-            {"Encoding_Local", "Read/Write texts using system default encoding", Type_RadioButton, true},
-            {"Encoding_8859_1", "Read/Write texts using 8859-1 encoding", Type_RadioButton, false},
-            {"Encoding_8859_2", "Read/Write texts using 8859-2 encoding", Type_RadioButton, false},
+            {"Encoding_UTF8", "UTF8 (default)", Type_RadioButton, true},
+            {"Encoding_8859_1", "ISO-8859-1", Type_RadioButton, false},
+            {"Encoding_8859_2", "ISO-8859-2", Type_RadioButton, false},
+            {"Encoding_Local", "System default encoding", Type_RadioButton, false},
             {"Ignore_File_Encoding", "Ignore encoding stored in the CSET chunk when reading the file", Type_CheckBox, false},
-            {"Write_Encoding", "Write encoding into CSET chunk", Type_CheckBox, false},
+            {"Write_CodePage", "Write encoding into CSET chunk", Type_CheckBox, false},
         },
         true,
         false,
@@ -725,6 +726,7 @@ void GUI_Preferences::Create()
             case Group_Tech     : Columns->addWidget(new QLabel("Select which technical values should appear on the 'Tech' table view of BWF MetaEdit, others will be hidden.")); break;
             case Group_Core     : Columns->addWidget(new QLabel("Select which technical values should appear on the 'Core' table view of BWF MetaEdit, others will be hidden.\nThese options affect only the displayed table and not the handling of imported or exported Core documents.\nBe aware that even if a column is hidden, metadata can be imported, exported and saved within these fields.")); break;
             case Group_Rules    : Columns->addWidget(new QLabel("Select which standards and rule sets to follow during use of BWF MetaEdit.\nSelection of rule sets will constrained the allowed data entry and may add additional metadata requirements.\nSee documentation on BWF MetaEdit Rules within the Help documentation.")); break;
+            case Group_Encoding : Columns->addWidget(new QLabel("If there is not CSET chunk or if it should be ignored, consider non ASCII bytes as:")); break;
         }
         
         for (size_t Option=0; Option<Groups[Kind].Option_Size; Option++)

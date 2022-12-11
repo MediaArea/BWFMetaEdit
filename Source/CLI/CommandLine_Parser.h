@@ -51,6 +51,8 @@ CL_OPTION(Simulate);
 CL_OPTION(SpecialChars);
 CL_OPTION(Encoding);
 CL_OPTION(Write_Encoding);
+CL_OPTION(Write_CodePage);
+CL_OPTION(In_CSET_Remove);
 CL_OPTION(Ignore_File_Encoding);
 
 //---------------------------------------------------------------------------

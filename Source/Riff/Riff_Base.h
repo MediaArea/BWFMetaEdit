@@ -55,9 +55,11 @@ const vector<wchar_t> ISO_8859_2=
 
 enum Riff_Encoding
 {
-    Encoding_Local=0,
+    Encoding_UTF8=0,
     Encoding_8859_1,
     Encoding_8859_2,
+    Encoding_Local,
+    Encoding_Max,
 };
 
 //***************************************************************************
@@ -257,6 +259,7 @@ public:
         chunk_strings      *MD5Generated;
         chunk_strings      *cue_;
         chunk_strings      *adtl;
+        bool                CSET_Present;
         bool                NoPadding_Accept;
         bool                NoPadding_IsCorrected;
         bool                RF64DataSize_IsCorrected;
@@ -293,6 +296,7 @@ public:
             adtl=NULL;
             MD5Stored=NULL;
             MD5Generated=NULL;
+            CSET_Present=false;
             NoPadding_Accept=false;
             NoPadding_IsCorrected=false;
             RF64DataSize_IsCorrected=false;

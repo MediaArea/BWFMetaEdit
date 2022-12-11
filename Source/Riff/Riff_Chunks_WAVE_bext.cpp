@@ -215,21 +215,18 @@ void Riff_WAVE_bext::Read_Internal ()
         Global->bext->Strings["codinghistory"]=CodingHistory;
     for (std::map<string, string>::iterator String=Global->bext->Strings.begin(); String!=Global->bext->Strings.end(); String++)
     {
-        Ztring temp=Ztring().From_UTF8(String->second);
-        temp.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        String->second=temp.To_UTF8();
+        for (size_t Pos=String->second.find("\r\n"); Pos!=std::string::npos;  Pos=String->second.find("\r\n", Pos+1))
+            String->second.replace(Pos, 2, "\n");
     }
     for (std::map<string, string>::iterator String=Global->bext->Strings.begin(); String!=Global->bext->Strings.end(); String++)
     {
-        Ztring temp=Ztring().From_UTF8(String->second);
-        temp.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
-        String->second=temp.To_UTF8();
+        for (size_t Pos=String->second.find("\r"); Pos!=std::string::npos; Pos=String->second.find("\r", Pos+1))
+            String->second.replace(Pos, 1, "\n");
     }
     for (std::map<string, string>::iterator String=Global->bext->Strings.begin(); String!=Global->bext->Strings.end(); String++)
     {
-        Ztring temp=Ztring().From_UTF8(String->second);
-        temp.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
-        String->second=temp.To_UTF8();
+        for (size_t Pos=String->second.find("\n"); Pos!=std::string::npos; Pos=String->second.find("\n", Pos+2))
+            String->second.replace(Pos, 1, "\r\n");
     }
 }
 

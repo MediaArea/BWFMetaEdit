@@ -23,6 +23,10 @@
 #include "Common/Mac_Helpers.h"
 #endif
 
+#ifdef _WIN32
+#include <winnls.h>
+#endif
+
 using namespace std;
 using namespace ZenLib;
 //---------------------------------------------------------------------------
@@ -151,8 +155,9 @@ Riff_Handler::Riff_Handler ()
     EmbedMD5=false;
     EmbedMD5_AuthorizeOverWritting=false;
     Trace_UseDec=false;
-    Encoding=Encoding_Local;
-    Write_Encoding=false;
+    Encoding=Encoding_UTF8;
+    Write_Encoding=Encoding_Max;
+    Write_CodePage=false;
     Ignore_File_Encoding=false;
     Bext_DefaultVersion=0;
     Bext_MaxVersion=2;
@@ -177,8 +182,11 @@ Riff_Handler::~Riff_Handler ()
 std::string Riff_Handler::Encode (const std::string& Str)
 {
     std::string Temp;
-    switch (Encoding)
+    switch (Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)
     {
+        case Encoding_UTF8:
+            Temp=Str;
+        break;
         case Encoding_8859_1:
         {
             wstring Unicode=Ztring().From_UTF8(Str).To_Unicode();
@@ -203,8 +211,11 @@ std::string Riff_Handler::Encode (const std::string& Str)
             }
         }
         break;
+        case Encoding_Local:
+            Temp=Ztring().From_UTF8(Str).To_Local();
+        break;
         default:
-            Temp.assign(Str);
+            Temp=Str;
     }
 
     return Temp;
@@ -216,14 +227,20 @@ std::string Riff_Handler::Decode (const std::string& Str)
     std::string Temp;
     switch (Encoding)
     {
+        case Encoding_UTF8:
+            Temp=Str;
+        break;
         case Encoding_8859_1:
             Temp=Ztring().From_ISO_8859_1(Str.c_str()).To_UTF8();
         break;
         case Encoding_8859_2:
             Temp=Ztring().From_ISO_8859_2(Str.c_str()).To_UTF8();
         break;
+        case Encoding_Local:
+            Temp=Ztring().From_Local(Str.c_str()).To_UTF8();
+        break;
         default:
-            Temp.assign(Str);
+            Temp=Str;
     }
 
     return Temp;
@@ -323,6 +340,89 @@ bool Riff_Handler::Open_Internal(const string &FileName)
             PerFile_Information<<"rf64 data size correction"<<endl;
         }
 
+        // Encoding
+        if (!Ignore_File_Encoding && Chunks->Global->CSET)
+        {
+            switch (Chunks->Global->CSET->codePage)
+            {
+                case 0: // ISO-8851-1 compatible
+                case 65001: // Windows codepage for UTF-8
+                    Encoding=Encoding_UTF8;
+                break;
+                case 28591: // Windows codepage for ISO 8859-1
+                    Encoding=Encoding_8859_1;
+                break;
+                case 28592: // Windows codepage for ISO 8859-2
+                    Encoding=Encoding_8859_2;
+                break;
+                default: // unsupported codepage, compare to local codepage (Windows only)
+                    #ifdef _WIN32
+                    if (Chunks->Global->CSET->codePage == GetACP())
+                        Encoding=Encoding_Local;
+                    else
+                    #endif
+                    {
+                        Errors << Chunks->Global->File_Name.To_UTF8() << ": Unsupported codepage in CSET chunk '" << Chunks->Global->CSET->codePage << "'." << endl;
+                        PerFile_Error << "Unsupported codepage in CSET chunk '" << Chunks->Global->CSET->codePage << "'." << endl;
+                        ReturnValue=false;
+                    }
+                ;
+            }
+        }
+
+        if (Encoding==Encoding_UTF8)
+        {
+            if (Chunks->Global->INFO)
+            {
+                for (map<string, string>::iterator It=Chunks->Global->INFO->Strings.begin(); It!=Chunks->Global->INFO->Strings.end(); It++)
+                {
+                    if (It->second.size() != Ztring().From_UTF8(It->second).To_UTF8().size())
+                    {
+                        Errors << Chunks->Global->File_Name.To_UTF8() << ": " << It->first << " Field contains invalids characters, try with another encoding." << endl;
+                        PerFile_Error << It->first << " Field contains invalids characters, try with another encoding." << endl;
+                        ReturnValue=false;
+                    }
+                }
+            }
+
+            if (Chunks->Global->bext)
+            {
+                for (map<string, string>::iterator It=Chunks->Global->bext->Strings.begin(); It!=Chunks->Global->bext->Strings.end(); It++)
+                {
+                    if (It->first=="description" || It->first=="originator" || It->first=="originatorreference" || It->first=="originationdate" || It->first=="originationtime" || It->first=="codinghistory")
+                    {
+                        if (It->second.size() != Ztring().From_UTF8(It->second).To_UTF8().size())
+                        {
+                            Errors << Chunks->Global->File_Name.To_UTF8() << ": " << It->first << " Field contains invalids characters, try with another encoding." << endl;
+                            PerFile_Error << It->first << " Field contains invalids characters, try with another encoding." << endl;
+                            ReturnValue=false;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            // Decode Fields to internal UTF-8
+            if (Chunks->Global->INFO)
+            {
+                for (map<string, string>::iterator It=Chunks->Global->INFO->Strings.begin(); It!=Chunks->Global->INFO->Strings.end(); It++)
+                {
+                    if (!It->second.empty())
+                        It->second=Decode(It->second);
+                }
+            }
+
+            if (Chunks->Global->bext)
+            {
+                for (map<string, string>::iterator It=Chunks->Global->bext->Strings.begin(); It!=Chunks->Global->bext->Strings.end(); It++)
+                {
+                    if ((It->first=="description" || It->first=="originator" || It->first=="originatorreference" || It->first=="originationdate" || It->first=="originationtime" || It->first=="codinghistory") && !It->second.empty())
+                        It->second=Decode(It->second);
+                }
+            }
+        }
+
         //Saving initial values
         Core_FromFile=Ztring().From_UTF8(Core_Get_Internal());
 
@@ -392,80 +492,6 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                 Set_Internal("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
     }
 
-    // Encoding
-    if (!Ignore_File_Encoding && Chunks->Global->CSET)
-    {
-        switch (Chunks->Global->CSET->codePage)
-        {
-            case 65001: // Windows codepage for UTF-8
-                Encoding=Encoding_Local;
-            break;
-            case 28591: // Windows codepage for ISO 8859-1
-                Encoding=Encoding_8859_1;
-            break;
-            case 28592: // Windows codepage for ISO 8859-2
-                Encoding=Encoding_8859_2;
-            break;
-            default: //0 or unsupported codepage, keep user preference
-                ;
-        }
-    }
-
-    if (Write_Encoding)
-    {
-        if (Encoding!=Encoding_Local)
-        {
-            if (!Chunks->Global->CSET)
-                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
-
-            if (Chunks->Global->CSET->codePage!=28590+(int8u)Encoding)
-            {
-                Chunks->Global->CSET->codePage=28590+(int8u)Encoding;
-                Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
-            }
-
-        }
-        else if (Chunks->Global->CSET && Chunks->Global->CSET->codePage!=0 && Chunks->Global->CSET->codePage!=65001)
-        {
-            Chunks->Global->CSET->codePage=0;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
-        }
-    }
-
-    if (Encoding==Encoding_Local)
-    {
-        if (Chunks->Global->INFO)
-        {
-            for (map<string, string>::iterator It=Chunks->Global->INFO->Strings.begin(); It!=Chunks->Global->INFO->Strings.end(); It++)
-            {
-                if (It->second.size() != Ztring().From_UTF8(It->second).To_UTF8().size())
-                    Warnings << Chunks->Global->File_Name.To_UTF8() << ": " << It->first << " Field contains invalids characters for the given encoding." << endl;
-                    PerFile_Warning << It->first << " Field contains invalids characters for the given encoding." << endl;
-            }
-        }
-
-        if (Chunks->Global->XMP && Chunks->Global->XMP->Strings.find("xmp")!=Chunks->Global->XMP->Strings.end())
-        {
-                if (Chunks->Global->XMP->Strings["xmp"].size() != Ztring().From_UTF8(Chunks->Global->XMP->Strings["xmp"]).To_UTF8().size())
-                    Warnings << Chunks->Global->File_Name.To_UTF8() << ": XMP Field contains invalids characters for the given encoding." << endl;
-                    PerFile_Warning << "XMP Field contains invalids characters for the given encoding." << endl;
-        }
-
-        if (Chunks->Global->aXML && Chunks->Global->aXML->Strings.find("axml")!=Chunks->Global->aXML->Strings.end())
-        {
-                if (Chunks->Global->aXML->Strings["axml"].size() != Ztring().From_UTF8(Chunks->Global->aXML->Strings["axml"]).To_UTF8().size())
-                    Warnings << Chunks->Global->File_Name.To_UTF8() << ": aXML Field contains invalids characters for the given encoding." << endl;
-                    PerFile_Warning << "XMP Field contains invalids characters for the given encoding." << endl;
-        }
-
-        if (Chunks->Global->iXML && Chunks->Global->iXML->Strings.find("ixml")!=Chunks->Global->iXML->Strings.end())
-        {
-                if (Chunks->Global->iXML->Strings["ixml"].size() != Ztring().From_UTF8(Chunks->Global->iXML->Strings["ixml"]).To_UTF8().size())
-                    Warnings << Chunks->Global->File_Name.To_UTF8() << ": iXML Field contains invalids characters for the given encoding." << endl;
-                    PerFile_Warning << "XMP Field contains invalids characters for the given encoding." << endl;
-        }
-    }
-
     CriticalSectionLocker(Chunks->Global->CS);
     Chunks->Global->Progress=1;
     
@@ -496,6 +522,70 @@ bool Riff_Handler::Save()
     {
         Errors<<Chunks->Global->File_Name.To_UTF8()<<": Is read only"<<endl;
         return false;
+    }
+
+    //Encoding
+    if (Write_Encoding!=Encoding_Max || Encoding!=Encoding_UTF8)
+    {
+        //Write
+        if (Chunks->Global->INFO)
+        {
+            for (map<string, string>::iterator It=Chunks->Global->INFO->Strings.begin(); It!=Chunks->Global->INFO->Strings.end(); It++)
+            {
+                if (!It->second.empty())
+                {
+                    It->second=Encode(It->second);
+                    Chunks->Modify(Elements::WAVE, Elements::WAVE_INFO, Chunk_Name3_Get(It->first));
+                }
+            }
+        }
+
+        if (Chunks->Global->bext)
+        {
+            for (map<string, string>::iterator It=Chunks->Global->bext->Strings.begin(); It!=Chunks->Global->bext->Strings.end(); It++)
+            {
+                if (It->first=="description" || It->first=="originator" || It->first=="originatorreference" || It->first=="originationdate" || It->first=="originationtime" || It->first=="codinghistory")
+                {
+                    if (!It->second.empty())
+                    {
+                        It->second=Encode(It->second);
+                        Chunks->Modify(Elements::WAVE, Elements::WAVE_bext, NULL);
+                    }
+                }
+            }
+        }
+    }
+
+    if (Write_CodePage || Write_Encoding!=Encoding_Max)
+    {
+        switch (Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)
+        {
+        case Encoding_UTF8:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=65001;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_8859_1:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=28591;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_8859_2:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=28592;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        default:;
+        }
     }
 
     //Write only if modified
@@ -654,7 +744,35 @@ string Riff_Handler::Get_Internal(const string &Field)
         return Chunks->Global->fmt_==NULL                                               ?"":Ztring().From_CC2(Chunks->Global->fmt_->formatType     ).To_UTF8();
     else if (Field=="BitsPerSample")
         return Chunks->Global->fmt_==NULL                                               ?"":Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample    ).To_UTF8();
-
+    else if (Field_Get(Field)=="encoding")
+    {
+        if (Write_Encoding!=Encoding_Max)
+        {
+            switch (Write_Encoding)
+            {
+                case Encoding_UTF8: return "UTF-8"; break;
+                case Encoding_8859_1: return "ISO-8859-1"; break;
+                case Encoding_8859_2: return "ISO-8859-2"; break;
+                default: return "";
+            }
+        }
+        else if (Chunks->Global->CSET)
+        {
+            switch (Chunks->Global->CSET->codePage)
+            {
+                case 65001: return "UTF-8"; break;
+                case 28591: return "ISO-8859-1"; break;
+                case 28592: return "ISO-8859-2"; break;
+                default:
+                    #ifdef _WIN32
+                    if (Chunks->Global->CSET->codePage == GetACP())
+                        return "Local";
+                    else
+                    #endif
+                        return "";
+            }
+        }
+    }
 
     //Special case - CueXml
     if (Field=="cuexml")
@@ -917,6 +1035,26 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
     if (Field=="cuexml")
         return Cue_Xml_Set(Value, Rules);
 
+    //Special case - Encoding
+    if (Field=="encoding")
+    {
+        if (Value=="REMOVE")
+        {
+            Write_Encoding=Encoding_Max;
+            return Remove_Internal("cset");
+        }
+        else if (Value=="UTF-8")
+            Write_Encoding=Encoding_UTF8;
+        else if (Value=="8859-1")
+            Write_Encoding=Encoding_8859_1;
+        else if (Value=="8859-2")
+            Write_Encoding=Encoding_8859_2;
+        else
+            return false;
+
+        return true;
+    }
+
     //Setting it
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings)
@@ -943,6 +1081,12 @@ bool Riff_Handler::Remove(const string &Field)
 {
     CriticalSectionLocker CSL(CS);
 
+    return Remove_Internal(Field);
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::Remove_Internal(const string &Field)
+{
     //Integrity
     if (Chunks==NULL)
     {
@@ -968,6 +1112,20 @@ bool Riff_Handler::Remove(const string &Field)
             }
 
         return ToReturn;
+    }
+
+    //CSET
+    if (Ztring().From_UTF8(Field).MakeLowerCase()==__T("cset"))
+    {
+        if (!Chunks->Global->CSET)
+            return false;
+
+        delete Chunks->Global->CSET;
+        Chunks->Global->CSET=NULL;
+
+        Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+
+        return true;
     }
 
     //Special case: CueXml
@@ -1020,7 +1178,29 @@ bool Riff_Handler::IsModified_Internal(const string &Field)
         ToReturn|=IsModified_Internal("ltxt");
         return ToReturn;
     }
+    if (Field_Get(Field)=="encoding")
+    {
+        if (Write_Encoding!=Encoding_Max)
+        {
+            if (!Chunks || !Chunks->Global || !Chunks->Global->CSET)
+                return true;
 
+            switch (Write_Encoding)
+            {
+                case Encoding_UTF8:
+                    return Chunks->Global->CSET->codePage!=65001; break;
+                case Encoding_8859_1:
+                    return Chunks->Global->CSET->codePage!=28591; break;
+                case Encoding_8859_2:
+                    return Chunks->Global->CSET->codePage!=28592; break;
+                default: return false;
+            }
+        }
+        else if (Chunks && Chunks->Global && !Chunks->Global->CSET && Chunks->Global->CSET_Present)
+            return true;
+        else
+            return false;
+    }
 
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
@@ -1059,7 +1239,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         Rules.INFO_Req=true;
 
     //Encoding
-    if (Field!="filename" && Field!="errors" && Field!="warnings" && Field!="information")
+    if (Field!="filename" && Field!="errors" && Field!="warnings" && Field!="information" && Field!="xmp" && Field!="ixml" && Field!="axml")
     {
         bool IsASCII=true;
         wstring Unicode=Value__.To_Unicode();
@@ -1068,7 +1248,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             if (((int32u)Unicode[i]) >= 0x80)
             {
                 IsASCII = false;
-                if (Encoding==Encoding_8859_1)
+                if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_8859_1)
                 {
                     if (Unicode[i] > 0xFF)
                     {
@@ -1076,7 +1256,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                         break;
                     }
                 }
-                else if (Encoding==Encoding_8859_2)
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_8859_2)
                 {
                     vector<wchar_t>::const_iterator It=find(ISO_8859_2.begin(), ISO_8859_2.end(), Unicode[i]);
                     if (It==ISO_8859_2.end())
@@ -1085,20 +1265,20 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                         break;
                     }
                 }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_Local)
+                {
+                    if (Ztring().From_Unicode(Unicode[i]).To_Local().empty())
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for operating system local encoding";
+                        break;
+                    }
+                }
                 else
                     break;
             }
         }
-        if (!IsASCII)
-        {
-            IsValid_Warnings<<"Warning: due to the presence of non ASCII characters, ";
-            if (Field=="description" || Field=="originator" || Field=="originatorreference")
-                IsValid_Warnings<<"which are forbidden by EBU Text 3285 specifications, ";
-            else
-                IsValid_Warnings<<"whose the encoding in files is not specified in WAV documents, ";
-            IsValid_Warnings<<"there is a risk of interoperability issues with other tools (including BWF MetaEdit on other platforms) "
-                            <<"as the content is converted with local codepage";
-        }
+        if (!IsASCII && Rules.OriginatorReference_Rec && (Field=="description" || Field=="originator" || Field=="originatorreference"))
+            IsValid_Warnings<<"Warning: non ASCII characters are forbidden by EBU Text 3285 specifications.";
     }
 
     //FileName
@@ -2296,7 +2476,7 @@ string Riff_Handler::Technical_Get()
     List.push_back(Get_Internal("iXML").empty()?__T("No"):__T("Yes"));
     List.push_back(Ztring().From_UTF8(Get_Internal("MD5Stored")));
     List.push_back(Ztring().From_UTF8(Get_Internal("MD5Generated")));
-    List.push_back(Chunks->Global->CSET?(Chunks->Global->CSET->codePage==28591?__T("8859-1"):(Chunks->Global->CSET->codePage==28592?__T("8859-2"):__T(""))):__T(""));
+    List.push_back(Ztring().From_UTF8(Get_Internal("Encoding")));
     string Errors_Temp=PerFile_Error.str();
     if (!Errors_Temp.empty())
         Errors_Temp.resize(Errors_Temp.size()-1);
@@ -2404,6 +2584,10 @@ bool Riff_Handler::IsModified_Get_Internal()
             if (IsModified_Internal(xxxx_Strings[Fields_Pos][Pos]))
                 ToReturn=true;
 
+    if (IsModified_Internal("Encoding"))
+        ToReturn=true;
+
+
     if (!ToReturn && Chunks)
         ToReturn=Chunks->IsModified();
 
@@ -2472,11 +2656,11 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
             timereference_Display=false;
         ZtringList List;
         List.Separator_Set(0, __T(","));
-        List.push_back(Ztring().From_UTF8(Decode(Chunk_Strings->Strings["description"])));
-        List.push_back(Ztring().From_UTF8(Decode(Chunk_Strings->Strings["originator"])));
-        List.push_back(Ztring().From_UTF8(Decode(Chunk_Strings->Strings["originatorreference"])));
-        List.push_back(Ztring().From_UTF8(Decode(Chunk_Strings->Strings["originationdate"])));
-        List.push_back(Ztring().From_UTF8(Decode(Chunk_Strings->Strings["originationtime"])));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["description"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["originator"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["originatorreference"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["originationdate"]));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["originationtime"]));
         List.push_back(Chunk_Strings->Strings["timereference (translated)"].empty()?(timereference_Display?Ztring("00:00:00.000"):Ztring()):Ztring().From_UTF8(Chunk_Strings->Strings["timereference (translated)"]));
         List.push_back(Chunk_Strings->Strings["timereference"].empty()?(timereference_Display?Ztring("0"):Ztring()):Ztring().From_UTF8(Chunk_Strings->Strings["timereference"]));
         List.push_back(timereference_Display?Ztring().From_UTF8(Chunk_Strings->Strings["bextversion"]):Ztring());
@@ -2486,7 +2670,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["maxtruepeaklevel"]));
         List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["maxmomentaryloudness"]));
         List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["maxshorttermloudness"]));
-        List.push_back(Ztring().From_UTF8(Decode(Chunk_Strings->Strings["codinghistory"])));
+        List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings["codinghistory"]));
         return List.Read().To_UTF8();
     }
     //Special cases
@@ -2495,7 +2679,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         ZtringList List;
         List.Separator_Set(0, __T(","));
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Info]; Pos++)
-             List.push_back(Ztring().From_UTF8(Decode(Chunk_Strings->Strings[xxxx_Strings[Fields_Info][Pos]])));
+             List.push_back(Ztring().From_UTF8(Chunk_Strings->Strings[xxxx_Strings[Fields_Info][Pos]]));
         return List.Read().To_UTF8();
     }
     if ((Field=="timereference (translated)" || Field=="timereference") && Chunk_Strings)
@@ -2518,10 +2702,12 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         return bextversion_Display?Chunk_Strings->Strings["bextversion"]:string();
     }
 
+
+
     if (&Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
-        return Decode(Chunk_Strings->Strings[Field]);
-    else
-        return Riff_Handler_EmptyZtring_Const.To_UTF8();
+        return Chunk_Strings->Strings[Field];
+
+    return Riff_Handler_EmptyZtring_Const.To_UTF8();
 }
 
 //---------------------------------------------------------------------------
@@ -2529,10 +2715,12 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
 {
     if (!File_IsValid)
         return false;
-    
-    if ((Chunk_Strings!=NULL && Encode(Value)==Decode(Chunk_Strings->Strings[Field]))
-     || (Chunk_Strings==NULL && Value.empty()))
+
+    if (Chunk_Strings==NULL && Value.empty())
         return true; //Nothing to do
+    else if (Chunk_Strings!=NULL)
+        if (Value==Chunk_Strings->Strings[Field])
+            return true; //Nothing to do
 
     //Overwrite_Rejec
     if (Overwrite_Reject && Chunk_Strings!=NULL && !Chunk_Strings->Strings[Field].empty() && !IsModified_Internal(Field))
@@ -2545,7 +2733,7 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
     Ztring Value_ToDisplay=Ztring().From_UTF8(Value);
     Value_ToDisplay.FindAndReplace(__T("\r"), __T(" "), 0, Ztring_Recursive);
     Value_ToDisplay.FindAndReplace(__T("\n"), __T(" "), 0, Ztring_Recursive);
-    Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": "<<Field<<", "<<((Chunk_Strings==NULL || Chunk_Strings->Strings[Field].empty())?"(empty)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Decode(Chunk_Strings->Strings[Field]).c_str()))<<" --> "<<(Value.empty()?"(removed)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Value_ToDisplay.To_UTF8().c_str()))<<endl;
+    Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": "<<Field<<", "<<((Chunk_Strings==NULL || Chunk_Strings->Strings[Field].empty())?"(empty)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Chunk_Strings->Strings[Field].c_str()))<<" --> "<<(Value.empty()?"(removed)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Value_ToDisplay.To_UTF8().c_str()))<<endl;
        
     //Special cases - Before
     if (Chunk_Strings==NULL)
@@ -2563,11 +2751,14 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
     //Filling
     bool Alreadyexists=false;
     for (size_t Pos=0; Pos<Chunk_Strings->Histories[Field].size(); Pos++)
-        if (Chunk_Strings->Histories[Field][Pos].To_UTF8()==Decode(Chunk_Strings->Strings[Field]))
+    {
+        if (Chunk_Strings->Histories[Field][Pos].To_UTF8()==Chunk_Strings->Strings[Field])
             Alreadyexists=true;
+    }
     if (!Alreadyexists)
-        Chunk_Strings->Histories[Field].push_back(Ztring().From_UTF8(Decode(Chunk_Strings->Strings[Field])));
-    Chunk_Strings->Strings[Field]=Encode(Value);
+        Chunk_Strings->Histories[Field].push_back(Ztring().From_UTF8(Chunk_Strings->Strings[Field]));
+
+    Chunk_Strings->Strings[Field]=Value;
 
     //Special cases - After
     if (Chunk_Strings && &Chunk_Strings==&Chunks->Global->bext && Field!="bextversion")
@@ -2594,8 +2785,8 @@ bool Riff_Handler::IsOriginal(const string &Field, const string &Value, Riff_Bas
         return IsOriginal_Internal("timereference", Get_Internal("timereference"));
 
     if (Chunk_Strings->Histories[Field].empty())
-        return Value==Decode(Chunk_Strings->Strings[Field]);
-   
+        return Value==Chunk_Strings->Strings[Field];
+
     return Value==Chunk_Strings->Histories[Field][0].To_UTF8();
 }
 
@@ -2615,7 +2806,7 @@ bool Riff_Handler::IsModified(const string &Field, Riff_Base::global::chunk_stri
         if (Field=="bextversion")
             return !Chunk_Strings->Histories["bextversion"].empty() && !(Chunk_Strings->Strings["bextversion"]=="0" || Chunk_Strings->Histories["bextversion"][0].To_UTF8()==Chunk_Strings->Strings["bextversion"]);
 
-        return !Chunk_Strings->Histories[Field].empty() && Chunk_Strings->Histories[Field][0].To_UTF8()!=Decode(Chunk_Strings->Strings[Field]);
+        return !Chunk_Strings->Histories[Field].empty() && Chunk_Strings->Histories[Field][0].To_UTF8()!=Chunk_Strings->Strings[Field];
     }
     else
         return false;

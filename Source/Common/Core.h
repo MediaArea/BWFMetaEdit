@@ -165,8 +165,10 @@ public:
     Ztring                              LogFile;
     bool                                Trace_UseDec;
     Riff_Encoding                       Encoding;
-    bool                                Write_Encoding;
+    Riff_Encoding                       Write_Encoding;
+    bool                                Write_CodePage;
     bool                                Ignore_File_Encoding;
+    bool                                In_CSET_Remove;
 
     //Status
     void                                StdOut(string Text);
@@ -195,6 +197,7 @@ protected:
         bool                In_cue__Remove;
         bool                In_cue__XML;
         string              In_cue__FileName;
+        bool                In_CSET_Remove;
 
         handler()
         {
@@ -208,6 +211,7 @@ protected:
             In_iXML_XML=false;
             In_cue__Remove=false;
             In_cue__XML=false;
+            In_CSET_Remove=false;
         }
 
         ~handler()

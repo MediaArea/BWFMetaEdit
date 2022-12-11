@@ -248,6 +248,58 @@ Control {
                             font.pointSize: 10
                             elide: Text.ElideRight
                             text: tech
+                        }
+
+                        //TODO: Use spacer
+                        Text {
+                            font.pointSize: 10
+                            elide: Text.ElideRight
+                            text: "Encoding:"
+                        }
+
+                        ComboBox {
+                            id: encoding
+                            font.pointSize: 10
+                            flat: true
+                            currentIndex: {
+                                var value = Model.value(file, "Encoding")
+                                if (value === "UTF-8")
+                                    return 0;
+                                else if (value === "ISO-8859-1")
+                                    return 1;
+                                else if (value === "ISO-8859-2")
+                                    return 2;
+                                else if (value === "Local")
+                                    return 3;
+
+                                return -1;
+                            }
+                            textRole: "text"
+                            model: [
+                                { text: "UTF-8", value: "UTF-8", enabled: true},
+                                { text: "ISO-8859-1", value: "8859-1", enabled: true},
+                                { text: "ISO-8859-2", value: "8859-2", enabled: true},
+                                { text: "Local", value: "Local", enabled: false}
+                            ]
+
+                            delegate: ItemDelegate {
+                                width: encoding.width
+                                text: modelData.text
+                                font.weight: encoding.currentIndex === index ? Font.DemiBold : Font.Normal
+                                highlighted: ListView.isCurrentItem
+                                enabled: modelData.enabled
+                            }
+
+                            onActivated: {
+                                Model.setValue(file, "Encoding", encoding.model[encoding.currentIndex].value)
+                            }
+                        }
+
+                        //TODO: Use spacer
+                        Text {
+                            font.pointSize: 10
+                            elide: Text.ElideRight
+                            text: " "
                             Layout.fillWidth: true
                         }
                         Repeater {

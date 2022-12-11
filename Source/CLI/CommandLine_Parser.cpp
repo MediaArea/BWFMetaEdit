@@ -61,8 +61,12 @@ int Parse(Core &C, string &Argument)
     OPTION("--simulate",                                    Simulate)
     OPTION("-s",                                            Simulate)
 
+    OPTION("--in-cset-remove",                              In_CSET_Remove)
     OPTION("--specialchars",                                SpecialChars)
+    OPTION("--ignore-file-encoding",                        Ignore_File_Encoding)
     OPTION("--encoding=",                                   Encoding)
+    OPTION("--write-encoding=",                             Write_Encoding)
+    OPTION("--write-encoding",                              Write_CodePage)
 
     OPTION("--out-xml=",                                    Out_XML_File)
     OPTION("--out-xml",                                     Out_XML_cout)
@@ -197,12 +201,14 @@ CL_OPTION(Simulate)
 CL_OPTION(Encoding)
 {
     std::string Value=Argument.substr(11);
-    if (Value.size()==5 && std::tolower(Value[0])=='l' && std::tolower(Value[1])=='o' && std::tolower(Value[2])=='c' && std::tolower(Value[3])=='a' && std::tolower(Value[4])=='l')
-        C.Encoding=Encoding_Local;
+    if (Value.size()==5 && std::tolower(Value[0])=='u' && std::tolower(Value[1])=='t' && std::tolower(Value[2])=='f' && Value[3]=='-' && Value[4]=='8')
+        C.Encoding=Encoding_UTF8;
     else if (Value=="8859-1")
         C.Encoding=Encoding_8859_1;
     else if (Value=="8859-2")
         C.Encoding=Encoding_8859_2;
+    else if (Value.size()==5 && std::tolower(Value[0])=='l' && std::tolower(Value[1])=='o' && std::tolower(Value[2])=='c' && std::tolower(Value[3])=='a' && std::tolower(Value[4])=='l')
+        C.Encoding=Encoding_Local;
     else
     {
         std::cout<<Value<<" unknown encoding"<<std::endl;
@@ -215,7 +221,26 @@ CL_OPTION(Encoding)
 //---------------------------------------------------------------------------
 CL_OPTION(Write_Encoding)
 {
-    C.Write_Encoding=true;
+    std::string Value=Argument.substr(17);
+    if (Value.size()==5 && std::tolower(Value[0])=='u' && std::tolower(Value[1])=='t' && std::tolower(Value[2])=='f' && Value[3]=='-' && Value[4]=='8')
+        C.Write_Encoding=Encoding_UTF8;
+    else if (Value=="8859-1")
+        C.Write_Encoding=Encoding_8859_1;
+    else if (Value=="8859-2")
+        C.Write_Encoding=Encoding_8859_2;
+    else
+    {
+        std::cout<<Value<<" unknown encoding"<<std::endl;
+        return 0;
+    }
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Write_CodePage)
+{
+    C.Write_CodePage=true;
 
     return -2; //Continue
 }
@@ -235,6 +260,15 @@ CL_OPTION(SpecialChars)
 
     return -2; //Continue
 }
+
+//---------------------------------------------------------------------------
+CL_OPTION(In_CSET_Remove)
+{
+    C.In_CSET_Remove=true;
+
+    return -2; //Continue
+}
+
 
 //---------------------------------------------------------------------------
 CL_OPTION(Log_cout)

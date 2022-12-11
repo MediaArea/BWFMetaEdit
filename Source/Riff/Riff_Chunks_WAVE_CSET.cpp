@@ -38,6 +38,7 @@ void Riff_WAVE_CSET::Read_Internal ()
     Global->CSET->countryCode=countryCode;
     Global->CSET->languageCode=languageCode;
     Global->CSET->dialectCode=dialectCode;
+    Global->CSET_Present=true;
 }
 
 //***************************************************************************

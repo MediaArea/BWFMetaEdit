@@ -119,7 +119,8 @@ public:
     bool            EmbedMD5_AuthorizeOverWritting;
     bool            Trace_UseDec;
     Riff_Encoding   Encoding;
-    bool            Write_Encoding;
+    Riff_Encoding   Write_Encoding;
+    bool            Write_CodePage;
     bool            Ignore_File_Encoding;
     unsigned short  Bext_DefaultVersion;
     unsigned short  Bext_MaxVersion;
@@ -142,6 +143,7 @@ private:
     bool      Open_Internal              (const string &FileName);
     string    Get_Internal               (const string &Field);
     bool      Set_Internal               (const string &Field, const string &Value, rules Rules);
+    bool      Remove_Internal            (const string &Field);
     bool      IsValid_Internal           (const string &Field, const string &Value, rules Rules, bool IgnoreCoherency=false);
     bool      IsOriginal_Internal        (const string &Field, const string &Value);
     bool      IsModified_Internal        (const string &Field);

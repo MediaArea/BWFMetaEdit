@@ -13,6 +13,7 @@
 #include "GUI/Qt/GUI_Main_xxxx_Bext.h"
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_CueDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_CodePageDialog.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
 #include <QLabel>
@@ -81,6 +82,17 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
             Fill="Fill with MD5Generated"; //If you change this, change at the end of method too      
         if (!item(Item->row(), Item->column())->text().isEmpty())
             Remove="Remove it"; //If you change this, change at the end of method too
+    }
+
+    if (Field=="Encoding")
+    {
+        if (!C->Get(FileName, Field).empty())
+        {
+            if (C->Write_CodePage)
+                Remove="Reset CSET";
+            else
+                Remove="Remove CSET"; //If you change this, change at the end of method too
+        }
     }
 
     //Do we need a context menu?
@@ -231,6 +243,11 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     {
         C->Set(FileName, "MD5Stored", C->Get(FileName, "MD5Generated"));
         SetText(Item->row(), "MD5Stored");
+    }
+    else if (Field=="Encoding")
+    {
+        C->Set(FileName, "Encoding", "REMOVE");
+        SetText(Item->row(), "Encoding");
     }
     else
     {
@@ -383,6 +400,24 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         return false;
     }
 
+    //Encoding
+    if (Field=="Encoding")
+    {
+        //User interaction
+        GUI_Main_xxxx_CodePageDialog* Edit=new GUI_Main_xxxx_CodePageDialog(C, FileName);
+        if (Edit->exec()!=QDialog::Accepted)
+        {
+            delete Edit; //Edit=NULL;
+            return false; //No change
+        }
+        delete Edit; //Edit=NULL;
+
+        //Updating
+        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
+        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+        return false;
+    }
 
     return false;
 }
@@ -411,6 +446,7 @@ bool GUI_Main_Technical_Table::Fill_Enabled (const string &FileName, const strin
      && Field!="aXML"
      && Field!="iXML"
      && Field!="bext"
+     && Field!="Encoding"
      && !(Field=="MD5Stored" && (Value.empty() || C->EmbedMD5_AuthorizeOverWritting)))
         return false;
 
