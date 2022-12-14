@@ -153,7 +153,10 @@ private:
     void      Options_Update_Internal    (bool Update=true);
     string    Cue_Xml_Get                ();
     bool      Cue_Xml_Set                (const string& Xml, rules Rules);
-    bool      Cue_Xml_To_Fields          (const string& Xml, string& cue_, string& labl, string& note, string& ltxt);
+    bool      Cue_Xml_To_Fields          (const string& Xml, std::vector<Riff_Base::global::chunk_cue_::point>& Points,
+                                                             std::vector<Riff_Base::global::chunk_labl>& Labels,
+                                                             std::vector<Riff_Base::global::chunk_note>& Notes,
+                                                             std::vector<Riff_Base::global::chunk_ltxt>& Texts);
 
     //---------------------------------------------------------------------------
     //Helpers - Per item

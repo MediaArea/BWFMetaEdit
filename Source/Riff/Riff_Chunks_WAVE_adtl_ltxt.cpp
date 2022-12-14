@@ -29,37 +29,19 @@ void Riff_WAVE_adtl_ltxt::Read_Internal ()
         throw exception_valid("wrong chunk size (ltxt)");
 
     //Parsing
-    int32u CuePointId, SampleLength, PurposeId;
-    int16u Country, Language, Dialect, CodePage;
-    string Value;
-    Get_L4(CuePointId);
-    Get_L4(SampleLength);
-    Get_B4(PurposeId);
-    Get_L2(Country);
-    Get_L2(Language);
-    Get_L2(Dialect);
-    Get_L2(CodePage);
+    Riff_Base::global::chunk_ltxt Item;
+    Get_L4(Item.cuePointId);
+    Get_L4(Item.sampleLength);
+    Get_B4(Item.purposeId);
+    Get_L2(Item.country);
+    Get_L2(Item.language);
+    Get_L2(Item.dialect);
+    Get_L2(Item.codePage);
     if (Chunk.Content.Size>20)
-        Get_String(Chunk.Content.Size-20, Value);
+        Get_String(Chunk.Content.Size-20, Item.text);
 
     //Filling
-    ZtringList Item;
-    Ztring Text;
-    Text.From_UTF8(Value);
-    Text.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    Text.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
-    Item.push_back(Ztring().From_Number(CuePointId));
-    Item.push_back(Ztring().From_Number(SampleLength));
-    Item.push_back(__T("0x")+Ztring().From_Number(PurposeId, 16));
-    Item.push_back(Ztring().From_Number(Country));
-    Item.push_back(Ztring().From_Number(Language));
-    Item.push_back(Ztring().From_Number(Dialect));
-    Item.push_back(Ztring().From_Number(CodePage));
-    Item.push_back(Text);
-
-    ZtringListList Items(Ztring().From_UTF8(Global->adtl->Strings["ltxt"].c_str()));
-    Items.push_back(Item);
-    Global->adtl->Strings["ltxt"]=Items.Read().To_UTF8();
+    Global->adtl->texts.push_back(Item);
 }
 
 //***************************************************************************
@@ -69,50 +51,37 @@ void Riff_WAVE_adtl_ltxt::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_adtl_ltxt::Modify_Internal ()
 {
-    ZtringListList Texts(Ztring().From_UTF8(Global->adtl?Global->adtl->Strings["ltxt"]:string()));
-    if (Texts.empty())
+    if (!Global->adtl || Global->adtl->texts.empty() || Global->adtl->textsIndex>=Global->adtl->texts.size())
     {
         Chunk.Content.IsRemovable=true;
         return;
     }
 
-    int32u PointId=Texts[0](0).To_int32u();
-    int32u SampleLength=Texts[0](1).To_int32u();
-    int32u PurposeId=Texts[0](2).To_int32u(16);
-    int16u Country=Texts[0](3).To_int16u();
-    int16u Language=Texts[0](4).To_int16u();
-    int16u Dialect=Texts[0](5).To_int16u();
-    int16u CodePage=Texts[0](6).To_int16u();
-    Ztring Text=Texts[0](7);
-    Text.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-    Text.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    Text.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
-    string Value=Text.To_UTF8();
+    Riff_Base::global::chunk_ltxt Item=Global->adtl->texts[Global->adtl->textsIndex];
 
     //Calculating size
-    if (Value.size()>=0xFFFFFFEA)
+    if (Item.text.size()>=0xFFFFFFEA)
         return; //TODO: error
 
     //Creating buffer
     Chunk.Content.Buffer_Offset=0;
-    Chunk.Content.Size=20+Value.size()+1;
+    Chunk.Content.Size=20+Item.text.size()+1;
     delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[Chunk.Content.Size];
 
-    Put_L4(PointId);
-    Put_L4(SampleLength);
-    Put_B4(PurposeId);
-    Put_L2(Country);
-    Put_L2(Language);
-    Put_L2(Dialect);
-    Put_L2(CodePage);
-    Put_String(Value.size(), Value);
+    Put_L4(Item.cuePointId);
+    Put_L4(Item.sampleLength);
+    Put_B4(Item.purposeId);
+    Put_L2(Item.country);
+    Put_L2(Item.language);
+    Put_L2(Item.dialect);
+    Put_L2(Item.codePage);
+    Put_String(Item.text.size(), Item.text);
     Put_L1(0x00); //ZSTR i.e. null terminated text string
 
     Chunk.Content.IsModified=true;
     Chunk.Content.Size_IsModified=true;
 
-    Texts.erase(Texts.begin());
-    Global->adtl->Strings["ltxt"]=Texts.Read().To_UTF8();
+    Global->adtl->textsIndex++;
 }
 
 //***************************************************************************

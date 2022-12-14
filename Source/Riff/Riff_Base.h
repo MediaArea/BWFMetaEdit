@@ -195,6 +195,90 @@ public:
                 bitsPerSample=0;
             }
         };
+        struct chunk_cue_
+        {
+
+            struct point
+            {
+                int32u          id;
+                int32u          position;
+                int32u          dataChunkId;
+                int32u          chunkStart;
+                int32u          blockStart;
+                int32u          sampleOffset;
+
+                point()
+                {
+                    id=0;
+                    position=0;
+                    dataChunkId=0;
+                    chunkStart=0;
+                    blockStart=0;
+                    sampleOffset=0;
+                }
+            };
+
+            std::vector<point> points;
+        };
+        struct chunk_labl
+        {
+            int32u          cuePointId;
+            string          label;
+
+            chunk_labl()
+            {
+                cuePointId=0;
+            }
+        };
+        struct chunk_note
+        {
+            int32u          cuePointId;
+            string          note;
+
+            chunk_note()
+            {
+                cuePointId=0;
+            }
+        };
+        struct chunk_ltxt
+        {
+            int32u          cuePointId;
+            int32u          sampleLength;
+            int32u          purposeId;
+            int16u          country;
+            int16u          language;
+            int16u          dialect;
+            int16u          codePage;
+            string          text;
+
+            chunk_ltxt()
+            {
+                cuePointId=0;
+                sampleLength=0;
+                purposeId=0;
+                country=0;
+                language=0;
+                dialect=0;
+                codePage=0;
+            }
+        };
+        struct chunk_adtl
+        {
+            std::vector<chunk_labl> labels;
+            size_t                  labelsIndex;
+            std::vector<chunk_note> notes;
+            size_t                  notesIndex;
+            std::vector<chunk_ltxt> texts;
+            size_t                  textsIndex;
+
+            chunk_adtl()
+            {
+                labelsIndex=0;
+                notesIndex=0;
+                textsIndex=0;
+            }
+        };
+
         struct chunk_CSET
         {
             int16u          codePage;
@@ -255,10 +339,11 @@ public:
         chunk_strings      * XMP;
         chunk_strings      *aXML;
         chunk_strings      *iXML;
+        chunk_strings      *cuexml;
         chunk_strings      *MD5Stored;
         chunk_strings      *MD5Generated;
-        chunk_strings      *cue_;
-        chunk_strings      *adtl;
+        chunk_cue_         *cue_;
+        chunk_adtl         *adtl;
         bool                CSET_Present;
         bool                NoPadding_Accept;
         bool                NoPadding_IsCorrected;
@@ -294,6 +379,7 @@ public:
             iXML=NULL;
             cue_=NULL;
             adtl=NULL;
+            cuexml=NULL;
             MD5Stored=NULL;
             MD5Generated=NULL;
             CSET_Present=false;
@@ -327,7 +413,8 @@ public:
             delete aXML; //aXML=NULL;
             delete iXML; //iXML=NULL;
             delete cue_; //cue_=NULL;
-            delete adtl; //cue_=NULL;
+            delete adtl; //adtl=NULL;
+            delete cuexml; //cuexml=NULL;
         }
     };
 

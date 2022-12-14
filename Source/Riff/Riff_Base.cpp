@@ -278,18 +278,13 @@ void Riff_Base::Modify_Internal_Subs (int32u Chunk_Name_1, int32u Chunk_Name_2, 
                      || Chunk_Name_1==Elements::WAVE_adtl_note
                      || Chunk_Name_1==Elements::WAVE_adtl_ltxt))
    {
-        //ZtringListList Fields;
-        std::string Fields;
-        std::string Fields_Backup;
-        std::vector<Riff_Base*> Chunks;
 
         if (Chunk_Name_1==Elements::WAVE_adtl_labl)
-           Fields="labl";
+           Global->adtl->labelsIndex=0;
         else if (Chunk_Name_1==Elements::WAVE_adtl_note)
-           Fields="note";
+           Global->adtl->notesIndex=0;
         else if (Chunk_Name_1==Elements::WAVE_adtl_ltxt)
-           Fields="ltxt";
-        Fields_Backup=Global->adtl->Strings[Fields];
+          Global->adtl->textsIndex=0;
 
         bool Adding=true;
         for (size_t Sub_Pos=0; Sub_Pos<Subs.size(); Sub_Pos++)
@@ -327,7 +322,6 @@ void Riff_Base::Modify_Internal_Subs (int32u Chunk_Name_1, int32u Chunk_Name_2, 
         if (Subs.empty())
             Chunk.Content.IsRemovable=true;
 
-        Global->adtl->Strings[Fields]=Fields_Backup;
         return;
    }
 

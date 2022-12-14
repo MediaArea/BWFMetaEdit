@@ -24,7 +24,7 @@
 #endif
 
 #ifdef _WIN32
-#include <winnls.h>
+#include <windows.h>
 #endif
 
 using namespace std;
@@ -44,7 +44,6 @@ enum xxxx_Fields
     Fields_Tech,
     Fields_Bext,
     Fields_Info,
-    Fields_Adtl,
     Fields_Max,
 };
 
@@ -53,7 +52,6 @@ size_t xxxx_Strings_Size[]=
     5,  //Tech
     15,  //Bext
     17, //Info
-    3, //Adtl
 };
 
 const char* xxxx_Strings[][17]=
@@ -63,7 +61,7 @@ const char* xxxx_Strings[][17]=
         "aXML",
         "iXML",
         "MD5Stored",
-        "cue",
+        "cuexml",
         "",
         "",
         "",
@@ -115,25 +113,6 @@ const char* xxxx_Strings[][17]=
         "ISRC", //Source
         "ISRF", //Source Form
         "ITCH", //Technician
-    },
-    {
-        "labl",
-        "note",
-        "ltxt",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
     },
 };
 
@@ -400,6 +379,40 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                     }
                 }
             }
+
+            if (Chunks->Global->adtl)
+            {
+                for (std::vector<Riff_Base::global::chunk_labl>::iterator It=Chunks->Global->adtl->labels.begin(); It!=Chunks->Global->adtl->labels.end(); It++)
+                {
+                    if (It->label.size() != Ztring().From_UTF8(It->label).To_UTF8().size())
+                    {
+                        Errors << Chunks->Global->File_Name.To_UTF8() << ": CUE labels contains invalids characters, try with another encoding." << endl;
+                        PerFile_Error << " CUE labels contains invalids characters, try with another encoding." << endl;
+                        ReturnValue=false;
+                    }
+                }
+
+                for (std::vector<Riff_Base::global::chunk_note>::iterator It=Chunks->Global->adtl->notes.begin(); It!=Chunks->Global->adtl->notes.end(); It++)
+                {
+                    if (It->note.size() != Ztring().From_UTF8(It->note).To_UTF8().size())
+                    {
+                        Errors << Chunks->Global->File_Name.To_UTF8() << ": CUE notes contains invalids characters, try with another encoding." << endl;
+                        PerFile_Error << " CUE notes contains invalids characters, try with another encoding." << endl;
+                        ReturnValue=false;
+                    }
+                }
+
+                //TODO: handle ltxt internal cset values
+                for (std::vector<Riff_Base::global::chunk_ltxt>::iterator It=Chunks->Global->adtl->texts.begin(); It!=Chunks->Global->adtl->texts.end(); It++)
+                {
+                    if (It->text.size() != Ztring().From_UTF8(It->text).To_UTF8().size())
+                    {
+                        Errors << Chunks->Global->File_Name.To_UTF8() << ": CUE texts contains invalids characters, try with another encoding." << endl;
+                        PerFile_Error << " CUE notes contains invalids characters, try with another encoding." << endl;
+                        ReturnValue=false;
+                    }
+                }
+            }
         }
         else
         {
@@ -421,6 +434,35 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                         It->second=Decode(It->second);
                 }
             }
+
+            if (Chunks->Global->adtl)
+            {
+                for (std::vector<Riff_Base::global::chunk_labl>::iterator It=Chunks->Global->adtl->labels.begin(); It!=Chunks->Global->adtl->labels.end(); It++)
+                {
+                    if (!It->label.empty())
+                        It->label=Decode(It->label);
+                }
+
+                for (std::vector<Riff_Base::global::chunk_note>::iterator It=Chunks->Global->adtl->notes.begin(); It!=Chunks->Global->adtl->notes.end(); It++)
+                {
+                    if (!It->note.empty())
+                        It->note=Decode(It->note);
+                }
+
+                //TODO: handle ltxt internal cset values
+                for (std::vector<Riff_Base::global::chunk_ltxt>::iterator It=Chunks->Global->adtl->texts.begin(); It!=Chunks->Global->adtl->texts.end(); It++)
+                {
+                    if (!It->text.empty())
+                        It->text=Decode(It->text);
+                }
+            }
+        }
+
+        //Cues - Xml
+        if (Chunks->Global->cue_)
+        {
+            Chunks->Global->cuexml = new Riff_Base::global::chunk_strings;
+            Chunks->Global->cuexml->Strings["cuexml"]=Cue_Xml_Get();
         }
 
         //Saving initial values
@@ -542,6 +584,7 @@ bool Riff_Handler::Save()
 
         if (Chunks->Global->bext)
         {
+            bool Modified=false;
             for (map<string, string>::iterator It=Chunks->Global->bext->Strings.begin(); It!=Chunks->Global->bext->Strings.end(); It++)
             {
                 if (It->first=="description" || It->first=="originator" || It->first=="originatorreference" || It->first=="originationdate" || It->first=="originationtime" || It->first=="codinghistory")
@@ -549,10 +592,52 @@ bool Riff_Handler::Save()
                     if (!It->second.empty())
                     {
                         It->second=Encode(It->second);
-                        Chunks->Modify(Elements::WAVE, Elements::WAVE_bext, NULL);
+                        Modified=true;
                     }
                 }
             }
+            if (Modified)
+                Chunks->Modify(Elements::WAVE, Elements::WAVE_bext, NULL);
+        }
+
+        if (Chunks->Global->adtl)
+        {
+            bool Modified=false;
+            for (std::vector<Riff_Base::global::chunk_labl>::iterator It=Chunks->Global->adtl->labels.begin(); It!=Chunks->Global->adtl->labels.end(); It++)
+            {
+                if (!It->label.empty())
+                {
+                    It->label=Encode(It->label);
+                    Modified=true;
+                }
+            }
+            if (Modified)
+                Chunks->Modify(Elements::WAVE, Elements::WAVE_adtl, Elements::WAVE_adtl_labl);
+
+            Modified=false;
+            for (std::vector<Riff_Base::global::chunk_note>::iterator It=Chunks->Global->adtl->notes.begin(); It!=Chunks->Global->adtl->notes.end(); It++)
+            {
+                if (!It->note.empty())
+                {
+                    It->note=Encode(It->note);
+                    Modified=true;
+                }
+            }
+            if (Modified)
+                Chunks->Modify(Elements::WAVE, Elements::WAVE_adtl, Elements::WAVE_adtl_note);
+
+            //TODO: handle ltxt internal cset values
+            Modified=false;
+            for (std::vector<Riff_Base::global::chunk_ltxt>::iterator It=Chunks->Global->adtl->texts.begin(); It!=Chunks->Global->adtl->texts.end(); It++)
+            {
+                if (!It->text.empty())
+                {
+                    It->text=Encode(It->text);
+                    Modified=true;
+                }
+            }
+            if (Modified)
+                Chunks->Modify(Elements::WAVE, Elements::WAVE_adtl, Elements::WAVE_adtl_ltxt);
         }
     }
 
@@ -600,7 +685,15 @@ bool Riff_Handler::Save()
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
         {
             if (!IsOriginal_Internal(xxxx_Strings[Fields_Pos][Pos], Get_Internal(xxxx_Strings[Fields_Pos][Pos])))
+            {
                 Chunks->Modify(Elements::WAVE, Chunk_Name2_Get(xxxx_Strings[Fields_Pos][Pos]), Chunk_Name3_Get(xxxx_Strings[Fields_Pos][Pos]));
+                if (Chunk_Name2_Get(xxxx_Strings[Fields_Pos][Pos])==Elements::WAVE_cue_)
+                {
+                    Chunks->Modify(Elements::WAVE, Chunk_Name2_Get("labl"), Chunk_Name3_Get("labl"));
+                    Chunks->Modify(Elements::WAVE, Chunk_Name2_Get("note"), Chunk_Name3_Get("note"));
+                    Chunks->Modify(Elements::WAVE, Chunk_Name2_Get("ltxt"), Chunk_Name3_Get("ltxt"));
+                }
+            }
         }
 
     //File size management
@@ -1167,15 +1260,6 @@ bool Riff_Handler::IsModified_Internal(const string &Field)
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Info]; Pos++)
              if (IsModified_Internal(xxxx_Strings[Fields_Info][Pos]))
                  ToReturn=true;
-        return ToReturn;
-    }
-    if (Field_Get(Field)=="cuexml")
-    {
-        bool ToReturn=false;
-        ToReturn|=IsModified_Internal("cue");
-        ToReturn|=IsModified_Internal("labl");
-        ToReturn|=IsModified_Internal("note");
-        ToReturn|=IsModified_Internal("ltxt");
         return ToReturn;
     }
     if (Field_Get(Field)=="encoding")
@@ -2050,52 +2134,46 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
 
     else if (Field=="cuexml")
     {
-        string cue_;
-        string labl;
-        string note;
-        string ltxt;
+        std::vector<Riff_Base::global::chunk_cue_::point> Cues;
+        std::vector<Riff_Base::global::chunk_labl> Labels;
+        std::vector<Riff_Base::global::chunk_note> Notes;
+        std::vector<Riff_Base::global::chunk_ltxt> Texts;
+        Cue_Xml_To_Fields(Value, Cues, Labels, Notes, Texts);
+        std::vector<int32u> CuesPoints;
 
-        Cue_Xml_To_Fields(Value, cue_, labl, note, ltxt);
-
-        ZtringListList Cues(Ztring().From_UTF8(cue_));
-        ZtringListList Labels(Ztring().From_UTF8(labl));
-        ZtringListList Notes(Ztring().From_UTF8(note));
-        ZtringListList Texts(Ztring().From_UTF8(ltxt));
-
-        //cue_
+        // cue_
         {
-            ZtringList Points;
-            ZtringList Duplicates;
+            std::vector<int32u> Duplicates;
             for (size_t Pos=0; Pos<Cues.size(); Pos++)
             {
-                Ztring Point=Cues[Pos](0);
-                if (find(Points.begin(), Points.end(), Point)!=Points.end())
+                int32u Point=Cues[Pos].id;
+                if (find(CuesPoints.begin(), CuesPoints.end(), Point)!=CuesPoints.end())
                 {
                     Duplicates.push_back(Point);
                     continue;
                 }
-                Points.push_back(Point);
+                CuesPoints.push_back(Point);
             }
             if (!Duplicates.empty())
             {
-                IsValid_Errors<<"Errors: duplicate cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                IsValid_Errors<<"Errors: duplicate cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0];
                 for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
-                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Duplicates[Pos];
             }
         }
 
         //labl
         {
-            ZtringList Points;
-            ZtringList Missing;
-            ZtringList Duplicates;
+            std::vector<int32u> Points;
+            std::vector<int32u> Missing;
+            std::vector<int32u> Duplicates;
             for (size_t Pos=0; Pos<Labels.size(); Pos++)
             {
-                Ztring Point=Labels[Pos](0);
+                int32u Point=Labels[Pos].cuePointId;
 
-                if (Cues.Find(Point, 0, 0)==Error)
+                if (find(CuesPoints.begin(), CuesPoints.end(), Point)==CuesPoints.end())
                     Missing.push_back(Point);
-                else if (Points.Find(Point)!=Error)
+                else if (find(Points.begin(), Points.end(), Point)!=Points.end())
                     Duplicates.push_back(Point);
                 else
                     Points.push_back(Point);
@@ -2104,32 +2182,33 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0].To_UTF8();
+                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0];
                 for (size_t Pos=1; Pos<Missing.size(); Pos++)
-                    IsValid_Errors<<", "<<Missing[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Missing[Pos];
                 IsValid_Errors<<(Missing.size()>1?" are":" is")<<" referenced by labl "<<(Missing.size()>1?"entries":"entry");
             }
             if (!Duplicates.empty())
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: multiple labl entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                IsValid_Errors<<"Error: multiple labl entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0];
                 for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
-                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Duplicates[Pos];
             }
         }
 
         //note
         {
-            ZtringList Points;
-            ZtringList Missing;
-            ZtringList Duplicates;
-            for (size_t Pos=0; Pos<Notes.size(); Pos++)
+            std::vector<int32u> Points;
+            std::vector<int32u> Missing;
+            std::vector<int32u> Duplicates;
+            for (size_t Pos=0; Pos<Labels.size(); Pos++)
             {
-                Ztring Point=Notes[Pos](0);
-                if (Cues.Find(Point, 0, 0)==Error)
+                int32u Point=Labels[Pos].cuePointId;
+
+                if (find(CuesPoints.begin(), CuesPoints.end(), Point)==CuesPoints.end())
                     Missing.push_back(Point);
-                else if (Points.Find(Point)!=Error)
+                else if (find(Points.begin(), Points.end(), Point)!=Points.end())
                     Duplicates.push_back(Point);
                 else
                     Points.push_back(Point);
@@ -2138,44 +2217,44 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0].To_UTF8();
+                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0];
                 for (size_t Pos=1; Pos<Missing.size(); Pos++)
-                    IsValid_Errors<<", "<<Missing[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Missing[Pos];
                 IsValid_Errors<<(Missing.size()>1?" are":" is")<<" referenced by note "<<(Missing.size()>1?"entries":"entry");
             }
             if (!Duplicates.empty())
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: multiple note entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                IsValid_Errors<<"Error: multiple note entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0];
                 for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
-                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Duplicates[Pos];
             }
         }
 
         //ltxt
         {
-            ZtringList Points;
-            ZtringList Missing;
-            ZtringList Duplicates;
+            std::vector<int32u>  Points;
+            std::vector<int32u>  Missing;
+            std::vector<int32u>  Duplicates;
             ostringstream IsValid_Errors_Save(IsValid_Errors.str());
             ostringstream IsValid_Warnings_Save(IsValid_Warnings.str());
             for (size_t Pos=0; Pos<Texts.size(); Pos++)
             {
-                Ztring Point=Texts[Pos](0);
-                if (Cues.Find(Point, 0, 0)==Error)
+                int32u Point=Texts[Pos].cuePointId;
+                if (find(CuesPoints.begin(), CuesPoints.end(), Point)==CuesPoints.end())
                     Missing.push_back(Point);
-                else if (Points.Find(Point)!=Error)
+                else if (find(Points.begin(), Points.end(), Point)!=Points.end())
                     Duplicates.push_back(Point);
                 else
                     Points.push_back(Point);
 
                 if (!IgnoreCoherency)
                 {
-                    string Purpose=Texts[Pos](2).To_UTF8();
-                    string Country=Texts[Pos](3).To_UTF8();
-                    string Language=Texts[Pos](4).To_UTF8();
-                    string Dialect=Texts[Pos](5).To_UTF8();
+                    string Purpose=string("0x")+Ztring().From_Number(Texts[Pos].purposeId, 16).To_UTF8();
+                    string Country=Ztring().From_Number(Texts[Pos].country).To_UTF8();
+                    string Language=Ztring().From_Number(Texts[Pos].language).To_UTF8();
+                    string Dialect=Ztring().From_Number(Texts[Pos].dialect).To_UTF8();
 
                     IsValid_Internal("cue_ltxt_purpose", Purpose, Rules, IgnoreCoherency);
 
@@ -2225,18 +2304,18 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0].To_UTF8();
+                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0];
                 for (size_t Pos=1; Pos<Missing.size(); Pos++)
-                    IsValid_Errors<<", "<<Missing[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Missing[Pos];
                 IsValid_Errors<<(Missing.size()>1?" are":" is")<<" referenced by ltxt "<<(Missing.size()>1?"entries":"entry");
             }
             if (!Duplicates.empty())
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: multiple ltxt entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                IsValid_Errors<<"Error: multiple ltxt entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0];
                 for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
-                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Duplicates[Pos];
             }
         }
     }
@@ -2326,26 +2405,6 @@ bool Riff_Handler::IsOriginal(const string &Field, const string &Value)
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsOriginal_Internal(const string &Field, const string &Value)
 {
-    //Special case: CueXml
-    if (Field=="cuexml")
-    {
-        string cue_;
-        string labl;
-        string note;
-        string ltxt;
-
-        if (!Cue_Xml_To_Fields(Value, cue_, labl, note, ltxt))
-            return false;
-
-        bool ToReturn=true;
-        ToReturn&=IsOriginal_Internal("cue", cue_);
-        ToReturn&=IsOriginal_Internal("labl", cue_);
-        ToReturn&=IsOriginal_Internal("note", cue_);
-        ToReturn&=IsOriginal_Internal("ltxt", cue_);
-
-        return ToReturn;
-    }
-
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return true;
@@ -2733,7 +2792,7 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
     Ztring Value_ToDisplay=Ztring().From_UTF8(Value);
     Value_ToDisplay.FindAndReplace(__T("\r"), __T(" "), 0, Ztring_Recursive);
     Value_ToDisplay.FindAndReplace(__T("\n"), __T(" "), 0, Ztring_Recursive);
-    Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": "<<Field<<", "<<((Chunk_Strings==NULL || Chunk_Strings->Strings[Field].empty())?"(empty)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Chunk_Strings->Strings[Field].c_str()))<<" --> "<<(Value.empty()?"(removed)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Value_ToDisplay.To_UTF8().c_str()))<<endl;
+    Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": "<<Field<<", "<<((Chunk_Strings==NULL || Chunk_Strings->Strings[Field].empty())?"(empty)":((Field=="xmp" || Field=="axml" || Field=="ixml" || Field=="cuexml")?"(XML data)":Chunk_Strings->Strings[Field].c_str()))<<" --> "<<(Value.empty()?"(removed)":((Field=="xmp" || Field=="axml" || Field=="ixml" || Field=="cuexml")?"(XML data)":Value_ToDisplay.To_UTF8().c_str()))<<endl;
        
     //Special cases - Before
     if (Chunk_Strings==NULL)
@@ -2800,7 +2859,7 @@ bool Riff_Handler::IsModified(const string &Field, Riff_Base::global::chunk_stri
     if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
         return IsModified_Internal("timereference");
 
-    if (&Chunk_Strings!=NULL && Chunk_Strings && Chunk_Strings->Histories.find(Field)!=Chunk_Strings->Histories.end())
+    if (&Chunk_Strings && Chunk_Strings && Chunk_Strings->Histories.find(Field)!=Chunk_Strings->Histories.end())
     {
         //Special cases
         if (Field=="bextversion")
@@ -2927,13 +2986,24 @@ void Riff_Handler::Options_Update_Internal(bool Update)
 //---------------------------------------------------------------------------
 string Riff_Handler::Cue_Xml_Get()
 {
-    ZtringListList Points(Ztring().From_UTF8(Get_Internal("cue").c_str()));
-    ZtringListList Labels=(Ztring().From_UTF8(Get_Internal("labl").c_str()));
-    ZtringListList Notes=(Ztring().From_UTF8(Get_Internal("note").c_str()));
-    ZtringListList Texts=(Ztring().From_UTF8(Get_Internal("ltxt").c_str()));
-
-    if (Points.empty())
+    if (!Chunks->Global->cue_ || Chunks->Global->cue_->points.empty())
         return string();
+
+    std::vector<Riff_Base::global::chunk_cue_::point> Points;
+    if (Chunks->Global->cue_)
+        Points=Chunks->Global->cue_->points;
+
+    std::vector<Riff_Base::global::chunk_labl> Labels;
+    if (Chunks->Global->adtl)
+        Labels=Chunks->Global->adtl->labels;
+
+    std::vector<Riff_Base::global::chunk_note> Notes;
+    if (Chunks->Global->adtl)
+        Notes=Chunks->Global->adtl->notes;
+
+    std::vector<Riff_Base::global::chunk_ltxt> Texts;
+    if (Chunks->Global->adtl)
+        Texts=Chunks->Global->adtl->texts;
 
     tinyxml2::XMLPrinter Printer;
     Printer.PushHeader(false, false);
@@ -2944,140 +3014,168 @@ string Riff_Handler::Cue_Xml_Get()
 
     for (size_t Pos=0; Pos<Points.size(); Pos++)
     {
-        Ztring Id=Points[Pos](0);
+        uint32_t Id=Points[Pos].id;
 
         Printer.OpenElement("Cue");
             Printer.OpenElement("ID");
-                Printer.PushText(Id.To_UTF8().c_str());
+                Printer.PushText(Points[Pos].id);
             Printer.CloseElement();
             Printer.OpenElement("Position");
-                Printer.PushText(Points[Pos](1).To_UTF8().c_str());
+                Printer.PushText(Points[Pos].position);
             Printer.CloseElement();
             Printer.OpenElement("DataChunkID");
-                Printer.PushText(Points[Pos](2).To_UTF8().c_str());
+                Printer.PushText("0x");
+                Printer.PushText(Ztring().From_Number(Points[Pos].dataChunkId, 16).To_UTF8().c_str());
             Printer.CloseElement();
             Printer.OpenElement("ChunkStart");
-                Printer.PushText(Points[Pos](3).To_UTF8().c_str());
+                Printer.PushText(Points[Pos].chunkStart);
             Printer.CloseElement();
             Printer.OpenElement("BlockStart");
-                Printer.PushText(Points[Pos](4).To_UTF8().c_str());
+                Printer.PushText(Points[Pos].blockStart);
             Printer.CloseElement();
             Printer.OpenElement("SampleOffset");
-                Printer.PushText(Points[Pos](5).To_UTF8().c_str());
+                Printer.PushText(Points[Pos].sampleOffset);
             Printer.CloseElement();
-        for (size_t Label_Pos=Labels.Find(Id, 0, 0); Label_Pos!=Error; Label_Pos=Labels.Find(Id, 0, 0))
-        {
-            Printer.OpenElement("Label");
-                Ztring Label=Labels[Label_Pos](1);
-                Label.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                Printer.PushText(Label.To_UTF8().c_str());
-            Printer.CloseElement();
-            Labels.erase(Labels.begin()+Label_Pos);
-        }
-        for (size_t Note_Pos=Notes.Find(Id, 0, 0); Note_Pos!=Error; Note_Pos=Notes.Find(Id, 0, 0))
-        {
-            Printer.OpenElement("Note");
-                Ztring Note=Notes[Note_Pos](1);
-                Note.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                Printer.PushText(Note.To_UTF8().c_str());
-            Printer.CloseElement();
-            Notes.erase(Notes.begin()+Note_Pos);
-        }
-        for (size_t Text_Pos=Texts.Find(Id, 0, 0); Text_Pos!=Error; Text_Pos=Texts.Find(Id, 0, 0))
-        {
-            Printer.OpenElement("LabeledText");
-                Printer.OpenElement("SampleLength");
-                    Printer.PushText(Texts[Text_Pos](1).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("PurposeID");
-                    Printer.PushText(Texts[Text_Pos](2).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Country");
-                    Printer.PushText(Texts[Text_Pos](3).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Language");
-                    Printer.PushText(Texts[Text_Pos](4).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Dialect");
-                    Printer.PushText(Texts[Text_Pos](5).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("CodePage");
-                    Printer.PushText(Texts[Text_Pos](6).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Text");
-                    Ztring Text=Texts[Text_Pos](7);
-                    Text.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                    Printer.PushText(Text.To_UTF8().c_str());
-                Printer.CloseElement();
-            Printer.CloseElement();
-            Texts.erase(Texts.begin()+Text_Pos);
-        }
+            {
+                std::vector<Riff_Base::global::chunk_labl>::iterator It=Labels.begin();
+                while (It!=Labels.end())
+                {
+                    if (It->cuePointId==Id)
+                    {
+                        Printer.OpenElement("Label");
+                            Printer.PushText(It->label.c_str());
+                        Printer.CloseElement();
+                        It=Labels.erase(It);
+                    }
+                    else
+                        It++;
+                }
+            }
+            {
+                std::vector<Riff_Base::global::chunk_note>::iterator It=Notes.begin();
+                while (It!=Notes.end())
+                {
+                    if (It->cuePointId==Id)
+                    {
+                        Printer.OpenElement("Note");
+                            Printer.PushText(It->note.c_str());
+                        Printer.CloseElement();
+                        It=Notes.erase(It);
+                    }
+                    else
+                        It++;
+                }
+            }
+            {
+                std::vector<Riff_Base::global::chunk_ltxt>::iterator It=Texts.begin();
+                while (It!=Texts.end())
+                {
+                    if (It->cuePointId==Id)
+                    {
+                        Printer.OpenElement("LabeledText");
+                            Printer.OpenElement("SampleLength");
+                                Printer.PushText(It->sampleLength);
+                            Printer.CloseElement();
+                            Printer.OpenElement("PurposeID");
+                                Printer.PushText("0x");
+                                Printer.PushText(Ztring().From_Number(It->purposeId, 16).To_UTF8().c_str());
+                            Printer.CloseElement();
+                            Printer.OpenElement("Country");
+                                Printer.PushText(It->country);
+                            Printer.CloseElement();
+                            Printer.OpenElement("Language");
+                                Printer.PushText(It->language);
+                            Printer.CloseElement();
+                            Printer.OpenElement("Dialect");
+                                Printer.PushText(It->dialect);
+                            Printer.CloseElement();
+                            Printer.OpenElement("CodePage");
+                                Printer.PushText(It->codePage);
+                            Printer.CloseElement();
+                            Printer.OpenElement("Text");
+                                Printer.PushText(It->text.c_str()); //TODO: Handle CodePage
+                            Printer.CloseElement();
+                        Printer.CloseElement();
+                        It=Texts.erase(It);
+                    }
+                    else
+                        It++;
+                }
+            }
         Printer.CloseElement();
     }
 
-    for (size_t Label_Pos=0; Label_Pos<Labels.size(); Label_Pos++)
     {
-        Printer.OpenElement("Cue");
-            Printer.OpenElement("ID");
-                Printer.PushAttribute("missing", "true");
-                Printer.PushText(Labels[Label_Pos](0).To_UTF8().c_str());
+        std::vector<Riff_Base::global::chunk_labl>::iterator It=Labels.begin();
+        while (It!=Labels.end())
+        {
+            Printer.OpenElement("Cue");
+                Printer.OpenElement("ID");
+                    Printer.PushAttribute("Missing", "true");
+                    Printer.PushText(It->cuePointId);
+                Printer.CloseElement();
+                Printer.OpenElement("Label");
+                    Printer.PushText(It->label.c_str());
+                Printer.CloseElement();
             Printer.CloseElement();
-            Printer.OpenElement("Label");
-                Ztring Label=Labels[Label_Pos](1);
-                Label.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                Printer.PushText(Label.To_UTF8().c_str());
-            Printer.CloseElement();
-        Printer.CloseElement();
-    }
 
-    for (size_t Note_Pos=0; Note_Pos<Notes.size(); Note_Pos++)
-    {
-        Printer.OpenElement("Cue");
-            Printer.OpenElement("ID");
-                Printer.PushAttribute("missing", "true");
-                Printer.PushText(Notes[Note_Pos](0).To_UTF8().c_str());
-            Printer.CloseElement();
-            Printer.OpenElement("Note");
-                Ztring Note=Notes[Note_Pos](1);
-                Note.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                Printer.PushText(Note.To_UTF8().c_str());
-            Printer.CloseElement();
-        Printer.CloseElement();
+            It++;
+        }
     }
-
-    for (size_t Text_Pos=0; Text_Pos<Texts.size(); Text_Pos++)
     {
-        Printer.OpenElement("Cue");
-            Printer.OpenElement("ID");
-                Printer.PushAttribute("missing", "true");
-                Printer.PushText(Texts[Text_Pos](0).To_UTF8().c_str());
-            Printer.CloseElement();
-            Printer.OpenElement("LabeledText");
-                Printer.OpenElement("SampleLength");
-                    Printer.PushText(Texts[Text_Pos](1).To_UTF8().c_str());
+        std::vector<Riff_Base::global::chunk_note>::iterator It=Notes.begin();
+        while (It!=Notes.end())
+        {
+            Printer.OpenElement("Cue");
+                Printer.OpenElement("ID");
+                    Printer.PushAttribute("Missing", "true");
+                    Printer.PushText(It->cuePointId);
                 Printer.CloseElement();
-                Printer.OpenElement("PurposeID");
-                    Printer.PushText(Texts[Text_Pos](2).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Country");
-                    Printer.PushText(Texts[Text_Pos](3).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Language");
-                    Printer.PushText(Texts[Text_Pos](4).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Dialect");
-                    Printer.PushText(Texts[Text_Pos](5).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("CodePage");
-                    Printer.PushText(Texts[Text_Pos](6).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Text");
-                    Ztring Text=Texts[Text_Pos](7);
-                    Text.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                    Printer.PushText(Text.To_UTF8().c_str());
+                Printer.OpenElement("Note");
+                    Printer.PushText(It->note.c_str());
                 Printer.CloseElement();
             Printer.CloseElement();
-        Printer.CloseElement();
+
+            It++;
+        }
+    }
+    {
+        std::vector<Riff_Base::global::chunk_ltxt>::iterator It=Texts.begin();
+        while (It!=Texts.end())
+        {
+            Printer.OpenElement("Cue");
+                Printer.OpenElement("ID");
+                    Printer.PushAttribute("Missing", "true");
+                    Printer.PushText(It->cuePointId);
+                Printer.CloseElement();
+                Printer.OpenElement("LabeledText");
+                    Printer.OpenElement("SampleLength");
+                        Printer.PushText(It->sampleLength);
+                    Printer.CloseElement();
+                    Printer.OpenElement("PurposeID");
+                        Printer.PushText("0x");
+                        Printer.PushText(Ztring().From_Number(It->purposeId, 16).To_UTF8().c_str());
+                    Printer.CloseElement();
+                    Printer.OpenElement("Country");
+                        Printer.PushText(It->country);
+                    Printer.CloseElement();
+                    Printer.OpenElement("Language");
+                        Printer.PushText(It->language);
+                    Printer.CloseElement();
+                    Printer.OpenElement("Dialect");
+                        Printer.PushText(It->dialect);
+                    Printer.CloseElement();
+                    Printer.OpenElement("CodePage");
+                        Printer.PushText(It->codePage);
+                    Printer.CloseElement();
+                    Printer.OpenElement("Text");
+                        Printer.PushText(It->text.c_str()); //TODO: Handle CodePage
+                    Printer.CloseElement();
+                Printer.CloseElement();
+            Printer.CloseElement();
+
+            It++;
+        }
     }
 
     Printer.CloseElement();
@@ -3088,36 +3186,41 @@ string Riff_Handler::Cue_Xml_Get()
 //---------------------------------------------------------------------------
 bool Riff_Handler::Cue_Xml_Set (const string& Xml, rules Rules)
 {
-    string Points;
-    string Labels;
-    string Notes;
-    string Texts;
+    std::vector<Riff_Base::global::chunk_cue_::point> Points;
+    std::vector<Riff_Base::global::chunk_labl> Labels;
+    std::vector<Riff_Base::global::chunk_note> Notes;
+    std::vector<Riff_Base::global::chunk_ltxt> Texts;
 
     if(!Cue_Xml_To_Fields(Xml, Points, Labels, Notes, Texts))
         return false;
 
-    Set_Internal("cue", Points, Rules);
-    Set_Internal("labl", Labels, Rules);
-    Set_Internal("note", Notes, Rules);
-    Set_Internal("ltxt", Texts, Rules);
+    if (!Chunks->Global->cue_)
+        Chunks->Global->cue_ = new Riff_Base::global::chunk_cue_();
+
+    Chunks->Global->cue_->points=Points;
+
+    if (!Chunks->Global->adtl)
+        Chunks->Global->adtl = new Riff_Base::global::chunk_adtl();
+
+    Chunks->Global->adtl->labels=Labels;
+    Chunks->Global->adtl->notes=Notes;
+    Chunks->Global->adtl->texts=Texts;
+
+    Set("cuexml", Cue_Xml_Get(), Chunks->Global->cuexml, NULL, NULL);
 
     return true;
 }
 
-bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, string& cue_, string& labl, string& note, string& ltxt)
+bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, std::vector<Riff_Base::global::chunk_cue_::point>& Points, std::vector<Riff_Base::global::chunk_labl>& Labels,
+                                      std::vector<Riff_Base::global::chunk_note>& Notes, std::vector<Riff_Base::global::chunk_ltxt>& Texts)
 {
-    cue_ = string();
-    labl = string();
-    note = string();
-    ltxt = string();
+    Points.clear();
+    Labels.clear();
+    Notes.clear();
+    Texts.clear();
 
     if (Xml.empty())
         return true;
-
-    ZtringListList Points;
-    ZtringListList Labels;
-    ZtringListList Notes;
-    ZtringListList Texts;
 
     tinyxml2::XMLDocument Document;
     if (Document.Parse(Xml.c_str())!=tinyxml2::XML_SUCCESS)
@@ -3130,8 +3233,7 @@ bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, string& cue_, string& l
 
     for(tinyxml2::XMLNode* Node=Root->FirstChildElement("Cue"); Node; Node=Node->NextSibling())
     {
-        ZtringList Point, Label, Note, Text;
-        Ztring Id;
+        uint32_t Id;
 
         tinyxml2::XMLElement* Element=NULL;
 
@@ -3139,68 +3241,62 @@ bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, string& cue_, string& l
         if (!Element)
             continue;
 
-        Id=Ztring().From_Number(Element->UnsignedText(0));
-        if (!Element->BoolAttribute("missing"))
+        Id=Element->UnsignedText(0);
+        if (!Element->BoolAttribute("Missing"))
         {
-            Point.push_back(Id);
+            Riff_Base::global::chunk_cue_::point Point;
+
+            Point.id=Id;
             Element=Node->FirstChildElement("Position");
-            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Point.position=Element?Element->UnsignedText(0):0;
             Element=Node->FirstChildElement("DataChunkID");
-            Point.push_back(Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"0x64617461"));
+            Point.dataChunkId=Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"0x64617461").To_int32u(16);
             Element=Node->FirstChildElement("ChunkStart");
-            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Point.chunkStart=Element?Element->UnsignedText(0):0;
             Element=Node->FirstChildElement("BlockStart");
-            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Point.blockStart=Element?Element->UnsignedText(0):0;
             Element=Node->FirstChildElement("SampleOffset");
-            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Point.sampleOffset=Element?Element->UnsignedText(0):0;
             Points.push_back(Point);
         }
         for (Element=Node->FirstChildElement("Label"); Element; Element=Element->NextSiblingElement("Label"))
         {
-            Ztring Value=Ztring().From_UTF8(Element->GetText()?Element->GetText():"");
-            Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-            Value.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
-            Label.push_back(Id);
-            Label.push_back(Value);
+            Riff_Base::global::chunk_labl Label;
+
+            Label.cuePointId=Id;
+            Label.label=Element->GetText()?Element->GetText():"";
             Labels.push_back(Label);
         }
         for (Element=Node->FirstChildElement("Note"); Element; Element=Element->NextSiblingElement("Note"))
         {
-            Ztring Value=Ztring().From_UTF8(Element->GetText()?Element->GetText():"");
-            Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-            Value.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
-            Note.push_back(Id);
-            Note.push_back(Value);
+            Riff_Base::global::chunk_note Note;
+
+            Note.cuePointId=Id;
+            Note.note=Element->GetText()?Element->GetText():"";
             Notes.push_back(Note);
         }
         for (tinyxml2::XMLElement* LabeledTextElement=Node->FirstChildElement("LabeledText"); LabeledTextElement; LabeledTextElement=LabeledTextElement->NextSiblingElement("LabeledText"))
         {
-            Text.push_back(Id);
+            Riff_Base::global::chunk_ltxt Text;
+
+            Text.cuePointId=Id;
             Element=LabeledTextElement->FirstChildElement("SampleLength");
-            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Text.sampleLength=Element?Element->UnsignedText(0):0;
             Element=LabeledTextElement->FirstChildElement("PurposeID");
-            Text.push_back(Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"0x00000000"));
+            Text.purposeId=Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"0x00000000").To_int32u(16);
             Element=LabeledTextElement->FirstChildElement("Country");
-            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Text.country=Element?Element->UnsignedText(0):0;
             Element=LabeledTextElement->FirstChildElement("Language");
-            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Text.language=Element?Element->UnsignedText(0):0;
             Element=LabeledTextElement->FirstChildElement("Dialect");
-            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Text.dialect=Element?Element->UnsignedText(0):0;
             Element=LabeledTextElement->FirstChildElement("CodePage");
-            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Text.codePage=Element?Element->UnsignedText(0):0;
             Element=LabeledTextElement->FirstChildElement("Text");
-            Ztring Value=Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"");
-            Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-            Value.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
-            Text.push_back(Value);
+            Text.text=Element&&Element->GetText()?Element->GetText():"";
             Texts.push_back(Text);
         }
     }
-
-    cue_ = Points.Read().To_UTF8();
-    labl = Labels.Read().To_UTF8();
-    note = Notes.Read().To_UTF8();
-    ltxt = Texts.Read().To_UTF8();
 
     return true;
 }
@@ -3250,9 +3346,9 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
     else if (Field_Lowered=="ixml")
         return &Chunks->Global->iXML;
 
-    //cue
-    else if (Field_Lowered=="cue")
-        return &Chunks->Global->cue_;
+    //cuexml
+    else if (Field_Lowered=="cuexml")
+        return &Chunks->Global->cuexml;
 
     //MD5Stored
     else if (Field_Lowered=="md5stored")
@@ -3261,12 +3357,6 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
     //MD5Stored
     else if (Field_Lowered=="md5generated")
         return &Chunks->Global->MD5Generated;
-
-    //adtl
-    else if (Field_Lowered=="labl"
-          || Field_Lowered=="note"
-          || Field_Lowered=="ltxt")
-        return &Chunks->Global->adtl;
 
     //INFO
     else if (Field.size()==4)
@@ -3304,10 +3394,7 @@ string Riff_Handler::Field_Get(const string &Field)
      || Field_Lowered=="xmp"
      || Field_Lowered=="axml"
      || Field_Lowered=="ixml"
-     || Field_Lowered=="cue"
-     || Field_Lowered=="labl"
-     || Field_Lowered=="note"
-     || Field_Lowered=="ltxt"
+     || Field_Lowered=="cuexml"
      || Field_Lowered=="md5stored"
      || Field_Lowered=="md5generated")
         return Field_Lowered; 
@@ -3359,9 +3446,8 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
         return Elements::WAVE_iXML;
 
     //cue
-    else if (Field_Lowered=="cue")
+    else if (Field_Lowered=="cue" || Field_Lowered=="cuexml")
         return Elements::WAVE_cue_;
-
     //MD5Stored
     else if (Field_Lowered=="md5stored")
         return Elements::WAVE_MD5_; 
