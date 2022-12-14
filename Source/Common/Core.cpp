@@ -1713,11 +1713,11 @@ void Core::Batch_Launch(handlers::iterator &Handler)
 //---------------------------------------------------------------------------
 void Core::Batch_Launch_Technical(handlers::iterator &Handler)
 {
-    Ztring Technical=Ztring().From_UTF8(Handler->second.Riff->Technical_Get())+EOL;
+    Ztring Technical=Ztring().From_UTF8(Handler->second.Riff->Technical_Get());
 
     //Technical chunk (with a Conformance Point Document)
     if (!Out_Tech_CSV_FileName.empty())
-        if (!Out_Tech_File.Write(Technical)) //Saving file part
+        if (!Out_Tech_File.Write(Technical+EOL)) //Saving file part
         {
             StdErr("--out-technical-file: error during file writing");
             Out_Tech_File.Close();
