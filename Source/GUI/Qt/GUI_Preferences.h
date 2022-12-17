@@ -83,6 +83,10 @@ enum option_md5
 enum option_encoding
 {
     Option_Encoding_UTF8,
+    Option_Encoding_CP437,
+    Option_Encoding_CP850,
+    Option_Encoding_CP858,
+    Option_Encoding_CP1252,
     Option_Encoding_8859_1,
     Option_Encoding_8859_2,
     Option_Encoding_Local,

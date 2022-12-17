@@ -166,6 +166,57 @@ std::string Riff_Handler::Encode (const std::string& Str)
         case Encoding_UTF8:
             Temp=Str;
         break;
+        case Encoding_CP437:
+        {
+            wstring Unicode=Ztring().From_UTF8(Str).To_Unicode();
+            for (size_t Pos=0; Pos<Unicode.size(); Pos++)
+            {
+                if (Unicode[Pos]<=0x007F)
+                    Temp+=(char)Unicode[Pos];
+                else
+                {
+                    vector<wchar_t>::const_iterator It=find(CP437.begin(), CP437.end(), Unicode[Pos]);
+                    if (It!=CP437.end())
+                        Temp+=(char)0x80+distance(CP437.begin(), It);
+                }
+            }
+        }
+        break;
+        case Encoding_CP850:
+        case Encoding_CP858:
+        {
+            wstring Unicode=Ztring().From_UTF8(Str).To_Unicode();
+            for (size_t Pos=0; Pos<Unicode.size(); Pos++)
+            {
+                if (Unicode[Pos]<=0x007F)
+                    Temp+=(char)Unicode[Pos];
+                else if (Unicode[Pos]==0x20AC && (Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_CP858)
+                    Temp+=0xD5;
+                else
+                {
+                    vector<wchar_t>::const_iterator It=find(CP850.begin(), CP850.end(), Unicode[Pos]);
+                    if (It!=CP850.end())
+                        Temp+=(char)0x80+distance(CP850.begin(), It);
+                }
+            }
+        }
+        break;
+        case Encoding_CP1252:
+        {
+            wstring Unicode=Ztring().From_UTF8(Str).To_Unicode();
+            for (size_t Pos=0; Pos<Unicode.size(); Pos++)
+            {
+                if (Unicode[Pos]<=0x00FF)
+                    Temp+=(char)Unicode[Pos];
+                else
+                {
+                    vector<wchar_t>::const_iterator It=find(CP1252.begin(), CP1252.end(), Unicode[Pos]);
+                    if (It!=CP1252.end())
+                        Temp+=(char)0x80+distance(CP1252.begin(), It);
+                }
+            }
+        }
+        break;
         case Encoding_8859_1:
         {
             wstring Unicode=Ztring().From_UTF8(Str).To_Unicode();
@@ -208,6 +259,51 @@ std::string Riff_Handler::Decode (const std::string& Str)
     {
         case Encoding_UTF8:
             Temp=Str;
+        break;
+        case Encoding_CP437:
+        {
+            wstring Unicode;
+            for (size_t Pos=0; Pos<Str.size(); Pos++)
+            {
+                unsigned char Char=(unsigned char)Str[Pos];
+                if (Char<=0x7F)
+                    Unicode+=(wchar_t)Char;
+                else
+                    Unicode+=CP437[Char-0x80];
+            }
+            Temp=Ztring().From_Unicode(Unicode).To_UTF8();
+        }
+        break;
+        case Encoding_CP850:
+        case Encoding_CP858:
+        {
+            wstring Unicode;
+            for (size_t Pos=0; Pos<Str.size(); Pos++)
+            {
+                unsigned char Char=(unsigned char)Str[Pos];
+                if (Char<=0x7F)
+                    Unicode+=(wchar_t)Char;
+                else if (Char==0xD5 && Encoding==Encoding_CP858)
+                    Unicode+=0x20AC;
+                else
+                    Unicode+=CP850[Char-0x80];
+            }
+            Temp=Ztring().From_Unicode(Unicode).To_UTF8();
+        }
+        break;
+        case Encoding_CP1252:
+        {
+            wstring Unicode;
+            for (size_t Pos=0; Pos<Str.size(); Pos++)
+            {
+                unsigned char Char=(unsigned char)Str[Pos];
+                if (Char<0x80 || Char>0x9F)
+                    Unicode+=(wchar_t)Char;
+                else
+                    Unicode+=CP1252[Char-0x80];
+            }
+            Temp=Ztring().From_Unicode(Unicode).To_UTF8();
+        }
         break;
         case Encoding_8859_1:
             Temp=Ztring().From_ISO_8859_1(Str.c_str()).To_UTF8();
@@ -327,6 +423,18 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                 case 0: // ISO-8851-1 compatible
                 case 65001: // Windows codepage for UTF-8
                     Encoding=Encoding_UTF8;
+                break;
+                case 437: // Windows codepage for IBM CP437
+                    Encoding=Encoding_CP437;
+                break;
+                case 850: // Windows codepage for IBM CP850
+                    Encoding=Encoding_CP850;
+                break;
+                case 858: // Windows codepage for IBM CP858
+                    Encoding=Encoding_CP858;
+                break;
+                case 1252: // Windows codepage for IBM CP858
+                    Encoding=Encoding_CP1252;
                 break;
                 case 28591: // Windows codepage for ISO 8859-1
                     Encoding=Encoding_8859_1;
@@ -653,6 +761,38 @@ bool Riff_Handler::Save()
             Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
         }
         break;
+        case Encoding_CP437:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=437;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_CP850:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=850;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_CP858:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=858;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_CP1252:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=1252;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
         case Encoding_8859_1:
         {
             if (!Chunks->Global->CSET)
@@ -844,6 +984,10 @@ string Riff_Handler::Get_Internal(const string &Field)
             switch (Write_Encoding)
             {
                 case Encoding_UTF8: return "UTF-8"; break;
+                case Encoding_CP437: return "CP437"; break;
+                case Encoding_CP850: return "CP850"; break;
+                case Encoding_CP858: return "CP858"; break;
+                case Encoding_CP1252: return "CP1252"; break;
                 case Encoding_8859_1: return "ISO-8859-1"; break;
                 case Encoding_8859_2: return "ISO-8859-2"; break;
                 default: return "";
@@ -854,6 +998,10 @@ string Riff_Handler::Get_Internal(const string &Field)
             switch (Chunks->Global->CSET->codePage)
             {
                 case 65001: return "UTF-8"; break;
+                case   437: return "CP437"; break;
+                case   850: return "CP850"; break;
+                case   858: return "CP858"; break;
+                case  1252: return "CP1252"; break;
                 case 28591: return "ISO-8859-1"; break;
                 case 28592: return "ISO-8859-2"; break;
                 default:
@@ -1138,6 +1286,14 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
         }
         else if (Value=="UTF-8")
             Write_Encoding=Encoding_UTF8;
+        else if (Value=="CP437")
+            Write_Encoding=Encoding_CP437;
+        else if (Value=="CP850")
+            Write_Encoding=Encoding_CP850;
+        else if (Value=="CP858")
+            Write_Encoding=Encoding_CP858;
+        else if (Value=="CP1252")
+            Write_Encoding=Encoding_CP1252;
         else if (Value=="8859-1")
             Write_Encoding=Encoding_8859_1;
         else if (Value=="8859-2")
@@ -1273,6 +1429,14 @@ bool Riff_Handler::IsModified_Internal(const string &Field)
             {
                 case Encoding_UTF8:
                     return Chunks->Global->CSET->codePage!=65001; break;
+                case Encoding_CP437:
+                    return Chunks->Global->CSET->codePage!=437; break;
+                case Encoding_CP850:
+                    return Chunks->Global->CSET->codePage!=850; break;
+                case Encoding_CP858:
+                    return Chunks->Global->CSET->codePage!=858; break;
+                case Encoding_CP1252:
+                    return Chunks->Global->CSET->codePage!=1252; break;
                 case Encoding_8859_1:
                     return Chunks->Global->CSET->codePage!=28591; break;
                 case Encoding_8859_2:
@@ -1347,6 +1511,53 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                     {
                         IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for ISO 8859-2 encoding";
                         break;
+                    }
+                }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_CP437)
+                {
+                    vector<wchar_t>::const_iterator It=find(CP437.begin(), CP437.end(), Unicode[i]);
+                    if (It==CP437.end())
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for IBM CP437 encoding";
+                        break;
+                    }
+                }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_CP850)
+                {
+                    vector<wchar_t>::const_iterator It=find(CP850.begin(), CP850.end(), Unicode[i]);
+                    if (It==CP850.end())
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for IBM CP850 encoding";
+                        break;
+                    }
+                }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_CP858)
+                {
+                    if (Unicode[i]==0x20AC) // Euro symbol
+                        continue;
+                    else if(Unicode[i]==0x0131) // Replaced by Euro symbol
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for IBM CP858 encoding";
+                        break;
+                    }
+
+                    vector<wchar_t>::const_iterator It=find(CP850.begin(), CP850.end(), Unicode[i]);
+                    if (It==CP850.end())
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for IBM CP858 encoding";
+                        break;
+                    }
+                }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_CP1252)
+                {
+                    if (Unicode[i] > 0xFF)
+                    {
+                        vector<wchar_t>::const_iterator It=find(CP1252.begin(), CP1252.end(), Unicode[i]);
+                        if (It==CP1252.end())
+                        {
+                            IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for Windows 1252 encoding";
+                            break;
+                        }
                     }
                 }
                 else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_Local)

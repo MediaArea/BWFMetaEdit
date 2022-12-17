@@ -160,6 +160,10 @@ options Groups[Group_Max]=
         Option_Encoding_Max,
         {
             {"Encoding_UTF8", "UTF8 (default)", Type_RadioButton, true},
+            {"Encoding_CP437", "IBM CP437", Type_RadioButton, false},
+            {"Encoding_CP850", "IBM CP850", Type_RadioButton, false},
+            {"Encoding_CP858", "IBM CP858", Type_RadioButton, false},
+            {"Encoding_CP1252", "Windows 1252", Type_RadioButton, false},
             {"Encoding_8859_1", "ISO-8859-1", Type_RadioButton, false},
             {"Encoding_8859_2", "ISO-8859-2", Type_RadioButton, false},
             {"Encoding_Local", "System default encoding", Type_RadioButton, false},

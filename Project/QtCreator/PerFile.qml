@@ -265,18 +265,30 @@ Control {
                                 var value = Model.value(file, "Encoding")
                                 if (value === "UTF-8")
                                     return 0;
-                                else if (value === "ISO-8859-1")
+                                else if (value === "CP437")
                                     return 1;
-                                else if (value === "ISO-8859-2")
+                                else if (value === "CP850")
                                     return 2;
-                                else if (value === "Local")
+                                else if (value === "CP858")
                                     return 3;
+                                else if (value === "CP1252")
+                                    return 4;
+                                else if (value === "ISO-8859-1")
+                                    return 5;
+                                else if (value === "ISO-8859-2")
+                                    return 6;
+                                else if (value === "Local")
+                                    return 7;
 
                                 return -1;
                             }
                             textRole: "text"
                             model: [
                                 { text: "UTF-8", value: "UTF-8", enabled: true},
+                                { text: "IBM CP437", value: "CP437", enabled: true},
+                                { text: "IBM CP850", value: "CP850", enabled: true},
+                                { text: "IBM CP858", value: "CP858", enabled: true},
+                                { text: "Windows 1252", value: "CP1252", enabled: true},
                                 { text: "ISO-8859-1", value: "8859-1", enabled: true},
                                 { text: "ISO-8859-2", value: "8859-2", enabled: true},
                                 { text: "Local", value: "Local", enabled: false}

@@ -328,6 +328,10 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)));
     connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_SwapEndian                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_SwapMD5Endianness(bool)));
     connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_UTF8            ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingUTF8(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_CP437           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingCP437(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_CP850           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingCP850(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_CP858           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingCP858(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_CP1252          ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingCP1252(bool)));
     connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_8859_1          ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Encoding8859_1(bool)));
     connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_8859_2          ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Encoding8859_2(bool)));
     connect(Menu_Fields_RadioButtons[Group_Encoding  *options::MaxCount+Option_Encoding_Local           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingLocal(bool)));
@@ -1020,6 +1024,46 @@ void GUI_Main::OnMenu_Options_EncodingUTF8(bool)
     if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_UTF8]->isChecked() && C->Encoding!=Encoding_UTF8)
     {
         C->Encoding=Encoding_UTF8;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingCP437(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP437]->isChecked() && C->Encoding!=Encoding_CP437)
+    {
+        C->Encoding=Encoding_CP437;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingCP850(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP850]->isChecked() && C->Encoding!=Encoding_CP850)
+    {
+        C->Encoding=Encoding_CP850;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingCP858(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP858]->isChecked() && C->Encoding!=Encoding_CP858)
+    {
+        C->Encoding=Encoding_CP858;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingCP1252(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP1252]->isChecked() && C->Encoding!=Encoding_CP1252)
+    {
+        C->Encoding=Encoding_CP1252;
         C->Menu_File_Options_Update();
     }
 }

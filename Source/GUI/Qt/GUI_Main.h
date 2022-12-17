@@ -158,6 +158,10 @@ public Q_SLOTS:
     void OnMenu_Rules_FADGI_Rec                     (bool);
     void OnMenu_Rules_EBU_ISRC_Rec                  (bool);
     void OnMenu_Options_EncodingUTF8                (bool);
+    void OnMenu_Options_EncodingCP437               (bool);
+    void OnMenu_Options_EncodingCP850               (bool);
+    void OnMenu_Options_EncodingCP858               (bool);
+    void OnMenu_Options_EncodingCP1252              (bool);
     void OnMenu_Options_Encoding8859_1              (bool);
     void OnMenu_Options_Encoding8859_2              (bool);
     void OnMenu_Options_EncodingLocal               (bool);
