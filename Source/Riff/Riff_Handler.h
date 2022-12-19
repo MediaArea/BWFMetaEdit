@@ -119,6 +119,7 @@ public:
     bool            EmbedMD5_AuthorizeOverWritting;
     bool            Trace_UseDec;
     Riff_Encoding   Encoding;
+    Riff_Encoding   Fallback_Encoding;
     Riff_Encoding   Write_Encoding;
     bool            Write_CodePage;
     bool            Ignore_File_Encoding;

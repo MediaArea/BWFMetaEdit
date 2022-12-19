@@ -135,6 +135,7 @@ Riff_Handler::Riff_Handler ()
     EmbedMD5_AuthorizeOverWritting=false;
     Trace_UseDec=false;
     Encoding=Encoding_UTF8;
+    Fallback_Encoding=Encoding_8859_1;
     Write_Encoding=Encoding_Max;
     Write_CodePage=false;
     Ignore_File_Encoding=false;
@@ -459,15 +460,16 @@ bool Riff_Handler::Open_Internal(const string &FileName)
 
         if (Encoding==Encoding_UTF8)
         {
+            bool Fail=false;
             if (Chunks->Global->INFO)
             {
                 for (map<string, string>::iterator It=Chunks->Global->INFO->Strings.begin(); It!=Chunks->Global->INFO->Strings.end(); It++)
                 {
                     if (It->second.size() != Ztring().From_UTF8(It->second).To_UTF8().size())
                     {
-                        Errors << Chunks->Global->File_Name.To_UTF8() << ": " << It->first << " Field contains invalids characters, try with another encoding." << endl;
-                        PerFile_Error << It->first << " Field contains invalids characters, try with another encoding." << endl;
-                        ReturnValue=false;
+                        Warnings << Chunks->Global->File_Name.To_UTF8() << ": " << It->first << " Field contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        PerFile_Warning << It->first << " Field contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        Fail=true;
                     }
                 }
             }
@@ -480,9 +482,9 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                     {
                         if (It->second.size() != Ztring().From_UTF8(It->second).To_UTF8().size())
                         {
-                            Errors << Chunks->Global->File_Name.To_UTF8() << ": " << It->first << " Field contains invalids characters, try with another encoding." << endl;
-                            PerFile_Error << It->first << " Field contains invalids characters, try with another encoding." << endl;
-                            ReturnValue=false;
+                            Warnings << Chunks->Global->File_Name.To_UTF8() << ": " << It->first << " Field contains invalids characters for UTF-8, using fallback encoding." << endl;
+                            PerFile_Warning << It->first << " Field contains invalids characters for UTF-8, using fallback encoding." << endl;
+                            Fail=true;
                         }
                     }
                 }
@@ -494,9 +496,9 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                 {
                     if (It->label.size() != Ztring().From_UTF8(It->label).To_UTF8().size())
                     {
-                        Errors << Chunks->Global->File_Name.To_UTF8() << ": CUE labels contains invalids characters, try with another encoding." << endl;
-                        PerFile_Error << " CUE labels contains invalids characters, try with another encoding." << endl;
-                        ReturnValue=false;
+                        Warnings << Chunks->Global->File_Name.To_UTF8() << ": CUE labels contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        PerFile_Warning << " CUE labels contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        Fail=true;
                     }
                 }
 
@@ -504,9 +506,9 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                 {
                     if (It->note.size() != Ztring().From_UTF8(It->note).To_UTF8().size())
                     {
-                        Errors << Chunks->Global->File_Name.To_UTF8() << ": CUE notes contains invalids characters, try with another encoding." << endl;
-                        PerFile_Error << " CUE notes contains invalids characters, try with another encoding." << endl;
-                        ReturnValue=false;
+                        Warnings << Chunks->Global->File_Name.To_UTF8() << ": CUE notes contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        PerFile_Warning << " CUE notes contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        Fail=true;
                     }
                 }
 
@@ -515,14 +517,18 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                 {
                     if (It->text.size() != Ztring().From_UTF8(It->text).To_UTF8().size())
                     {
-                        Errors << Chunks->Global->File_Name.To_UTF8() << ": CUE texts contains invalids characters, try with another encoding." << endl;
-                        PerFile_Error << " CUE notes contains invalids characters, try with another encoding." << endl;
-                        ReturnValue=false;
+                        Warnings << Chunks->Global->File_Name.To_UTF8() << ": CUE texts contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        PerFile_Warning << " CUE notes contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        Fail=true;
                     }
                 }
             }
+
+            if (Fail)
+                Encoding=Fallback_Encoding;
         }
-        else
+
+        if (Encoding!=Encoding_UTF8)
         {
             // Decode Fields to internal UTF-8
             if (Chunks->Global->INFO)

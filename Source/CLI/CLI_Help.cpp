@@ -74,6 +74,13 @@ std::string Help()
     ToDisplay<<"                        CP1252 (Windows superset of ISO-8859-1),"<<std::endl;
     ToDisplay<<"                        8859-1 (ISO-8859-1),"<<std::endl;
     ToDisplay<<"                        8859-2 (ISO-8859-2),"<<std::endl;
+    ToDisplay<<"--fallback-encoding=    If UTF-8 detection fails, use one of the 8 bits encodings belows for read/write operations:"<<std::endl;
+    ToDisplay<<"                        CP437 (US),"<<std::endl;
+    ToDisplay<<"                        CP850 (Estern Europe),"<<std::endl;
+    ToDisplay<<"                        CP858 (CP850 + Euro symbol),"<<std::endl;
+    ToDisplay<<"                        CP1252 (Windows superset of ISO-8859-1),"<<std::endl;
+    ToDisplay<<"                        8859-1 (ISO-8859-1, default),"<<std::endl;
+    ToDisplay<<"                        8859-2 (ISO-8859-2),"<<std::endl;
     ToDisplay<<"--ignore-file-encoding  Ignore encoding specified in the CSET chunk when reading"<<std::endl;
     ToDisplay<<"--in-CSET-remove        Remove CSET"<<std::endl;
     ToDisplay<<""<<std::endl;

@@ -116,6 +116,21 @@ GUI_Main::GUI_Main(Core* _C)
             }
     }
 
+    for (size_t Option=0; Option<Preferences->Group_Options_Count_Get(Group_Encoding_Fallback); Option++)
+    {
+        if (Preferences->Group_Option_Checked_Get(Group_Encoding_Fallback, Option))
+            switch (Option)
+            {
+                case Option_Encoding_Fallback_CP437  : Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP437]->setChecked(true); break;
+                case Option_Encoding_Fallback_CP850  : Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP850]->setChecked(true); break;
+                case Option_Encoding_Fallback_CP858  : Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP858]->setChecked(true); break;
+                case Option_Encoding_Fallback_CP1252 : Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP1252]->setChecked(true); break;
+                case Option_Encoding_Fallback_8859_1 : Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_8859_1]->setChecked(true); break;
+                case Option_Encoding_Fallback_8859_2 : Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_8859_2]->setChecked(true); break;
+                default                     : ;
+            }
+    }
+
     Trace_UseDec_Set(Preferences->Group_Option_Checked_Get(Group_Trace, Option_Trace_UseDec));
 
     /*

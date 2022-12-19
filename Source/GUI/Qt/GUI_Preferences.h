@@ -40,6 +40,8 @@ enum group
     Group_File,
     Group_MD5,
     Group_Encoding,
+    Group_Encoding_Fallback,
+    Group_Encoding_Options,
     Group_DefaultView,
     Group_Tables,
     Group_Trace,
@@ -90,9 +92,25 @@ enum option_encoding
     Option_Encoding_8859_1,
     Option_Encoding_8859_2,
     Option_Encoding_Local,
+    Option_Encoding_Max
+};
+
+enum option_encoding_fallback
+{
+    Option_Encoding_Fallback_CP437,
+    Option_Encoding_Fallback_CP850,
+    Option_Encoding_Fallback_CP858,
+    Option_Encoding_Fallback_CP1252,
+    Option_Encoding_Fallback_8859_1,
+    Option_Encoding_Fallback_8859_2,
+    Option_Encoding_Fallback_Max
+};
+
+enum option_encoding_options
+{
     Option_Ignore_File_Encoding,
     Option_Write_CodePage,
-    Option_Encoding_Max
+    Option_Encoding_Options_Max
 };
 
 enum option_defaultview
@@ -149,6 +167,7 @@ struct options
     option      Option[MaxCount];
     bool        InTemporaryPrefs;
     bool        ViewOptions;
+    bool        EncodingOptions;
 };
 
 class GUI_Preferences : public QDialog

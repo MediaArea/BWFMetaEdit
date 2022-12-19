@@ -165,6 +165,12 @@ public Q_SLOTS:
     void OnMenu_Options_Encoding8859_1              (bool);
     void OnMenu_Options_Encoding8859_2              (bool);
     void OnMenu_Options_EncodingLocal               (bool);
+    void OnMenu_Options_EncodingFallbackCP437       (bool);
+    void OnMenu_Options_EncodingFallbackCP850       (bool);
+    void OnMenu_Options_EncodingFallbackCP858       (bool);
+    void OnMenu_Options_EncodingFallbackCP1252      (bool);
+    void OnMenu_Options_EncodingFallback8859_1      (bool);
+    void OnMenu_Options_EncodingFallback8859_2      (bool);
     void OnMenu_Options_Ignore_File_Encoding        (bool);
     void OnMenu_Options_Write_CodePage              (bool);
     void OnMenu_Options_TechCore                    (bool);
