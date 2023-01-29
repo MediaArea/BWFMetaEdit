@@ -546,6 +546,7 @@ QString PerFileModel::Technical_Info(const QString FileName) const
     QString SampleRate=Get_Technical_Field(FileName, "SampleRate");
     QString BitRate=Get_Technical_Field(FileName, "BitRate");
     QString BitPerSample=Get_Technical_Field(FileName, "BitPerSample");
+    QString Encoding=Get_Technical_Field(FileName, "Encoding");
 
     if (!FileSize.isEmpty())
     {
@@ -597,6 +598,12 @@ QString PerFileModel::Technical_Info(const QString FileName) const
         toReturn+=toReturn.isEmpty()?"":" ";
         toReturn+=BitPerSample;
         toReturn+=" bit";
+    }
+
+    if (!Encoding.isEmpty())
+    {
+        toReturn+=toReturn.isEmpty()?"":" ";
+        toReturn+=Encoding;
     }
 
     return toReturn;

@@ -165,7 +165,7 @@ void Riff_WAVE_bext::Read_Internal ()
     Get_String( 32, Originator);
     Get_String( 32, OriginatorReference);
     Get_String( 10, OriginationDate);
-    Get_String(  8, OriginationTime);
+    Get_String(  8, OriginationTime);;
     Get_L8    (     TimeReference); //To be divided by SamplesPerSec
     Get_L2    (     Version);
     if (Version>=1)
@@ -215,21 +215,18 @@ void Riff_WAVE_bext::Read_Internal ()
         Global->bext->Strings["codinghistory"]=CodingHistory;
     for (std::map<string, string>::iterator String=Global->bext->Strings.begin(); String!=Global->bext->Strings.end(); String++)
     {
-        Ztring temp=Ztring().From_UTF8(String->second);
-        temp.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        String->second=temp.To_UTF8();
+        for (size_t Pos=String->second.find("\r\n"); Pos!=std::string::npos;  Pos=String->second.find("\r\n", Pos+1))
+            String->second.replace(Pos, 2, "\n");
     }
     for (std::map<string, string>::iterator String=Global->bext->Strings.begin(); String!=Global->bext->Strings.end(); String++)
     {
-        Ztring temp=Ztring().From_UTF8(String->second);
-        temp.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
-        String->second=temp.To_UTF8();
+        for (size_t Pos=String->second.find("\r"); Pos!=std::string::npos; Pos=String->second.find("\r", Pos+1))
+            String->second.replace(Pos, 1, "\n");
     }
     for (std::map<string, string>::iterator String=Global->bext->Strings.begin(); String!=Global->bext->Strings.end(); String++)
     {
-        Ztring temp=Ztring().From_UTF8(String->second);
-        temp.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
-        String->second=temp.To_UTF8();
+        for (size_t Pos=String->second.find("\n"); Pos!=std::string::npos; Pos=String->second.find("\n", Pos+2))
+            String->second.replace(Pos, 1, "\r\n");
     }
 }
 
@@ -261,12 +258,19 @@ void Riff_WAVE_bext::Modify_Internal ()
         return;
     }
 
+    string Description=Global->bext->Strings["description"];
+    string Originator=Global->bext->Strings["originator"];
+    string OriginatorReference=Global->bext->Strings["originatorreference"];
+    string OriginationDate=Global->bext->Strings["originationdate"];
+    string OriginationTime=Global->bext->Strings["originationtime"];
+    string CodingHistory=Global->bext->Strings["codinghistory"];
+
     //Calculating size
     int64u TargetedSize=858;
     if (Chunk.Content.Size)
         TargetedSize=Chunk.Content.Size;
-    if (TargetedSize<=602+Global->bext->Strings["codinghistory"].size())
-        TargetedSize=602+Global->bext->Strings["codinghistory"].size();
+    if (TargetedSize<=602+CodingHistory.size())
+        TargetedSize=602+CodingHistory.size();
     if (TargetedSize>=0x100000000LL)
         return; //TODO: error
 
@@ -306,11 +310,13 @@ void Riff_WAVE_bext::Modify_Internal ()
         BextVersion=1;
     if (BextVersion<2 && (LoudnessValue!=0x7FFF || LoudnessRange!=0x7FFF || MaxTruePeakLevel!=0x7FFF || MaxMomentaryLoudness!=0x7FFF || MaxShortTermLoudness!=0x7FFF))
         BextVersion=2;
-    Put_String(256, Global->bext->Strings["description"]);
-    Put_String( 32, Global->bext->Strings["originator"]);
-    Put_String( 32, Global->bext->Strings["originatorreference"]);
-    Put_String( 10, Global->bext->Strings["originationdate"]);
-    Put_String(  8, Global->bext->Strings["originationtime"]);
+
+
+    Put_String(256, Description);
+    Put_String( 32, Originator);
+    Put_String( 32, OriginatorReference);
+    Put_String( 10, OriginationDate);
+    Put_String(  8, OriginationTime);
     Put_L8    (     TimeReference);
     Put_L2    (     BextVersion);
     if (Global->bext->Strings["umid"].find(__T('-'))!=string::npos)
@@ -346,7 +352,7 @@ void Riff_WAVE_bext::Modify_Internal ()
     else
         Skip_XX   (602-Chunk.Content.Buffer_Offset); //Keeping old data
     if (Chunk.Content.Buffer_Offset<Chunk.Content.Size)
-        Put_String(Chunk.Content.Size-Chunk.Content.Buffer_Offset, Global->bext->Strings["codinghistory"]);
+        Put_String(Chunk.Content.Size-Chunk.Content.Buffer_Offset, CodingHistory);
 
     Chunk.Content.IsModified=true;
     Chunk.Content.Size_IsModified=true;

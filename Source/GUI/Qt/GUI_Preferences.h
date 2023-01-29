@@ -39,6 +39,9 @@ enum group
     Group_Rules,
     Group_File,
     Group_MD5,
+    Group_Encoding,
+    Group_Encoding_Fallback,
+    Group_Encoding_Options,
     Group_DefaultView,
     Group_Tables,
     Group_Trace,
@@ -77,6 +80,37 @@ enum option_md5
     Option_MD5_Embed_AuthorizeOverWritting,
     Option_MD5_SwapEndian,
     Option_MD5_Max
+};
+
+enum option_encoding
+{
+    Option_Encoding_UTF8,
+    Option_Encoding_CP437,
+    Option_Encoding_CP850,
+    Option_Encoding_CP858,
+    Option_Encoding_CP1252,
+    Option_Encoding_8859_1,
+    Option_Encoding_8859_2,
+    Option_Encoding_Local,
+    Option_Encoding_Max
+};
+
+enum option_encoding_fallback
+{
+    Option_Encoding_Fallback_CP437,
+    Option_Encoding_Fallback_CP850,
+    Option_Encoding_Fallback_CP858,
+    Option_Encoding_Fallback_CP1252,
+    Option_Encoding_Fallback_8859_1,
+    Option_Encoding_Fallback_8859_2,
+    Option_Encoding_Fallback_Max
+};
+
+enum option_encoding_options
+{
+    Option_Ignore_File_Encoding,
+    Option_Write_CodePage,
+    Option_Encoding_Options_Max
 };
 
 enum option_defaultview
@@ -133,6 +167,7 @@ struct options
     option      Option[MaxCount];
     bool        InTemporaryPrefs;
     bool        ViewOptions;
+    bool        EncodingOptions;
 };
 
 class GUI_Preferences : public QDialog
@@ -145,6 +180,7 @@ public:
     size_t      Groups_Count_Get();
     std::string Group_Name_Get(group Group);
     size_t      Group_Options_Count_Get(group Group, bool ForTemporaryPrefs=false);
+    type        Group_Option_Type_Get(group Group, size_t Option);
     std::string Group_Option_Description_Get(group Group, size_t Option);
     bool        Group_Option_Checked_Get(group Group, size_t Option);
     bool        Group_Option_Checked_Set(group Group, size_t Option, bool Value);

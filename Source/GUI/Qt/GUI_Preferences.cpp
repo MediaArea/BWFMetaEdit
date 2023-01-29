@@ -45,7 +45,7 @@ options Groups[Group_Max]=
 {
     {
         "Technical Metadata",
-        20,
+        21,
         {
             {"Tech_FileSize", "FileSize", Type_CheckBox, true},
             {"Tech_Format", "Format", Type_CheckBox, true},
@@ -64,11 +64,13 @@ options Groups[Group_Max]=
             {"Tech_iXML", "iXML", Type_CheckBox, true},
             {"Tech_MD5Stored", "MD5Stored", Type_CheckBox, true},
             {"Tech_MD5Generated", "MD5Generated", Type_CheckBox, true},
+            {"Tech_Encoding", "Encoding", Type_CheckBox, true},
             {"Tech_Errors", "Errors", Type_CheckBox, true},
             {"Tech_Warnings", "Warnings", Type_CheckBox, true},
             {"Tech_Information", "Information", Type_CheckBox, true},
         },
         true,
+        false,
         false,
     },
     {
@@ -110,6 +112,7 @@ options Groups[Group_Max]=
         },
         true,
         false,
+        false,
     },
     {
         "Rules",
@@ -126,6 +129,7 @@ options Groups[Group_Max]=
         },
         true,
         false,
+        false,
     },
     {
         "File management",
@@ -140,6 +144,7 @@ options Groups[Group_Max]=
         },
         true,
         false,
+        false,
     },
     {
         "MD5",
@@ -153,6 +158,50 @@ options Groups[Group_Max]=
         },
         true,
         false,
+        false,
+    },
+    {
+        "Encoding",
+        Option_Encoding_Max,
+        {
+            {"Encoding_UTF8", "UTF8 (default)", Type_RadioButton, true},
+            {"Encoding_CP437", "IBM CP437", Type_RadioButton, false},
+            {"Encoding_CP850", "IBM CP850", Type_RadioButton, false},
+            {"Encoding_CP858", "IBM CP858", Type_RadioButton, false},
+            {"Encoding_CP1252", "Windows 1252", Type_RadioButton, false},
+            {"Encoding_8859_1", "ISO-8859-1", Type_RadioButton, false},
+            {"Encoding_8859_2", "ISO-8859-2", Type_RadioButton, false},
+            {"Encoding_Local", "System default encoding", Type_RadioButton, false},
+        },
+        true,
+        false,
+        true,
+    },
+    {
+        "Encoding (Fallback)",
+        Option_Encoding_Fallback_Max,
+        {
+            {"Encoding_Fallback_CP437", "IBM CP437", Type_RadioButton, false},
+            {"Encoding_Fallback_CP850", "IBM CP850", Type_RadioButton, false},
+            {"Encoding_Fallback_CP858", "IBM CP858", Type_RadioButton, false},
+            {"Encoding_Fallback_CP1252", "Windows 1252", Type_RadioButton, false},
+            {"Encoding_Fallback_8859_1", "ISO-8859-1 (default)", Type_RadioButton, true},
+            {"Encoding_Fallback_8859_2", "ISO-8859-2", Type_RadioButton, false},
+        },
+        true,
+        false,
+        true,
+    },
+    {
+        "Encoding (Options)",
+        Option_Encoding_Options_Max,
+        {
+            {"Ignore_File_Encoding", "Ignore encoding stored in the CSET chunk when reading the file", Type_CheckBox, false},
+            {"Write_CodePage", "Write encoding into CSET chunk", Type_CheckBox, false},
+        },
+        true,
+        false,
+        true,
     },
     {
         "Default view",
@@ -167,6 +216,7 @@ options Groups[Group_Max]=
         },
         false,
         true,
+        false,
     },
     {
         "Table views",
@@ -177,6 +227,7 @@ options Groups[Group_Max]=
         },
         false,
         true,
+        false,
     },
     {
         "Trace view",
@@ -186,6 +237,7 @@ options Groups[Group_Max]=
         },
         false,
         true,
+        false,
     },
 };
 //***************************************************************************
@@ -258,6 +310,12 @@ size_t GUI_Preferences::Group_Options_Count_Get(group Group, bool ForTemporaryPr
 }
 
 //---------------------------------------------------------------------------
+type GUI_Preferences::Group_Option_Type_Get(group Group, size_t Option)
+{
+    return Groups[Group].Option[Option].Type;
+}
+
+//---------------------------------------------------------------------------
 string GUI_Preferences::Group_Option_Description_Get(group Group, size_t Option)
 {
     return Groups[Group].Option[Option].Description;
@@ -268,8 +326,8 @@ bool GUI_Preferences::Group_Option_Checked_Get(group Group, size_t Option)
 {
     switch (Groups[Group].Option[Option].Type)
     {
-        case Type_CheckBox      : return CheckBoxes  [Group*options::MaxCount+Option]->isChecked();
-        case Type_RadioButton   : return RadioButtons[Group*options::MaxCount+Option]->isChecked();
+        case Type_CheckBox      : return CheckBoxes  [Group*options::MaxCount+Option]->isChecked(); break;
+        case Type_RadioButton   : return RadioButtons[Group*options::MaxCount+Option]->isChecked(); break;
         default                 : return false;
     }
 }
@@ -279,8 +337,8 @@ bool GUI_Preferences::Group_Option_Checked_Set(group Group, size_t Option, bool 
 {
     switch (Groups[Group].Option[Option].Type)
     {
-        case Type_CheckBox      : CheckBoxes  [Group*options::MaxCount+Option]->setChecked(Value);
-        case Type_RadioButton   : break; //RadioButtons[Group*options::MaxCount+Option]->isChecked();
+        case Type_CheckBox      : CheckBoxes  [Group*options::MaxCount+Option]->setChecked(Value); break;
+        case Type_RadioButton   : RadioButtons[Group*options::MaxCount+Option]->setChecked(Value); break;
         default                 : ;
     }
 
@@ -586,7 +644,8 @@ void GUI_Preferences::OnClicked ()
 
                                                 //Loading new config
                                                 for (size_t Option2=0; Option2<Groups[Group].Option_Size; Option2++)
-                                                    CheckBoxes[Group*options::MaxCount+Option2]->setChecked(Main->Menu_Fields_CheckBoxes[Group*options::MaxCount+Option2]->isChecked());
+                                                    if (Groups[Group].Option[Option2].Type==Type_CheckBox)
+                                                        CheckBoxes[Group*options::MaxCount+Option2]->setChecked(Main->Menu_Fields_CheckBoxes[Group*options::MaxCount+Option2]->isChecked());
                                             }
                                             break;
                 case Type_RadioButton   :   if ((Groups[Group].InTemporaryPrefs || Group==Group_DefaultView) && RadioButtons[Group*options::MaxCount+Option]->isChecked()!=Main->Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked())
@@ -694,7 +753,9 @@ void GUI_Preferences::Create()
     RadioButtons=new QRadioButton*[Group_Max*options::MaxCount];
     QVBoxLayout* ViewsOptions=new QVBoxLayout();
     ViewsOptions->addStretch();
-    
+    QVBoxLayout* EncodingOptions=new QVBoxLayout();
+    EncodingOptions->addStretch();
+
     for (size_t Kind=0; Kind<Group_Max; Kind++)
     {
         QVBoxLayout* Columns=new QVBoxLayout();
@@ -704,6 +765,8 @@ void GUI_Preferences::Create()
             case Group_Tech     : Columns->addWidget(new QLabel("Select which technical values should appear on the 'Tech' table view of BWF MetaEdit, others will be hidden.")); break;
             case Group_Core     : Columns->addWidget(new QLabel("Select which technical values should appear on the 'Core' table view of BWF MetaEdit, others will be hidden.\nThese options affect only the displayed table and not the handling of imported or exported Core documents.\nBe aware that even if a column is hidden, metadata can be imported, exported and saved within these fields.")); break;
             case Group_Rules    : Columns->addWidget(new QLabel("Select which standards and rule sets to follow during use of BWF MetaEdit.\nSelection of rule sets will constrained the allowed data entry and may add additional metadata requirements.\nSee documentation on BWF MetaEdit Rules within the Help documentation.")); break;
+            case Group_Encoding : Columns->addWidget(new QLabel("If there is not CSET chunk or if it should be ignored, consider non ASCII bytes as:")); break;
+            case Group_Encoding_Fallback : Columns->addWidget(new QLabel("If UTF8 is not selected or UTF8 detection fails, fallback on:")); break;
         }
         
         for (size_t Option=0; Option<Groups[Kind].Option_Size; Option++)
@@ -722,6 +785,12 @@ void GUI_Preferences::Create()
             Box->setLayout(Columns);
             ViewsOptions->addWidget(Box);
         }
+        else if (Groups[Kind].EncodingOptions)
+        {
+            QGroupBox* Box=new QGroupBox();
+            Box->setLayout(Columns);
+            EncodingOptions->addWidget(Box);
+        }
         else
         {
             QWidget* Columns_Widget=new QWidget();
@@ -733,13 +802,26 @@ void GUI_Preferences::Create()
         }
     }
 
-    //Views related options
-    QScrollArea* ScrollArea=new QScrollArea();
-    QWidget* Widget=new QWidget();
-    Widget->setLayout(ViewsOptions);
+    //Encoding related options
+    {
+        QScrollArea* ScrollArea=new QScrollArea();
+        QWidget* Widget=new QWidget();
+        Widget->setLayout(EncodingOptions);
 
-    ScrollArea->setWidget(Widget);
-    Central->addTab(ScrollArea, "Views options");
+        ScrollArea->setWidget(Widget);
+        Central->addTab(ScrollArea, "Encoding");
+    }
+
+
+    //Views related options
+    {
+        QScrollArea* ScrollArea=new QScrollArea();
+        QWidget* Widget=new QWidget();
+        Widget->setLayout(ViewsOptions);
+
+        ScrollArea->setWidget(Widget);
+        Central->addTab(ScrollArea, "Views options");
+    }
 
     //Extra - OpenSaveDirectory
     Extra_OpenSaveDirectory_Default=new QRadioButton("Default open/save directory");

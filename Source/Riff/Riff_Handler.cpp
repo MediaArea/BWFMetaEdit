@@ -23,6 +23,10 @@
 #include "Common/Mac_Helpers.h"
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 using namespace std;
 using namespace ZenLib;
 //---------------------------------------------------------------------------
@@ -40,7 +44,6 @@ enum xxxx_Fields
     Fields_Tech,
     Fields_Bext,
     Fields_Info,
-    Fields_Adtl,
     Fields_Max,
 };
 
@@ -49,7 +52,6 @@ size_t xxxx_Strings_Size[]=
     5,  //Tech
     15,  //Bext
     17, //Info
-    3, //Adtl
 };
 
 const char* xxxx_Strings[][17]=
@@ -59,7 +61,7 @@ const char* xxxx_Strings[][17]=
         "aXML",
         "iXML",
         "MD5Stored",
-        "cue",
+        "cuexml",
         "",
         "",
         "",
@@ -112,25 +114,6 @@ const char* xxxx_Strings[][17]=
         "ISRF", //Source Form
         "ITCH", //Technician
     },
-    {
-        "labl",
-        "note",
-        "ltxt",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-    },
 };
 
 //***************************************************************************
@@ -150,6 +133,12 @@ Riff_Handler::Riff_Handler ()
     VerifyMD5_Force=false;
     EmbedMD5=false;
     EmbedMD5_AuthorizeOverWritting=false;
+    Trace_UseDec=false;
+    Encoding=Encoding_UTF8;
+    Fallback_Encoding=Encoding_8859_1;
+    Write_Encoding=Encoding_Max;
+    Write_CodePage=false;
+    Ignore_File_Encoding=false;
     Bext_DefaultVersion=0;
     Bext_MaxVersion=2;
 
@@ -163,6 +152,174 @@ Riff_Handler::Riff_Handler ()
 Riff_Handler::~Riff_Handler ()
 {
     delete Chunks; //Chunks=NULL;
+}
+
+//***************************************************************************
+// Helpers
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+std::string Riff_Handler::Encode (const std::string& Str)
+{
+    std::string Temp;
+    switch (Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)
+    {
+        case Encoding_UTF8:
+            Temp=Str;
+        break;
+        case Encoding_CP437:
+        {
+            wstring Unicode=Ztring().From_UTF8(Str).To_Unicode();
+            for (size_t Pos=0; Pos<Unicode.size(); Pos++)
+            {
+                if (Unicode[Pos]<=0x007F)
+                    Temp+=(char)Unicode[Pos];
+                else
+                {
+                    vector<wchar_t>::const_iterator It=find(CP437.begin(), CP437.end(), Unicode[Pos]);
+                    if (It!=CP437.end())
+                        Temp+=(char)0x80+distance(CP437.begin(), It);
+                }
+            }
+        }
+        break;
+        case Encoding_CP850:
+        case Encoding_CP858:
+        {
+            wstring Unicode=Ztring().From_UTF8(Str).To_Unicode();
+            for (size_t Pos=0; Pos<Unicode.size(); Pos++)
+            {
+                if (Unicode[Pos]<=0x007F)
+                    Temp+=(char)Unicode[Pos];
+                else if (Unicode[Pos]==0x20AC && (Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_CP858)
+                    Temp+=0xD5;
+                else
+                {
+                    vector<wchar_t>::const_iterator It=find(CP850.begin(), CP850.end(), Unicode[Pos]);
+                    if (It!=CP850.end())
+                        Temp+=(char)0x80+distance(CP850.begin(), It);
+                }
+            }
+        }
+        break;
+        case Encoding_CP1252:
+        {
+            wstring Unicode=Ztring().From_UTF8(Str).To_Unicode();
+            for (size_t Pos=0; Pos<Unicode.size(); Pos++)
+            {
+                if (Unicode[Pos]<=0x00FF)
+                    Temp+=(char)Unicode[Pos];
+                else
+                {
+                    vector<wchar_t>::const_iterator It=find(CP1252.begin(), CP1252.end(), Unicode[Pos]);
+                    if (It!=CP1252.end())
+                        Temp+=(char)0x80+distance(CP1252.begin(), It);
+                }
+            }
+        }
+        break;
+        case Encoding_8859_1:
+        {
+            wstring Unicode=Ztring().From_UTF8(Str).To_Unicode();
+            for (size_t Pos=0; Pos<Unicode.size(); Pos++)
+                if (Unicode[Pos]<=0x00FF)
+                    Temp+=(char)Unicode[Pos];
+        }
+        break;
+        case Encoding_8859_2:
+        {
+            wstring Unicode=Ztring().From_UTF8(Str).To_Unicode();
+            for (size_t Pos=0; Pos<Unicode.size(); Pos++)
+            {
+                if (Unicode[Pos]<=0x00A0)
+                    Temp+=(char)Unicode[Pos];
+                else
+                {
+                    vector<wchar_t>::const_iterator It=find(ISO_8859_2.begin(), ISO_8859_2.end(), Unicode[Pos]);
+                    if (It!=ISO_8859_2.end())
+                        Temp+=(char)0xA0+distance(ISO_8859_2.begin(), It);
+                }
+            }
+        }
+        break;
+        case Encoding_Local:
+            Temp=Ztring().From_UTF8(Str).To_Local();
+        break;
+        default:
+            Temp=Str;
+    }
+
+    return Temp;
+}
+
+//---------------------------------------------------------------------------
+std::string Riff_Handler::Decode (const std::string& Str)
+{
+    std::string Temp;
+    switch (Encoding)
+    {
+        case Encoding_UTF8:
+            Temp=Str;
+        break;
+        case Encoding_CP437:
+        {
+            wstring Unicode;
+            for (size_t Pos=0; Pos<Str.size(); Pos++)
+            {
+                unsigned char Char=(unsigned char)Str[Pos];
+                if (Char<=0x7F)
+                    Unicode+=(wchar_t)Char;
+                else
+                    Unicode+=CP437[Char-0x80];
+            }
+            Temp=Ztring().From_Unicode(Unicode).To_UTF8();
+        }
+        break;
+        case Encoding_CP850:
+        case Encoding_CP858:
+        {
+            wstring Unicode;
+            for (size_t Pos=0; Pos<Str.size(); Pos++)
+            {
+                unsigned char Char=(unsigned char)Str[Pos];
+                if (Char<=0x7F)
+                    Unicode+=(wchar_t)Char;
+                else if (Char==0xD5 && Encoding==Encoding_CP858)
+                    Unicode+=0x20AC;
+                else
+                    Unicode+=CP850[Char-0x80];
+            }
+            Temp=Ztring().From_Unicode(Unicode).To_UTF8();
+        }
+        break;
+        case Encoding_CP1252:
+        {
+            wstring Unicode;
+            for (size_t Pos=0; Pos<Str.size(); Pos++)
+            {
+                unsigned char Char=(unsigned char)Str[Pos];
+                if (Char<0x80 || Char>0x9F)
+                    Unicode+=(wchar_t)Char;
+                else
+                    Unicode+=CP1252[Char-0x80];
+            }
+            Temp=Ztring().From_Unicode(Unicode).To_UTF8();
+        }
+        break;
+        case Encoding_8859_1:
+            Temp=Ztring().From_ISO_8859_1(Str.c_str()).To_UTF8();
+        break;
+        case Encoding_8859_2:
+            Temp=Ztring().From_ISO_8859_2(Str.c_str()).To_UTF8();
+        break;
+        case Encoding_Local:
+            Temp=Ztring().From_Local(Str.c_str()).To_UTF8();
+        break;
+        default:
+            Temp=Str;
+    }
+
+    return Temp;
 }
 
 //***************************************************************************
@@ -257,6 +414,169 @@ bool Riff_Handler::Open_Internal(const string &FileName)
         {
             Information<<Chunks->Global->File_Name.To_UTF8()<<": rf64 data size correction"<<endl;
             PerFile_Information<<"rf64 data size correction"<<endl;
+        }
+
+        // Encoding
+        if (!Ignore_File_Encoding && Chunks->Global->CSET)
+        {
+            switch (Chunks->Global->CSET->codePage)
+            {
+                case 0: // ISO-8851-1 compatible
+                case 65001: // Windows codepage for UTF-8
+                    Encoding=Encoding_UTF8;
+                break;
+                case 437: // Windows codepage for IBM CP437
+                    Encoding=Encoding_CP437;
+                break;
+                case 850: // Windows codepage for IBM CP850
+                    Encoding=Encoding_CP850;
+                break;
+                case 858: // Windows codepage for IBM CP858
+                    Encoding=Encoding_CP858;
+                break;
+                case 1252: // Windows codepage for IBM CP858
+                    Encoding=Encoding_CP1252;
+                break;
+                case 28591: // Windows codepage for ISO 8859-1
+                    Encoding=Encoding_8859_1;
+                break;
+                case 28592: // Windows codepage for ISO 8859-2
+                    Encoding=Encoding_8859_2;
+                break;
+                default: // unsupported codepage, compare to local codepage (Windows only)
+                    #ifdef _WIN32
+                    if (Chunks->Global->CSET->codePage == GetACP())
+                        Encoding=Encoding_Local;
+                    else
+                    #endif
+                    {
+                        Errors << Chunks->Global->File_Name.To_UTF8() << ": Unsupported codepage in CSET chunk '" << Chunks->Global->CSET->codePage << "'." << endl;
+                        PerFile_Error << "Unsupported codepage in CSET chunk '" << Chunks->Global->CSET->codePage << "'." << endl;
+                        ReturnValue=false;
+                    }
+                ;
+            }
+        }
+
+        if (Encoding==Encoding_UTF8)
+        {
+            bool Fail=false;
+            if (Chunks->Global->INFO)
+            {
+                for (map<string, string>::iterator It=Chunks->Global->INFO->Strings.begin(); It!=Chunks->Global->INFO->Strings.end(); It++)
+                {
+                    if (It->second.size() != Ztring().From_UTF8(It->second).To_UTF8().size())
+                    {
+                        Warnings << Chunks->Global->File_Name.To_UTF8() << ": " << It->first << " Field contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        PerFile_Warning << It->first << " Field contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        Fail=true;
+                    }
+                }
+            }
+
+            if (Chunks->Global->bext)
+            {
+                for (map<string, string>::iterator It=Chunks->Global->bext->Strings.begin(); It!=Chunks->Global->bext->Strings.end(); It++)
+                {
+                    if (It->first=="description" || It->first=="originator" || It->first=="originatorreference" || It->first=="originationdate" || It->first=="originationtime" || It->first=="codinghistory")
+                    {
+                        if (It->second.size() != Ztring().From_UTF8(It->second).To_UTF8().size())
+                        {
+                            Warnings << Chunks->Global->File_Name.To_UTF8() << ": " << It->first << " Field contains invalids characters for UTF-8, using fallback encoding." << endl;
+                            PerFile_Warning << It->first << " Field contains invalids characters for UTF-8, using fallback encoding." << endl;
+                            Fail=true;
+                        }
+                    }
+                }
+            }
+
+            if (Chunks->Global->adtl)
+            {
+                for (std::vector<Riff_Base::global::chunk_labl>::iterator It=Chunks->Global->adtl->labels.begin(); It!=Chunks->Global->adtl->labels.end(); It++)
+                {
+                    if (It->label.size() != Ztring().From_UTF8(It->label).To_UTF8().size())
+                    {
+                        Warnings << Chunks->Global->File_Name.To_UTF8() << ": CUE labels contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        PerFile_Warning << " CUE labels contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        Fail=true;
+                    }
+                }
+
+                for (std::vector<Riff_Base::global::chunk_note>::iterator It=Chunks->Global->adtl->notes.begin(); It!=Chunks->Global->adtl->notes.end(); It++)
+                {
+                    if (It->note.size() != Ztring().From_UTF8(It->note).To_UTF8().size())
+                    {
+                        Warnings << Chunks->Global->File_Name.To_UTF8() << ": CUE notes contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        PerFile_Warning << " CUE notes contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        Fail=true;
+                    }
+                }
+
+                //TODO: handle ltxt internal cset values
+                for (std::vector<Riff_Base::global::chunk_ltxt>::iterator It=Chunks->Global->adtl->texts.begin(); It!=Chunks->Global->adtl->texts.end(); It++)
+                {
+                    if (It->text.size() != Ztring().From_UTF8(It->text).To_UTF8().size())
+                    {
+                        Warnings << Chunks->Global->File_Name.To_UTF8() << ": CUE texts contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        PerFile_Warning << " CUE notes contains invalids characters for UTF-8, using fallback encoding." << endl;
+                        Fail=true;
+                    }
+                }
+            }
+
+            if (Fail)
+                Encoding=Fallback_Encoding;
+        }
+
+        if (Encoding!=Encoding_UTF8)
+        {
+            // Decode Fields to internal UTF-8
+            if (Chunks->Global->INFO)
+            {
+                for (map<string, string>::iterator It=Chunks->Global->INFO->Strings.begin(); It!=Chunks->Global->INFO->Strings.end(); It++)
+                {
+                    if (!It->second.empty())
+                        It->second=Decode(It->second);
+                }
+            }
+
+            if (Chunks->Global->bext)
+            {
+                for (map<string, string>::iterator It=Chunks->Global->bext->Strings.begin(); It!=Chunks->Global->bext->Strings.end(); It++)
+                {
+                    if ((It->first=="description" || It->first=="originator" || It->first=="originatorreference" || It->first=="originationdate" || It->first=="originationtime" || It->first=="codinghistory") && !It->second.empty())
+                        It->second=Decode(It->second);
+                }
+            }
+
+            if (Chunks->Global->adtl)
+            {
+                for (std::vector<Riff_Base::global::chunk_labl>::iterator It=Chunks->Global->adtl->labels.begin(); It!=Chunks->Global->adtl->labels.end(); It++)
+                {
+                    if (!It->label.empty())
+                        It->label=Decode(It->label);
+                }
+
+                for (std::vector<Riff_Base::global::chunk_note>::iterator It=Chunks->Global->adtl->notes.begin(); It!=Chunks->Global->adtl->notes.end(); It++)
+                {
+                    if (!It->note.empty())
+                        It->note=Decode(It->note);
+                }
+
+                //TODO: handle ltxt internal cset values
+                for (std::vector<Riff_Base::global::chunk_ltxt>::iterator It=Chunks->Global->adtl->texts.begin(); It!=Chunks->Global->adtl->texts.end(); It++)
+                {
+                    if (!It->text.empty())
+                        It->text=Decode(It->text);
+                }
+            }
+        }
+
+        //Cues - Xml
+        if (Chunks->Global->cue_)
+        {
+            Chunks->Global->cuexml = new Riff_Base::global::chunk_strings;
+            Chunks->Global->cuexml->Strings["cuexml"]=Cue_Xml_Get();
         }
 
         //Saving initial values
@@ -360,6 +680,145 @@ bool Riff_Handler::Save()
         return false;
     }
 
+    //Encoding
+    if (Write_Encoding!=Encoding_Max || Encoding!=Encoding_UTF8)
+    {
+        //Write
+        if (Chunks->Global->INFO)
+        {
+            for (map<string, string>::iterator It=Chunks->Global->INFO->Strings.begin(); It!=Chunks->Global->INFO->Strings.end(); It++)
+            {
+                if (!It->second.empty())
+                {
+                    It->second=Encode(It->second);
+                    Chunks->Modify(Elements::WAVE, Elements::WAVE_INFO, Chunk_Name3_Get(It->first));
+                }
+            }
+        }
+
+        if (Chunks->Global->bext)
+        {
+            bool Modified=false;
+            for (map<string, string>::iterator It=Chunks->Global->bext->Strings.begin(); It!=Chunks->Global->bext->Strings.end(); It++)
+            {
+                if (It->first=="description" || It->first=="originator" || It->first=="originatorreference" || It->first=="originationdate" || It->first=="originationtime" || It->first=="codinghistory")
+                {
+                    if (!It->second.empty())
+                    {
+                        It->second=Encode(It->second);
+                        Modified=true;
+                    }
+                }
+            }
+            if (Modified)
+                Chunks->Modify(Elements::WAVE, Elements::WAVE_bext, NULL);
+        }
+
+        if (Chunks->Global->adtl)
+        {
+            bool Modified=false;
+            for (std::vector<Riff_Base::global::chunk_labl>::iterator It=Chunks->Global->adtl->labels.begin(); It!=Chunks->Global->adtl->labels.end(); It++)
+            {
+                if (!It->label.empty())
+                {
+                    It->label=Encode(It->label);
+                    Modified=true;
+                }
+            }
+            if (Modified)
+                Chunks->Modify(Elements::WAVE, Elements::WAVE_adtl, Elements::WAVE_adtl_labl);
+
+            Modified=false;
+            for (std::vector<Riff_Base::global::chunk_note>::iterator It=Chunks->Global->adtl->notes.begin(); It!=Chunks->Global->adtl->notes.end(); It++)
+            {
+                if (!It->note.empty())
+                {
+                    It->note=Encode(It->note);
+                    Modified=true;
+                }
+            }
+            if (Modified)
+                Chunks->Modify(Elements::WAVE, Elements::WAVE_adtl, Elements::WAVE_adtl_note);
+
+            //TODO: handle ltxt internal cset values
+            Modified=false;
+            for (std::vector<Riff_Base::global::chunk_ltxt>::iterator It=Chunks->Global->adtl->texts.begin(); It!=Chunks->Global->adtl->texts.end(); It++)
+            {
+                if (!It->text.empty())
+                {
+                    It->text=Encode(It->text);
+                    Modified=true;
+                }
+            }
+            if (Modified)
+                Chunks->Modify(Elements::WAVE, Elements::WAVE_adtl, Elements::WAVE_adtl_ltxt);
+        }
+    }
+
+    if (Write_CodePage || Write_Encoding!=Encoding_Max)
+    {
+        switch (Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)
+        {
+        case Encoding_UTF8:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=65001;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_CP437:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=437;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_CP850:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=850;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_CP858:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=858;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_CP1252:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=1252;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_8859_1:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=28591;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        case Encoding_8859_2:
+        {
+            if (!Chunks->Global->CSET)
+                Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
+            Chunks->Global->CSET->codePage=28592;
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        }
+        break;
+        default:;
+        }
+    }
+
     //Write only if modified
     if (!IsModified_Get_Internal())
     {
@@ -372,7 +831,15 @@ bool Riff_Handler::Save()
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
         {
             if (!IsOriginal_Internal(xxxx_Strings[Fields_Pos][Pos], Get_Internal(xxxx_Strings[Fields_Pos][Pos])))
+            {
                 Chunks->Modify(Elements::WAVE, Chunk_Name2_Get(xxxx_Strings[Fields_Pos][Pos]), Chunk_Name3_Get(xxxx_Strings[Fields_Pos][Pos]));
+                if (Chunk_Name2_Get(xxxx_Strings[Fields_Pos][Pos])==Elements::WAVE_cue_)
+                {
+                    Chunks->Modify(Elements::WAVE, Chunk_Name2_Get("labl"), Chunk_Name3_Get("labl"));
+                    Chunks->Modify(Elements::WAVE, Chunk_Name2_Get("note"), Chunk_Name3_Get("note"));
+                    Chunks->Modify(Elements::WAVE, Chunk_Name2_Get("ltxt"), Chunk_Name3_Get("ltxt"));
+                }
+            }
         }
 
     //File size management
@@ -516,7 +983,43 @@ string Riff_Handler::Get_Internal(const string &Field)
         return Chunks->Global->fmt_==NULL                                               ?"":Ztring().From_CC2(Chunks->Global->fmt_->formatType     ).To_UTF8();
     else if (Field=="BitsPerSample")
         return Chunks->Global->fmt_==NULL                                               ?"":Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample    ).To_UTF8();
-
+    else if (Field_Get(Field)=="encoding")
+    {
+        if (Write_Encoding!=Encoding_Max)
+        {
+            switch (Write_Encoding)
+            {
+                case Encoding_UTF8: return "UTF-8"; break;
+                case Encoding_CP437: return "CP437"; break;
+                case Encoding_CP850: return "CP850"; break;
+                case Encoding_CP858: return "CP858"; break;
+                case Encoding_CP1252: return "CP1252"; break;
+                case Encoding_8859_1: return "ISO-8859-1"; break;
+                case Encoding_8859_2: return "ISO-8859-2"; break;
+                default: return "";
+            }
+        }
+        else if (Chunks->Global->CSET)
+        {
+            switch (Chunks->Global->CSET->codePage)
+            {
+                case 65001: return "UTF-8"; break;
+                case   437: return "CP437"; break;
+                case   850: return "CP850"; break;
+                case   858: return "CP858"; break;
+                case  1252: return "CP1252"; break;
+                case 28591: return "ISO-8859-1"; break;
+                case 28592: return "ISO-8859-2"; break;
+                default:
+                    #ifdef _WIN32
+                    if (Chunks->Global->CSET->codePage == GetACP())
+                        return "Local";
+                    else
+                    #endif
+                        return "";
+            }
+        }
+    }
 
     //Special case - CueXml
     if (Field=="cuexml")
@@ -779,6 +1282,34 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
     if (Field=="cuexml")
         return Cue_Xml_Set(Value, Rules);
 
+    //Special case - Encoding
+    if (Field=="encoding")
+    {
+        if (Value=="REMOVE")
+        {
+            Write_Encoding=Encoding_Max;
+            return Remove_Internal("cset");
+        }
+        else if (Value=="UTF-8")
+            Write_Encoding=Encoding_UTF8;
+        else if (Value=="CP437")
+            Write_Encoding=Encoding_CP437;
+        else if (Value=="CP850")
+            Write_Encoding=Encoding_CP850;
+        else if (Value=="CP858")
+            Write_Encoding=Encoding_CP858;
+        else if (Value=="CP1252")
+            Write_Encoding=Encoding_CP1252;
+        else if (Value=="8859-1")
+            Write_Encoding=Encoding_8859_1;
+        else if (Value=="8859-2")
+            Write_Encoding=Encoding_8859_2;
+        else
+            return false;
+
+        return true;
+    }
+
     //Setting it
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings)
@@ -805,6 +1336,12 @@ bool Riff_Handler::Remove(const string &Field)
 {
     CriticalSectionLocker CSL(CS);
 
+    return Remove_Internal(Field);
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::Remove_Internal(const string &Field)
+{
     //Integrity
     if (Chunks==NULL)
     {
@@ -830,6 +1367,20 @@ bool Riff_Handler::Remove(const string &Field)
             }
 
         return ToReturn;
+    }
+
+    //CSET
+    if (Ztring().From_UTF8(Field).MakeLowerCase()==__T("cset"))
+    {
+        if (!Chunks->Global->CSET)
+            return false;
+
+        delete Chunks->Global->CSET;
+        Chunks->Global->CSET=NULL;
+
+        Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+
+        return true;
     }
 
     //Special case: CueXml
@@ -873,16 +1424,37 @@ bool Riff_Handler::IsModified_Internal(const string &Field)
                  ToReturn=true;
         return ToReturn;
     }
-    if (Field_Get(Field)=="cuexml")
+    if (Field_Get(Field)=="encoding")
     {
-        bool ToReturn=false;
-        ToReturn|=IsModified_Internal("cue");
-        ToReturn|=IsModified_Internal("labl");
-        ToReturn|=IsModified_Internal("note");
-        ToReturn|=IsModified_Internal("ltxt");
-        return ToReturn;
-    }
+        if (Write_Encoding!=Encoding_Max)
+        {
+            if (!Chunks || !Chunks->Global || !Chunks->Global->CSET)
+                return true;
 
+            switch (Write_Encoding)
+            {
+                case Encoding_UTF8:
+                    return Chunks->Global->CSET->codePage!=65001; break;
+                case Encoding_CP437:
+                    return Chunks->Global->CSET->codePage!=437; break;
+                case Encoding_CP850:
+                    return Chunks->Global->CSET->codePage!=850; break;
+                case Encoding_CP858:
+                    return Chunks->Global->CSET->codePage!=858; break;
+                case Encoding_CP1252:
+                    return Chunks->Global->CSET->codePage!=1252; break;
+                case Encoding_8859_1:
+                    return Chunks->Global->CSET->codePage!=28591; break;
+                case Encoding_8859_2:
+                    return Chunks->Global->CSET->codePage!=28592; break;
+                default: return false;
+            }
+        }
+        else if (Chunks && Chunks->Global && !Chunks->Global->CSET && Chunks->Global->CSET_Present)
+            return true;
+        else
+            return false;
+    }
 
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
@@ -920,28 +1492,94 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
     if (Rules.INFO_Rec)
         Rules.INFO_Req=true;
 
-    //Encoding (warning only)
-    if (Field!="filename" && Field!="errors" && Field!="warnings" && Field!="information")
+    //Encoding
+    if (Field!="filename" && Field!="errors" && Field!="warnings" && Field!="information" && Field!="xmp" && Field!="ixml" && Field!="axml")
     {
         bool IsASCII=true;
-        for (size_t i=0; i<Value.size(); i++)
+        wstring Unicode=Value__.To_Unicode();
+        for (size_t i=0; i<Unicode.size(); i++)
         {
-            if (((unsigned char)Value[i]) >= 0x80)
+            if (((int32u)Unicode[i]) >= 0x80)
             {
                 IsASCII = false;
-                break;
+                if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_8859_1)
+                {
+                    if (Unicode[i] > 0xFF)
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for ISO 8859-1 encoding";
+                        break;
+                    }
+                }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_8859_2)
+                {
+                    vector<wchar_t>::const_iterator It=find(ISO_8859_2.begin(), ISO_8859_2.end(), Unicode[i]);
+                    if (It==ISO_8859_2.end())
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for ISO 8859-2 encoding";
+                        break;
+                    }
+                }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_CP437)
+                {
+                    vector<wchar_t>::const_iterator It=find(CP437.begin(), CP437.end(), Unicode[i]);
+                    if (It==CP437.end())
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for IBM CP437 encoding";
+                        break;
+                    }
+                }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_CP850)
+                {
+                    vector<wchar_t>::const_iterator It=find(CP850.begin(), CP850.end(), Unicode[i]);
+                    if (It==CP850.end())
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for IBM CP850 encoding";
+                        break;
+                    }
+                }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_CP858)
+                {
+                    if (Unicode[i]==0x20AC) // Euro symbol
+                        continue;
+                    else if(Unicode[i]==0x0131) // Replaced by Euro symbol
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for IBM CP858 encoding";
+                        break;
+                    }
+
+                    vector<wchar_t>::const_iterator It=find(CP850.begin(), CP850.end(), Unicode[i]);
+                    if (It==CP850.end())
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for IBM CP858 encoding";
+                        break;
+                    }
+                }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_CP1252)
+                {
+                    if (Unicode[i] > 0xFF)
+                    {
+                        vector<wchar_t>::const_iterator It=find(CP1252.begin(), CP1252.end(), Unicode[i]);
+                        if (It==CP1252.end())
+                        {
+                            IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for Windows 1252 encoding";
+                            break;
+                        }
+                    }
+                }
+                else if ((Write_Encoding!=Encoding_Max?Write_Encoding:Encoding)==Encoding_Local)
+                {
+                    if (Ztring().From_Unicode(Unicode[i]).To_Local().empty())
+                    {
+                        IsValid_Errors<<"'"<<Ztring().From_Unicode(Unicode[i]).To_UTF8()<<"' Is invalid for operating system local encoding";
+                        break;
+                    }
+                }
+                else
+                    break;
             }
         }
-        if (!IsASCII)
-        {
-            IsValid_Warnings<<"Warning: due to the presence of non ASCII characters, ";
-            if (Field=="description" || Field=="originator" || Field=="originatorreference")
-                IsValid_Warnings<<"which are forbidden by EBU Text 3285 specifications, ";
-            else
-                IsValid_Warnings<<"whose the encoding in files is not specified in WAV documents, ";
-            IsValid_Warnings<<"there is a risk of interoperability issues with other tools (including BWF MetaEdit on other platforms) "
-                            <<"as the content is converted with local codepage";
-        }
+        if (!IsASCII && Rules.OriginatorReference_Rec && (Field=="description" || Field=="originator" || Field=="originatorreference"))
+            IsValid_Warnings<<"Warning: non ASCII characters are forbidden by EBU Text 3285 specifications.";
     }
 
     //FileName
@@ -1713,52 +2351,46 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
 
     else if (Field=="cuexml")
     {
-        string cue_;
-        string labl;
-        string note;
-        string ltxt;
+        std::vector<Riff_Base::global::chunk_cue_::point> Cues;
+        std::vector<Riff_Base::global::chunk_labl> Labels;
+        std::vector<Riff_Base::global::chunk_note> Notes;
+        std::vector<Riff_Base::global::chunk_ltxt> Texts;
+        Cue_Xml_To_Fields(Value, Cues, Labels, Notes, Texts);
+        std::vector<int32u> CuesPoints;
 
-        Cue_Xml_To_Fields(Value, cue_, labl, note, ltxt);
-
-        ZtringListList Cues(Ztring().From_UTF8(cue_));
-        ZtringListList Labels(Ztring().From_UTF8(labl));
-        ZtringListList Notes(Ztring().From_UTF8(note));
-        ZtringListList Texts(Ztring().From_UTF8(ltxt));
-
-        //cue_
+        // cue_
         {
-            ZtringList Points;
-            ZtringList Duplicates;
+            std::vector<int32u> Duplicates;
             for (size_t Pos=0; Pos<Cues.size(); Pos++)
             {
-                Ztring Point=Cues[Pos](0);
-                if (find(Points.begin(), Points.end(), Point)!=Points.end())
+                int32u Point=Cues[Pos].id;
+                if (find(CuesPoints.begin(), CuesPoints.end(), Point)!=CuesPoints.end())
                 {
                     Duplicates.push_back(Point);
                     continue;
                 }
-                Points.push_back(Point);
+                CuesPoints.push_back(Point);
             }
             if (!Duplicates.empty())
             {
-                IsValid_Errors<<"Errors: duplicate cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                IsValid_Errors<<"Errors: duplicate cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0];
                 for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
-                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Duplicates[Pos];
             }
         }
 
         //labl
         {
-            ZtringList Points;
-            ZtringList Missing;
-            ZtringList Duplicates;
+            std::vector<int32u> Points;
+            std::vector<int32u> Missing;
+            std::vector<int32u> Duplicates;
             for (size_t Pos=0; Pos<Labels.size(); Pos++)
             {
-                Ztring Point=Labels[Pos](0);
+                int32u Point=Labels[Pos].cuePointId;
 
-                if (Cues.Find(Point, 0, 0)==Error)
+                if (find(CuesPoints.begin(), CuesPoints.end(), Point)==CuesPoints.end())
                     Missing.push_back(Point);
-                else if (Points.Find(Point)!=Error)
+                else if (find(Points.begin(), Points.end(), Point)!=Points.end())
                     Duplicates.push_back(Point);
                 else
                     Points.push_back(Point);
@@ -1767,32 +2399,33 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0].To_UTF8();
+                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0];
                 for (size_t Pos=1; Pos<Missing.size(); Pos++)
-                    IsValid_Errors<<", "<<Missing[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Missing[Pos];
                 IsValid_Errors<<(Missing.size()>1?" are":" is")<<" referenced by labl "<<(Missing.size()>1?"entries":"entry");
             }
             if (!Duplicates.empty())
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: multiple labl entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                IsValid_Errors<<"Error: multiple labl entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0];
                 for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
-                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Duplicates[Pos];
             }
         }
 
         //note
         {
-            ZtringList Points;
-            ZtringList Missing;
-            ZtringList Duplicates;
-            for (size_t Pos=0; Pos<Notes.size(); Pos++)
+            std::vector<int32u> Points;
+            std::vector<int32u> Missing;
+            std::vector<int32u> Duplicates;
+            for (size_t Pos=0; Pos<Labels.size(); Pos++)
             {
-                Ztring Point=Notes[Pos](0);
-                if (Cues.Find(Point, 0, 0)==Error)
+                int32u Point=Labels[Pos].cuePointId;
+
+                if (find(CuesPoints.begin(), CuesPoints.end(), Point)==CuesPoints.end())
                     Missing.push_back(Point);
-                else if (Points.Find(Point)!=Error)
+                else if (find(Points.begin(), Points.end(), Point)!=Points.end())
                     Duplicates.push_back(Point);
                 else
                     Points.push_back(Point);
@@ -1801,44 +2434,44 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0].To_UTF8();
+                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0];
                 for (size_t Pos=1; Pos<Missing.size(); Pos++)
-                    IsValid_Errors<<", "<<Missing[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Missing[Pos];
                 IsValid_Errors<<(Missing.size()>1?" are":" is")<<" referenced by note "<<(Missing.size()>1?"entries":"entry");
             }
             if (!Duplicates.empty())
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: multiple note entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                IsValid_Errors<<"Error: multiple note entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0];
                 for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
-                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Duplicates[Pos];
             }
         }
 
         //ltxt
         {
-            ZtringList Points;
-            ZtringList Missing;
-            ZtringList Duplicates;
+            std::vector<int32u>  Points;
+            std::vector<int32u>  Missing;
+            std::vector<int32u>  Duplicates;
             ostringstream IsValid_Errors_Save(IsValid_Errors.str());
             ostringstream IsValid_Warnings_Save(IsValid_Warnings.str());
             for (size_t Pos=0; Pos<Texts.size(); Pos++)
             {
-                Ztring Point=Texts[Pos](0);
-                if (Cues.Find(Point, 0, 0)==Error)
+                int32u Point=Texts[Pos].cuePointId;
+                if (find(CuesPoints.begin(), CuesPoints.end(), Point)==CuesPoints.end())
                     Missing.push_back(Point);
-                else if (Points.Find(Point)!=Error)
+                else if (find(Points.begin(), Points.end(), Point)!=Points.end())
                     Duplicates.push_back(Point);
                 else
                     Points.push_back(Point);
 
                 if (!IgnoreCoherency)
                 {
-                    string Purpose=Texts[Pos](2).To_UTF8();
-                    string Country=Texts[Pos](3).To_UTF8();
-                    string Language=Texts[Pos](4).To_UTF8();
-                    string Dialect=Texts[Pos](5).To_UTF8();
+                    string Purpose=string("0x")+Ztring().From_Number(Texts[Pos].purposeId, 16).To_UTF8();
+                    string Country=Ztring().From_Number(Texts[Pos].country).To_UTF8();
+                    string Language=Ztring().From_Number(Texts[Pos].language).To_UTF8();
+                    string Dialect=Ztring().From_Number(Texts[Pos].dialect).To_UTF8();
 
                     IsValid_Internal("cue_ltxt_purpose", Purpose, Rules, IgnoreCoherency);
 
@@ -1888,18 +2521,18 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0].To_UTF8();
+                IsValid_Errors<<"Error: missing cue point"<<(Missing.size()>1?"s: ":": ")<<Missing[0];
                 for (size_t Pos=1; Pos<Missing.size(); Pos++)
-                    IsValid_Errors<<", "<<Missing[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Missing[Pos];
                 IsValid_Errors<<(Missing.size()>1?" are":" is")<<" referenced by ltxt "<<(Missing.size()>1?"entries":"entry");
             }
             if (!Duplicates.empty())
             {
                 if (!IsValid_Errors.str().empty())
                     IsValid_Errors<<endl;
-                IsValid_Errors<<"Error: multiple ltxt entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0].To_UTF8();
+                IsValid_Errors<<"Error: multiple ltxt entries reference the same cue point"<<(Duplicates.size()>1?"s: ":": ")<<Duplicates[0];
                 for (size_t Pos=1; Pos<Duplicates.size(); Pos++)
-                    IsValid_Errors<<", "<<Duplicates[Pos].To_UTF8();
+                    IsValid_Errors<<", "<<Duplicates[Pos];
             }
         }
     }
@@ -1989,26 +2622,6 @@ bool Riff_Handler::IsOriginal(const string &Field, const string &Value)
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsOriginal_Internal(const string &Field, const string &Value)
 {
-    //Special case: CueXml
-    if (Field=="cuexml")
-    {
-        string cue_;
-        string labl;
-        string note;
-        string ltxt;
-
-        if (!Cue_Xml_To_Fields(Value, cue_, labl, note, ltxt))
-            return false;
-
-        bool ToReturn=true;
-        ToReturn&=IsOriginal_Internal("cue", cue_);
-        ToReturn&=IsOriginal_Internal("labl", cue_);
-        ToReturn&=IsOriginal_Internal("note", cue_);
-        ToReturn&=IsOriginal_Internal("ltxt", cue_);
-
-        return ToReturn;
-    }
-
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return true;
@@ -2103,6 +2716,7 @@ string Riff_Handler::Technical_Header()
     ToReturn<<"iXML"<<',';
     ToReturn<<"MD5Stored"<<',';
     ToReturn<<"MD5Generated"<<',';
+    ToReturn<<"Encoding"<<',';
     ToReturn<<"Errors"<<',';
     ToReturn<<"Warnings"<<',';
     ToReturn<<"Information";
@@ -2138,6 +2752,7 @@ string Riff_Handler::Technical_Get()
     List.push_back(Get_Internal("iXML").empty()?__T("No"):__T("Yes"));
     List.push_back(Ztring().From_UTF8(Get_Internal("MD5Stored")));
     List.push_back(Ztring().From_UTF8(Get_Internal("MD5Generated")));
+    List.push_back(Ztring().From_UTF8(Get_Internal("Encoding")));
     string Errors_Temp=PerFile_Error.str();
     if (!Errors_Temp.empty())
         Errors_Temp.resize(Errors_Temp.size()-1);
@@ -2244,6 +2859,10 @@ bool Riff_Handler::IsModified_Get_Internal()
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
             if (IsModified_Internal(xxxx_Strings[Fields_Pos][Pos]))
                 ToReturn=true;
+
+    if (IsModified_Internal("Encoding"))
+        ToReturn=true;
+
 
     if (!ToReturn && Chunks)
         ToReturn=Chunks->IsModified();
@@ -2359,10 +2978,12 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         return bextversion_Display?Chunk_Strings->Strings["bextversion"]:string();
     }
 
+
+
     if (&Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
         return Chunk_Strings->Strings[Field];
-    else
-        return Riff_Handler_EmptyZtring_Const.To_UTF8();
+
+    return Riff_Handler_EmptyZtring_Const.To_UTF8();
 }
 
 //---------------------------------------------------------------------------
@@ -2370,10 +2991,12 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
 {
     if (!File_IsValid)
         return false;
-    
-    if ((Chunk_Strings!=NULL && Value==Chunk_Strings->Strings[Field])
-     || (Chunk_Strings==NULL && Value.empty()))
+
+    if (Chunk_Strings==NULL && Value.empty())
         return true; //Nothing to do
+    else if (Chunk_Strings!=NULL)
+        if (Value==Chunk_Strings->Strings[Field])
+            return true; //Nothing to do
 
     //Overwrite_Rejec
     if (Overwrite_Reject && Chunk_Strings!=NULL && !Chunk_Strings->Strings[Field].empty() && !IsModified_Internal(Field))
@@ -2386,7 +3009,7 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
     Ztring Value_ToDisplay=Ztring().From_UTF8(Value);
     Value_ToDisplay.FindAndReplace(__T("\r"), __T(" "), 0, Ztring_Recursive);
     Value_ToDisplay.FindAndReplace(__T("\n"), __T(" "), 0, Ztring_Recursive);
-    Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": "<<Field<<", "<<((Chunk_Strings==NULL || Chunk_Strings->Strings[Field].empty())?"(empty)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Chunk_Strings->Strings[Field].c_str()))<<" --> "<<(Value.empty()?"(removed)":((Field=="xmp" || Field=="axml" || Field=="ixml")?"(XML data)":Value_ToDisplay.To_UTF8().c_str()))<<endl;
+    Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": "<<Field<<", "<<((Chunk_Strings==NULL || Chunk_Strings->Strings[Field].empty())?"(empty)":((Field=="xmp" || Field=="axml" || Field=="ixml" || Field=="cuexml")?"(XML data)":Chunk_Strings->Strings[Field].c_str()))<<" --> "<<(Value.empty()?"(removed)":((Field=="xmp" || Field=="axml" || Field=="ixml" || Field=="cuexml")?"(XML data)":Value_ToDisplay.To_UTF8().c_str()))<<endl;
        
     //Special cases - Before
     if (Chunk_Strings==NULL)
@@ -2404,10 +3027,13 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
     //Filling
     bool Alreadyexists=false;
     for (size_t Pos=0; Pos<Chunk_Strings->Histories[Field].size(); Pos++)
+    {
         if (Chunk_Strings->Histories[Field][Pos].To_UTF8()==Chunk_Strings->Strings[Field])
             Alreadyexists=true;
+    }
     if (!Alreadyexists)
         Chunk_Strings->Histories[Field].push_back(Ztring().From_UTF8(Chunk_Strings->Strings[Field]));
+
     Chunk_Strings->Strings[Field]=Value;
 
     //Special cases - After
@@ -2436,7 +3062,7 @@ bool Riff_Handler::IsOriginal(const string &Field, const string &Value, Riff_Bas
 
     if (Chunk_Strings->Histories[Field].empty())
         return Value==Chunk_Strings->Strings[Field];
-   
+
     return Value==Chunk_Strings->Histories[Field][0].To_UTF8();
 }
 
@@ -2450,7 +3076,7 @@ bool Riff_Handler::IsModified(const string &Field, Riff_Base::global::chunk_stri
     if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
         return IsModified_Internal("timereference");
 
-    if (&Chunk_Strings!=NULL && Chunk_Strings && Chunk_Strings->Histories.find(Field)!=Chunk_Strings->Histories.end())
+    if (&Chunk_Strings && Chunk_Strings && Chunk_Strings->Histories.find(Field)!=Chunk_Strings->Histories.end())
     {
         //Special cases
         if (Field=="bextversion")
@@ -2577,13 +3203,24 @@ void Riff_Handler::Options_Update_Internal(bool Update)
 //---------------------------------------------------------------------------
 string Riff_Handler::Cue_Xml_Get()
 {
-    ZtringListList Points(Ztring().From_UTF8(Get_Internal("cue").c_str()));
-    ZtringListList Labels=(Ztring().From_UTF8(Get_Internal("labl").c_str()));
-    ZtringListList Notes=(Ztring().From_UTF8(Get_Internal("note").c_str()));
-    ZtringListList Texts=(Ztring().From_UTF8(Get_Internal("ltxt").c_str()));
-
-    if (Points.empty())
+    if (!Chunks->Global->cue_ || Chunks->Global->cue_->points.empty())
         return string();
+
+    std::vector<Riff_Base::global::chunk_cue_::point> Points;
+    if (Chunks->Global->cue_)
+        Points=Chunks->Global->cue_->points;
+
+    std::vector<Riff_Base::global::chunk_labl> Labels;
+    if (Chunks->Global->adtl)
+        Labels=Chunks->Global->adtl->labels;
+
+    std::vector<Riff_Base::global::chunk_note> Notes;
+    if (Chunks->Global->adtl)
+        Notes=Chunks->Global->adtl->notes;
+
+    std::vector<Riff_Base::global::chunk_ltxt> Texts;
+    if (Chunks->Global->adtl)
+        Texts=Chunks->Global->adtl->texts;
 
     tinyxml2::XMLPrinter Printer;
     Printer.PushHeader(false, false);
@@ -2594,140 +3231,168 @@ string Riff_Handler::Cue_Xml_Get()
 
     for (size_t Pos=0; Pos<Points.size(); Pos++)
     {
-        Ztring Id=Points[Pos](0);
+        uint32_t Id=Points[Pos].id;
 
         Printer.OpenElement("Cue");
             Printer.OpenElement("ID");
-                Printer.PushText(Id.To_UTF8().c_str());
+                Printer.PushText(Points[Pos].id);
             Printer.CloseElement();
             Printer.OpenElement("Position");
-                Printer.PushText(Points[Pos](1).To_UTF8().c_str());
+                Printer.PushText(Points[Pos].position);
             Printer.CloseElement();
             Printer.OpenElement("DataChunkID");
-                Printer.PushText(Points[Pos](2).To_UTF8().c_str());
+                Printer.PushText("0x");
+                Printer.PushText(Ztring().From_Number(Points[Pos].dataChunkId, 16).To_UTF8().c_str());
             Printer.CloseElement();
             Printer.OpenElement("ChunkStart");
-                Printer.PushText(Points[Pos](3).To_UTF8().c_str());
+                Printer.PushText(Points[Pos].chunkStart);
             Printer.CloseElement();
             Printer.OpenElement("BlockStart");
-                Printer.PushText(Points[Pos](4).To_UTF8().c_str());
+                Printer.PushText(Points[Pos].blockStart);
             Printer.CloseElement();
             Printer.OpenElement("SampleOffset");
-                Printer.PushText(Points[Pos](5).To_UTF8().c_str());
+                Printer.PushText(Points[Pos].sampleOffset);
             Printer.CloseElement();
-        for (size_t Label_Pos=Labels.Find(Id, 0, 0); Label_Pos!=Error; Label_Pos=Labels.Find(Id, 0, 0))
-        {
-            Printer.OpenElement("Label");
-                Ztring Label=Labels[Label_Pos](1);
-                Label.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                Printer.PushText(Label.To_UTF8().c_str());
-            Printer.CloseElement();
-            Labels.erase(Labels.begin()+Label_Pos);
-        }
-        for (size_t Note_Pos=Notes.Find(Id, 0, 0); Note_Pos!=Error; Note_Pos=Notes.Find(Id, 0, 0))
-        {
-            Printer.OpenElement("Note");
-                Ztring Note=Notes[Note_Pos](1);
-                Note.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                Printer.PushText(Note.To_UTF8().c_str());
-            Printer.CloseElement();
-            Notes.erase(Notes.begin()+Note_Pos);
-        }
-        for (size_t Text_Pos=Texts.Find(Id, 0, 0); Text_Pos!=Error; Text_Pos=Texts.Find(Id, 0, 0))
-        {
-            Printer.OpenElement("LabeledText");
-                Printer.OpenElement("SampleLength");
-                    Printer.PushText(Texts[Text_Pos](1).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("PurposeID");
-                    Printer.PushText(Texts[Text_Pos](2).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Country");
-                    Printer.PushText(Texts[Text_Pos](3).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Language");
-                    Printer.PushText(Texts[Text_Pos](4).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Dialect");
-                    Printer.PushText(Texts[Text_Pos](5).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("CodePage");
-                    Printer.PushText(Texts[Text_Pos](6).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Text");
-                    Ztring Text=Texts[Text_Pos](7);
-                    Text.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                    Printer.PushText(Text.To_UTF8().c_str());
-                Printer.CloseElement();
-            Printer.CloseElement();
-            Texts.erase(Texts.begin()+Text_Pos);
-        }
+            {
+                std::vector<Riff_Base::global::chunk_labl>::iterator It=Labels.begin();
+                while (It!=Labels.end())
+                {
+                    if (It->cuePointId==Id)
+                    {
+                        Printer.OpenElement("Label");
+                            Printer.PushText(It->label.c_str());
+                        Printer.CloseElement();
+                        It=Labels.erase(It);
+                    }
+                    else
+                        It++;
+                }
+            }
+            {
+                std::vector<Riff_Base::global::chunk_note>::iterator It=Notes.begin();
+                while (It!=Notes.end())
+                {
+                    if (It->cuePointId==Id)
+                    {
+                        Printer.OpenElement("Note");
+                            Printer.PushText(It->note.c_str());
+                        Printer.CloseElement();
+                        It=Notes.erase(It);
+                    }
+                    else
+                        It++;
+                }
+            }
+            {
+                std::vector<Riff_Base::global::chunk_ltxt>::iterator It=Texts.begin();
+                while (It!=Texts.end())
+                {
+                    if (It->cuePointId==Id)
+                    {
+                        Printer.OpenElement("LabeledText");
+                            Printer.OpenElement("SampleLength");
+                                Printer.PushText(It->sampleLength);
+                            Printer.CloseElement();
+                            Printer.OpenElement("PurposeID");
+                                Printer.PushText("0x");
+                                Printer.PushText(Ztring().From_Number(It->purposeId, 16).To_UTF8().c_str());
+                            Printer.CloseElement();
+                            Printer.OpenElement("Country");
+                                Printer.PushText(It->country);
+                            Printer.CloseElement();
+                            Printer.OpenElement("Language");
+                                Printer.PushText(It->language);
+                            Printer.CloseElement();
+                            Printer.OpenElement("Dialect");
+                                Printer.PushText(It->dialect);
+                            Printer.CloseElement();
+                            Printer.OpenElement("CodePage");
+                                Printer.PushText(It->codePage);
+                            Printer.CloseElement();
+                            Printer.OpenElement("Text");
+                                Printer.PushText(It->text.c_str()); //TODO: Handle CodePage
+                            Printer.CloseElement();
+                        Printer.CloseElement();
+                        It=Texts.erase(It);
+                    }
+                    else
+                        It++;
+                }
+            }
         Printer.CloseElement();
     }
 
-    for (size_t Label_Pos=0; Label_Pos<Labels.size(); Label_Pos++)
     {
-        Printer.OpenElement("Cue");
-            Printer.OpenElement("ID");
-                Printer.PushAttribute("missing", "true");
-                Printer.PushText(Labels[Label_Pos](0).To_UTF8().c_str());
+        std::vector<Riff_Base::global::chunk_labl>::iterator It=Labels.begin();
+        while (It!=Labels.end())
+        {
+            Printer.OpenElement("Cue");
+                Printer.OpenElement("ID");
+                    Printer.PushAttribute("Missing", "true");
+                    Printer.PushText(It->cuePointId);
+                Printer.CloseElement();
+                Printer.OpenElement("Label");
+                    Printer.PushText(It->label.c_str());
+                Printer.CloseElement();
             Printer.CloseElement();
-            Printer.OpenElement("Label");
-                Ztring Label=Labels[Label_Pos](1);
-                Label.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                Printer.PushText(Label.To_UTF8().c_str());
-            Printer.CloseElement();
-        Printer.CloseElement();
-    }
 
-    for (size_t Note_Pos=0; Note_Pos<Notes.size(); Note_Pos++)
-    {
-        Printer.OpenElement("Cue");
-            Printer.OpenElement("ID");
-                Printer.PushAttribute("missing", "true");
-                Printer.PushText(Notes[Note_Pos](0).To_UTF8().c_str());
-            Printer.CloseElement();
-            Printer.OpenElement("Note");
-                Ztring Note=Notes[Note_Pos](1);
-                Note.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                Printer.PushText(Note.To_UTF8().c_str());
-            Printer.CloseElement();
-        Printer.CloseElement();
+            It++;
+        }
     }
-
-    for (size_t Text_Pos=0; Text_Pos<Texts.size(); Text_Pos++)
     {
-        Printer.OpenElement("Cue");
-            Printer.OpenElement("ID");
-                Printer.PushAttribute("missing", "true");
-                Printer.PushText(Texts[Text_Pos](0).To_UTF8().c_str());
-            Printer.CloseElement();
-            Printer.OpenElement("LabeledText");
-                Printer.OpenElement("SampleLength");
-                    Printer.PushText(Texts[Text_Pos](1).To_UTF8().c_str());
+        std::vector<Riff_Base::global::chunk_note>::iterator It=Notes.begin();
+        while (It!=Notes.end())
+        {
+            Printer.OpenElement("Cue");
+                Printer.OpenElement("ID");
+                    Printer.PushAttribute("Missing", "true");
+                    Printer.PushText(It->cuePointId);
                 Printer.CloseElement();
-                Printer.OpenElement("PurposeID");
-                    Printer.PushText(Texts[Text_Pos](2).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Country");
-                    Printer.PushText(Texts[Text_Pos](3).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Language");
-                    Printer.PushText(Texts[Text_Pos](4).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Dialect");
-                    Printer.PushText(Texts[Text_Pos](5).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("CodePage");
-                    Printer.PushText(Texts[Text_Pos](6).To_UTF8().c_str());
-                Printer.CloseElement();
-                Printer.OpenElement("Text");
-                    Ztring Text=Texts[Text_Pos](7);
-                    Text.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-                    Printer.PushText(Text.To_UTF8().c_str());
+                Printer.OpenElement("Note");
+                    Printer.PushText(It->note.c_str());
                 Printer.CloseElement();
             Printer.CloseElement();
-        Printer.CloseElement();
+
+            It++;
+        }
+    }
+    {
+        std::vector<Riff_Base::global::chunk_ltxt>::iterator It=Texts.begin();
+        while (It!=Texts.end())
+        {
+            Printer.OpenElement("Cue");
+                Printer.OpenElement("ID");
+                    Printer.PushAttribute("Missing", "true");
+                    Printer.PushText(It->cuePointId);
+                Printer.CloseElement();
+                Printer.OpenElement("LabeledText");
+                    Printer.OpenElement("SampleLength");
+                        Printer.PushText(It->sampleLength);
+                    Printer.CloseElement();
+                    Printer.OpenElement("PurposeID");
+                        Printer.PushText("0x");
+                        Printer.PushText(Ztring().From_Number(It->purposeId, 16).To_UTF8().c_str());
+                    Printer.CloseElement();
+                    Printer.OpenElement("Country");
+                        Printer.PushText(It->country);
+                    Printer.CloseElement();
+                    Printer.OpenElement("Language");
+                        Printer.PushText(It->language);
+                    Printer.CloseElement();
+                    Printer.OpenElement("Dialect");
+                        Printer.PushText(It->dialect);
+                    Printer.CloseElement();
+                    Printer.OpenElement("CodePage");
+                        Printer.PushText(It->codePage);
+                    Printer.CloseElement();
+                    Printer.OpenElement("Text");
+                        Printer.PushText(It->text.c_str()); //TODO: Handle CodePage
+                    Printer.CloseElement();
+                Printer.CloseElement();
+            Printer.CloseElement();
+
+            It++;
+        }
     }
 
     Printer.CloseElement();
@@ -2738,36 +3403,41 @@ string Riff_Handler::Cue_Xml_Get()
 //---------------------------------------------------------------------------
 bool Riff_Handler::Cue_Xml_Set (const string& Xml, rules Rules)
 {
-    string Points;
-    string Labels;
-    string Notes;
-    string Texts;
+    std::vector<Riff_Base::global::chunk_cue_::point> Points;
+    std::vector<Riff_Base::global::chunk_labl> Labels;
+    std::vector<Riff_Base::global::chunk_note> Notes;
+    std::vector<Riff_Base::global::chunk_ltxt> Texts;
 
     if(!Cue_Xml_To_Fields(Xml, Points, Labels, Notes, Texts))
         return false;
 
-    Set_Internal("cue", Points, Rules);
-    Set_Internal("labl", Labels, Rules);
-    Set_Internal("note", Notes, Rules);
-    Set_Internal("ltxt", Texts, Rules);
+    if (!Chunks->Global->cue_)
+        Chunks->Global->cue_ = new Riff_Base::global::chunk_cue_();
+
+    Chunks->Global->cue_->points=Points;
+
+    if (!Chunks->Global->adtl)
+        Chunks->Global->adtl = new Riff_Base::global::chunk_adtl();
+
+    Chunks->Global->adtl->labels=Labels;
+    Chunks->Global->adtl->notes=Notes;
+    Chunks->Global->adtl->texts=Texts;
+
+    Set("cuexml", Cue_Xml_Get(), Chunks->Global->cuexml, NULL, NULL);
 
     return true;
 }
 
-bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, string& cue_, string& labl, string& note, string& ltxt)
+bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, std::vector<Riff_Base::global::chunk_cue_::point>& Points, std::vector<Riff_Base::global::chunk_labl>& Labels,
+                                      std::vector<Riff_Base::global::chunk_note>& Notes, std::vector<Riff_Base::global::chunk_ltxt>& Texts)
 {
-    cue_ = string();
-    labl = string();
-    note = string();
-    ltxt = string();
+    Points.clear();
+    Labels.clear();
+    Notes.clear();
+    Texts.clear();
 
     if (Xml.empty())
         return true;
-
-    ZtringListList Points;
-    ZtringListList Labels;
-    ZtringListList Notes;
-    ZtringListList Texts;
 
     tinyxml2::XMLDocument Document;
     if (Document.Parse(Xml.c_str())!=tinyxml2::XML_SUCCESS)
@@ -2780,8 +3450,7 @@ bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, string& cue_, string& l
 
     for(tinyxml2::XMLNode* Node=Root->FirstChildElement("Cue"); Node; Node=Node->NextSibling())
     {
-        ZtringList Point, Label, Note, Text;
-        Ztring Id;
+        uint32_t Id;
 
         tinyxml2::XMLElement* Element=NULL;
 
@@ -2789,68 +3458,62 @@ bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, string& cue_, string& l
         if (!Element)
             continue;
 
-        Id=Ztring().From_Number(Element->UnsignedText(0));
-        if (!Element->BoolAttribute("missing"))
+        Id=Element->UnsignedText(0);
+        if (!Element->BoolAttribute("Missing"))
         {
-            Point.push_back(Id);
+            Riff_Base::global::chunk_cue_::point Point;
+
+            Point.id=Id;
             Element=Node->FirstChildElement("Position");
-            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Point.position=Element?Element->UnsignedText(0):0;
             Element=Node->FirstChildElement("DataChunkID");
-            Point.push_back(Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"0x64617461"));
+            Point.dataChunkId=Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"0x64617461").To_int32u(16);
             Element=Node->FirstChildElement("ChunkStart");
-            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Point.chunkStart=Element?Element->UnsignedText(0):0;
             Element=Node->FirstChildElement("BlockStart");
-            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Point.blockStart=Element?Element->UnsignedText(0):0;
             Element=Node->FirstChildElement("SampleOffset");
-            Point.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Point.sampleOffset=Element?Element->UnsignedText(0):0;
             Points.push_back(Point);
         }
         for (Element=Node->FirstChildElement("Label"); Element; Element=Element->NextSiblingElement("Label"))
         {
-            Ztring Value=Ztring().From_UTF8(Element->GetText()?Element->GetText():"");
-            Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-            Value.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
-            Label.push_back(Id);
-            Label.push_back(Value);
+            Riff_Base::global::chunk_labl Label;
+
+            Label.cuePointId=Id;
+            Label.label=Element->GetText()?Element->GetText():"";
             Labels.push_back(Label);
         }
         for (Element=Node->FirstChildElement("Note"); Element; Element=Element->NextSiblingElement("Note"))
         {
-            Ztring Value=Ztring().From_UTF8(Element->GetText()?Element->GetText():"");
-            Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-            Value.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
-            Note.push_back(Id);
-            Note.push_back(Value);
+            Riff_Base::global::chunk_note Note;
+
+            Note.cuePointId=Id;
+            Note.note=Element->GetText()?Element->GetText():"";
             Notes.push_back(Note);
         }
         for (tinyxml2::XMLElement* LabeledTextElement=Node->FirstChildElement("LabeledText"); LabeledTextElement; LabeledTextElement=LabeledTextElement->NextSiblingElement("LabeledText"))
         {
-            Text.push_back(Id);
+            Riff_Base::global::chunk_ltxt Text;
+
+            Text.cuePointId=Id;
             Element=LabeledTextElement->FirstChildElement("SampleLength");
-            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Text.sampleLength=Element?Element->UnsignedText(0):0;
             Element=LabeledTextElement->FirstChildElement("PurposeID");
-            Text.push_back(Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"0x00000000"));
+            Text.purposeId=Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"0x00000000").To_int32u(16);
             Element=LabeledTextElement->FirstChildElement("Country");
-            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Text.country=Element?Element->UnsignedText(0):0;
             Element=LabeledTextElement->FirstChildElement("Language");
-            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Text.language=Element?Element->UnsignedText(0):0;
             Element=LabeledTextElement->FirstChildElement("Dialect");
-            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Text.dialect=Element?Element->UnsignedText(0):0;
             Element=LabeledTextElement->FirstChildElement("CodePage");
-            Text.push_back(Ztring().From_Number(Element?Element->UnsignedText(0):0));
+            Text.codePage=Element?Element->UnsignedText(0):0;
             Element=LabeledTextElement->FirstChildElement("Text");
-            Ztring Value=Ztring().From_UTF8(Element&&Element->GetText()?Element->GetText():"");
-            Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-            Value.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
-            Text.push_back(Value);
+            Text.text=Element&&Element->GetText()?Element->GetText():"";
             Texts.push_back(Text);
         }
     }
-
-    cue_ = Points.Read().To_UTF8();
-    labl = Labels.Read().To_UTF8();
-    note = Notes.Read().To_UTF8();
-    ltxt = Texts.Read().To_UTF8();
 
     return true;
 }
@@ -2900,9 +3563,9 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
     else if (Field_Lowered=="ixml")
         return &Chunks->Global->iXML;
 
-    //cue
-    else if (Field_Lowered=="cue")
-        return &Chunks->Global->cue_;
+    //cuexml
+    else if (Field_Lowered=="cuexml")
+        return &Chunks->Global->cuexml;
 
     //MD5Stored
     else if (Field_Lowered=="md5stored")
@@ -2911,12 +3574,6 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
     //MD5Stored
     else if (Field_Lowered=="md5generated")
         return &Chunks->Global->MD5Generated;
-
-    //adtl
-    else if (Field_Lowered=="labl"
-          || Field_Lowered=="note"
-          || Field_Lowered=="ltxt")
-        return &Chunks->Global->adtl;
 
     //INFO
     else if (Field.size()==4)
@@ -2954,10 +3611,7 @@ string Riff_Handler::Field_Get(const string &Field)
      || Field_Lowered=="xmp"
      || Field_Lowered=="axml"
      || Field_Lowered=="ixml"
-     || Field_Lowered=="cue"
-     || Field_Lowered=="labl"
-     || Field_Lowered=="note"
-     || Field_Lowered=="ltxt"
+     || Field_Lowered=="cuexml"
      || Field_Lowered=="md5stored"
      || Field_Lowered=="md5generated")
         return Field_Lowered; 
@@ -3009,9 +3663,8 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
         return Elements::WAVE_iXML;
 
     //cue
-    else if (Field_Lowered=="cue")
+    else if (Field_Lowered=="cue" || Field_Lowered=="cuexml")
         return Elements::WAVE_cue_;
-
     //MD5Stored
     else if (Field_Lowered=="md5stored")
         return Elements::WAVE_MD5_; 

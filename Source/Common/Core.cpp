@@ -182,6 +182,13 @@ Core::Core()
 
     Trace_UseDec=false;
 
+    Encoding=Encoding_UTF8;
+    Fallback_Encoding=Encoding_8859_1;
+    Write_Encoding=Encoding_Max;
+    Write_CodePage=false;
+    Ignore_File_Encoding=false;
+    In_CSET_Remove=false;
+
     //Status
     Text_stderr_Updated=false;
     Files_Modified_NotWritten_Count=0;
@@ -329,6 +336,7 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
             Handler->second.In_cue__Remove=In_cue__Remove;
             Handler->second.In_cue__XML=In_cue__XML;
             Handler->second.In_cue__FileName=In_cue__FileName;
+            Handler->second.In_CSET_Remove=In_CSET_Remove;
 
             //Settings - Adding default Core values if the Core value does not exist yet (from --xxx=)
             for (map<string, Ztring>::iterator In_Core_Item=Handler_Default.In_Core.begin(); In_Core_Item!=Handler_Default.In_Core.end(); In_Core_Item++)
@@ -485,6 +493,12 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
         else if (Handler->second.In_cue__Remove)
         {
             Handler->second.Riff->Set("cuexml", "", Rules);
+            StdAll(Handler);
+        }
+
+        if (Handler->second.In_CSET_Remove)
+        {
+            Handler->second.Riff->Remove("cset");
             StdAll(Handler);
         }
 
@@ -2151,6 +2165,11 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->Bext_DefaultVersion=Bext_DefaultVersion;
         Handler->second.Riff->Bext_MaxVersion=Bext_MaxVersion;
         Handler->second.Riff->Trace_UseDec=Trace_UseDec;
+        Handler->second.Riff->Encoding=Encoding;
+        Handler->second.Riff->Fallback_Encoding=Fallback_Encoding;
+        Handler->second.Riff->Write_Encoding=Write_Encoding;
+        Handler->second.Riff->Write_CodePage=Write_CodePage;
+        Handler->second.Riff->Ignore_File_Encoding=Ignore_File_Encoding;
 
         bool IsModified_Old=Handler->second.Riff->IsModified_Get();
 

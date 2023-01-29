@@ -281,43 +281,83 @@ void GUI_Main::Menu_Create()
     Preferences=new GUI_Preferences(this);
     Menu_Fields_Menus=new QMenu*[Preferences->Groups_Count_Get()];
     Menu_Fields_CheckBoxes=new QAction*[Preferences->Groups_Count_Get()*options::MaxCount];
+    Menu_Fields_ActionGroups=new QActionGroup*[Preferences->Groups_Count_Get()];
+
     for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
     {
         if (Preferences->Group_Options_Count_Get((group)Group, true))
+        {
+            Menu_Fields_ActionGroups[Group]=new QActionGroup(this);
             Menu_Fields_Menus[Group]=Menu_Fields_Main->addMenu(QString().fromUtf8(Preferences->Group_Name_Get((group)Group).c_str()));
+        }
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
         {
-            Menu_Fields_CheckBoxes[Group*options::MaxCount+Option] = new QAction(QString().fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
-            Menu_Fields_Menus[Group]->addAction(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]);
-            Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setCheckable(true);
+            switch (Preferences->Group_Option_Type_Get((group)Group, Option))
+            {
+            case Type_CheckBox:
+                Menu_Fields_CheckBoxes[Group*options::MaxCount+Option] = new QAction(QString().fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
+                Menu_Fields_Menus[Group]->addAction(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]);
+                Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setCheckable(true);
+            break;
+            case Type_RadioButton:
+                Menu_Fields_RadioButtons[Group*options::MaxCount+Option] = new QAction(QString().fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
+                Menu_Fields_ActionGroups[Group]->addAction(Menu_Fields_RadioButtons[Group*options::MaxCount+Option]);
+                Menu_Fields_Menus[Group]->addAction(Menu_Fields_RadioButtons[Group*options::MaxCount+Option]);
+                Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setCheckable(true);
+            break;
+            }
         }
     }
-    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_Tech3285_Req              ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_Tech3285_Req(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_Tech3285_Rec              ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_Tech3285_Rec(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec         ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_CodingHistory_Rec(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_OriginatorReference_Rec   ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_OriginatorReference_Rec(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_INFO_Req                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_INFO_Req(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_INFO_Rec                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_INFO_Rec(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_FADGI_Rec                 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_FADGI_Rec(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_EBU_ISRC_Rec              ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_EBU_ISRC_Rec(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_Riff2Rf64_Reject           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_riff2rf64_Reject(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_Overwrite_Reject           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Overwrite_Reject(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_NoPadding_Accept           ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_NoPadding_Accept(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_FileNotValid_Skip          ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_FileNotValid_Skip(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_WrongExtension_Skip        ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_WrongExtension_Skip(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_File *options::MaxCount+Option_File_NewChunksAtTheEnd          ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_NewChunksAtTheEnd(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Generate                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_GenerateMD5(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Verify                      ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyMD5(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_MD5  *options::MaxCount+Option_MD5_SwapEndian ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_SwapMD5Endianness(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_Tech3285_Req                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_Tech3285_Req(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_Tech3285_Rec                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_Tech3285_Rec(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec               ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_CodingHistory_Rec(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_OriginatorReference_Rec         ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_OriginatorReference_Rec(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_INFO_Req                        ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_INFO_Req(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_INFO_Rec                        ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_INFO_Rec(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_FADGI_Rec                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_FADGI_Rec(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_EBU_ISRC_Rec                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_EBU_ISRC_Rec(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Riff2Rf64_Reject                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_riff2rf64_Reject(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Overwrite_Reject                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Overwrite_Reject(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_NoPadding_Accept                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_NoPadding_Accept(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_FileNotValid_Skip                 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_FileNotValid_Skip(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_WrongExtension_Skip               ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_WrongExtension_Skip(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_NewChunksAtTheEnd                 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_NewChunksAtTheEnd(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Generate                            ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_GenerateMD5(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Verify                              ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyMD5(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed                               ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting         ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_SwapEndian                          ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_SwapMD5Endianness(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_UTF8                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingUTF8(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP437                   ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingCP437(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP850                   ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingCP850(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP858                   ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingCP858(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP1252                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingCP1252(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_8859_1                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Encoding8859_1(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_8859_2                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Encoding8859_2(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_Local                   ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingLocal(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP437 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingFallbackCP437(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP850 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingFallbackCP850(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP858 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingFallbackCP858(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP1252], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingFallbackCP1252(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_8859_1], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingFallback8859_1(bool)));
+    connect(Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_8859_2], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingFallback8859_2(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Encoding_Options*options::MaxCount+Option_Ignore_File_Encoding       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Ignore_File_Encoding(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Encoding_Options*options::MaxCount+Option_Write_CodePage             ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Write_CodePage(bool)));
     for (size_t Group=Group_Tech; Group<=Group_Core; Group++)
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
             connect(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_TechCore(bool)));
 
     for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
-            Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setChecked(Preferences->Group_Option_Checked_Get((group)Group, Option));
+            switch (Preferences->Group_Option_Type_Get((group)Group, Option))
+            {
+            case Type_CheckBox:
+                Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setChecked(Preferences->Group_Option_Checked_Get((group)Group, Option));
+            break;
+            case Type_RadioButton:
+                Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setChecked(Preferences->Group_Option_Checked_Get((group)Group, Option));
+            break;
+            }
 
     //Menu Help
     Menu_Help_Help = new QAction(QIcon(":/Image/Menu/Help.png"), tr("Help..."), this);
@@ -985,6 +1025,166 @@ void GUI_Main::OnMenu_Rules_EBU_ISRC_Rec(bool)
 }
 
 //---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingUTF8(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_UTF8]->isChecked() && C->Encoding!=Encoding_UTF8)
+    {
+        C->Encoding=Encoding_UTF8;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingCP437(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP437]->isChecked() && C->Encoding!=Encoding_CP437)
+    {
+        C->Encoding=Encoding_CP437;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingCP850(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP850]->isChecked() && C->Encoding!=Encoding_CP850)
+    {
+        C->Encoding=Encoding_CP850;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingCP858(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP858]->isChecked() && C->Encoding!=Encoding_CP858)
+    {
+        C->Encoding=Encoding_CP858;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingCP1252(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_CP1252]->isChecked() && C->Encoding!=Encoding_CP1252)
+    {
+        C->Encoding=Encoding_CP1252;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_Encoding8859_1(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_8859_1]->isChecked() && C->Encoding!=Encoding_8859_1)
+    {
+        C->Encoding=Encoding_8859_1;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_Encoding8859_2(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_8859_2]->isChecked() && C->Encoding!=Encoding_8859_2)
+    {
+        C->Encoding=Encoding_8859_2;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingLocal(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding*options::MaxCount+Option_Encoding_Local]->isChecked() && C->Encoding!=Encoding_Local)
+    {
+        C->Encoding=Encoding_Local;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingFallbackCP437(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP437]->isChecked() && C->Fallback_Encoding!=Encoding_CP437)
+    {
+        C->Fallback_Encoding=Encoding_CP437;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingFallbackCP850(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP850]->isChecked() && C->Fallback_Encoding!=Encoding_CP850)
+    {
+        C->Fallback_Encoding=Encoding_CP850;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingFallbackCP858(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP858]->isChecked() && C->Fallback_Encoding!=Encoding_CP858)
+    {
+        C->Fallback_Encoding=Encoding_CP858;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingFallbackCP1252(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_CP1252]->isChecked() && C->Fallback_Encoding!=Encoding_CP1252)
+    {
+        C->Fallback_Encoding=Encoding_CP1252;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingFallback8859_1(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_8859_1]->isChecked() && C->Fallback_Encoding!=Encoding_8859_1)
+    {
+        C->Fallback_Encoding=Encoding_8859_1;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_EncodingFallback8859_2(bool)
+{
+    if (Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_8859_2]->isChecked() && C->Fallback_Encoding!=Encoding_8859_2)
+    {
+        C->Fallback_Encoding=Encoding_8859_2;
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_Ignore_File_Encoding(bool)
+{
+    if (C->Ignore_File_Encoding!=Menu_Fields_CheckBoxes[Group_Encoding_Options*options::MaxCount+Option_Ignore_File_Encoding]->isChecked())
+    {
+        C->Ignore_File_Encoding=Menu_Fields_CheckBoxes[Group_Encoding_Options*options::MaxCount+Option_Ignore_File_Encoding]->isChecked();
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_Write_CodePage(bool)
+{
+    if (C->Write_CodePage!=Menu_Fields_CheckBoxes[Group_Encoding_Options*options::MaxCount+Option_Write_CodePage]->isChecked())
+    {
+        C->Write_CodePage=Menu_Fields_CheckBoxes[Group_Encoding_Options*options::MaxCount+Option_Write_CodePage]->isChecked();
+        C->Menu_File_Options_Update();
+    }
+}
+
+//---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Options_TechCore(bool)
 {
     if (View==NULL)
@@ -1270,8 +1470,18 @@ void GUI_Main::OnMenu_Options_Preferences()
     bool HasChanged=false;
     for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
-            if (Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->isChecked()!=Preferences->Group_Option_Checked_Get((group)Group, Option))
-                HasChanged=true;
+            switch (Preferences->Group_Option_Type_Get((group)Group, Option))
+            {
+            case Type_CheckBox:
+                if (Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->isChecked()!=Preferences->Group_Option_Checked_Get((group)Group, Option))
+                    HasChanged=true;
+            break;
+            case Type_RadioButton:
+                if (Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked()!=Preferences->Group_Option_Checked_Get((group)Group, Option))
+                    HasChanged=true;
+            break;
+            }
+
     if (HasChanged)
     {
         QMessageBox MessageBox;
@@ -1291,7 +1501,15 @@ void GUI_Main::OnMenu_Options_Preferences()
             case QMessageBox::Yes     : // Yes was clicked
                                         for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
                                             for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
-                                                Preferences->Group_Option_Checked_Set((group)Group, Option, Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->isChecked());
+                                                switch (Preferences->Group_Option_Type_Get((group)Group, Option))
+                                                {
+                                                case Type_CheckBox:
+                                                    Preferences->Group_Option_Checked_Set((group)Group, Option, Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->isChecked());
+                                                break;
+                                                case Type_RadioButton:
+                                                    Preferences->Group_Option_Checked_Set((group)Group, Option, Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked());
+                                                break;
+                                                }
                                         break;
             case QMessageBox::No      : // Yes was clicked
                                         break;

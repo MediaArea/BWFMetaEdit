@@ -49,6 +49,15 @@ CL_OPTION(Append);
 CL_OPTION(Log_cout);
 CL_OPTION(Simulate);
 CL_OPTION(SpecialChars);
+CL_OPTION(Encoding);
+CL_OPTION(Write_Encoding);
+CL_OPTION(Fallback_Encoding);
+CL_OPTION(Write_CodePage);
+CL_OPTION(In_CSET_Remove);
+CL_OPTION(Ignore_File_Encoding);
+
+//---------------------------------------------------------------------------
+
 
 //---------------------------------------------------------------------------
 CL_OPTION(Out_XML_cout);

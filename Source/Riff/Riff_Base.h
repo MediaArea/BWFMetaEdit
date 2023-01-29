@@ -27,7 +27,89 @@ using namespace std;
 //---------------------------------------------------------------------------
 const int64u RIFF_Size_Limit=0xFFFFFFFF; //Limit about when we implement ds64
 const int64u RIFF_WAVE_FLLR_DefaultSise=16*1024; //Default size of FLLR at the beginning of a file
+const vector<wchar_t> ISO_8859_2=
+{
+    0x00A0,0x0104,0x02D8,0x0141,0x00A4,0x013D,
+    0x015A,0x00A7,0x00A8,0x0160,0x015E,0x0164,
+    0x0179,0x00AD,0x017D,0x017B,0x00B0,0x0105,
+    0x02DB,0x0142,0x00B4,0x013E,0x015B,0x02C7,
+    0x00B8,0x0161,0x015F,0x0165,0x017A,0x02DD,
+    0x017E,0x017C,0x0154,0x00C1,0x00C2,0x0102,
+    0x00C4,0x0139,0x0106,0x00C7,0x010C,0x00C9,
+    0x0118,0x00CB,0x011A,0x00CD,0x00CE,0x010E,
+    0x0110,0x0143,0x0147,0x00D3,0x00D4,0x0150,
+    0x00D6,0x00D7,0x0158,0x016E,0x00DA,0x0170,
+    0x00DC,0x00DD,0x0162,0x00DF,0x0155,0x00E1,
+    0x00E2,0x0103,0x00E4,0x013A,0x0107,0x00E7,
+    0x010D,0x00E9,0x0119,0x00EB,0x011B,0x00ED,
+    0x00EE,0x010F,0x0111,0x0144,0x0148,0x00F3,
+    0x00F4,0x0151,0x00F6,0x00F7,0x0159,0x016F,
+    0x00FA,0x0171,0x00FC,0x00FD,0x0163,0x02D9,
+};
+const vector<wchar_t> CP437=
+{
+    0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x00E5,0x00E7,
+    0x00EA,0x00EB,0x00E8,0x00EF,0x00EE,0x00EC,0x00C4,0x00C5,
+    0x00C9,0x00E6,0x00C6,0x00F4,0x00F6,0x00F2,0x00FB,0x00F9,
+    0x00FF,0x00D6,0x00DC,0x00A2,0x00A3,0x00A5,0x20A7,0x0192,
+    0x00E1,0x00ED,0x00F3,0x00FA,0x00F1,0x00D1,0x00AA,0x00BA,
+    0x00BF,0x2310,0x00AC,0x00BD,0x00BC,0x00A1,0x00AB,0x00BB,
+    0x2591,0x2592,0x2593,0x2502,0x2524,0x2561,0x2562,0x2556,
+    0x2555,0x2563,0x2551,0x2557,0x255D,0x255C,0x255B,0x2510,
+    0x2514,0x2534,0x252C,0x251C,0x2500,0x253C,0x255E,0x255F,
+    0x255A,0x2554,0x2569,0x2566,0x2560,0x2550,0x256C,0x2567,
+    0x2568,0x2564,0x2565,0x2559,0x2558,0x2552,0x2553,0x256B,
+    0x256A,0x2518,0x250C,0x2588,0x2584,0x258C,0x2590,0x2580,
+    0x03B1,0x00DF,0x0393,0x03C0,0x03A3,0x03C3,0x00B5,0x03C4,
+    0x03A6,0x0398,0x03A9,0x03B4,0x221E,0x03C6,0x03B5,0x2229,
+    0x2261,0x00B1,0x2265,0x2264,0x2320,0x2321,0x00F7,0x2248,
+    0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0,
+};
+const vector<wchar_t> CP850=
+{
+    0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x00E5,0x00E7,
+    0x00EA,0x00EB,0x00E8,0x00EF,0x00EE,0x00EC,0x00C4,0x00C5,
+    0x00C9,0x00E6,0x00C6,0x00F4,0x00F6,0x00F2,0x00FB,0x00F9,
+    0x00FF,0x00D6,0x00DC,0x00F8,0x00A3,0x00D8,0x00D7,0x0192,
+    0x00E1,0x00ED,0x00F3,0x00FA,0x00F1,0x00D1,0x00AA,0x00BA,
+    0x00BF,0x00AE,0x00AC,0x00BD,0x00BC,0x00A1,0x00AB,0x00BB,
+    0x2591,0x2592,0x2593,0x2502,0x2524,0x00C1,0x00C2,0x00C0,
+    0x00A9,0x2563,0x2551,0x2557,0x255D,0x00A2,0x00A5,0x2510,
+    0x2514,0x2534,0x252C,0x251C,0x2500,0x253C,0x00E3,0x00C3,
+    0x255A,0x2554,0x2569,0x2566,0x2560,0x2550,0x256C,0x00A4,
+    0x00F0,0x00D0,0x00CA,0x00CB,0x00C8,0x0131,0x00CD,0x00CE,
+    0x00CF,0x2518,0x250C,0x2588,0x2584,0x00A6,0x00CC,0x2580,
+    0x00D3,0x00DF,0x00D4,0x00D2,0x00F5,0x00D5,0x00B5,0x00FE,
+    0x00DE,0x00DA,0x00DB,0x00D9,0x00FD,0x00DD,0x00AF,0x00B4,
+    0x00AD,0x00B1,0x2017,0x00BE,0x00B6,0x00A7,0x00F7,0x00B8,
+    0x00B0,0x00A8,0x00B7,0x00B9,0x00B3,0x00B2,0x25A0,0x00A0,
+};
+const vector<wchar_t> CP1252=
+{
+    0x20AC,0x0000,0x201A,0x0192,0x201E,0x2026,0x2020,0x2021,
+    0x02C6,0x2030,0x0160,0x2039,0x0152,0x0000,0x017D,0x0000,
+    0x0000,0x2018,0x2019,0x201C,0x201D,0x2022,0x2013,0x2014,
+    0x02DC,0x2122,0x0161,0x203A,0x0153,0x0000,0x017E,0x0178,
+};
+
 //---------------------------------------------------------------------------
+
+//***************************************************************************
+// Enums
+//***************************************************************************
+
+enum Riff_Encoding
+{
+    Encoding_UTF8=0,
+    Encoding_CP437,
+    Encoding_CP850,
+    Encoding_CP858,
+    Encoding_CP1252,
+    Encoding_8859_1,
+    Encoding_8859_2,
+    Encoding_Local,
+    Encoding_Max,
+};
 
 //***************************************************************************
 // Exceptions
@@ -162,6 +244,105 @@ public:
                 bitsPerSample=0;
             }
         };
+        struct chunk_cue_
+        {
+
+            struct point
+            {
+                int32u          id;
+                int32u          position;
+                int32u          dataChunkId;
+                int32u          chunkStart;
+                int32u          blockStart;
+                int32u          sampleOffset;
+
+                point()
+                {
+                    id=0;
+                    position=0;
+                    dataChunkId=0;
+                    chunkStart=0;
+                    blockStart=0;
+                    sampleOffset=0;
+                }
+            };
+
+            std::vector<point> points;
+        };
+        struct chunk_labl
+        {
+            int32u          cuePointId;
+            string          label;
+
+            chunk_labl()
+            {
+                cuePointId=0;
+            }
+        };
+        struct chunk_note
+        {
+            int32u          cuePointId;
+            string          note;
+
+            chunk_note()
+            {
+                cuePointId=0;
+            }
+        };
+        struct chunk_ltxt
+        {
+            int32u          cuePointId;
+            int32u          sampleLength;
+            int32u          purposeId;
+            int16u          country;
+            int16u          language;
+            int16u          dialect;
+            int16u          codePage;
+            string          text;
+
+            chunk_ltxt()
+            {
+                cuePointId=0;
+                sampleLength=0;
+                purposeId=0;
+                country=0;
+                language=0;
+                dialect=0;
+                codePage=0;
+            }
+        };
+        struct chunk_adtl
+        {
+            std::vector<chunk_labl> labels;
+            size_t                  labelsIndex;
+            std::vector<chunk_note> notes;
+            size_t                  notesIndex;
+            std::vector<chunk_ltxt> texts;
+            size_t                  textsIndex;
+
+            chunk_adtl()
+            {
+                labelsIndex=0;
+                notesIndex=0;
+                textsIndex=0;
+            }
+        };
+
+        struct chunk_CSET
+        {
+            int16u          codePage;
+            int16u          countryCode;
+            int16u          languageCode;
+            int16u          dialectCode;
+
+            chunk_CSET()
+            {
+                codePage=0;
+                countryCode=0;
+                languageCode=0;
+                dialectCode=0;
+            }
+        };
         struct chunk_strings
         {
             map<string, string> Strings;
@@ -201,15 +382,18 @@ public:
         chunk_ds64         *ds64;
         chunk_fmt_         *fmt_;
         chunk_data         *data;
+        chunk_CSET         *CSET;
         chunk_strings      *bext;
         chunk_strings      *INFO;
         chunk_strings      * XMP;
         chunk_strings      *aXML;
         chunk_strings      *iXML;
+        chunk_strings      *cuexml;
         chunk_strings      *MD5Stored;
         chunk_strings      *MD5Generated;
-        chunk_strings      *cue_;
-        chunk_strings      *adtl;
+        chunk_cue_         *cue_;
+        chunk_adtl         *adtl;
+        bool                CSET_Present;
         bool                NoPadding_Accept;
         bool                NoPadding_IsCorrected;
         bool                RF64DataSize_IsCorrected;
@@ -236,6 +420,7 @@ public:
             ds64=NULL;
             fmt_=NULL;
             data=NULL;
+            CSET=NULL;
             bext=NULL;
             INFO=NULL;
              XMP=NULL;
@@ -243,8 +428,10 @@ public:
             iXML=NULL;
             cue_=NULL;
             adtl=NULL;
+            cuexml=NULL;
             MD5Stored=NULL;
             MD5Generated=NULL;
+            CSET_Present=false;
             NoPadding_Accept=false;
             NoPadding_IsCorrected=false;
             RF64DataSize_IsCorrected=false;
@@ -269,12 +456,14 @@ public:
             delete ds64; //ds64=NULL;
             delete fmt_; //fmt_=NULL;
             delete bext; //bext=NULL;
+            delete CSET; //CSET=NULL;
             delete INFO; //INFO=NULL;
             delete  XMP; // XMP=NULL;
             delete aXML; //aXML=NULL;
             delete iXML; //iXML=NULL;
             delete cue_; //cue_=NULL;
-            delete adtl; //cue_=NULL;
+            delete adtl; //adtl=NULL;
+            delete cuexml; //cuexml=NULL;
         }
     };
 
@@ -319,7 +508,7 @@ public:
             ~content()
             {
                 delete[] Buffer; //Buffer=NULL;
-            }   
+            }
         };
 
         int64u  File_In_Position;

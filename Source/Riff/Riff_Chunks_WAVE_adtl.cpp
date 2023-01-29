@@ -23,7 +23,7 @@ void Riff_WAVE_adtl::Read_Internal ()
         throw exception_valid("2 adtl chunks");
 
     //Filling
-    Global->adtl=new Riff_Base::global::chunk_strings;
+    Global->adtl=new Riff_Base::global::chunk_adtl;
 
     //Subs
     SUBS_BEGIN();
@@ -42,7 +42,6 @@ size_t Riff_WAVE_adtl::Insert_Internal (int32u Chunk_Name_Insert)
 {
 
     Riff_Base* NewChunk=NULL;
-    string Field;
     if (Chunk_Name_Insert==Elements::WAVE_adtl_labl)
         NewChunk=new Riff_WAVE_adtl_labl(Global);
     else if (Chunk_Name_Insert==Elements::WAVE_adtl_note)

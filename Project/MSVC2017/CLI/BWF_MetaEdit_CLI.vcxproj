@@ -207,6 +207,7 @@
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_adtl_labl.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_adtl_note.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_adtl_ltxt.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_CSET.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Handler.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\Conf.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\CriticalSection.cpp" />

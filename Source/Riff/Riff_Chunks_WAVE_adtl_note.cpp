@@ -28,25 +28,13 @@ void Riff_WAVE_adtl_note::Read_Internal ()
         throw exception_valid("wrong chunk size (note)");
 
     //Parsing
-    int32u CuePointId;
-    string Value;
-    Get_L4(CuePointId);
+    Riff_Base::global::chunk_note Item;
+    Get_L4(Item.cuePointId);
     if (Chunk.Content.Size>4)
-        Get_String(Chunk.Content.Size-4, Value);
+        Get_String(Chunk.Content.Size-4, Item.note);
 
     //Filling
-    ZtringList Item;
-    Ztring Note;
-
-    Note.From_UTF8(Value);
-    Note.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    Note.FindAndReplace(__T("\n"), __T("\\n"), 0, Ztring_Recursive);
-    Item.push_back(Ztring().From_Number(CuePointId));
-    Item.push_back(Note);
-
-    ZtringListList Items(Ztring().From_UTF8(Global->adtl->Strings["note"].c_str()));
-    Items.push_back(Item);
-    Global->adtl->Strings["note"]=Items.Read().To_UTF8();
+    Global->adtl->notes.push_back(Item);
 }
 
 //***************************************************************************
@@ -56,38 +44,31 @@ void Riff_WAVE_adtl_note::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_adtl_note::Modify_Internal ()
 {
-    ZtringListList Notes(Ztring().From_UTF8(Global->adtl?Global->adtl->Strings["note"]:string()));
-    if (Notes.empty())
+    if (!Global->adtl || Global->adtl->notes.empty() || Global->adtl->notesIndex>=Global->adtl->notes.size())
     {
         Chunk.Content.IsRemovable=true;
         return;
     }
 
-    int32u PointId=Notes[0](0).To_int32u();
-    Ztring Note=Notes[0](1);
-    Note.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
-    Note.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    Note.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
-    string Value=Note.To_UTF8();
+    Riff_Base::global::chunk_note Item=Global->adtl->notes[Global->adtl->notesIndex];
 
     //Calculating size
-    if (Value.size()>=0xFFFFFFFA)
+    if (Item.note.size()>=0xFFFFFFFA)
         return; //TODO: error
 
     //Creating buffer
     Chunk.Content.Buffer_Offset=0;
-    Chunk.Content.Size=4+Value.size()+1;
+    Chunk.Content.Size=4+Item.note.size()+1;
     delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[Chunk.Content.Size];
 
-    Put_L4(PointId);
-    Put_String(Value.size(), Value);
+    Put_L4(Item.cuePointId);
+    Put_String(Item.note.size(), Item.note);
     Put_L1(0x00); //ZSTR i.e. null terminated text string
 
     Chunk.Content.IsModified=true;
     Chunk.Content.Size_IsModified=true;
 
-    Notes.erase(Notes.begin());
-    Global->adtl->Strings["note"]=Notes.Read().To_UTF8();
+    Global->adtl->notesIndex++;
 }
 
 //***************************************************************************

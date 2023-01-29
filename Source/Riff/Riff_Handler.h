@@ -61,7 +61,12 @@ public:
     //Constructor/Destructor
     Riff_Handler();
     ~Riff_Handler();
-    
+
+    //---------------------------------------------------------------------------
+    //Encoding
+    std::string     Encode          (const std::string& Str);
+    std::string     Decode          (const std::string& Str);
+
     //---------------------------------------------------------------------------
     //I/O
     bool            Open            (const string &FileName);
@@ -113,6 +118,11 @@ public:
     bool            EmbedMD5;
     bool            EmbedMD5_AuthorizeOverWritting;
     bool            Trace_UseDec;
+    Riff_Encoding   Encoding;
+    Riff_Encoding   Fallback_Encoding;
+    Riff_Encoding   Write_Encoding;
+    bool            Write_CodePage;
+    bool            Ignore_File_Encoding;
     unsigned short  Bext_DefaultVersion;
     unsigned short  Bext_MaxVersion;
     void            Options_Update();
@@ -134,6 +144,7 @@ private:
     bool      Open_Internal              (const string &FileName);
     string    Get_Internal               (const string &Field);
     bool      Set_Internal               (const string &Field, const string &Value, rules Rules);
+    bool      Remove_Internal            (const string &Field);
     bool      IsValid_Internal           (const string &Field, const string &Value, rules Rules, bool IgnoreCoherency=false);
     bool      IsOriginal_Internal        (const string &Field, const string &Value);
     bool      IsModified_Internal        (const string &Field);
@@ -143,7 +154,10 @@ private:
     void      Options_Update_Internal    (bool Update=true);
     string    Cue_Xml_Get                ();
     bool      Cue_Xml_Set                (const string& Xml, rules Rules);
-    bool      Cue_Xml_To_Fields          (const string& Xml, string& cue_, string& labl, string& note, string& ltxt);
+    bool      Cue_Xml_To_Fields          (const string& Xml, std::vector<Riff_Base::global::chunk_cue_::point>& Points,
+                                                             std::vector<Riff_Base::global::chunk_labl>& Labels,
+                                                             std::vector<Riff_Base::global::chunk_note>& Notes,
+                                                             std::vector<Riff_Base::global::chunk_ltxt>& Texts);
 
     //---------------------------------------------------------------------------
     //Helpers - Per item

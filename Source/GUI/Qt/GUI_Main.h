@@ -66,6 +66,7 @@ public:
     QMenu**         Menu_Fields_Menus;
     QAction**       Menu_Fields_CheckBoxes;
     QAction**       Menu_Fields_RadioButtons;
+    QActionGroup**  Menu_Fields_ActionGroups;
 
 private:
     //Menu - List
@@ -156,6 +157,22 @@ public Q_SLOTS:
     void OnMenu_Rules_INFO_Rec                      (bool);
     void OnMenu_Rules_FADGI_Rec                     (bool);
     void OnMenu_Rules_EBU_ISRC_Rec                  (bool);
+    void OnMenu_Options_EncodingUTF8                (bool);
+    void OnMenu_Options_EncodingCP437               (bool);
+    void OnMenu_Options_EncodingCP850               (bool);
+    void OnMenu_Options_EncodingCP858               (bool);
+    void OnMenu_Options_EncodingCP1252              (bool);
+    void OnMenu_Options_Encoding8859_1              (bool);
+    void OnMenu_Options_Encoding8859_2              (bool);
+    void OnMenu_Options_EncodingLocal               (bool);
+    void OnMenu_Options_EncodingFallbackCP437       (bool);
+    void OnMenu_Options_EncodingFallbackCP850       (bool);
+    void OnMenu_Options_EncodingFallbackCP858       (bool);
+    void OnMenu_Options_EncodingFallbackCP1252      (bool);
+    void OnMenu_Options_EncodingFallback8859_1      (bool);
+    void OnMenu_Options_EncodingFallback8859_2      (bool);
+    void OnMenu_Options_Ignore_File_Encoding        (bool);
+    void OnMenu_Options_Write_CodePage              (bool);
     void OnMenu_Options_TechCore                    (bool);
     void OnMenu_Options_riff2rf64_Reject            (bool);
     void OnMenu_Options_Overwrite_Reject            (bool);
