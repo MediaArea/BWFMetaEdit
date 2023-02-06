@@ -22,6 +22,10 @@ BuildRequires:	automake
 BuildRequires:	autoconf
 BuildRequires:	gcc-c++
 
+%if 0%{?rhel} >= 8
+BuildRequires:  alternatives
+%endif
+
 %description
 bwfmetaedit CLI (Command Line Interface)
 
