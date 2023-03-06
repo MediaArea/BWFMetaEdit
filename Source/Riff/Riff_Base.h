@@ -228,6 +228,7 @@ public:
         struct chunk_fmt_
         {
             int16u          formatType;
+            int128u         extFormatType;
             int16u          channelCount;
             int32u          sampleRate;
             int32u          bytesPerSecond;
@@ -237,6 +238,7 @@ public:
             chunk_fmt_()
             {
                 formatType=0;
+                extFormatType=0;
                 channelCount=0;
                 sampleRate=0;
                 bytesPerSecond=0;
