@@ -19,11 +19,11 @@
 	<key>CFBundleVersion</key>
 	<string>25.03</string>
 	<key>DTSDKName</key>
-	<string>macosx10.10</string>
+	<string>macosx10.12</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.10</string>
+	<string>10.12</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>(c) FADGI</string>
 	<key>NSPrincipalClass</key>

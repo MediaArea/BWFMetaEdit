@@ -225,23 +225,37 @@ void GUI_Main::Menu_Create()
     connect(Menu_Export_Core_XML_Global, SIGNAL(triggered()), this, SLOT(OnMenu_Export_Core_XML_Global()));
 
     Menu_Export_Core_XML_PerFile = new QAction(tr("Core Document (one XML file per WAV file)"), this);
+    #ifdef MACSTORE
+    Menu_Export_Core_XML_PerFile->setVisible(false);
+    #endif
     Menu_Export_Core_XML_PerFile->setStatusTip(tr(""));
-    Menu_Export_Core_XML_PerFile->setVisible(true);
     connect(Menu_Export_Core_XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_Core_XML_PerFile()));
 
     Menu_Export__PMX_XML_PerFile = new QAction(tr("XMP (one XML file per WAV file)"), this);
+    #ifdef MACSTORE
+    Menu_Export__PMX_XML_PerFile->setVisible(false);
+    #endif
     Menu_Export__PMX_XML_PerFile->setStatusTip(tr(""));
     connect(Menu_Export__PMX_XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export__PMX_XML_PerFile()));
 
     Menu_Export_aXML_XML_PerFile = new QAction(tr("aXML (one XML file per WAV file)"), this);
+    #ifdef MACSTORE
+    Menu_Export_aXML_XML_PerFile->setVisible(false);
+    #endif
     Menu_Export_aXML_XML_PerFile->setStatusTip(tr(""));
     connect(Menu_Export_aXML_XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_aXML_XML_PerFile()));
 
     Menu_Export_iXML_XML_PerFile = new QAction(tr("iXML (one XML file per WAV file)"), this);
+    #ifdef MACSTORE
+    Menu_Export_iXML_XML_PerFile->setVisible(false);
+    #endif
     Menu_Export_iXML_XML_PerFile->setStatusTip(tr(""));
     connect(Menu_Export_iXML_XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_iXML_XML_PerFile()));
 
     Menu_Export_cue__XML_PerFile = new QAction(tr("cue (one XML file per WAV file)"), this);
+    #ifdef MACSTORE
+    Menu_Export_cue__XML_PerFile->setVisible(false);
+    #endif
     Menu_Export_cue__XML_PerFile->setStatusTip(tr(""));
     connect(Menu_Export_cue__XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_cue__XML_PerFile()));
 
