@@ -160,6 +160,8 @@ void CodingAlgorithmDelegate::Fill(QComboBox* Editor) const
 {
     Editor->addItem("");
     Editor->addItem("ANALOGUE");
+    if (!Rules.CodingHistory_Rec || Rules.CodingHistory_Rec_Ex_Analog)
+        Editor->addItem("ANALOG");
     Editor->addItem("PCM");
     Editor->addItem("MPEG1L1");
     Editor->addItem("MPEG1L2");
@@ -183,10 +185,10 @@ void SamplingFrequencyDelegate::Fill(QComboBox* Editor) const
     Editor->addItem("32000");
     Editor->addItem("44100");
     Editor->addItem("48000");
-    Editor->addItem("64000");
-    Editor->addItem("88200");
-    if (!Rules.CodingHistory_Rec)
+    if (!Rules.CodingHistory_Rec || Rules.CodingHistory_Rec_Ex_Frequency)
     {
+        Editor->addItem("64000");
+        Editor->addItem("88200");
         Editor->addItem("96000");
         Editor->addItem("176400");
         Editor->addItem("192000");
@@ -244,7 +246,7 @@ void WordLengthDelegate::Fill(QComboBox* Editor) const
     Editor->addItem("20");
     Editor->addItem("22");
     Editor->addItem("24");
-    if (!Rules.CodingHistory_Rec)
+    if (!Rules.CodingHistory_Rec || Rules.CodingHistory_Rec_Ex_WordLength)
     {
         Editor->addItem("32");
     }
@@ -305,8 +307,14 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
     //Central
     TextEdit=new QTextEdit(this);
     Table=new CodingHistoryDialog_TableWidget(List, this);
+    AddComma=new QCheckBox("Add comma at EOL");
+    QWidget* W=new QWidget();
+    QVBoxLayout* E=new QVBoxLayout(W);
+    E->addWidget(Table);
+    E->addWidget(AddComma);
+
     Central=new QTabWidget(this);
-    Central->addTab(Table   , tr("EBU R98-1999"));
+    Central->addTab(W       , tr("EBU R98-1999"));
     Central->addTab(TextEdit, tr("Free text"));
     connect(Central, SIGNAL(currentChanged (int)), this, SLOT(OnCurrentChanged(int)));
 
@@ -320,6 +328,9 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
 
     resize(QApplication::desktop()->screenGeometry().width()/2, QApplication::desktop()->screenGeometry().height()/3);
 
+    if (Rules.CodingHistory_Rec && !Rules.CodingHistory_Rec_Ex_Comma)
+        AddComma->setEnabled(false);
+
     //Filling
     TextEdit->setPlainText(OldText);
     string Text=OldText.toUtf8().data();
@@ -329,9 +340,6 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
      || (Text.size()>=2
       && Text[1]=='='
       && (Text[0]=='A' || Text[0]=='F' || Text[0]=='B' || Text[0]=='W' || Text[0]=='M' || Text[0]=='T')
-      && Text.find("ANALOG,")==string::npos && (Text.size()<8 || Text.find("ANALOG", Text.size()-7)==string::npos)
-      && Text.find("Analog,")==string::npos && (Text.size()<8 || Text.find("Analog", Text.size()-7)==string::npos)
-      && Text.find("analog,")==string::npos && (Text.size()<8 || Text.find("analog", Text.size()-7)==string::npos)
       && Text.find(", ")==string::npos))
         OnCurrentChanged(0); //By default, index=0
     else
@@ -459,7 +467,10 @@ void GUI_Main_xxxx_CodingHistoryDialog::List2Text ()
         
         while (!ToReturn.empty() && (*(ToReturn.end()-1))==',')
             ToReturn.erase(ToReturn.end()-1);
-            
+
+        if (AddComma->isChecked())
+            ToReturn+=',';
+
         ToReturn+='\n';
     }
     
@@ -478,16 +489,20 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
     bool Modified=false;
 
     //Loading
-    string Text=TextEdit->toPlainText().toUtf8().data();
+    Ztring Text=Ztring().From_UTF8(TextEdit->toPlainText().toUtf8().data());
+
+    if ((!Rules.CodingHistory_Rec || Rules.CodingHistory_Rec_Ex_Comma))
+        AddComma->setChecked(Text.find(__T(",\n"))!=string::npos);
+
 //	if(Text.empty())
 //		return;
 	List.clear();
     List.Separator_Set(0, "\n");
-    if (Text.find(", ")==string::npos)
+    if (Text.find(__T(", "))==string::npos)
         List.Separator_Set(1, ",");
     else
         List.Separator_Set(1, ", ");
-    List.Write(Ztring().From_UTF8(Text));
+    List.Write(Text);
 	int size = List.size();
 
     Table->setRowCount((int)List.size()+1);
@@ -529,12 +544,6 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
             {
                 string Header=Value.substr(0, 2);
                 Value.erase(0, 2);
-                if (Value=="ANALOG" || Value=="Analog" || Value=="analog")
-                {
-                    Modified=true;
-                    Value="ANALOGUE";
-                    List[Line_Pos][Data_Pos]=Ztring().From_UTF8(Header)+Ztring().From_UTF8(Value);
-                }
                 QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(Value.c_str()));
 
                 Table->setItem((int)Line_Pos, Column, Item);

@@ -18,6 +18,7 @@ class Core;
 #include "ZenLib/ZtringListList.h"
 #include <QItemDelegate>
 #include <QTableWidget>
+#include <QCheckBox>
 #include "Common/Core.h"
 class QEvent;
 class QComboBox;
@@ -62,6 +63,7 @@ public:
     //Widgets
     QTabWidget*                         Central;
     CodingHistoryDialog_TableWidget*    Table;
+    QCheckBox*                          AddComma;
     QTextEdit*                          TextEdit;
     QPushButton*                        Cancel;
     QPushButton*                        Valid;

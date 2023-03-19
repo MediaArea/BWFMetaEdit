@@ -2108,7 +2108,9 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                                          && Value!=__T("MPEG1L3")
                                          && Value!=__T("MPEG2L1")
                                          && Value!=__T("MPEG2L2")
-                                         && Value!=__T("MPEG2L3"))
+                                         && Value!=__T("MPEG2L3")
+                                         && ((Rules.CodingHistory_Rec && !Rules.CodingHistory_Rec_Ex_Analog)
+                                         || Value!=__T("ANALOG")))
                                         Wrong=true;
                                         break;
                                      
@@ -2122,7 +2124,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                                          && Value!=__T("48000")
                                          && Value!=__T("64000")
                                          && Value!=__T("88200")
-                                         && ((!Rules.FADGI_Rec || Rules.CodingHistory_Rec)
+                                         && ((Rules.CodingHistory_Rec && !Rules.CodingHistory_Rec_Ex_Frequency)
                                          || (Value!=__T("96000")
                                          &&  Value!=__T("176400")
                                          &&  Value!=__T("192000")
@@ -2167,7 +2169,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                                          && Value!=__T("20")
                                          && Value!=__T("22")
                                          && Value!=__T("24")
-                                         && ((!Rules.FADGI_Rec || Rules.CodingHistory_Rec)
+                                         && ((Rules.CodingHistory_Rec && !Rules.CodingHistory_Rec_Ex_WordLength)
                                          || (Value!=__T("32"))))
                                         Wrong=true;
                                         break;
@@ -2177,7 +2179,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                                          && Value!=__T("stereo")
                                          && Value!=__T("dual-mono")
                                          && Value!=__T("joint-stereo")
-                                         && ((!Rules.FADGI_Rec || Rules.CodingHistory_Rec)
+                                         && ((Rules.CodingHistory_Rec)
                                          || (Value!=__T("multitrack")
                                          &&  Value!=__T("multichannel")
                                          &&  Value!=__T("surround")
@@ -2198,7 +2200,10 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                     }
                 }
                 if (Lines[Line_Pos].size()>0 && Lines[Line_Pos][Lines[Line_Pos].size()-1]==__T(','))
-                    Message="comma at the end of line";
+                {
+                    if (Rules.CodingHistory_Rec && !Rules.CodingHistory_Rec_Ex_Comma)
+                        Message="comma at the end of line";
+                }
             }
             
             if (Wrong)

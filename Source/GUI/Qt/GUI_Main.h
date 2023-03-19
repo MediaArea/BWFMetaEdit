@@ -152,6 +152,10 @@ public Q_SLOTS:
     void OnMenu_Rules_Tech3285_Req                  (bool);
     void OnMenu_Rules_Tech3285_Rec                  (bool);
     void OnMenu_Rules_CodingHistory_Rec             (bool);
+    void OnMenu_Rules_CodingHistory_Rec_Ex_Comma    (bool);
+    void OnMenu_Rules_CodingHistory_Rec_Ex_Analog   (bool);
+    void OnMenu_Rules_CodingHistory_Rec_Ex_Frequency(bool);
+    void OnMenu_Rules_CodingHistory_Rec_Ex_WordLength(bool);
     void OnMenu_Rules_OriginatorReference_Rec       (bool);
     void OnMenu_Rules_INFO_Req                      (bool);
     void OnMenu_Rules_INFO_Rec                      (bool);
