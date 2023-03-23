@@ -15,7 +15,7 @@
 #include <iostream>
 #include <algorithm>
 #include "ZenLib/ZtringListList.h"
-#include "ZenLib/File.h"
+#include "FLACwrapper/File.h"
 #include "ZenLib/Dir.h"
 #include "TinyXml2/tinyxml2.h"
 
@@ -1090,7 +1090,7 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
      && Value__[5]==__T('/')
      && Value__[6]==__T('/'))
     {
-        File F;
+        FLACwrapper::File F;
         if (!F.Open(Value__.substr(7, string::npos)))
         {
             Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value__.To_UTF8()<<", File does not exist)"<<endl;

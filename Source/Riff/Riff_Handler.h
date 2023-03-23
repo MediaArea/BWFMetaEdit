@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#include "ZenLib/File.h"
+#include "FLACwrapper/File.h"
 #include "ZenLib/Ztring.h"
 #include <string>
 #include <sstream>
@@ -176,8 +176,8 @@ private:
 
     //---------------------------------------------------------------------------
     //Internal
-    ZenLib::File    In;
-    ZenLib::File    Out;
+    FLACwrapper::File    In;
+    FLACwrapper::File    Out;
     Ztring          Core_FromFile;
     Riff*           Chunks;
     bool            File_IsValid;

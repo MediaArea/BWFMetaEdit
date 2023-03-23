@@ -15,7 +15,7 @@
 //---------------------------------------------------------------------------
 #include "ZenLib/ZtringList.h"
 #include "ZenLib/Ztring.h"
-#include "ZenLib/File.h"
+#include "FLACwrapper/File.h"
 #include "ZenLib/CriticalSection.h"
 #include <vector>
 #include <map>
@@ -362,8 +362,8 @@ public:
             }
         };
 
-        File                In;
-        File                Out;
+        FLACwrapper::File   In;
+        FLACwrapper::File   Out;
         buffer              Out_Buffer_Begin;
         buffer              Out_Buffer_End;
         bool                Out_Buffer_WriteAtEnd;
