@@ -65,6 +65,11 @@ CXXFLAGS="$CXXFLAGS -pthread"
 LDFLAGS="$LDFLAGS -lpthread -pthread"
 
 dnl -------------------------------------------------------------------------
+dnl Use dlopen
+dnl
+LIBS="$LIBS -ldl"
+
+dnl -------------------------------------------------------------------------
 dnl Large files
 dnl
 if test "$enable_large_files" = "yes"; then

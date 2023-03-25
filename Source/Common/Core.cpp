@@ -17,7 +17,7 @@
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
 #include "ZenLib/Ztring.h"
-#include "ZenLib/File.h"
+#include "FLACwrapper/File.h"
 #include "ZenLib/Dir.h"
 #include "ZenLib/OS_Utils.h"
 #include "Common/Common_About.h"
@@ -456,7 +456,7 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
                 File_Name=Ztring().From_UTF8(Handler->second.In_cue__FileName);
 
             Ztring Value;
-            File F;
+            FLACwrapper::File F;
             int64u F_Size;
 
             if (!F.Open(File_Name))
@@ -734,7 +734,7 @@ string Core::Menu_File_Undo_ListModifiedFiles(size_t Pos)
     Ztring FileName=BackupFiles[Pos];
 
     //Opening the file
-    File F;
+    FLACwrapper::File F;
     if (!F.Open(FileName))
         return string();
     int64u F_Size=F.Size_Get();
@@ -976,7 +976,7 @@ int Core::Menu_File_Import_Core(const string &FileName)
     try
     {
         //Checking if file exists
-        File In_Bext_File;
+        FLACwrapper::File In_Bext_File;
         if (!In_Bext_File.Open(Ztring().From_UTF8(FileName)))
             throw "--in-core=: file does not exist";
         int64u File_Size=In_Bext_File.Size_Get();
@@ -1603,7 +1603,7 @@ void Core::Batch_Finish()
         {
             try
             {
-                File F;
+                FLACwrapper::File F;
                 if (!F.Create(Ztring().From_UTF8(Out_XML_FileName)))
                     throw "--out-XML: error during file creation";
                 if (!F.Write(Ztring().From_UTF8(Out_XML_Buf)))
@@ -1896,7 +1896,7 @@ void Core::Batch_Launch_PMX(handlers::iterator &Handler)
         {
             try
             {
-                File F;
+                FLACwrapper::File F;
                 if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".XMP.xml")))
                     throw "--out-XMP-XML: error during file creation";
                 if (!F.Write(Ztring().From_UTF8(Content)))
@@ -1913,7 +1913,7 @@ void Core::Batch_Launch_PMX(handlers::iterator &Handler)
         {
             try
             {
-                File F;
+                FLACwrapper::File F;
                 if (!F.Create(Ztring().From_UTF8(Out__PMX_FileName.c_str())))
                     throw "--out-XMP=: error during file creation";
                 if (!F.Write(Ztring().From_UTF8(Content)))
@@ -1959,7 +1959,7 @@ void Core::Batch_Launch_aXML(handlers::iterator &Handler)
         {
             try
             {
-                File F;
+                FLACwrapper::File F;
                 if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".aXML.xml")))
                     throw "--out-aXML-XML: error during file creation";
                 if (!F.Write(Ztring().From_UTF8(Content)))
@@ -1976,7 +1976,7 @@ void Core::Batch_Launch_aXML(handlers::iterator &Handler)
         {
             try
             {
-                File F;
+                FLACwrapper::File F;
                 if (!F.Create(Ztring().From_UTF8(Out_aXML_FileName.c_str())))
                     throw "--out-aXML=: error during file creation";
                 if (!F.Write(Ztring().From_UTF8(Content)))
@@ -2020,7 +2020,7 @@ void Core::Batch_Launch_iXML(handlers::iterator &Handler)
         {
             try
             {
-                File F;
+                FLACwrapper::File F;
                 if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".iXML.xml")))
                     throw "--out-iXML-XML: error during file creation";
                 if (!F.Write(Ztring().From_UTF8(Content)))
@@ -2037,7 +2037,7 @@ void Core::Batch_Launch_iXML(handlers::iterator &Handler)
         {
             try
             {
-                File F;
+                FLACwrapper::File F;
                 if (!F.Create(Ztring().From_UTF8(Out_iXML_FileName.c_str())))
                     throw "--out-iXML=: error during file creation";
                 if (!F.Write(Ztring().From_UTF8(Content)))
@@ -2082,7 +2082,7 @@ void Core::Batch_Launch_cue_(handlers::iterator &Handler)
             //Saving file
             try
             {
-                File F;
+                FLACwrapper::File F;
                 if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".cue.xml")))
                     throw "--out-cue-XML: error during file creation";
                 if (!F.Write(Content))
@@ -2099,7 +2099,7 @@ void Core::Batch_Launch_cue_(handlers::iterator &Handler)
         {
             try
             {
-                File F;
+                FLACwrapper::File F;
                 if (!F.Create(Ztring().From_UTF8(Out_cue__FileName.c_str())))
                     throw "--out-cue=: error during file creation";
                 if (!F.Write(Content))
@@ -2210,7 +2210,7 @@ void Core::StdAll(handlers::iterator &Handler)
             Data+=TimeS;
             Data+=__T(" ");
             Data+=Ztring().From_UTF8(Handler->second.Riff->Information.str());
-            File F(LogFile, File::Access_Write_Append);
+            FLACwrapper::File F(LogFile, File::Access_Write_Append);
             F.Write(Data);
         }
         Handler->second.Riff->Information.str(string());
@@ -2225,7 +2225,7 @@ void Core::StdAll(handlers::iterator &Handler)
             Data+=TimeS;
             Data+=__T(" ");
             Data+=Ztring().From_UTF8(Handler->second.Riff->Warnings.str());
-            File F(LogFile, File::Access_Write_Append);
+            FLACwrapper::File F(LogFile, File::Access_Write_Append);
             F.Write(Data);
         }
         Handler->second.Riff->Warnings.str(string());
@@ -2240,7 +2240,7 @@ void Core::StdAll(handlers::iterator &Handler)
             Data+=TimeS;
             Data+=__T(" ");
             Data+=Ztring().From_UTF8(Handler->second.Riff->Errors.str());
-            File F(LogFile, File::Access_Write_Append);
+            FLACwrapper::File F(LogFile, File::Access_Write_Append);
             F.Write(Data);
         }
         Handler->second.Riff->Errors.str(string());
@@ -2266,7 +2266,7 @@ void Core::StdOut(string Text)
         Data+=__T(" ");
         Data+=Ztring().From_UTF8(Text);
         Data+=EOL;
-        File F(LogFile, File::Access_Write_Append);
+        FLACwrapper::File F(LogFile, File::Access_Write_Append);
         F.Write(Data);
     }
 }

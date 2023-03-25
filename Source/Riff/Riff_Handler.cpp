@@ -394,7 +394,7 @@ bool Riff_Handler::Open_Internal(const string &FileName)
     Chunks->Global->In.Close();
 
     //ReadOnly check
-    if (!File().Open(Ztring().From_UTF8(FileName), File::Access_Write))
+    if (!FLACwrapper::File().Open(Ztring().From_UTF8(FileName), File::Access_Write))
     {
         Chunks->Global->Read_Only=true;
             Information<<Chunks->Global->File_Name.To_UTF8()<<": Is read only"<<endl;
@@ -823,6 +823,12 @@ bool Riff_Handler::Save()
     if (!IsModified_Get_Internal())
     {
         Information<<Chunks->Global->File_Name.To_UTF8()<<": Nothing to do"<<endl;
+        return false;
+    }
+
+    if (ZenLib::FileName(Chunks->Global->File_Name).Extension_Get() == ZenLib::Ztring("flac"))
+    {
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": Writing to FLAC is not yet supported"<<endl;
         return false;
     }
 
