@@ -583,7 +583,11 @@ bool Riff_Handler::Open_Internal(const string &FileName)
         Core_FromFile=Ztring().From_UTF8(Core_Get_Internal());
 
         //Data size check
-        if (Chunks->Global->data && Chunks->Global->fmt_ && Chunks->Global->fmt_->formatType==0x0001)
+        if (Chunks->Global->data && Chunks->Global->fmt_ && (Chunks->Global->fmt_->formatType==0x0001 ||
+           (Chunks->Global->fmt_->formatType==0xFFFE &&
+           (Chunks->Global->fmt_->extFormatType.hi&0x0000FFFFFFFFFFFFLL)==0x0000000000001000LL &&
+           (Chunks->Global->fmt_->extFormatType.lo)==0x800000AA00389B71LL &&
+           ((int16u)((((Chunks->Global->fmt_->extFormatType.hi>>48)&0xFF)<<8) | (Chunks->Global->fmt_->extFormatType.hi>>56)))==1)))
         {
             int16u channelCount=Chunks->Global->fmt_->channelCount;
             int32u bitsPerSample=Chunks->Global->fmt_->bitsPerSample;
@@ -980,9 +984,16 @@ string Riff_Handler::Get_Internal(const string &Field)
     if (Field=="SampleRate")
         return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      ).To_UTF8()));
     else if (Field=="CodecID")
-        return Chunks->Global->fmt_==NULL                                               ?"":Ztring().From_CC2(Chunks->Global->fmt_->formatType     ).To_UTF8();
+    {
+        if (Chunks->Global->fmt_==NULL)
+            return "";
+        else if (Chunks->Global->fmt_->formatType!=0xFFFE)
+            return Ztring().From_CC2(Chunks->Global->fmt_->formatType).To_UTF8();
+        else
+            return Ztring().From_GUID(Chunks->Global->fmt_->extFormatType).To_UTF8();
+    }
     else if (Field=="BitsPerSample")
-        return Chunks->Global->fmt_==NULL                                               ?"":Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample    ).To_UTF8();
+        return Chunks->Global->fmt_==NULL                                               ?"":Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample   ).To_UTF8();
     else if (Field_Get(Field)=="encoding")
     {
         if (Write_Encoding!=Encoding_Max)
@@ -2734,11 +2745,16 @@ string Riff_Handler::Technical_Get()
     List.push_back(Chunks->Global->File_Name);
     List.push_back(Ztring::ToZtring(Chunks->Global->File_Size));
     List.push_back(Chunks->Global->IsRF64?__T("Wave (RF64)"):__T("Wave"));
-    List.push_back( Chunks->Global->fmt_==NULL                                            ?__T(""):Ztring().From_CC2(Chunks->Global->fmt_->formatType      ));
-    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->channelCount  ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->channelCount    )));
-    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      )));
-    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->bytesPerSecond*8)));
-    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bitsPerSample ==0)?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample   )));
+    if (Chunks->Global->fmt_==NULL)
+        List.push_back(__T(""));
+    else if ( Chunks->Global->fmt_->formatType!=0xFFFE)
+        List.push_back(Ztring().From_CC2(Chunks->Global->fmt_->formatType));
+    else
+        List.push_back(Ztring().From_GUID(Chunks->Global->fmt_->extFormatType));
+    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->channelCount  ==0) ?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->channelCount    )));
+    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0) ?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      )));
+    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0) ?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->bytesPerSecond*8)));
+    List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bitsPerSample ==0) ?__T(""):Ztring::ToZtring(Chunks->Global->fmt_->bitsPerSample   )));
     List.push_back(((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->bytesPerSecond==0 || Chunks->Global->data==NULL || Chunks->Global->data->Size==(int64u)-1)?__T(""):Ztring().Duration_From_Milliseconds(Chunks->Global->data->Size*1000/Chunks->Global->fmt_->bytesPerSecond)));
     List.push_back(Ztring().From_UTF8(Chunks->Global->UnsupportedChunks));
     if (Chunks->Global->bext!=NULL && !Chunks->Global->bext->Strings["bextversion"].empty())

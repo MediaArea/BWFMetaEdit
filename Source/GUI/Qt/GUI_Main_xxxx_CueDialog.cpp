@@ -949,8 +949,16 @@ void GUI_Main_xxxx_CueDialog::Xml2List()
     bool NonZero_ChunkStart=false;
     bool NonZero_BlockStart=false;
 
-    if (C->Get(FileName, "CodecID")!="0001")
+    if (C->Get(FileName, "CodecID")!="0001" && C->Get(FileName, "CodecID")!="FFFE")
         CodecID_NotEqual_PCM=true;
+    else if (C->Get(FileName, "CodecID")=="FFFE")
+    {
+        int128u extFormatType=Ztring().From_UTF8(C->Get(FileName, "CodecID")).To_UUID();
+        if ((extFormatType.hi&0x0000FFFFFFFFFFFFLL)!=0x0000000000001000LL ||
+            (extFormatType.lo)!=0x800000AA00389B71LL ||
+            ((int16u)((((extFormatType.hi>>48)&0xFF)<<8) | (extFormatType.hi>>56)))!=1)
+            CodecID_NotEqual_PCM=true;
+    }
 
     //Preparing
     Updating=true;

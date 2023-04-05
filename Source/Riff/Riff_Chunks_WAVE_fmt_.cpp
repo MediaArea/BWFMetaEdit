@@ -28,7 +28,7 @@ void Riff_WAVE_fmt_::Read_Internal ()
     //Parsing
     int32u sampleRate, bytesPerSecond;
     int16u formatType, channelCount, blockAlignment, bitsPerSample, cbSize=0;
-    int128u subFormat=0;
+    int128u extFormatType=0;
     Get_L2    (formatType);
     Get_L2    (channelCount);
     Get_L4    (sampleRate);
@@ -43,18 +43,22 @@ void Riff_WAVE_fmt_::Read_Internal ()
     {
         Skip_XX(2); //validBitsPerSample
         Skip_XX(4); //channelMask
-        Get_UUID(subFormat);
-        if ((subFormat.hi&0x0000FFFFFFFFFFFFLL)==0x0000000000001000LL && subFormat.lo==0x800000AA00389B71LL)
-            formatType=(int16u)((((subFormat.hi>>48)&0xFF)<<8) | (subFormat.hi>>56)); // It is Little Endian
+        Get_UUID(extFormatType);
     }
 
     //Integrity
-    if (formatType==1 && bitsPerSample!=0 && channelCount*sampleRate*bitsPerSample!=bytesPerSecond*8) //if PCM
+    if ((formatType==1 ||
+       (formatType==0xFFFE &&
+       (extFormatType.hi&0x0000FFFFFFFFFFFFLL)==0x0000000000001000LL &&
+       (extFormatType.lo)==0x800000AA00389B71LL &&
+       ((int16u)((((extFormatType.hi>>48)&0xFF)<<8) | (extFormatType.hi>>56)))==1)) &&
+       bitsPerSample!=0 && channelCount*sampleRate*bitsPerSample!=bytesPerSecond*8) //if PCM
         throw exception_valid("fmt_");
     
     //Filling
     Global->fmt_=new Riff_Base::global::chunk_fmt_;
     Global->fmt_->formatType=formatType;
+    Global->fmt_->extFormatType=extFormatType;
     Global->fmt_->channelCount=channelCount;
     Global->fmt_->sampleRate=sampleRate;
     Global->fmt_->bytesPerSecond=bytesPerSecond;
