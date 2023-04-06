@@ -311,6 +311,10 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_Tech3285_Req                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_Tech3285_Req(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_Tech3285_Rec                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_Tech3285_Rec(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec               ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_CodingHistory_Rec(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Comma      ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_CodingHistory_Rec_Ex_Comma(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Analog     ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_CodingHistory_Rec_Ex_Analog(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Frequency  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_CodingHistory_Rec_Ex_Frequency(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_WordLength ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_CodingHistory_Rec_Ex_WordLength(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_OriginatorReference_Rec         ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_OriginatorReference_Rec(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_INFO_Req                        ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_INFO_Req(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_INFO_Rec                        ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_INFO_Rec(bool)));
@@ -358,6 +362,12 @@ void GUI_Main::Menu_Create()
                 Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setChecked(Preferences->Group_Option_Checked_Get((group)Group, Option));
             break;
             }
+
+    bool Value=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec]->isChecked();
+    Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Comma]->setEnabled(Value);
+    Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Analog]->setEnabled(Value);
+    Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Frequency]->setEnabled(Value);
+    Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_WordLength]->setEnabled(Value);
 
     //Menu Help
     Menu_Help_Help = new QAction(QIcon(":/Image/Menu/Help.png"), tr("Help..."), this);
@@ -955,6 +965,56 @@ void GUI_Main::OnMenu_Rules_Tech3285_Rec(bool)
 void GUI_Main::OnMenu_Rules_CodingHistory_Rec(bool)
 {
     C->Rules.CodingHistory_Rec=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec]->isChecked();
+
+    bool Value=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec]->isChecked();
+    Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Comma]->setEnabled(Value);
+    Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Analog]->setEnabled(Value);
+    Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Frequency]->setEnabled(Value);
+    Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_WordLength]->setEnabled(Value);
+
+    if (View==NULL)
+        return;
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Rules_CodingHistory_Rec_Ex_Comma(bool)
+{
+    C->Rules.CodingHistory_Rec_Ex_Comma=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Comma]->isChecked();
+
+    if (View==NULL)
+        return;
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Rules_CodingHistory_Rec_Ex_Analog(bool)
+{
+    C->Rules.CodingHistory_Rec_Ex_Analog=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Analog]->isChecked();
+
+    if (View==NULL)
+        return;
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Rules_CodingHistory_Rec_Ex_Frequency(bool)
+{
+    C->Rules.CodingHistory_Rec_Ex_Frequency=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Frequency]->isChecked();
+
+    if (View==NULL)
+        return;
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Rules_CodingHistory_Rec_Ex_WordLength(bool)
+{
+    C->Rules.CodingHistory_Rec_Ex_WordLength=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_WordLength]->isChecked();
 
     if (View==NULL)
         return;

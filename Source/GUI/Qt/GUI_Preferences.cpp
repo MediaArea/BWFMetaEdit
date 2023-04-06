@@ -121,6 +121,10 @@ options Groups[Group_Max]=
             {"Rules_Tech3285_Req", "BWF (EBU Tech 3285) requirements", Type_CheckBox, true},
             {"Rules_Tech3285_Rec", "BWF (EBU Tech 3285) recommendations", Type_CheckBox, false},
             {"Rules_CodingHistory_Rec", "BWF CodingHistory (EBU Tech R98-1999) recommendations", Type_CheckBox, false},
+            {"Rules_CodingHistory_Rec_Ex_Comma", "    Allow comma at EOL", Type_CheckBox, false},
+            {"Rules_CodingHistory_Rec_Ex_Analog", "    Allow A=ANALOG", Type_CheckBox, false},
+            {"Rules_CodingHistory_Rec_Ex_Comma_Frequency", "    Allow F>48000", Type_CheckBox, false},
+            {"Rules_CodingHistory_Rec_Ex_Comma_WordLength", "    Allow W>24", Type_CheckBox, false},
             {"Rules_OriginatorReference_Rec", "BWF OriginatorReference (EBU R99-1999) recommendations", Type_CheckBox, false},
             {"Rules_INFO_Req", "INFO (Microsoft definition) requirements", Type_CheckBox, true},
             {"Rules_INFO_Rec", "INFO (Microsoft definition) recommendations", Type_CheckBox, false},
@@ -659,6 +663,21 @@ void GUI_Preferences::OnClicked ()
 
     if (CheckBoxes[Group_Trace*options::MaxCount+Option_Trace_UseDec]->isChecked()!=Main->Trace_UseDec_Get())
         Main->Trace_UseDec_Set(CheckBoxes[Group_Trace*options::MaxCount+Option_Trace_UseDec]->isChecked());
+
+    if (CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec]->isChecked())
+    {
+        CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Comma]->setEnabled(true);
+        CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Analog]->setEnabled(true);
+        CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Frequency]->setEnabled(true);
+        CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_WordLength]->setEnabled(true);
+    }
+    else
+    {
+        CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Comma]->setEnabled(false);
+        CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Analog]->setEnabled(false);
+        CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Frequency]->setEnabled(false);
+        CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_WordLength]->setEnabled(false);
+    }
 }
 
 //---------------------------------------------------------------------------

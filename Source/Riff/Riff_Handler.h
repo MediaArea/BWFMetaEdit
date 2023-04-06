@@ -38,6 +38,10 @@ public:
         bool                            Tech3285_Req;
         bool                            Tech3285_Rec;
         bool                            CodingHistory_Rec;
+        bool                            CodingHistory_Rec_Ex_Comma;
+        bool                            CodingHistory_Rec_Ex_Analog;
+        bool                            CodingHistory_Rec_Ex_Frequency;
+        bool                            CodingHistory_Rec_Ex_WordLength;
         bool                            OriginatorReference_Rec;
         bool                            INFO_Req;
         bool                            INFO_Rec;
@@ -49,6 +53,10 @@ public:
             Tech3285_Req=true;
             Tech3285_Rec=false;
             CodingHistory_Rec=false;
+            CodingHistory_Rec_Ex_Comma=false;
+            CodingHistory_Rec_Ex_Analog=false;
+            CodingHistory_Rec_Ex_Frequency=false;
+            CodingHistory_Rec_Ex_WordLength=false;
             OriginatorReference_Rec=false;
             INFO_Req=true;
             INFO_Rec=false;
