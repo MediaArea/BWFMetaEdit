@@ -32,7 +32,9 @@ cd BWFMetaEdit_GUI_Windows_i386\
 cd ..
 
 rem --- Installer ---
-%BPATH%\Windows\NSIS\makensis ..\Source\Install\BWF_MetaEdit_GUI_Windows_i386.nsi
+pushd %BPATH%\Windows\NSIS
+makensis.exe "%~dp0\..\Source\Install\BWF_MetaEdit_GUI_Windows_i386.nsi"
+popd
 
 rem --- Clean up ---
 if "%1"=="SkipCleanUp" goto SkipCleanUp
