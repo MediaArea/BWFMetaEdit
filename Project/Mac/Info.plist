@@ -15,9 +15,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>22.11</string>
+	<string>23.04</string>
 	<key>CFBundleVersion</key>
-	<string>22.11</string>
+	<string>23.04</string>
 	<key>DTSDKName</key>
 	<string>macosx10.10</string>
 	<key>LSApplicationCategoryType</key>
