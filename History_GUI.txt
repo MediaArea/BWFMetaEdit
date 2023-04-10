@@ -4,6 +4,13 @@ Notes:
 - Deleted
 x Correction
 
+Version 23.04, 2023-04-10
+-------------
++ Support of read/write CP437, CP850, CP858, Windows-1252, ISO 8859-1, ISO 8859-2 encoded fields
++ Read/write character encoding in CSET chunk
++ Add options to bypass some EBU R98-1999 (CodingHistory) limitations (ANALOG vs ANALOGUE, comma at EOL, >48k frequencies, ...)
++ Show WAV extended codec identifier (UUID)
+
 Version 22.11, 2022-12-06
 -------------
 + Option to export all file metadata in a single xml (Issues #51, #196, #238)
