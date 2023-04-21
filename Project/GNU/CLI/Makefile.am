@@ -32,6 +32,7 @@ bwfmetaedit_SOURCES = \
     ../../../Source/Riff/Riff_Chunks_WAVE_CSET.cpp \
     ../../../Source/Riff/Riff_Handler.cpp \
     ../../../Source/TinyXml2/tinyxml2.cpp \
+    ../../../Source/FLACwrapper/File.cpp \
     ../../../Source/ZenLib/Conf.cpp \
     ../../../Source/ZenLib/CriticalSection.cpp \
     ../../../Source/ZenLib/Dir.cpp \

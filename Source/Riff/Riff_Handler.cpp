@@ -15,7 +15,7 @@
 #include <iostream>
 #include <algorithm>
 #include "ZenLib/ZtringListList.h"
-#include "ZenLib/File.h"
+#include "FLACwrapper/File.h"
 #include "ZenLib/Dir.h"
 #include "TinyXml2/tinyxml2.h"
 
@@ -394,7 +394,7 @@ bool Riff_Handler::Open_Internal(const string &FileName)
     Chunks->Global->In.Close();
 
     //ReadOnly check
-    if (!File().Open(Ztring().From_UTF8(FileName), File::Access_Write))
+    if (!FLACwrapper::File().Open(Ztring().From_UTF8(FileName), File::Access_Write))
     {
         Chunks->Global->Read_Only=true;
             Information<<Chunks->Global->File_Name.To_UTF8()<<": Is read only"<<endl;
@@ -830,6 +830,12 @@ bool Riff_Handler::Save()
         return false;
     }
 
+    if (ZenLib::FileName(Chunks->Global->File_Name).Extension_Get() == ZenLib::Ztring("flac"))
+    {
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": Writing to FLAC is not yet supported"<<endl;
+        return false;
+    }
+
     //Modifying the chunks in memory
     for (size_t Fields_Pos=0; Fields_Pos<Fields_Max; Fields_Pos++)
         for (size_t Pos=0; Pos<xxxx_Strings_Size[Fields_Pos]; Pos++)
@@ -1101,7 +1107,7 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
      && Value__[5]==__T('/')
      && Value__[6]==__T('/'))
     {
-        File F;
+        FLACwrapper::File F;
         if (!F.Open(Value__.substr(7, string::npos)))
         {
             Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value__.To_UTF8()<<", File does not exist)"<<endl;
