@@ -1587,38 +1587,40 @@ void Core::Batch_Finish()
     //--out-XML=file
     if (Out_XML_Doc)
     {
-        tinyxml2::XMLPrinter Printer;
-        Out_XML_Doc->Print(&Printer);
-        Out_XML_Buf=Printer.CStr();
-
-        for(size_t Pos=Out_XML_Buf.find("\n            <PLACEHOLDER><![CDATA["); Pos!=string::npos; Pos=Out_XML_Buf.find("\n            <PLACEHOLDER><![CDATA[", Pos))
+        if (Out_XML_Doc->RootElement() && Out_XML_Doc->RootElement()->FirstChildElement("File"))
         {
-            Out_XML_Buf.erase(Pos, 35);
-            Pos=Out_XML_Buf.find("]]></PLACEHOLDER>\n        ", Pos);
-            if (Pos!=string::npos)
-                Out_XML_Buf.erase(Pos, 26);
-        }
+            tinyxml2::XMLPrinter Printer;
+            Out_XML_Doc->Print(&Printer);
+            Out_XML_Buf=Printer.CStr();
 
-        if (!Out_XML_FileName.empty())
-        {
-            try
+            for(size_t Pos=Out_XML_Buf.find("\n            <PLACEHOLDER><![CDATA["); Pos!=string::npos; Pos=Out_XML_Buf.find("\n            <PLACEHOLDER><![CDATA[", Pos))
             {
-                File F;
-                if (!F.Create(Ztring().From_UTF8(Out_XML_FileName)))
-                    throw "--out-XML: error during file creation";
-                if (!F.Write(Ztring().From_UTF8(Out_XML_Buf)))
-                    throw "--out-XML: error during file writing";
+                Out_XML_Buf.erase(Pos, 35);
+                Pos=Out_XML_Buf.find("]]></PLACEHOLDER>\n        ", Pos);
+                if (Pos!=string::npos)
+                    Out_XML_Buf.erase(Pos, 26);
             }
-            catch (const char *Message)
+
+            if (!Out_XML_FileName.empty())
             {
-                StdErr(Message);
+                try
+                {
+                    File F;
+                    if (!F.Create(Ztring().From_UTF8(Out_XML_FileName)))
+                        throw "--out-XML: error during file creation";
+                    if (!F.Write(Ztring().From_UTF8(Out_XML_Buf)))
+                        throw "--out-XML: error during file writing";
+                }
+                catch (const char *Message)
+                {
+                    StdErr(Message);
+                }
+                catch (...) {}
             }
-            catch (...) {}
+
+            if (Cout!=Cout_XML)
+                Out_XML_Buf.clear();
         }
-
-        if (Cout!=Cout_XML)
-            Out_XML_Buf.clear();
-
         Out_XML_Doc->Clear();
         delete Out_XML_Doc; Out_XML_Doc=NULL;
     }
