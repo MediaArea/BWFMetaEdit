@@ -488,7 +488,7 @@ void GUI_Main_xxxx__Common::Fill ()
 
         QTableWidgetItem* Item=new QTableWidgetItem(""); //Create QTableWidgetItem to edit cell flags
         Item->setToolTip("Close this file");
-        Item->setFlags(Qt::ItemIsEnabled);
+        Item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         setItem(File_Pos-1, 0, Item);
 
         QPushButton* Close = new QPushButton(CloseIcon, "");
