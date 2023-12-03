@@ -315,14 +315,14 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
     {
         Item->setToolTip(QString("<qt>%1</qt>").arg(QString(C->IsValid_LastError(FileName).c_str()).toHtmlEscaped()));
         Item->setIcon(QIcon(":/Image/Menu/Error.svg"));
-        Item->setBackgroundColor(Qt::white);
+        Item->setBackground(QBrush());
     }
     else
     {
         if (C->IsModified(FileName, Field=="Cue"?"cuexml":Field))
-            Item->setBackgroundColor(QColor(144, 238, 144)); //Green
+            Item->setBackground(QBrush(QColor(144, 238, 144))); //Green
         else
-            Item->setBackgroundColor(Qt::white);
+            Item->setBackground(QBrush());
 
         if(!C->IsValid_LastWarning(FileName.c_str()).empty())
         {
