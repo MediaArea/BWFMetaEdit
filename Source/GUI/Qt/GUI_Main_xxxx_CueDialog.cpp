@@ -838,7 +838,7 @@ void GUI_Main_xxxx_CueDialog::OnEdited(QTableWidgetItem* Item)
 
             QTableWidgetItem* Item=new QTableWidgetItem(""); //Create QTableWidgetItem to edit cell flags
             Item->setToolTip("Delete");
-            Item->setFlags(Qt::ItemIsEnabled);
+            Item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
             Table->setItem(Table->rowCount()-1, Column_Close, Item);
 
             QPushButton* Close=new QPushButton(CloseIcon, "");

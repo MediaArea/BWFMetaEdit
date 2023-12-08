@@ -172,7 +172,7 @@ Control {
                                              "<path d='M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z'/>",
                                              "<path d='M0 0h24v24H0z' fill='none'/>",
                                            "</svg>"].join('')
-                        source: modified ? svg.arg("orange") : svg.arg("lightgray")
+                        source: modified ? svg.arg("orangered") : svg.arg("lightgray")
                         fillMode: Image.PreserveAspectFit
                         MouseArea {
                             anchors.fill: parent
@@ -187,17 +187,17 @@ Control {
                             onClicked: {
                                 if (modified) {
                                     Model.saveFile(file)
-                                    parent.source = parent.svg.arg("orange")
+                                    parent.source = parent.svg.arg("orangered")
                                 }
                             }
                             onEntered: {
                                 if (modified) {
-                                    parent.source = parent.svg.arg("darkorange")
+                                    parent.source = parent.svg.arg("brown")
                                 }
                             }
                             onExited: {
                                 if (modified) {
-                                    parent.source = parent.svg.arg("orange")
+                                    parent.source = parent.svg.arg("orangered")
                                 }
                             }
                         }
@@ -322,7 +322,7 @@ Control {
                                     if (!Model.valid(file, field, Model.value(file, field)))
                                        return hovered?"darkred":root.red
                                     else if (Model.lastValidationWarning(file).length > 0)
-                                        return hovered?"darkorange":"orange"
+                                        return hovered?"brown":"orangered"
                                     else if (Model.modified(file, field))
                                         return hovered?root.darkgreen:root.green
                                     else if (Model.visible(file, field))
@@ -382,7 +382,7 @@ Control {
                                         // Basic wrapping of text since QML ToolTip Doesn't have option for that
                                         text: message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
                                         background: Rectangle {
-                                            border.color: parent.valid ? "orange" : root.red
+                                            border.color: parent.valid ? "orangered" : root.red
                                         }
                                     }
                                 }
@@ -421,7 +421,7 @@ Control {
                            id: unsupported
                            text: {
                                var chunks = Model.unsupportedChunks(file);
-                               var message = "<font color='orange'>";
+                               var message = "<font color='orangered'>";
                                if (chunks.split(' ').length > 1) {
                                    message += "Unsupported chunks are found (" + chunks + "), they are ignored but kept when saving the file."
                                }
@@ -561,7 +561,7 @@ Control {
                                                     // Basic wrapping of text since QML ToolTip Doesn't have option for that
                                                     text: status.message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
                                                     background: Rectangle {
-                                                        border.color: status.valid ? "orange" : root.red
+                                                        border.color: status.valid ? "orangered" : root.red
                                                     }
                                                 }
                                             }
