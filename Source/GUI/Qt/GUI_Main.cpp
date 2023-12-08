@@ -583,3 +583,9 @@ void GUI_Main::Open_Timer_Init (open_timer_init Action)
         Timer->start(100);
     }
 }     
+
+bool GUI_Main::ShouldApplyDarkTheme()
+{
+    const QPalette DefaultPalette;
+    return DefaultPalette.color(QPalette::WindowText).lightness() > DefaultPalette.color(QPalette::Window).lightness();
+}

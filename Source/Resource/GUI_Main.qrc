@@ -5,9 +5,13 @@
   <file>Image/Menu/File_Open_File.png</file>
   <file>Image/Menu/File_Open_Directory.png</file>
   <file>Image/Menu/File_Save.png</file>
+  <file>Image/Menu/File_Save_Dark.png</file>
   <file>Image/Menu/View_Technical.png</file>
+  <file>Image/Menu/View_Technical_Dark.png</file>
   <file>Image/Menu/View_Core.png</file>
+  <file>Image/Menu/View_Core_Dark.png</file>
   <file>Image/Menu/View_PerFile.png</file>
+  <file>Image/Menu/View_PerFile_Dark.png</file>
   <file>Image/Menu/Options_Prefs.png</file>
   <file>Image/Menu/Help.png</file>
   <file>Image/Menu/About.png</file>
