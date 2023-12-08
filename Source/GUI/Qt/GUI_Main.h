@@ -249,6 +249,8 @@ private:
     };
     void Open_Timer_Init (open_timer_init Action);
     open_timer_init Open_Timer_Action;
+
+    bool ShouldApplyDarkTheme();
 };
 
 #endif

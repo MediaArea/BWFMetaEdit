@@ -35,6 +35,8 @@
 //---------------------------------------------------------------------------
 void GUI_Main::Menu_Create()
 {
+    bool Dark=ShouldApplyDarkTheme();
+
     //Menu Files
     Menu_File_Open_Files = new QAction(QIcon(":/Image/Menu/File_Open_File.png"), tr("Open file(s)..."), this);
     Menu_File_Open_Files->setShortcut(tr("Ctrl+F"));
@@ -55,7 +57,7 @@ void GUI_Main::Menu_Create()
     Menu_File_Close_All->setStatusTip(tr(""));
     connect(Menu_File_Close_All, SIGNAL(triggered()), this, SLOT(OnMenu_File_Close_All()));
 
-    Menu_File_Save_All = new QAction(QIcon(":/Image/Menu/File_Save.png"), tr("Save all modified files"), this);
+    Menu_File_Save_All = new QAction(QIcon(Dark?":/Image/Menu/File_Save_Dark.png":":/Image/Menu/File_Save.png"), tr("Save all modified files"), this);
     Menu_File_Save_All->setEnabled(false);
     connect(Menu_File_Save_All, SIGNAL(triggered()), this, SLOT(OnMenu_File_Save_All()));
 
@@ -86,13 +88,13 @@ void GUI_Main::Menu_Create()
     //Menu Views
     Menu_Fields_RadioButtons=new QAction*[Preferences->Groups_Count_Get()*options::MaxCount];
 
-    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile] = new QAction(QIcon(":/Image/Menu/View_PerFile.png"), tr("File"), this);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile] = new QAction(QIcon(Dark?":/Image/Menu/View_PerFile_Dark.png":":/Image/Menu/View_PerFile.png"), tr("File"), this);
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile]->setShortcut(tr(""));
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile]->setCheckable(true);
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile]->setStatusTip(tr(""));
     connect(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_PerFile], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_PerFile(bool)));
 
-    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table] = new QAction(QIcon(":/Image/Menu/View_Technical.png"), tr("Technical Metadata (table)"), this);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table] = new QAction(QIcon(Dark?":/Image/Menu/View_Technical_Dark.png":":/Image/Menu/View_Technical.png"), tr("Technical Metadata (table)"), this);
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]->setShortcut(tr(""));
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]->setCheckable(true);
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Table]->setStatusTip(tr(""));
@@ -104,7 +106,7 @@ void GUI_Main::Menu_Create()
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text]->setStatusTip(tr(""));
     connect(Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Tech_Text], SIGNAL(toggled(bool)), this, SLOT(OnMenu_View_Technical_Text(bool)));
 
-    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table] = new QAction(QIcon(":/Image/Menu/View_Core.png"), tr("Core Metadata (table)"), this);
+    Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table] = new QAction(QIcon(Dark?":/Image/Menu/View_Core_Dark.png":":/Image/Menu/View_Core.png"), tr("Core Metadata (table)"), this);
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]->setShortcut(tr(""));
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]->setCheckable(true);
     Menu_Fields_RadioButtons[Group_DefaultView*options::MaxCount+Option_DefaultView_Core_Table]->setStatusTip(tr(""));
