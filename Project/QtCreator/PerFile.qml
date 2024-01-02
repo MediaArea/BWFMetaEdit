@@ -85,150 +85,149 @@ Control {
                 RowLayout {
                     spacing: 5
                     anchors { left: parent.left; right: parent.right }
-                    Image {
-                        property var expandSvg: ["data:image/svg+xml;utf8,",
-                                                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
-                                                  "<path d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/>",
-                                                  "<path d='M0 0h24v24H0z' fill='none'/>",
-                                                "</svg>"].join('')
-                        property var collapseSvg: ["data:image/svg+xml;utf8,",
-                                                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
-                                                  "<path d='M19 13H5v-2h14v2z'/>",
-                                                  "<path d='M0 0h24v24H0z' fill='none'/>",
-                                                "</svg>"].join('')
-                        source: expanded ? collapseSvg.arg("gray") : expandSvg.arg("gray")
-                        fillMode: Image.PreserveAspectFit
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            ToolTip {
-                                visible: parent.containsMouse
-                                timeout: 5000
-                                delay: 1000
-                                text: expanded ? "Collapse" : "Expand"
+                    Button {
+                        implicitHeight: expand_icon.height
+                        implicitWidth: expand_icon.width
+                        anchors.verticalCenter: filename.verticalCenter
+                        flat: activeFocus ? false : true
+                        hoverEnabled: true
+                        onClicked: {
+                            expanded = !expanded
+                        }
+                        ToolTip {
+                            visible: (parent.hovered || parent.activeFocus)
+                            timeout: 5000
+                            delay: 1000
+                            text: expanded ? "Collapse" : "Expand"
+                        }
+                        Image {
+                            id: expand_icon
+                            property var expandSvg: ["data:image/svg+xml;utf8,",
+                                                     "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
+                                                       "<path d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/>",
+                                                       "<path d='M0 0h24v24H0z' fill='none'/>",
+                                                     "</svg>"].join('')
+                            property var collapseSvg: ["data:image/svg+xml;utf8,",
+                                                       "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
+                                                         "<path d='M19 13H5v-2h14v2z'/>",
+                                                         "<path d='M0 0h24v24H0z' fill='none'/>",
+                                                       "</svg>"].join('')
+                            source: {
+                                if (parent.hovered) {
+                                    return expanded ? collapseSvg.arg("dimgray") : expandSvg.arg("dimgray")
+                                }
+                                return expanded ? collapseSvg.arg("gray") : expandSvg.arg("gray")
                             }
-                            acceptedButtons: Qt.LeftButton
-                            onClicked: {
-                                expanded = !expanded
-                                parent.source = expanded ? parent.collapseSvg.arg("gray") : parent.expandSvg.arg("gray")
-                            }
-                            onEntered: {
-                                parent.source = expanded ? parent.collapseSvg.arg("dimgray") : parent.expandSvg.arg("dimgray")
-                            }
-                            onExited: {
-                                parent.source = expanded ? parent.collapseSvg.arg("gray") : parent.expandSvg.arg("gray")
-                            }
+                            anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
+                            fillMode: Image.PreserveAspectFit
                         }
                     }
                     Text {
+                        id: filename
                         text: "<b>" + file + "</b>"
                         elide: Text.ElideMiddle
                         Layout.fillWidth: true
                     }
-                    Image {
-                        property var editSvg: ["data:image/svg+xml;utf8,",
-                                           "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
-                                             "<path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/>",
-                                             "<path d='M0 0h24v24H0z' fill='none'/>",
-                                           "</svg>"].join('')
-                        property var displaySvg: ["data:image/svg+xml;utf8,",
-                                           "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
-                                             "<path d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/>",
-                                             "<path d='M0 0h24v24H0z' fill='none'/>",
-                                           "</svg>"].join('')
-                        source: Model.isWritable(file) ? (editMode ? displaySvg.arg("gray") : editSvg.arg("gray")) : editSvg.arg("lightgray")
-                        fillMode: Image.PreserveAspectFit
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            ToolTip {
-                                visible: parent.containsMouse && Model.valid(file)
-                                timeout: 5000
-                                delay: 1000
-                                text: Model.readOnly(file) ? "Edit mode disabled, file is read only!" : (editMode ? "Display Mode" : "Edit Mode")
-                            }
-                            acceptedButtons: Qt.LeftButton
-                            onClicked: {
-                                if (Model.isWritable(file)) {
-                                    editMode = !editMode
-                                    parent.source = editMode ? parent.displaySvg.arg("gray") : parent.editSvg.arg("gray")
-                                }
-                            }
-                            onEntered: {
-                                if (Model.isWritable(file)) {
-                                    parent.source = editMode ? parent.displaySvg.arg("dimgray") : parent.editSvg.arg("dimgray")
-                                }
-                            }
-                            onExited: {
-                                if (Model.isWritable(file)) {
-                                    parent.source = editMode ? parent.displaySvg.arg("gray") : parent.editSvg.arg("gray")
-                                }
+                    Button {
+                        implicitHeight: editmode_icon.height
+                        implicitWidth: editmode_icon.width
+                        anchors.verticalCenter: filename.verticalCenter
+                        flat: activeFocus ? false : true
+                        hoverEnabled: true
+                        onClicked: {
+                            if (Model.isWritable(file)) {
+                                editMode = !editMode
                             }
                         }
-                    }
-                    Image {
-                        property var svg: ["data:image/svg+xml;utf8,",
-                                           "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
-                                             "<path d='M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z'/>",
-                                             "<path d='M0 0h24v24H0z' fill='none'/>",
-                                           "</svg>"].join('')
-                        source: modified ? svg.arg("orangered") : svg.arg("lightgray")
-                        fillMode: Image.PreserveAspectFit
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            ToolTip {
-                                visible: hovered
-                                timeout: 5000
-                                delay: 1000
-                                text: modified ? "Save" : "Saved"
-                            }
-                            acceptedButtons: Qt.LeftButton
-                            onClicked: {
-                                if (modified) {
-                                    Model.saveFile(file)
-                                    parent.source = parent.svg.arg("orangered")
+                        ToolTip {
+                            visible: (parent.hovered || parent.activeFocus) && Model.valid(file)
+                            timeout: 5000
+                            delay: 1000
+                            text: Model.readOnly(file) ? "Edit mode disabled, file is read only!" : (editMode ? "Display Mode" : "Edit Mode")
+                        }
+                        Image {
+                            id: editmode_icon
+                            property var editSvg: ["data:image/svg+xml;utf8,",
+                                                   "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
+                                                     "<path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/>",
+                                                     "<path d='M0 0h24v24H0z' fill='none'/>",
+                                                   "</svg>"].join('')
+                            property var displaySvg: ["data:image/svg+xml;utf8,",
+                                                      "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
+                                                        "<path d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/>",
+                                                        "<path d='M0 0h24v24H0z' fill='none'/>",
+                                                      "</svg>"].join('')
+                            source: {
+                                if (parent.hovered) {
+                                    return Model.isWritable(file) ? (editMode ? displaySvg.arg("dimgray") : editSvg.arg("dimgray")) : editSvg.arg("lightgray")
                                 }
+                                return Model.isWritable(file) ? (editMode ? displaySvg.arg("gray") : editSvg.arg("gray")) : editSvg.arg("lightgray")
                             }
-                            onEntered: {
-                                if (modified) {
-                                    parent.source = parent.svg.arg("brown")
-                                }
-                            }
-                            onExited: {
-                                if (modified) {
-                                    parent.source = parent.svg.arg("orangered")
-                                }
-                            }
+                            anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
+                            fillMode: Image.PreserveAspectFit
                         }
                     }
-                    Image {
-                        property var svg: ["data:image/svg+xml;utf8,",
-                                           "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
-                                             "<path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/>",
-                                             "<path d='M0 0h24v24H0z' fill='none'/>",
-                                           "</svg>"].join('')
-                        source: svg.arg("gray")
-                        fillMode: Image.PreserveAspectFit
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            ToolTip {
-                                visible: parent.containsMouse
-                                timeout: 5000
-                                delay: 1000
-                                text: "Close"
+                    Button {
+                        implicitHeight: save_icon.height
+                        implicitWidth: save_icon.width
+                        anchors.verticalCenter: filename.verticalCenter
+                        flat: activeFocus ? false : true
+                        hoverEnabled: true
+                        onClicked: {
+                            if (modified) {
+                                Model.saveFile(file)
                             }
-                            acceptedButtons: Qt.LeftButton
-                            onClicked: {
-                                Model.closeFile(file)
+                        }
+                        ToolTip {
+                            visible: (parent.hovered || parent.activeFocus) && Model.valid(file)
+                            timeout: 5000
+                            delay: 1000
+                            text: modified ? "Save" : "Saved"
+                        }
+                        Image {
+                            id: save_icon
+                            property var svg: ["data:image/svg+xml;utf8,",
+                                               "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
+                                                 "<path d='M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z'/>",
+                                                 "<path d='M0 0h24v24H0z' fill='none'/>",
+                                               "</svg>"].join('')
+                            source: {
+                                if (modified) {
+                                    return parent.hovered ? svg.arg("brown") : svg.arg("orangered")
+                                }
+                                return svg.arg("lightgray")
                             }
-                            onEntered: {
-                                parent.source = parent.svg.arg("dimgray")
+                            anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
+                            fillMode: Image.PreserveAspectFit
+                        }
+                    }
+                    Button {
+                        implicitHeight: close_icon.height
+                        implicitWidth: close_icon.width
+                        anchors.verticalCenter: filename.verticalCenter
+                        flat: activeFocus ? false : true
+                        hoverEnabled: true
+                        onClicked: {
+                            Model.closeFile(file)
+                        }
+                        ToolTip {
+                            visible: (parent.hovered || parent.activeFocus) && Model.valid(file)
+                            timeout: 5000
+                            delay: 1000
+                            text: "Close"
+                        }
+                        Image {
+                            id: close_icon
+                            property var svg: ["data:image/svg+xml;utf8,",
+                                               "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
+                                                 "<path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/>",
+                                                 "<path d='M0 0h24v24H0z' fill='none'/>",
+                                               "</svg>"].join('')
+                            source: {
+                                return parent.hovered ? svg.arg("dimgray") : svg.arg("gray")
                             }
-                            onExited: {
-                                parent.source = parent.svg.arg("gray")
-                            }
+                            anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
+                            fillMode: Image.PreserveAspectFit
                         }
                     }
                 }
@@ -260,7 +259,7 @@ Control {
                         ComboBox {
                             id: encoding
                             font.pointSize: 10
-                            flat: true
+                            flat: activeFocus ? false : true
                             currentIndex: {
                                 var value = Model.value(file, "Encoding")
                                 if (value === "UTF-8")
@@ -316,7 +315,7 @@ Control {
                         }
                         Repeater {
                             model: ["Cue", "XMP", "aXML", "iXML"]
-                            delegate: Item {
+                            delegate: Button {
                                 function buttonColor(hovered) {
                                     var field = modelData==="Cue"?"cuexml":modelData
                                     if (!Model.valid(file, field, Model.value(file, field)))
@@ -330,61 +329,44 @@ Control {
                                     else
                                         return "lightgray"
                                 }
-                                width: text.width + icon.width
-                                height: text.height
+                                implicitHeight: icon.height
+                                implicitWidth: text.width + icon.width
+                                flat: activeFocus ? false : true
+                                hoverEnabled: true
+                                onClicked: {
+                                    if(Model.visible(file, modelData)) {
+                                        Model.editField(file, modelData)
+                                    }
+                                }
+                                ToolTip {
+                                    property var valid: Model.valid(file, modelData=="Cue"?"cuexml":modelData, Model.value(file, modelData=="Cue"?"cuexml":modelData))
+                                    property var message: valid ? Model.lastValidationWarning(file) : Model.lastValidationError(file)
+                                    visible: message.length > 0 && (parent.hovered || parent.activeFocus)
+                                    delay: 500
+                                    // Basic wrapping of text since QML ToolTip Doesn't have option for that
+                                    text: message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
+                                    background: Rectangle {
+                                        border.color: parent.valid ? "orangered" : root.red
+                                    }
+                                }
                                 Text {
                                     id: text
                                     text: modelData
-                                    color: parent.buttonColor(false)
+                                    color: parent.buttonColor(parent.hovered)
                                     horizontalAlignment: Text.AlignHCenter
                                 }
                                 Image {
                                     property var svg: ["data:image/svg+xml;utf8,",
-                                        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
-                                        "<path d='M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/>",
-                                        "<path d='M0 0h24v24H0z' fill='none'/>",
-                                        "</svg>"].join('')
+                                                       "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' height='24' width='24' fill='%1'>",
+                                                         "<path d='M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/>",
+                                                         "<path d='M0 0h24v24H0z' fill='none'/>",
+                                                       "</svg>"].join('')
                                     id: icon
                                     width: 16
                                     height: 16
-                                    source: svg.arg(parent.buttonColor(false))
+                                    source: svg.arg(parent.buttonColor(parent.hovered))
                                     fillMode: Image.PreserveAspectFit
                                     anchors { top: text.top; left: text.right; topMargin: (text.height - height) / 2 }
-                                }
-                                MouseArea {
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    acceptedButtons: Qt.LeftButton
-                                    onClicked: {
-                                        if(Model.visible(file, modelData)) {
-                                            Model.editField(file, modelData)
-                                            text.color = parent.buttonColor(false)
-                                            icon.source = icon.svg.arg(parent.buttonColor(false))
-                                        }
-                                    }
-                                    onEntered: {
-                                        if(Model.visible(file, modelData)) {
-                                            text.color = parent.buttonColor(true)
-                                            icon.source = icon.svg.arg(parent.buttonColor(true))
-                                        }
-                                    }
-                                    onExited: {
-                                        if(Model.visible(file, modelData)) {
-                                            text.color = parent.buttonColor(false)
-                                            icon.source = icon.svg.arg(parent.buttonColor(false))
-                                        }
-                                    }
-                                    ToolTip {
-                                        property var valid: Model.valid(file, modelData=="Cue"?"cuexml":modelData, Model.value(file, modelData=="Cue"?"cuexml":modelData))
-                                        property var message: valid ? Model.lastValidationWarning(file) : Model.lastValidationError(file)
-                                        visible: message.length > 0 && parent.containsMouse
-                                        delay: 500
-                                        // Basic wrapping of text since QML ToolTip Doesn't have option for that
-                                        text: message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
-                                        background: Rectangle {
-                                            border.color: parent.valid ? "orangered" : root.red
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -520,6 +502,12 @@ Control {
                                                     if (event.key === Qt.Key_Return && !multiline) {
                                                         event.accepted = true;
                                                     }
+                                                    else if (event.key === Qt.Key_Alt) {
+                                                        forceActiveFocus();
+                                                        if (!Model.readOnly(file, name) && Model.valid(file, name, parent.text)) {
+                                                            Model.showCoreMenu(mapToGlobal(x, y), file, name);
+                                                        }
+                                                    }
                                                 }
                                                 onActiveFocusChanged: {
                                                     if (activeFocus) {
@@ -536,7 +524,7 @@ Control {
                                                     acceptedButtons: Qt.RightButton
                                                     onClicked: {
                                                         parent.forceActiveFocus();
-                                                        if (Model.valid(file, name, parent.text)) {
+                                                        if (!Model.readOnly(file, name) && Model.valid(file, name, parent.text)) {
                                                             Model.showCoreMenu(mapToGlobal(mouse.x, mouse.y), file, name);
                                                         }
                                                     }
@@ -556,7 +544,7 @@ Control {
                                                 anchors.fill: parent
                                                 hoverEnabled: true
                                                 ToolTip {
-                                                    visible: parent.containsMouse
+                                                    visible: (parent.containsMouse || parent.activeFocus || input.activeFocus)
                                                     delay: 500
                                                     // Basic wrapping of text since QML ToolTip Doesn't have option for that
                                                     text: status.message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
@@ -570,7 +558,7 @@ Control {
                                             height: 24
                                             width: 24
                                             anchors.verticalCenter: title.verticalCenter
-                                            flat: true
+                                            flat: activeFocus ? false : true
                                             hoverEnabled: true
                                             onClicked: Model.editField(file, name)
                                             Image {
@@ -579,12 +567,14 @@ Control {
                                                     "<path d='M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/>",
                                                     "<path d='M0 0h24v24H0z' fill='none'/>",
                                                     "</svg>"].join('')
-                                                source: svg.arg("gray")
+                                                source: {
+                                                    return parent.hovered ? svg.arg("dimgray") : svg.arg("gray")
+                                                }
                                                 fillMode: Image.PreserveAspectFit
                                                 anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
                                             }
                                             ToolTip {
-                                                visible: parent.hovered
+                                                visible: (parent.hovered || parent.activeFocus)
                                                 delay: 1000
                                                 timeout: 5000
                                                 text: "Open in field editor"
