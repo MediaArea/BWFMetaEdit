@@ -1,13 +1,31 @@
 import QtQuick 2.9
-import QtQuick.Controls 2.2
+import QtQuick.Controls 2.13
+import QtQuick.Controls.Material 2.13
 import QtQuick.Layouts 1.3
 
 Control {
     id: root
-    readonly property color red: "#fc6744"
-    readonly property color green: "#90ee90"
-    readonly property color darkgreen: "#4ee44e"
+    readonly property color red: "#f44336"
+    readonly property color green: "#4caf50"
+    function alternate(color, mode) {
+        if (!mode) {
+            return color
+        }
+        else if (root.Material.theme === Material.Dark) {
+            return Qt.lighter(color, 1.25)
+        }
+        return Qt.darker(color, 1.25)
+    }
     visible: true
+    Material.theme: Material.System
+    Material.accent: "dodgerblue"
+    Rectangle
+    {
+        id: background
+        anchors.fill: parent
+        color: parent.Material.background
+        border.color: parent.Material.background
+    }
     ListModel {
         id: sections
         ListElement {
@@ -68,7 +86,6 @@ Control {
         anchors.fill: parent
         ScrollBar.vertical.policy: contentHeight > height ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
         ListView {
-
             // With Qt5.9 (only on macOS?) list do not fill width without this element
             header: Rectangle {
                 anchors { left: parent.left; right: parent.right }
@@ -88,8 +105,9 @@ Control {
                     Button {
                         implicitHeight: expand_icon.height
                         implicitWidth: expand_icon.width
-                        anchors.verticalCenter: filename.verticalCenter
-                        flat: activeFocus ? false : true
+                        bottomInset: 0; rightInset: 0; leftInset: 0; topInset: 0
+                        bottomPadding: 0; rightPadding: 0; leftPadding: 0; topPadding: 0
+                        flat: true
                         hoverEnabled: true
                         onClicked: {
                             expanded = !expanded
@@ -113,16 +131,13 @@ Control {
                                                          "<path d='M0 0h24v24H0z' fill='none'/>",
                                                        "</svg>"].join('')
                             source: {
-                                if (parent.hovered) {
-                                    return expanded ? collapseSvg.arg("dimgray") : expandSvg.arg("dimgray")
-                                }
-                                return expanded ? collapseSvg.arg("gray") : expandSvg.arg("gray")
+                                return expanded ? collapseSvg.arg(root.alternate("gray", parent.hovered || parent.activeFocus)) : expandSvg.arg(root.alternate("gray", parent.hovered || parent.activeFocus))
                             }
                             anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
                             fillMode: Image.PreserveAspectFit
                         }
                     }
-                    Text {
+                    Label {
                         id: filename
                         text: "<b>" + file + "</b>"
                         elide: Text.ElideMiddle
@@ -131,8 +146,9 @@ Control {
                     Button {
                         implicitHeight: editmode_icon.height
                         implicitWidth: editmode_icon.width
-                        anchors.verticalCenter: filename.verticalCenter
-                        flat: activeFocus ? false : true
+                        bottomInset: 0; rightInset: 0; leftInset: 0; topInset: 0
+                        bottomPadding: 0; rightPadding: 0; leftPadding: 0; topPadding: 0
+                        flat: true
                         hoverEnabled: true
                         onClicked: {
                             if (Model.isWritable(file)) {
@@ -158,10 +174,7 @@ Control {
                                                         "<path d='M0 0h24v24H0z' fill='none'/>",
                                                       "</svg>"].join('')
                             source: {
-                                if (parent.hovered) {
-                                    return Model.isWritable(file) ? (editMode ? displaySvg.arg("dimgray") : editSvg.arg("dimgray")) : editSvg.arg("lightgray")
-                                }
-                                return Model.isWritable(file) ? (editMode ? displaySvg.arg("gray") : editSvg.arg("gray")) : editSvg.arg("lightgray")
+                                return Model.isWritable(file) ? (editMode ? displaySvg.arg(root.alternate("gray", parent.hovered || parent.activeFocus)) : editSvg.arg(root.alternate("gray", parent.hovered || parent.activeFocus))) : editSvg.arg("lightgray")
                             }
                             anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
                             fillMode: Image.PreserveAspectFit
@@ -170,8 +183,9 @@ Control {
                     Button {
                         implicitHeight: save_icon.height
                         implicitWidth: save_icon.width
-                        anchors.verticalCenter: filename.verticalCenter
-                        flat: activeFocus ? false : true
+                        bottomInset: 0; rightInset: 0; leftInset: 0; topInset: 0
+                        bottomPadding: 0; rightPadding: 0; leftPadding: 0; topPadding: 0
+                        flat: true
                         hoverEnabled: true
                         onClicked: {
                             if (modified) {
@@ -193,7 +207,7 @@ Control {
                                                "</svg>"].join('')
                             source: {
                                 if (modified) {
-                                    return parent.hovered ? svg.arg("brown") : svg.arg("orangered")
+                                    return svg.arg(root.alternate("orangered", parent.hovered || parent.activeFocus))
                                 }
                                 return svg.arg("lightgray")
                             }
@@ -204,8 +218,9 @@ Control {
                     Button {
                         implicitHeight: close_icon.height
                         implicitWidth: close_icon.width
-                        anchors.verticalCenter: filename.verticalCenter
-                        flat: activeFocus ? false : true
+                        bottomInset: 0; rightInset: 0; leftInset: 0; topInset: 0
+                        bottomPadding: 0; rightPadding: 0; leftPadding: 0; topPadding: 0
+                        flat: true
                         hoverEnabled: true
                         onClicked: {
                             Model.closeFile(file)
@@ -224,7 +239,7 @@ Control {
                                                  "<path d='M0 0h24v24H0z' fill='none'/>",
                                                "</svg>"].join('')
                             source: {
-                                return parent.hovered ? svg.arg("dimgray") : svg.arg("gray")
+                                return svg.arg(root.alternate("gray", parent.hovered || parent.activeFocus))
                             }
                             anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
                             fillMode: Image.PreserveAspectFit
@@ -243,23 +258,22 @@ Control {
                         id: details
                         anchors { left: parent.left; right: parent.right }
                         spacing: 10
-                        Text {
+                        Label {
                             font.pointSize: 10
                             elide: Text.ElideRight
                             text: tech
                         }
-
-                        //TODO: Use spacer
-                        Text {
+                        Label {
                             font.pointSize: 10
                             elide: Text.ElideRight
                             text: "Encoding:"
                         }
-
                         ComboBox {
                             id: encoding
                             font.pointSize: 10
-                            flat: activeFocus ? false : true
+                            flat: true
+                            bottomInset: 0; rightInset: 0; leftInset: 0; topInset: 0
+                            bottomPadding: 4; rightPadding: 4; leftPadding: 4; topPadding: 4
                             currentIndex: {
                                 var value = Model.value(file, "Encoding")
                                 if (value === "UTF-8")
@@ -278,7 +292,6 @@ Control {
                                     return 6;
                                 else if (value === "Local")
                                     return 7;
-
                                 return -1;
                             }
                             textRole: "text"
@@ -292,25 +305,21 @@ Control {
                                 { text: "ISO-8859-2", value: "8859-2", enabled: true},
                                 { text: "Local", value: "Local", enabled: false}
                             ]
-
                             delegate: ItemDelegate {
                                 width: encoding.width
                                 text: modelData.text
+                                background: Rectangle {
+                                    color: highlighted ? root.Material.accent : root.Material.background
+                                }
                                 font.weight: encoding.currentIndex === index ? Font.DemiBold : Font.Normal
                                 highlighted: ListView.isCurrentItem
                                 enabled: modelData.enabled
                             }
-
                             onActivated: {
                                 Model.setValue(file, "Encoding", encoding.model[encoding.currentIndex].value)
                             }
                         }
-
-                        //TODO: Use spacer
-                        Text {
-                            font.pointSize: 10
-                            elide: Text.ElideRight
-                            text: " "
+                        Item {
                             Layout.fillWidth: true
                         }
                         Repeater {
@@ -319,19 +328,21 @@ Control {
                                 function buttonColor(hovered) {
                                     var field = modelData==="Cue"?"cuexml":modelData
                                     if (!Model.valid(file, field, Model.value(file, field)))
-                                       return hovered?"darkred":root.red
+                                        return root.alternate("red", hovered)
                                     else if (Model.lastValidationWarning(file).length > 0)
-                                        return hovered?"brown":"orangered"
+                                        return root.alternate("orangered", hovered)
                                     else if (Model.modified(file, field))
-                                        return hovered?root.darkgreen:root.green
+                                        return root.alternate(root.green, hovered)
                                     else if (Model.visible(file, field))
-                                        return hovered?"dimgray":"gray"
+                                        return root.alternate("gray", hovered)
                                     else
                                         return "lightgray"
                                 }
                                 implicitHeight: icon.height
                                 implicitWidth: text.width + icon.width
-                                flat: activeFocus ? false : true
+                                bottomInset: 0; rightInset: 0; leftInset: 0; topInset: 0
+                                bottomPadding: 0; rightPadding: 0; leftPadding: 0; topPadding: 0
+                                flat: true
                                 hoverEnabled: true
                                 onClicked: {
                                     if(Model.visible(file, modelData)) {
@@ -346,13 +357,14 @@ Control {
                                     // Basic wrapping of text since QML ToolTip Doesn't have option for that
                                     text: message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
                                     background: Rectangle {
+                                        color: root.Material.background
                                         border.color: parent.valid ? "orangered" : root.red
                                     }
                                 }
-                                Text {
+                                Label {
                                     id: text
                                     text: modelData
-                                    color: parent.buttonColor(parent.hovered)
+                                    color: parent.buttonColor(parent.hovered || parent.activeFocus)
                                     horizontalAlignment: Text.AlignHCenter
                                 }
                                 Image {
@@ -364,7 +376,7 @@ Control {
                                     id: icon
                                     width: 16
                                     height: 16
-                                    source: svg.arg(parent.buttonColor(parent.hovered))
+                                    source: svg.arg(parent.buttonColor(parent.hovered || parent.activeFocus))
                                     fillMode: Image.PreserveAspectFit
                                     anchors { top: text.top; left: text.right; topMargin: (text.height - height) / 2 }
                                 }
@@ -375,7 +387,7 @@ Control {
                         id: messages
                         anchors { left: parent.left; right: parent.right }
                         spacing: 5
-                        Text {
+                        Label {
                            id:errors
                            text: "<h4><font color='" + root.red + "'>Errors:</font></h4>" + "<font color='" + root.red + "'>" + Model.errors(file) + "</font>"
                            width: root.width - 20 // Can't refer to parent.width dues to bug,
@@ -383,7 +395,7 @@ Control {
                            visible: Model.errors(file).length > 0
                            wrapMode: Text.Wrap
                         }
-                        Text {
+                        Label {
                            id:warnings
                            text: "<h4><font color='darkorange'>Warnings:</font></h4>" + "<font color='darkorange'>" + Model.warnings(file) + "</font>"
                            width: root.width - 20 // Can't refer to parent.width dues to bug,
@@ -391,7 +403,7 @@ Control {
                            visible: Model.warnings(file).length > 0
                            wrapMode: Text.Wrap
                         }
-                        Text {
+                        Label {
                            id: informations
                            text: "<h4>Informations:</h4>" +  Model.informations(file)
                            width: root.width - 20 // Can't refer to parent.width dues to bug,
@@ -399,7 +411,7 @@ Control {
                            visible: Model.informations(file).length > 0
                            wrapMode: Text.Wrap
                         }
-                        Text {
+                        Label {
                            id: unsupported
                            text: {
                                var chunks = Model.unsupportedChunks(file);
@@ -439,7 +451,7 @@ Control {
                                 }
                                 return false
                             }
-                            Text {
+                            Label {
                                 text: "<h4>" + section + "</h4>"
                             }
                             Flow {
@@ -470,7 +482,7 @@ Control {
                                                 ScrollBar.horizontal.position = 0
                                             }
                                             background: Rectangle {
-                                                color: Model.readOnly(file, name) ? "whitesmoke" : "transparent"
+                                                color: root.alternate(root.Material.background, input.readOnly)
                                                 border.color: {
                                                     if (parent.activeFocus) {
                                                         return "dodgerblue"
@@ -489,7 +501,12 @@ Control {
                                             }
                                             TextArea {
                                                 id: input
-                                                color: "black"
+                                                background: Rectangle {
+                                                    color: "transparent"
+                                                }
+                                                bottomInset: 0; rightInset: 0; leftInset: 0; topInset: 0
+                                                bottomPadding: 4; rightPadding: 4; leftPadding: 4; topPadding: 4
+                                                color: root.alternate(root.Material.foreground, readOnly)
                                                 text: Model.value(file, name)
                                                 readOnly: Model.readOnly(file, name)
                                                 selectByMouse: true
@@ -544,11 +561,12 @@ Control {
                                                 anchors.fill: parent
                                                 hoverEnabled: true
                                                 ToolTip {
-                                                    visible: (parent.containsMouse || parent.activeFocus || input.activeFocus)
                                                     delay: 500
                                                     // Basic wrapping of text since QML ToolTip Doesn't have option for that
                                                     text: status.message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
+                                                    visible: text.length && (parent.containsMouse || parent.activeFocus || input.activeFocus)
                                                     background: Rectangle {
+                                                        color: root.Material.background
                                                         border.color: status.valid ? "orangered" : root.red
                                                     }
                                                 }
@@ -558,7 +576,9 @@ Control {
                                             height: 24
                                             width: 24
                                             anchors.verticalCenter: title.verticalCenter
-                                            flat: activeFocus ? false : true
+                                            bottomInset: 0; rightInset: 0; leftInset: 0; topInset: 0
+                                            bottomPadding: 0; rightPadding: 0; leftPadding: 0; topPadding: 0
+                                            flat: true
                                             hoverEnabled: true
                                             onClicked: Model.editField(file, name)
                                             Image {
@@ -568,7 +588,7 @@ Control {
                                                     "<path d='M0 0h24v24H0z' fill='none'/>",
                                                     "</svg>"].join('')
                                                 source: {
-                                                    return parent.hovered ? svg.arg("dimgray") : svg.arg("gray")
+                                                    return svg.arg(root.alternate("gray", parent.hovered || parent.activeFocus))
                                                 }
                                                 fillMode: Image.PreserveAspectFit
                                                 anchors { top: parent.top; right: parent.right; topMargin: (parent.height - height) / 2 }
