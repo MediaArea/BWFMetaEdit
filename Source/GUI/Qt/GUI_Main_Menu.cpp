@@ -245,7 +245,7 @@ void GUI_Main::Menu_Create()
     Menu_Export_cue__XML_PerFile->setStatusTip(tr(""));
     connect(Menu_Export_cue__XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_cue__XML_PerFile()));
 
-    Menu_Export = menuBar()->addMenu(tr("&Export"));
+    Menu_Export = menuBar()->addMenu(tr("E&xport"));
     Menu_Export->addAction(Menu_Export_Unified_XML_Global);
     Menu_Export->addSeparator();
     Menu_Export->addAction(Menu_Export_Technical_CSV_Global);

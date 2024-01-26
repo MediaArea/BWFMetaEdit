@@ -159,7 +159,7 @@ class CueDialog_TableWidget : public QTableWidget
     Q_OBJECT
 public:
     //Constructor/Destructor
-    CueDialog_TableWidget(Core* C, const std::string& FileName, QWidget* parent=0);
+    CueDialog_TableWidget(Core* C, const std::string& FileName, bool ReadOnly, QWidget* parent=0);
 
 protected:
     bool edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event);
@@ -169,6 +169,7 @@ private:
     std::string FileName;
     Core*       C;
     int32u      SampleRate;
+    bool        ReadOnly;
 };
 
 

@@ -311,7 +311,13 @@ void GUI_Main_xxxx__Common::Colors_Update ()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string &FileName, const string &Field) 
 {
-    if (!C->IsValid(FileName, Field=="Cue"?"cuexml":Field, C->Get(FileName, Field=="Cue"?"cuexml":Field)))
+    if (!C->IsValid_Get(FileName) || C->IsReadOnly_Get(FileName) || !Fill_Enabled(FileName, Field, C->Get(FileName, Field=="Cue"?"cuexml":Field)))
+    {
+        const QPalette DefaultPalette;
+        bool DarkMode=DefaultPalette.color(QPalette::WindowText).lightness()>DefaultPalette.color(QPalette::Window).lightness();
+        Item->setBackground(QBrush(DarkMode?DefaultPalette.color(QPalette::Base).lighter(125):DefaultPalette.color(QPalette::Base).darker(125)));
+    }
+    else if (!C->IsValid(FileName, Field=="Cue"?"cuexml":Field, C->Get(FileName, Field=="Cue"?"cuexml":Field)))
     {
         Item->setToolTip(QString("<qt>%1</qt>").arg(QString(C->IsValid_LastError(FileName).c_str()).toHtmlEscaped()));
         Item->setIcon(QIcon(":/Image/Menu/Error.svg"));
@@ -361,12 +367,8 @@ void GUI_Main_xxxx__Common::SetEnabled (int Row, const QString &Field)
         if (Field_Current==Field)
         {
             string FileName=FileName_Before+item(Row, FILENAME_COL)->text().toUtf8().data();
-            if (Fill_Enabled(FileName, "BextVersion", C->Get(FileName, "BextVersion")))
-                item(Row, Column)->setFlags(item(Row, Column)->flags()|Qt::ItemIsEnabled);
-            else
-                item(Row, Column)->setFlags(item(Row, Column)->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
             dataChanged(indexFromItem(item(Row, Column)), indexFromItem(item(Row, Column)));
-            //Colors_Update(item(Row, Column), FileName, Field.toUtf8().data());
+            Colors_Update(item(Row, Column), FileName, Field.toUtf8().data());
             return;
         }
     }
@@ -525,10 +527,6 @@ void GUI_Main_xxxx__Common::Fill ()
                         Item=new QTableWidgetItem(QString());
                 }
 
-                if (!C->IsValid_Get(FileName_Before+List[File_Pos][0].To_UTF8())
-                 || C->IsReadOnly_Get(FileName_Before+List[File_Pos][0].To_UTF8())
-                 || (Data_Pos<List[File_Pos].size() && !Fill_Enabled(FileName_Before+List[File_Pos][0].To_UTF8(), List[0][Data_Pos].To_UTF8(), List[File_Pos][Data_Pos].To_UTF8())))
-                    Item->setFlags(Item->flags()&((Qt::ItemFlags)-1-Qt::ItemIsEnabled));
                 setItem((int)File_Pos-1, (int)(FILENAME_COL+Data_Pos-ColumnMissing_Count), Item);
             }
             else
