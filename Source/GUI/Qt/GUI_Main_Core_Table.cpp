@@ -141,6 +141,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
     string FileName=FileName_Before+item(index.row(), FILENAME_COL)->text().toUtf8().data();
     string Field=horizontalHeaderItem(index.column())->text().toUtf8().data();
 
+    if (!Fill_Enabled(FileName, Field, C->Get(FileName, Field)))
+        return false;
+
     //Line is selected?
     if (trigger==CurrentChanged)
     {

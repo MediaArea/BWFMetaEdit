@@ -610,8 +610,8 @@ void CueDialogCombo_Delegate::updateEditorGeometry(QWidget* editor, const QStyle
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-CueDialog_TableWidget::CueDialog_TableWidget(Core* C, const string& FileName, QWidget* parent)
-: QTableWidget(parent), C(C), FileName(FileName)
+CueDialog_TableWidget::CueDialog_TableWidget(Core* C, const string& FileName, bool ReadOnly, QWidget* parent)
+: QTableWidget(parent), C(C), FileName(FileName), ReadOnly(ReadOnly)
 {
     SampleRate=Ztring().From_UTF8(C->Get(FileName, "SampleRate")).To_int32u();
 }
@@ -622,7 +622,7 @@ bool CueDialog_TableWidget::edit(const QModelIndex& index, QAbstractItemView::Ed
     if (index.column()==Column_Close)
         return false;
 
-    if ((trigger==DoubleClicked || trigger==AnyKeyPressed) && (index.column()==Column_Start || index.column()==Column_Length))
+    if ((trigger==DoubleClicked || trigger==AnyKeyPressed) && (index.column()==Column_Start || index.column()==Column_Length) && !ReadOnly)
     {
         //User interaction
         CueDialog_SampleRateDialog* Edit=new CueDialog_SampleRateDialog(index.model()->data(index, Qt::UserRole+1).toUInt(), SampleRate);
@@ -661,7 +661,7 @@ GUI_Main_xxxx_CueDialog::GUI_Main_xxxx_CueDialog(Core* C, const string& FileName
     DavidMode=new QCheckBox("Use DAVID/DigaSystem CUE point format.");
 
     //Central
-    Table=new CueDialog_TableWidget(C, FileName, this);
+    Table=new CueDialog_TableWidget(C, FileName, ReadOnly_, this);
     Table->setEditTriggers(QAbstractItemView::AllEditTriggers);
 
     SampleRate=Ztring().From_UTF8(C->Get(FileName, "SampleRate")).To_int32u();
@@ -1199,7 +1199,12 @@ void GUI_Main_xxxx_CueDialog::Xml2List()
         {
             Table->cellWidget(Index, Column_Close)->setEnabled(false);
             for (int Column=0; Column<Column_Max; Column++)
-                Table->item(Index, Column)->setFlags(Table->item(Index, Column)->flags()&~Qt::ItemIsEnabled);
+            {
+                const QPalette DefaultPalette;
+                bool DarkMode=DefaultPalette.color(QPalette::WindowText).lightness()>DefaultPalette.color(QPalette::Window).lightness();
+                Table->item(Index, Column)->setBackground(QBrush(DarkMode?DefaultPalette.color(QPalette::Base).lighter(125):DefaultPalette.color(QPalette::Base).darker(125)));
+                Table->item(Index, Column)->setFlags(Table->item(Index, Column)->flags()&~Qt::ItemIsEditable);
+            }
         }
     }
 
