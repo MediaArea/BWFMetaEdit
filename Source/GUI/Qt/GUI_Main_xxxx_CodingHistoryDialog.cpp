@@ -307,15 +307,15 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
     //Central
     TextEdit=new QTextEdit(this);
     Table=new CodingHistoryDialog_TableWidget(List, this);
-    AddComma=new QCheckBox("Add comma at EOL");
+    AddComma=new QCheckBox("&Add comma at EOL");
     QWidget* W=new QWidget();
     QVBoxLayout* E=new QVBoxLayout(W);
     E->addWidget(Table);
     E->addWidget(AddComma);
 
     Central=new QTabWidget(this);
-    Central->addTab(W       , tr("EBU R98-1999"));
-    Central->addTab(TextEdit, tr("Free text"));
+    Central->addTab(W       , tr("&EBU R98-1999"));
+    Central->addTab(TextEdit, tr("&Free text"));
     connect(Central, SIGNAL(currentChanged (int)), this, SLOT(OnCurrentChanged(int)));
 
     Table->setEditTriggers(QAbstractItemView::AllEditTriggers);
