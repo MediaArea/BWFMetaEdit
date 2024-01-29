@@ -120,8 +120,8 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
 
     QVBoxLayout* L=new QVBoxLayout();
     Central=new QTabWidget(this);
-    Central->addTab(Central_Calendar, (Field=="OriginationDate" || Field=="OriginationTime")?tr("BWF (EBU Tech 3285) Recommandation"):tr("INFO (Microsoft definition) requirements"));
-    Central->addTab(TextEdit, tr("Free text"));
+    Central->addTab(Central_Calendar, (Field=="OriginationDate" || Field=="OriginationTime")?tr("&BWF (EBU Tech 3285) Recommandation"):tr("&INFO (Microsoft definition) requirements"));
+    Central->addTab(TextEdit, tr("&Free text"));
     connect(Central, SIGNAL(currentChanged (int)), this, SLOT(OnCurrentChanged(int)));
     L->addWidget(Central);
     L->addWidget(Label);

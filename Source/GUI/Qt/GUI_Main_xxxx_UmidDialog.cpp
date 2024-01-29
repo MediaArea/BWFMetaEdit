@@ -896,8 +896,8 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
         
     //Central
     Central=new QTabWidget(this);
-    Central->addTab(Smpte330_SA, tr("SMPTE 330M-2000"));
-    Central->addTab(FreeText, tr("Free text"));
+    Central->addTab(Smpte330_SA, tr("S&MPTE 330M-2000"));
+    Central->addTab(FreeText, tr("&Free text"));
     connect(Central, SIGNAL(currentChanged (int)), this, SLOT(OnCurrentChanged(int)));
         
     Label=new QLabel(this);

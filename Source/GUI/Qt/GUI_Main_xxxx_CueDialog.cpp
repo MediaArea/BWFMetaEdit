@@ -658,7 +658,7 @@ GUI_Main_xxxx_CueDialog::GUI_Main_xxxx_CueDialog(Core* C, const string& FileName
     Message=new QLabel(this);
 
     // DAVID/DigaSystem checkbox
-    DavidMode=new QCheckBox("Use DAVID/DigaSystem CUE point format.");
+    DavidMode=new QCheckBox("Use &DAVID/DigaSystem CUE point format.");
 
     //Central
     Table=new CueDialog_TableWidget(C, FileName, ReadOnly_, this);
