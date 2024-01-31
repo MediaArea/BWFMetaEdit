@@ -4,6 +4,12 @@ Notes:
 - Deleted
 x Correction
 
+Version 24.01, 2024-01-31
+-------------
++ Improve accessibility based on FADGI Report on Software Accessibility for Open-Source Digital Preservation Applications
++ Support of dark theme
+x Prevent creation of empty xml file
+
 Version 23.04, 2023-04-10
 -------------
 + Support of read/write CP437, CP850, CP858, Windows-1252, ISO 8859-1, ISO 8859-2 encoded fields
