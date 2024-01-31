@@ -1814,12 +1814,20 @@ void Core::Batch_Launch_Core(handlers::iterator &Handler)
 
     //Core chunk (with a Conformance Point Document)
     if (!Out_Core_CSV_FileName.empty() && (!Batch_IsBackuping || Handler->second.Riff->IsModified_Get())) //If backuping, only if file is modified
+    {
+        if (!Out_Core_CSV_File.Create(Ztring().From_UTF8(Out_Core_CSV_FileName)))
+        {
+            StdErr("--out-Core-CSV=file: error during file creation");
+            Out_Core_CSV_File.Close();
+            Out_Core_CSV_FileName.clear();
+        }
         if (!Out_Core_CSV_File.Write(Core+EOL)) //Saving file part
         {
             StdErr("--out-Core-CSV=file: error during file writing");
             Out_Core_CSV_File.Close();
             Out_Core_CSV_FileName.clear();
         }
+    }
 
     if (Out_Core_XML || Out_Core_XML_Doc || Out_XML_Doc)
     {
