@@ -70,6 +70,9 @@ void Riff_WAVE_cue_::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_cue_::Modify_Internal ()
 {
+    if (Chunk.Content.IsRemovable)
+        return;
+
     if (Global->cue_==NULL || Global->cue_->points.empty())
     {
         Chunk.Content.IsRemovable=true;

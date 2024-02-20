@@ -337,6 +337,7 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
             Handler->second.In_cue__XML=In_cue__XML;
             Handler->second.In_cue__FileName=In_cue__FileName;
             Handler->second.In_CSET_Remove=In_CSET_Remove;
+            Handler->second.In_Chunks_Remove= Handler_Default.In_Chunks_Remove;
 
             //Settings - Adding default Core values if the Core value does not exist yet (from --xxx=)
             for (map<string, Ztring>::iterator In_Core_Item=Handler_Default.In_Core.begin(); In_Core_Item!=Handler_Default.In_Core.end(); In_Core_Item++)
@@ -383,6 +384,12 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
         }
 
         bool IsModified_Old=Handler->second.Riff->IsModified_Get();
+
+        for (size_t Pos=0; Pos<Handler->second.In_Chunks_Remove.size(); Pos++)
+        {
+            Handler->second.Riff->Remove_Chunk(Handler->second.In_Chunks_Remove[Pos].To_UTF8());
+            StdAll(Handler);
+        }
 
         //Modifying file with --xxx values
         if (!Handler->second.In_Core.empty())
@@ -1277,6 +1284,12 @@ bool Core::In_Core_Add (const string &Field, const string &Value)
     return true;
 }
 
+//---------------------------------------------------------------------------
+bool Core::In_Chunk_Remove(const string &Field)
+{
+    Handler_Default.In_Chunks_Remove.push_back(Ztring().From_UTF8(Field));
+    return true;
+}
 //---------------------------------------------------------------------------
 string Core::Out_Core_Read (const string &FileName, const string &Field)
 {

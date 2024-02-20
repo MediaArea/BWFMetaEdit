@@ -51,6 +51,9 @@ void Riff_WAVE_adtl_ltxt::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_adtl_ltxt::Modify_Internal ()
 {
+    if (Chunk.Content.IsRemovable)
+        return;
+
     if (!Global->adtl || Global->adtl->texts.empty() || Global->adtl->textsIndex>=Global->adtl->texts.size())
     {
         Chunk.Content.IsRemovable=true;

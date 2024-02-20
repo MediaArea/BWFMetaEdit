@@ -44,6 +44,9 @@ void Riff_WAVE_adtl_note::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_adtl_note::Modify_Internal ()
 {
+    if (Chunk.Content.IsRemovable)
+        return;
+
     if (!Global->adtl || Global->adtl->notes.empty() || Global->adtl->notesIndex>=Global->adtl->notes.size())
     {
         Chunk.Content.IsRemovable=true;
