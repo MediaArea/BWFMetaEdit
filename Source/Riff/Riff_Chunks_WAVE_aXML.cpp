@@ -39,6 +39,10 @@ void Riff_WAVE_axml::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_axml::Modify_Internal ()
 {
+    Riff_Base::Modify_Internal();
+    if (Chunk.Content.IsRemovable)
+        return;
+
     if (Global->aXML==NULL
      || Global->aXML->Strings["axml"].empty())
     {

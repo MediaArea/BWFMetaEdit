@@ -39,6 +39,10 @@ void Riff_WAVE__PMX::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE__PMX::Modify_Internal ()
 {
+    Riff_Base::Modify_Internal();
+    if (Chunk.Content.IsRemovable)
+        return;
+
     if (Global->XMP==NULL
      || Global->XMP->Strings["xmp"].empty())
     {
