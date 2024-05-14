@@ -742,7 +742,7 @@ string Core::Menu_File_Undo_ListModifiedFiles(size_t Pos)
         return string();
 
     //Creating buffer
-    int8u* Buffer=new int8u[(size_t)F_Size+1];
+    int8u* Buffer=new int8u[(size_t)F_Size];
     size_t Buffer_Offset=0;
 
     //Reading the file
@@ -755,19 +755,17 @@ string Core::Menu_File_Undo_ListModifiedFiles(size_t Pos)
     }
     if (Buffer_Offset<F_Size)
         return string();
-    Buffer[Buffer_Offset]='\0';
 
     //Filling
-    Ztring ModifiedContent((const char*)Buffer);
+    string ModifiedContent((const char*)Buffer, F_Size);
     delete[] Buffer;
-    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    ModifiedContent.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+    AdaptEOL(ModifiedContent, adapt_n);
 
     //Showing
     ZtringListList List;
     List.Separator_Set(0, __T("\n"));
     List.Separator_Set(1, __T(","));
-    List.Write(ModifiedContent);
+    List.Write(Ztring().From_UTF8(ModifiedContent));
 
     //Elminating unuseful info from filenames
     Ztring FileName_Before;

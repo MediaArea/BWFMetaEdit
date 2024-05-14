@@ -124,7 +124,7 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
             else
                 Text="&Set originationDate and Time to file creation timestamp ("+Date+")";
 
-            QAction* Action=new QAction(QString().fromUtf8(Text.c_str()));
+            QAction* Action=new QAction(QString::fromUtf8(Text.c_str()));
             Action->setProperty("Action", "Date");
             Main->Menu_Edit->addAction(Action);
             Main->Menu_Edit->addSeparator();
@@ -137,7 +137,7 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
             string Text=History[Pos-1].To_UTF8();
             if (!Text.empty())
             {
-                QAction* Action=new QAction(QString().fromUtf8(Text.c_str()));
+                QAction* Action=new QAction(QString::fromUtf8(Text.c_str()));
                 Action->setProperty("Action", "History");
                 Main->Menu_Edit->addAction(Action);
                 connect(Action, SIGNAL(triggered(bool)), this, SLOT(onActionTriggered()));

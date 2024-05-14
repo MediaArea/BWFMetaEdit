@@ -474,7 +474,7 @@ void GUI_Main_xxxx__Common::Fill ()
     for (size_t Data_Pos=0; Data_Pos<List[0].size(); Data_Pos++)
         if (Data_Pos==0 || Main->Menu_Fields_CheckBoxes[Fill_Group()*options::MaxCount+Data_Pos-1]->isChecked())
         {
-            QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(List[0][Data_Pos].To_UTF8().c_str()));
+            QTableWidgetItem* Item=new QTableWidgetItem(QString::fromUtf8(List[0][Data_Pos].To_UTF8().c_str()));
             setHorizontalHeaderItem((int)(FILENAME_COL+Data_Pos-ColumnMissing_Count), Item);
             horizontalHeaderItem((FILENAME_COL+Data_Pos-ColumnMissing_Count))->setToolTip(Columns_ToolTip(List[0][Data_Pos].To_UTF8()));
         }
@@ -515,9 +515,9 @@ void GUI_Main_xxxx__Common::Fill ()
                         Value=Ztring().From_UTF8(Swap_MD5_Endianess(QString::fromUtf8(Value.To_UTF8().c_str())).toStdString());
 
                     if (Data_Pos==0)
-                        Item=new TableWidgetFileNameItem(Main, QString().fromUtf8(Value.To_UTF8().c_str()));
+                        Item=new TableWidgetFileNameItem(Main, QString::fromUtf8(Value.To_UTF8().c_str()));
                     else
-                        Item=new QTableWidgetItem(QString().fromUtf8(Value.To_UTF8().c_str()));
+                        Item=new QTableWidgetItem(QString::fromUtf8(Value.To_UTF8().c_str()));
                 }
                 else
                 {

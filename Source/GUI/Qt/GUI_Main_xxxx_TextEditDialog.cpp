@@ -65,12 +65,15 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
     Label=new QLabel(this);
     Label->setOpenExternalLinks(true);
 
+    BigMessage=new QLabel(this);
+
     Message=new QLabel(this);
     Message->setOpenExternalLinks(true);
     
     QVBoxLayout* L=new QVBoxLayout();
     L->addWidget(TextEdit);
     L->addWidget(Label);
+    L->addWidget(BigMessage);
     L->addWidget(Message);
     L->addWidget(Dialog);
 
@@ -83,10 +86,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
     else if (Field=="iXML")
         Message->setText("<html><body>This tool does not validate the contents of the XML chunks  against the rules for iXML.<br />Edit at your own risk. For more information see the <a href=\"http://www.gallery.co.uk/ixml/\">iXML Specification</a><br />Edits to this chunk can not be undone</body></html>");
 
-    TextEdit->setPlainText(Value);
-    TextEdit->setReadOnly(ReadOnly);
-    QTextCursor Cursor=TextEdit->textCursor(); Cursor.setPosition(Value.length());
-    TextEdit->setTextCursor(Cursor);
+    Display(Value);
     TextEdit->setFocus();
 
 }
@@ -98,7 +98,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_TextEditDialog::OnAccept ()
 {
-    std::string Value=TextEdit->toPlainText().toUtf8().data();
+    std::string Value=(BigValue.isEmpty()?TextEdit->toPlainText():BigValue).toUtf8().data();
     if (!C->IsValid(FileName, Field, Value, true))
     {
         QMessageBox MessageBox;
@@ -121,7 +121,7 @@ void GUI_Main_xxxx_TextEditDialog::OnAccept ()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_TextEditDialog::OnTextChanged ()
 {
-    std::string Value=TextEdit->toPlainText().toUtf8().data();
+    std::string Value=(BigValue.isEmpty()?TextEdit->toPlainText():BigValue).toUtf8().data();
     if (!C->IsValid(FileName, Field, Value, true))
     {
         Label->setText(QString::fromUtf8(C->IsValid_LastError(FileName).c_str()));
@@ -168,16 +168,14 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Load()
     }
     if (Buffer_Offset<F_Size)
         return;
-    Buffer[Buffer_Offset]='\0';
 
     //Filling
-    Ztring ModifiedContent=Ztring().From_UTF8((const char*)Buffer);
+    string ModifiedContent((const char*)Buffer, Buffer_Offset);
     delete[] Buffer;
-    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    ModifiedContent.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
-    QString ModifiedContentQ=QString().fromUtf8(ModifiedContent.To_UTF8().c_str());
+    AdaptEOL(ModifiedContent, adapt_n);
+    QString ModifiedContentQ=ModifiedContent.c_str();
 
-    TextEdit->setPlainText(ModifiedContentQ);
+    Display(ModifiedContentQ);
 }
 
 //---------------------------------------------------------------------------
@@ -197,5 +195,32 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Save()
         return;
 
     //Filling
-    F.Write(Ztring(TextEdit->toPlainText().toUtf8().data()));
+    std::string Value=(BigValue.isEmpty()?TextEdit->toPlainText():BigValue).toUtf8().data();
+    F.Write((int8u*)Value.c_str(), Value.size());
+}
+
+//***************************************************************************
+// Menu actions
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+void GUI_Main_xxxx_TextEditDialog::Display(const QString& Value)
+{
+    static const size_t MaxSize=0x100000;
+    if (Value.size()<MaxSize)
+    {
+        BigValue.clear();
+        BigMessage->setText(QString());
+        TextEdit->setReadOnly(ReadOnly);
+        TextEdit->setPlainText(Value);
+        QTextCursor Cursor=TextEdit->textCursor(); Cursor.setPosition(Value.length());
+        TextEdit->setTextCursor(Cursor);
+    }
+    else
+    {
+        BigValue=Value;
+        BigMessage->setText("The content is too large to be displayed in full here and can not be edited here.");
+        TextEdit->setReadOnly(true);
+        TextEdit->setPlainText(Value.mid(0, MaxSize>>4));
+    }
 }

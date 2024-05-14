@@ -116,6 +116,163 @@ const char* xxxx_Strings[][17]=
     },
 };
 
+//---------------------------------------------------------------------------
+// Convert carriage return to platform EOL (or "\r\n" if ForceRN is true)
+// Value2 is filled if copy was needed
+inline void AdaptEOL_Internal(const string& Value, string& Value2, bool RN=false)
+{
+    size_t Pos1=0;
+    size_t Pos2=0;
+
+    for (;;)
+    {
+        Pos2=Value.find_first_of("\r\n", Pos2);
+        if (Pos2==string::npos)
+            break;
+        size_t Pos2Plus1=Pos2+1;
+        if (Value[Pos2]=='\r')
+        {
+            //"\r"
+            if (Pos2Plus1<Value.size() && Value[Pos2Plus1]=='\n')
+            {
+                //"\r\n"
+                if (RN)
+                {
+                    //"\r\n" is fine
+                    Pos2=Pos2Plus1+1;
+                }
+                else
+                {
+                    //"\r\n" to "\n"
+                    if (Value2.empty())
+                        Value2.reserve(Value.size());
+                    Value2.append(Value.c_str()+Pos1, Pos2-Pos1); // \n will be copied at next iteration
+                    Pos2=Pos2Plus1;
+                    Pos1=Pos2Plus1;
+                }
+            }
+            else
+            {
+                //"\r" alone
+                if (RN)
+                {
+                    //"\r" to "\r\n"
+                    if (Value2.empty())
+                        Value2.reserve(Value.size()+Value.size()/16);
+                    Pos2=Pos2Plus1;
+                    Value2.append(Value.c_str()+Pos1, Pos2-Pos1);
+                    Value2+='\n';
+                    Pos1=Pos2;
+                }
+                else
+                {
+                    //"\r" to "\n"
+                    if (Value2.empty())
+                        Value2.reserve(Value.size());
+                    Value2.append(Value.c_str()+Pos1, Pos2-Pos1);
+                    Value2+='\n';
+                    Pos2=Pos2Plus1;
+                    Pos1=Pos2Plus1;
+                }
+            }
+        }
+        else
+        {
+            //"\n"
+            if (Pos2Plus1<Value.size() && Value[Pos2Plus1]=='\r')
+            {
+                //"\n\r" (Bug in v0.2.1 XML, \r\n was inverted)
+                if (RN)
+                {
+                    //"\n\r" to "\r\n"
+                    if (Value2.empty())
+                        Value2.reserve(Value.size()+Value.size());
+                    Value2.append(Value.c_str()+Pos1, Pos2-Pos1);
+                    Value2+='\r';
+                    Value2+='\n';
+                    Pos2=Pos2Plus1+1;
+                    Pos1=Pos2;
+                }
+                else
+                {
+                    //"\n\r" to "\n"
+                    if (Value2.empty())
+                        Value2.reserve(Value.size()+Value.size());
+                    Value2.append(Value.c_str()+Pos1, Pos2Plus1-Pos1);
+                    Pos2=Pos2Plus1+1;
+                    Pos1=Pos2;
+                }
+            }
+            else
+            {
+                //"\n" alone
+                if (RN)
+                {
+                    //"\n" to "\r\n"
+                    if (Value2.empty())
+                        Value2.reserve(Value.size()+Value.size()/16);
+                    Value2.append(Value.c_str()+Pos1, Pos2-Pos1); // \n will be copied at next iteration
+                    Value2+='\r';
+                    Pos1=Pos2;
+                    Pos2=Pos2Plus1;
+                }
+                else
+                {
+                    //"\n" is fine
+                    Pos2=Pos2Plus1;
+                }
+            }
+        }
+    }
+    if (!Value2.empty())
+        Value2.append(Value.c_str()+Pos1, Value.size()-Pos1);
+}
+static const string Test[][2]=
+{
+    { "x\nx\n\nx", "\nx\nx\n\nx\n" },
+    { "x\rx\r\rx", "\rx\rx\r\rx\r" },
+    { "x\n\rx\n\r\n\rx", "\n\rx\n\rx\n\r\n\rx\n\r" },
+    { "x\r\nx\r\n\r\nx", "\r\nx\r\nx\r\n\r\nx\r\n" },
+    { "x\nx\r\n\n\rx", "\rx\nx\r\n\n\rx\n\r" },
+};
+static bool TestAdaptEOL()
+{
+    for (size_t i=0; i<sizeof(Test)/sizeof(Test[0]); i++)
+    {
+        for (size_t j=0; j<sizeof(Test[0])/sizeof(Test[0][0]); j++)
+        {
+            string Test1(Test[i][j]);
+            string Test2;
+            AdaptEOL_Internal(Test1, Test2, false);
+            if (Test2.empty())
+                Test2=Test1;
+            if (Test2!=Test[0][j])
+                return true;
+            Test2.clear();
+            AdaptEOL_Internal(Test1, Test2, true);
+            if (Test2.empty())
+                Test2=Test1;
+            if (Test2!=Test[3][j])
+                return true;
+        }
+    }
+    return false;
+}
+void AdaptEOL(const string& Value, string& Value2, adapteol Adapt=adapt_platform) { AdaptEOL_Internal(Value, Value2, Adapt==adapt_platform?adapt_rn:Adapt==adapt_rn); }
+#ifdef WINDOWS
+static const adapteol Adapt_Platform=adapt_rn;
+#else
+static const adapteol Adapt_Platform=adapt_n;
+#endif
+void AdaptEOL(string& Value, string& Value2, adapteol Adapt=adapt_platform) { AdaptEOL_Internal(Value, Value2, Adapt==adapt_platform?Adapt_Platform:Adapt==adapt_rn); }
+void AdaptEOL(string& Value, adapteol Adapt=adapt_platform)
+{
+    string Value2;
+    AdaptEOL_Internal(Value, Value2, Adapt);
+    if (!Value2.empty())
+        Value=Value2;
+}
+
 //***************************************************************************
 // Constructor/Destructor
 //***************************************************************************
@@ -1040,13 +1197,10 @@ string Riff_Handler::Get_Internal(const string &Field)
     if (!Chunk_Strings || !*Chunk_Strings)
         return string();
 
-    Ztring Value=Ztring().From_UTF8(Get(Field_Get(Field), *Chunk_Strings));
-    Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    Value.FindAndReplace(__T("\n\r"), __T("\n"), 0, Ztring_Recursive); //Bug in v0.2.1 XML, \r\n was inverted
-    Value.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
-    Value.FindAndReplace(__T("\n"), EOL, 0, Ztring_Recursive);
-    
-    return Value.To_UTF8();
+    string Value=Get(Field_Get(Field), *Chunk_Strings);
+    string Value2;
+    AdaptEOL(Value, Value2);
+    return Value2.empty()?Value:Value2;
 }
 
 //---------------------------------------------------------------------------
@@ -1086,37 +1240,26 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
      || Value_=="NOCHANGE")
         return true;
     
-    Ztring Value__=Ztring().From_UTF8(Value_);
-    Value__.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    Value__.FindAndReplace(__T("\n\r"), __T("\n"), 0, Ztring_Recursive); //Bug in v0.2.1 XML, \r\n was inverted
-    Value__.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
-    Value__.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
+    string Value;
 
-    if (Value__.size()>7
-     && Value__[0]==__T('f')
-     && Value__[1]==__T('i')
-     && Value__[2]==__T('l')
-     && Value__[3]==__T('e')
-     && Value__[4]==__T(':')
-     && Value__[5]==__T('/')
-     && Value__[6]==__T('/'))
+    if (Value_.size() > 7 && Value_.rfind("file://", 0)!=string::npos)
     {
         File F;
-        if (!F.Open(Value__.substr(7, string::npos)))
+        if (!F.Open(Ztring().From_UTF8(Value_.substr(7, string::npos))))
         {
-            Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value__.To_UTF8()<<", File does not exist)"<<endl;
+            Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value_<<", File does not exist)"<<endl;
             return false;
         }
 
         int64u F_Size=F.Size_Get();
         if (F_Size>((size_t)-1)-1)
         {
-            Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value__.To_UTF8()<<", Unable to open file)"<<endl;
+            Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value_<<", Unable to open file)"<<endl;
             return false;
         }
 
         //Creating buffer
-        int8u* Buffer=new int8u[(size_t)F_Size+1];
+        int8u* Buffer=new int8u[(size_t)F_Size];
         size_t Buffer_Offset=0;
 
         //Reading the file
@@ -1129,15 +1272,23 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
         }
         if (Buffer_Offset<F_Size)
         {
-            Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value__.To_UTF8()<<", Error while reading file)"<<endl;
+            Errors<<Chunks->Global->File_Name.To_UTF8()<<": Malformed input ("<<Field<<"="<<Value_<<", Error while reading file)"<<endl;
             delete[] Buffer;
             return false;
         }
-        Buffer[Buffer_Offset]='\0';
 
-        Value__=Ztring().From_UTF8((const char*)Buffer);
+        string Value2((const char*)Buffer, Buffer_Offset);
+        delete[] Buffer;
+        AdaptEOL(Value2, Value, adapt_n);
+        if (Value.empty())
+            Value=Value2;
     }
-    string Value=Value__.To_UTF8();
+    else
+    {
+        AdaptEOL(Value_, Value, adapt_n);
+        if (Value.empty())
+            Value=Value_;
+    }
 
     //Legacy
     if (Field=="timereference" && !(Value.size()<12
@@ -1488,12 +1639,10 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
     IsValid_Errors.str(string());
     IsValid_Warnings.str(string());
     string Field=Field_Get(Field_);
-    Ztring Value__=Ztring().From_UTF8(Value_);
-    Value__.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    Value__.FindAndReplace(__T("\n\r"), __T("\n"), 0, Ztring_Recursive); //Bug in v0.2.1 XML, \r\n was inverted
-    Value__.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
-    Value__.FindAndReplace(__T("\n"), __T("\r\n"), 0, Ztring_Recursive);
-    string Value=Value__.To_UTF8();
+    string Value;
+    AdaptEOL(Value_, Value, adapt_rn);
+    if (Value.empty())
+        Value=Value_;
 
     //Rules
     if (Rules.FADGI_Rec)
@@ -1507,7 +1656,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
     if (Field!="filename" && Field!="errors" && Field!="warnings" && Field!="information" && Field!="xmp" && Field!="ixml" && Field!="axml")
     {
         bool IsASCII=true;
-        wstring Unicode=Value__.To_Unicode();
+        wstring Unicode=Ztring().From_UTF8(Value).To_Unicode();
         for (size_t i=0; i<Unicode.size(); i++)
         {
             if (((int32u)Unicode[i]) >= 0x80)

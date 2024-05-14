@@ -37,6 +37,7 @@ public:
     //Widgets
     QTextEdit*          TextEdit;
     QLabel*             Label;
+    QLabel*             BigMessage;
     QLabel*             Message;
     QDialogButtonBox*   Dialog;
     QPushButton*        Load;
@@ -54,7 +55,10 @@ private:
     Core* C;
     std::string FileName;
     std::string Field;
+    QString BigValue;
     bool ReadOnly;
+
+    void Display(const QString& Value);
 };
 
 #endif

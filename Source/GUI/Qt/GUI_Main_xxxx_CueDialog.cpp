@@ -756,7 +756,7 @@ void GUI_Main_xxxx_CueDialog::OnMenu_Load()
         return;
 
     //Creating buffer
-    int8u* Buffer=new int8u[(size_t)F_Size+1];
+    int8u* Buffer=new int8u[(size_t)F_Size];
     size_t Buffer_Offset=0;
 
     //Reading the file
@@ -769,17 +769,15 @@ void GUI_Main_xxxx_CueDialog::OnMenu_Load()
     }
     if (Buffer_Offset<F_Size)
         return;
-    Buffer[Buffer_Offset]='\0';
 
     //Filling
-    Ztring ModifiedContent=Ztring().From_UTF8((const char*)Buffer);
+    string ModifiedContent((const char*)Buffer, Buffer_Offset);
     delete[] Buffer;
-    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    ModifiedContent.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+    AdaptEOL(ModifiedContent, adapt_n);
 
-    if(C->IsValid(FileName, "cuexml", ModifiedContent.To_UTF8()), true)
+    if(C->IsValid(FileName, "cuexml", ModifiedContent), true)
     {
-        Xml=ModifiedContent.To_UTF8();
+        Xml=ModifiedContent;
         Xml2List();
         Dialog->button(QDialogButtonBox::Ok)->setEnabled(ReadOnly || C->IsValid(FileName, "cuexml", Xml));
     }
@@ -1071,9 +1069,9 @@ void GUI_Main_xxxx_CueDialog::Xml2List()
             C->IsValid(FileName, "cue_ltxt_language_dialect", QString::number(Language).toStdString() + ";" + QString::number(Dialect).toStdString());
             UpdateItem(Table->item(Index, Column_Dialect));
             Element=LabeledTextElement->FirstChildElement("CodePage");
-            Table->item(Index, Column_CodePage)->setText(QString().fromUtf8(Element&&Element->GetText()?Element->GetText():"0"));
+            Table->item(Index, Column_CodePage)->setText(QString::fromUtf8(Element&&Element->GetText()?Element->GetText():"0"));
             Element=LabeledTextElement->FirstChildElement("Text");
-            Table->item(Index, Column_LabeledText)->setText(QString().fromUtf8(Element&&Element->GetText()?Element->GetText():""));
+            Table->item(Index, Column_LabeledText)->setText(QString::fromUtf8(Element&&Element->GetText()?Element->GetText():""));
         }
 
         // Check coherency: DataChunkID
