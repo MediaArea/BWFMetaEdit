@@ -375,7 +375,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Load()
         return;
 
     //Creating buffer
-    int8u* Buffer=new int8u[(size_t)F_Size+1];
+    int8u* Buffer=new int8u[(size_t)F_Size];
     size_t Buffer_Offset=0;
 
     //Reading the file
@@ -388,14 +388,12 @@ void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Load()
     }
     if (Buffer_Offset<F_Size)
         return;
-    Buffer[Buffer_Offset]='\0';
 
     //Filling
-    Ztring ModifiedContent=Ztring().From_UTF8((const char*)Buffer);
+    string ModifiedContent((const char*)Buffer, Buffer_Offset);
     delete[] Buffer;
-    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    ModifiedContent.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
-    QString ModifiedContentQ=QString().fromUtf8(ModifiedContent.To_UTF8().c_str());
+    AdaptEOL(ModifiedContent, adapt_n);
+    QString ModifiedContentQ=QString::fromUtf8(ModifiedContent.c_str());
 
     TextEdit->setPlainText(ModifiedContentQ);
     if (Central->currentIndex()==0)
@@ -544,7 +542,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
             {
                 string Header=Value.substr(0, 2);
                 Value.erase(0, 2);
-                QTableWidgetItem* Item=new QTableWidgetItem(QString().fromUtf8(Value.c_str()));
+                QTableWidgetItem* Item=new QTableWidgetItem(QString::fromUtf8(Value.c_str()));
 
                 Table->setItem((int)Line_Pos, Column, Item);
             }

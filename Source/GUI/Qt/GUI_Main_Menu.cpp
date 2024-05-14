@@ -290,19 +290,19 @@ void GUI_Main::Menu_Create()
         if (Preferences->Group_Options_Count_Get((group)Group, true))
         {
             Menu_Fields_ActionGroups[Group]=new QActionGroup(this);
-            Menu_Fields_Menus[Group]=Menu_Fields_Main->addMenu(QString().fromUtf8(Preferences->Group_Name_Get((group)Group).c_str()));
+            Menu_Fields_Menus[Group]=Menu_Fields_Main->addMenu(QString::fromUtf8(Preferences->Group_Name_Get((group)Group).c_str()));
         }
         for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
         {
             switch (Preferences->Group_Option_Type_Get((group)Group, Option))
             {
             case Type_CheckBox:
-                Menu_Fields_CheckBoxes[Group*options::MaxCount+Option] = new QAction(QString().fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
+                Menu_Fields_CheckBoxes[Group*options::MaxCount+Option] = new QAction(QString::fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
                 Menu_Fields_Menus[Group]->addAction(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]);
                 Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setCheckable(true);
             break;
             case Type_RadioButton:
-                Menu_Fields_RadioButtons[Group*options::MaxCount+Option] = new QAction(QString().fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
+                Menu_Fields_RadioButtons[Group*options::MaxCount+Option] = new QAction(QString::fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
                 Menu_Fields_ActionGroups[Group]->addAction(Menu_Fields_RadioButtons[Group*options::MaxCount+Option]);
                 Menu_Fields_Menus[Group]->addAction(Menu_Fields_RadioButtons[Group*options::MaxCount+Option]);
                 Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setCheckable(true);

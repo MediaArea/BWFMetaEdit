@@ -104,16 +104,16 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
 
     //Handling export display
     if (!Import.empty())
-        menu.addAction(new QAction(QString().fromUtf8(Import.To_UTF8().c_str()), this));
+        menu.addAction(new QAction(QString::fromUtf8(Import.To_UTF8().c_str()), this));
     if (!Export.empty())
-        menu.addAction(new QAction(QString().fromUtf8(Export.To_UTF8().c_str()), this));
+        menu.addAction(new QAction(QString::fromUtf8(Export.To_UTF8().c_str()), this));
     if (!Import.empty() || !Export.empty())
         menu.addSeparator();
 
     //Handling Fill display
     if (!Fill.empty())
     {
-        menu.addAction(new QAction(QString().fromUtf8(Fill.To_UTF8().c_str()), this));
+        menu.addAction(new QAction(QString::fromUtf8(Fill.To_UTF8().c_str()), this));
         menu.addSeparator();
     }
 
@@ -124,7 +124,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         {
             Pos--;
 
-            QString Text=QString().fromUtf8(History[Pos].To_UTF8().c_str());
+            QString Text=QString::fromUtf8(History[Pos].To_UTF8().c_str());
             if (!Text.isEmpty())
             {
                 QAction* Action=new QAction(Text, this);
@@ -137,7 +137,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     if (!Remove.empty())
     {
         menu.addSeparator();
-        menu.addAction(new QAction(QString().fromUtf8(Remove.To_UTF8().c_str()), this));
+        menu.addAction(new QAction(QString::fromUtf8(Remove.To_UTF8().c_str()), this));
     }
 
     //Displaying
@@ -190,7 +190,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
             return;
 
         //Creating buffer
-        int8u* Buffer=new int8u[(size_t)F_Size+1];
+        int8u* Buffer=new int8u[(size_t)F_Size];
         size_t Buffer_Offset=0;
 
         //Reading the file
@@ -203,14 +203,12 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
         }
         if (Buffer_Offset<F_Size)
             return;
-        Buffer[Buffer_Offset]='\0';
 
         //Filling
-        Ztring Value=Ztring().From_UTF8((const char*)Buffer);
+        string Value((const char*)Buffer, Buffer_Offset);
         delete[] Buffer;
-        Value.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        Value.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
-        if (!C->IsValid(FileName, Field=="Cue"?"cuexml":Field, Value.To_UTF8()))
+        AdaptEOL(Value, adapt_n);
+        if (!C->IsValid(FileName, Field=="Cue"?"cuexml":Field, Value))
         {
             QMessageBox MessageBox;
             MessageBox.setWindowTitle("BWF MetaEdit");
@@ -224,7 +222,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
             return;
         }
 
-        ModifiedContent=Value.To_UTF8();
+        ModifiedContent=Value;
     }
 
     //Filling
@@ -251,9 +249,8 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     }
     else
     {
-        Ztring NewValue=Ztring().From_UTF8(ModifiedContent);
-        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        item(Item->row(), Item->column())->setText(NewValue.To_UTF8().c_str());
+        AdaptEOL(ModifiedContent, adapt_n);
+        item(Item->row(), Item->column())->setText(ModifiedContent.c_str());
     }
 
     //Configuring
@@ -343,9 +340,9 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         //Retrieving data
         if (!ModifiedContentQ.isEmpty())
         {
-            Ztring ModifiedContent=Ztring().From_UTF8(C->Get(FileName, Field));
-            ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-            ModifiedContentQ=QString::fromUtf8(ModifiedContent.To_UTF8().c_str());
+            string ModifiedContent=C->Get(FileName, Field);
+            AdaptEOL(ModifiedContent, adapt_n);
+            ModifiedContentQ=ModifiedContent.c_str();
         }
 
         //User interaction
@@ -394,9 +391,9 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         delete Edit; //Edit=NULL;
 
         //Filling
-        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+        string NewValue=C->Get(FileName, Field);
+        AdaptEOL(NewValue, adapt_n);
+        item(index.row(), index.column())->setText(NewValue.c_str());
         return false;
     }
 
@@ -413,9 +410,9 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         delete Edit; //Edit=NULL;
 
         //Updating
-        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+        string NewValue=C->Get(FileName, Field);
+        AdaptEOL(NewValue, adapt_n);
+        item(index.row(), index.column())->setText(NewValue.c_str());
         return false;
     }
 

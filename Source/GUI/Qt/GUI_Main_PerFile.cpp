@@ -253,13 +253,13 @@ Q_INVOKABLE QString PerFileModel::unsupportedChunks(const QString& FileName) con
 //---------------------------------------------------------------------------
 Q_INVOKABLE QString PerFileModel::value(const QString& FileName, const QString& Field) const
 {
-    Ztring ModifiedContent=Ztring().From_UTF8(C->Get(FileName.toStdString(), Field.toStdString()));
-    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+    string ModifiedContent=C->Get(FileName.toStdString(), Field.toStdString());
+    AdaptEOL(ModifiedContent, adapt_n);
 
     if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian) && !ModifiedContent.empty())
-        ModifiedContent=Ztring().From_UTF8(Swap_MD5_Endianess(QString::fromUtf8(ModifiedContent.To_UTF8().c_str())).toStdString());
+        ModifiedContent=Swap_MD5_Endianess(QString::fromUtf8(ModifiedContent.c_str())).toStdString();
 
-    return QString().fromUtf8(ModifiedContent.To_UTF8().c_str());
+    return QString::fromUtf8(ModifiedContent.c_str());
 }
 
 //---------------------------------------------------------------------------
@@ -323,18 +323,18 @@ Q_INVOKABLE bool PerFileModel::isWritable(const QString& FileName) const {
 //---------------------------------------------------------------------------
 Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString& Field)
 {
-    Ztring ModifiedContent=Ztring().From_UTF8(C->Get(FileName.toStdString(), Field.toStdString()));
-    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+    string ModifiedContent=C->Get(FileName.toStdString(), Field.toStdString());
+    AdaptEOL(ModifiedContent, adapt_n);
 
     if (readOnly(FileName, Field)) {
         if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian) && !ModifiedContent.empty())
-            ModifiedContent=Ztring().From_UTF8(Swap_MD5_Endianess(QString::fromUtf8(ModifiedContent.To_UTF8().c_str())).toStdString());
+            ModifiedContent=Swap_MD5_Endianess(QString::fromUtf8(ModifiedContent.c_str())).toStdString();
 
         QDialog* Edit=NULL;
         if (Field=="Cue")
             Edit=new GUI_Main_xxxx_CueDialog(C, FileName.toStdString(), true);
         else
-            Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()), true);
+            Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName.toStdString(), Field.toStdString(), QString::fromUtf8(ModifiedContent.c_str()), true);
         Edit->exec();
         delete Edit; //Edit=NULL;
         return;
@@ -377,25 +377,25 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
     }
     else if (Field=="UMID")
     {
-        GUI_Main_xxxx_UmidDialog* Edit=new GUI_Main_xxxx_UmidDialog(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()));
+        GUI_Main_xxxx_UmidDialog* Edit=new GUI_Main_xxxx_UmidDialog(C, FileName.toStdString(), Field.toStdString(), QString::fromUtf8(ModifiedContent.c_str()));
         Edit->exec();
         delete Edit; //Edit=NULL;
     }
     else if (Field=="OriginationDate" || Field=="OriginationTime" || Field=="ICRD") 
     {
-        GUI_Main_xxxx_DateDialog* Edit=new GUI_Main_xxxx_DateDialog(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()));
+        GUI_Main_xxxx_DateDialog* Edit=new GUI_Main_xxxx_DateDialog(C, FileName.toStdString(), Field.toStdString(), QString::fromUtf8(ModifiedContent.c_str()));
         Edit->exec();
         delete Edit; //Edit=NULL;
     }
     else if (Field=="CodingHistory")
     {
-        GUI_Main_xxxx_CodingHistoryDialog* Edit=new GUI_Main_xxxx_CodingHistoryDialog(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()), C->Rules);
+        GUI_Main_xxxx_CodingHistoryDialog* Edit=new GUI_Main_xxxx_CodingHistoryDialog(C, FileName.toStdString(), Field.toStdString(), QString::fromUtf8(ModifiedContent.c_str()), C->Rules);
         Edit->exec();
         delete Edit; //Edit=NULL;
     }
     else if (Field=="LoudnessValue" || Field=="LoudnessRange" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
     {
-        GUI_Main_xxxx_Loudness* Edit=new GUI_Main_xxxx_Loudness(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()), C->Rules.Tech3285_Req);
+        GUI_Main_xxxx_Loudness* Edit=new GUI_Main_xxxx_Loudness(C, FileName.toStdString(), Field.toStdString(), QString::fromUtf8(ModifiedContent.c_str()), C->Rules.Tech3285_Req);
         Edit->exec();
         delete Edit; //Edit=NULL;
     }
@@ -406,7 +406,7 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
     }
     else
     {
-        GUI_Main_xxxx_TextEditDialog* Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName.toStdString(), Field.toStdString(), QString().fromUtf8(ModifiedContent.To_UTF8().c_str()), false);
+        GUI_Main_xxxx_TextEditDialog* Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName.toStdString(), Field.toStdString(), QString::fromUtf8(ModifiedContent.c_str()), false);
         Edit->exec();
         delete Edit; //Edit=NULL;
     }
@@ -497,7 +497,7 @@ void PerFileModel::Fill()
         if (List[Pos][0].empty())
             continue;
 
-        QString FileName = QString().fromUtf8(List[Pos][0].To_UTF8().c_str());
+        QString FileName = QString::fromUtf8(List[Pos][0].To_UTF8().c_str());
         FileNames.append(FileName);
         Expanded.insert(FileName, Expanded_Old.value(FileName, true));
         EditMode.insert(FileName, EditMode_Old.value(FileName, false));
@@ -529,7 +529,7 @@ QString PerFileModel::Get_Technical_Field(const QString FileName, const QString 
 
     size_t FieldIndex=TechnicalData[0].Find(Ztring().From_UTF8(FieldName.toStdString()));
     if (FieldIndex<TechnicalData[FileIndex].size())
-        toReturn+=QString().fromUtf8(TechnicalData[FileIndex][FieldIndex].To_UTF8().c_str());
+        toReturn+=QString::fromUtf8(TechnicalData[FileIndex][FieldIndex].To_UTF8().c_str());
 
     return toReturn;
 }

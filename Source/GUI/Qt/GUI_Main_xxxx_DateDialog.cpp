@@ -56,7 +56,7 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
     Date=NULL;
     if (Field=="OriginationDate")
     {
-        QString DateQ=QString().fromUtf8(ZenLib::Ztring().From_UTF8(C->FileDate_Get(FileName)).To_UTF8().c_str());
+        QString DateQ=QString::fromUtf8(ZenLib::Ztring().From_UTF8(C->FileDate_Get(FileName)).To_UTF8().c_str());
         if (DateQ.size()>10)
         {
             DateQ.truncate(10);
@@ -70,7 +70,7 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
     }
     if (Field=="OriginationTime")
     {
-        QString TimeQ=QString().fromUtf8(ZenLib::Ztring().From_UTF8(C->FileDate_Get(FileName)).To_UTF8().c_str());
+        QString TimeQ=QString::fromUtf8(ZenLib::Ztring().From_UTF8(C->FileDate_Get(FileName)).To_UTF8().c_str());
         if (TimeQ.size()>10)
         {
             TimeQ.remove(0, 10+1);
@@ -258,7 +258,7 @@ void GUI_Main_xxxx_DateDialog::OnMenu_Calendar ()
         {
             TimeEdit->setVisible(true);
             TimeEdit_Activated->setChecked(true);
-            TimeEdit->setTime(QTime::fromString(QString().fromUtf8(Value.To_UTF8().c_str()), Qt::ISODate));
+            TimeEdit->setTime(QTime::fromString(QString::fromUtf8(Value.To_UTF8().c_str()), Qt::ISODate));
         }
     }
     OnCalendar_Changed();

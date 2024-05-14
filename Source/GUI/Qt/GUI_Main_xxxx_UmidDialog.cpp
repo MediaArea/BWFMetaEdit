@@ -1024,14 +1024,11 @@ void GUI_Main_xxxx_UmidDialog::OnMenu_Load()
     }
     if (Buffer_Offset<F_Size)
         return;
-    Buffer[Buffer_Offset]='\0';
 
     //Filling
-    Ztring ModifiedContent=Ztring().From_UTF8((const char*)Buffer);
+    Field.assign((const char*)Buffer, Buffer_Offset);
     delete[] Buffer;
-    ModifiedContent.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-    ModifiedContent.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
-    Field=ModifiedContent.To_UTF8();
+    AdaptEOL(Field, adapt_n);
 
     if (Field.empty())
         Free_Basic->setText(Field.substr(0, 64).c_str());

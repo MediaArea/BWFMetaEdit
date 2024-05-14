@@ -99,10 +99,10 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
         {
             if (!QApplication::clipboard()->text().isEmpty() && C->IsValid(FileName, Field, QApplication::clipboard()->text().toStdString()))
             {
-                Ztring NewValue=Ztring().From_UTF8(QApplication::clipboard()->text().toStdString());
-                NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+                string NewValue=QApplication::clipboard()->text().toStdString();
+                AdaptEOL(NewValue, adapt_n);
 
-                item(Item->row(), Item->column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+                item(Item->row(), Item->column())->setText(QString::fromUtf8(NewValue.c_str()));
                 dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
 
                 update(indexFromItem(item(Item->row(), Item->column())));
@@ -180,9 +180,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Filling
-        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+        string NewValue=C->Get(FileName, Field);
+        AdaptEOL(NewValue, adapt_n);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.c_str()));
         if (Field=="Originator")
             SetText(index, "IARL"); //IARL is sometimes updated if Originator is modified
 
@@ -206,9 +206,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Filling
-        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+        string NewValue=C->Get(FileName, Field);
+        AdaptEOL(NewValue, adapt_n);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -276,9 +276,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Updating
-        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+        string NewValue=C->Get(FileName, Field);
+        AdaptEOL(NewValue, adapt_n);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -323,9 +323,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Updating
-        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+        string NewValue=C->Get(FileName, Field);
+        AdaptEOL(NewValue, adapt_n);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -347,9 +347,9 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         delete Edit; //Edit=NULL;
 
         //Updating
-        Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-        NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+        string NewValue=C->Get(FileName, Field);
+        AdaptEOL(NewValue, adapt_n);
+        item(index.row(), index.column())->setText(QString::fromUtf8(NewValue.c_str()));
 
         //Changing BextVersion Enabled value
         SetText   (index, "BextVersion");
@@ -393,10 +393,9 @@ void GUI_Main_Core_Table::onValuesChanged(bool onlySelected)
             string Field=horizontalHeaderItem(Item->column())->text().toUtf8().data();
 
             //Updating
-            Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-            NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-
-            item(Item->row(), Item->column())->setText(QString::fromUtf8(NewValue.To_UTF8().c_str()));
+            string NewValue=C->Get(FileName, Field);
+            AdaptEOL(NewValue, adapt_n);
+            item(Item->row(), Item->column())->setText(QString::fromUtf8(NewValue.c_str()));
             dataChanged(indexFromItem(item(Item->row(), Item->column())), indexFromItem(item(Item->row(), Item->column())));
 
             //Special case
@@ -425,10 +424,9 @@ void GUI_Main_Core_Table::onValuesChanged(bool onlySelected)
             for (int Row=0; Row<rowCount(); Row++)
             {
                 string FileName=FileName_Before+item(Row, FILENAME_COL)->text().toUtf8().data();
-                Ztring NewValue=Ztring().From_UTF8(C->Get(FileName, Field));
-                NewValue.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
-
-                item(Row, Item->column())->setText(QString::fromUtf8(C->Get(FileName, Field).c_str()));
+                string NewValue=C->Get(FileName, Field);
+                AdaptEOL(NewValue, adapt_n);
+                item(Row, Item->column())->setText(QString::fromUtf8(NewValue.c_str()));
                 dataChanged(indexFromItem(item(Row, Item->column())), indexFromItem(item(Row, Item->column())));
 
                 //Special case
