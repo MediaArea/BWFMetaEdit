@@ -4,6 +4,10 @@ Notes:
 - Deleted
 x Correction
 
+Version 24.05, 2024-05-14
+-------------
+x Better support of big (but not too big) XML content
+
 Version 24.01, 2024-01-31
 -------------
 + Improve accessibility based on FADGI Report on Software Accessibility for Open-Source Digital Preservation Applications

@@ -1,8 +1,8 @@
 #include <winresrc.h>
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 24,01,0,0
- PRODUCTVERSION 24,01,0,0
+ FILEVERSION 24,05,0,0
+ PRODUCTVERSION 24,05,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19,12 +19,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "MediaArea.net"
             VALUE "FileDescription", "BWF MetaEdit"
-            VALUE "FileVersion", "24.01.0"
+            VALUE "FileVersion", "24.05.0"
             VALUE "InternalName", "BWF MetaEdit - GUI"
             VALUE "LegalCopyright", "MediaArea.net"
             VALUE "OriginalFilename", "BWF MetaEdit.exe"
             VALUE "ProductName", "BWF MetaEdit"
-            VALUE "ProductVersion", "24.01.0"
+            VALUE "ProductVersion", "24.05.0"
         END
     END
     BLOCK "VarFileInfo"
