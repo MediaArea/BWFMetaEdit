@@ -39,10 +39,10 @@ jobs:
       - name: Configure GUI
         run: |
           cd Project/QtCreator
-          export PATH=/usr/local/opt/qt5/bin:$PATH
-          ./prepare INCLUDEPATH+=/usr/local/include CONFIG+=c++11 -after QMAKE_MACOSX_DEPLOYMENT_TARGET=10.9
+          export PATH=/opt/homebrew/opt/qt@5/bin:$PATH
+          ./prepare CONFIG+=c++11 -after QMAKE_MACOSX_DEPLOYMENT_TARGET=10.9
       - name: Build GUI
         run: |
           cd Project/QtCreator
-          export PATH=/usr/local/opt/qt/bin:$PATH
+          export PATH=/opt/homebrew/opt/qt@5/bin:$PATH
           make
