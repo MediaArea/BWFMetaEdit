@@ -410,6 +410,7 @@ public:
         bool                IsRF64;
         bool                Trace_UseDec;
         bool                Read_Only;
+        vector<int32u>      Removable_Chunks;
 
         CriticalSection     CS;
         float               Progress;
@@ -559,7 +560,7 @@ protected :
     //---------------------------------------------------------------------------
     //Read/Write
     virtual void    Read_Internal       ();
-    virtual void    Modify_Internal     ()                                      {}
+    virtual void    Modify_Internal     ();
     virtual size_t  Insert_Internal     (int32u)                                {return Subs.size();}
     virtual void    Write_Internal      ()                                      ;
     void            Write_Internal      (const int8u* Buffer, size_t Buffer_Size);

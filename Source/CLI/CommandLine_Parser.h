@@ -55,6 +55,7 @@ CL_OPTION(Fallback_Encoding);
 CL_OPTION(Write_CodePage);
 CL_OPTION(In_CSET_Remove);
 CL_OPTION(Ignore_File_Encoding);
+CL_OPTION(Chunks_Remove);
 
 //---------------------------------------------------------------------------
 

@@ -117,7 +117,9 @@ int Parse(Core &C, string &Argument)
     OPTION("--md5-verify",                                  MD5_Verify)
     OPTION("--md5-embed-overwrite",                         MD5_Embed_Overwrite)
     OPTION("--md5-embed",                                   MD5_Embed)
-    
+
+    OPTION("--remove-chunks=",                              Chunks_Remove)
+
     //Default
     OPTION("--",                                            Default)
     OPTION("-",                                             Default)
@@ -800,6 +802,36 @@ CL_OPTION(MD5_Embed_Overwrite)
     C.EmbedMD5_AuthorizeOverWritting=true;
 
     return -2; //Continue
+}
+
+//***************************************************************************
+// Options - Others
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+CL_OPTION(Chunks_Remove)
+{
+    ZtringList Fields;
+    Fields.Separator_Set(0, __T(","));
+    Fields.Write(Ztring().From_Local(string().assign(Argument, 16, std::string::npos)));
+
+    for (auto Field : Fields)
+    {
+        if (Field.size()!=4)
+        {
+            std::cerr<<"Invalid chunk identifier: "<<Field.To_UTF8()<<std::endl;
+            return 1;
+        }
+        else if (Field==__T("data") || Field==__T("ds64") || Field==__T("fmt "))
+        {
+            std::cerr<<"Unable to remove mandatory chunk: "<<Field.To_UTF8()<<std::endl;
+            return 1;
+        }
+
+        C.In_Chunk_Remove(Field.To_UTF8());
+    }
+
+    return -2;
 }
 
 //***************************************************************************

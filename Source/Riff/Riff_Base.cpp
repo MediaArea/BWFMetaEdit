@@ -19,6 +19,7 @@
 #ifdef MACSTORE
 #include "Common/Mac_Helpers.h"
 #include "ZenLib/Dir.h"
+#include "Riff_Base.h"
 #endif
 
 using namespace std;
@@ -643,6 +644,19 @@ void Riff_Base::Read_Internal ()
     }
         
     Read_Internal_ReadAllInBuffer();
+}
+
+//--------------------------------------------------------------------------
+void Riff_Base::Modify_Internal()
+{
+    // Integrity
+    if (Chunk.Header.Level!=2 || Chunk.Header.Name==Elements::WAVE_data || Chunk.Header.Name==Elements::WAVE_ds64 || Chunk.Header.Name==Elements::WAVE_fmt_)
+        return;
+
+    if (std::find(Global->Removable_Chunks.begin(), Global->Removable_Chunks.end(), Chunk.Header.Name)!=Global->Removable_Chunks.end())
+    {
+        Chunk.Content.IsRemovable=true;
+    }
 }
 
 //---------------------------------------------------------------------------

@@ -1502,6 +1502,14 @@ bool Riff_Handler::Remove(const string &Field)
 }
 
 //---------------------------------------------------------------------------
+bool Riff_Handler::Remove_Chunk(const string &Field)
+{
+    CriticalSectionLocker CSL(CS);
+
+    return Remove_Chunk_Internal(Field);
+}
+
+//---------------------------------------------------------------------------
 bool Riff_Handler::Remove_Internal(const string &Field)
 {
     //Integrity
@@ -1554,6 +1562,41 @@ bool Riff_Handler::Remove_Internal(const string &Field)
         return false;
 
     return Set(Field, string(), *Chunk_Strings, Chunk_Name2_Get(Field), Chunk_Name3_Get(Field));
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::Remove_Chunk_Internal(const string &Field)
+{
+    //Integrity
+    if (Chunks==NULL)
+    {
+        Errors<<"(No file name): Internal error"<<endl;
+        return false;
+    }
+
+    if (Field.size()!=4)
+    {
+        Errors<<"Chunk identifier must be 4 characters long: "<<Field<<endl;
+        return false;
+    }
+
+    int32u CC4=Ztring().From_UTF8(Field).To_CC4();
+    if (!CC4)
+    {
+        Errors<<"Invalid chunk identifier: "<<Field<<endl;
+        return false;
+    }
+
+    if (CC4==Elements::WAVE_data || CC4==Elements::WAVE_ds64 || CC4==Elements::WAVE_fmt_)
+    {
+        Errors<<"Unable to remove mandatory chunk: "<<Field<<endl;
+        return false;
+    }
+
+    Chunks->Global->Removable_Chunks.push_back(CC4);
+    Chunks->Modify(Elements::WAVE, CC4, NULL);
+
+    return true;
 }
 
 //---------------------------------------------------------------------------
