@@ -51,10 +51,10 @@ size_t xxxx_Strings_Size[]=
 {
     5,  //Tech
     15,  //Bext
-    17, //Info
+    18, //Info
 };
 
-const char* xxxx_Strings[][17]=
+const char* xxxx_Strings[][18]=
 {
     {
         "XMP",
@@ -62,6 +62,7 @@ const char* xxxx_Strings[][17]=
         "iXML",
         "MD5Stored",
         "cuexml",
+        "",
         "",
         "",
         "",
@@ -93,6 +94,7 @@ const char* xxxx_Strings[][17]=
         "CodingHistory",
         "",
         "",
+        "",
     },
     {
         //Note: there is a duplicate in Riff_Chunks_INFO_xxxx
@@ -102,6 +104,7 @@ const char* xxxx_Strings[][17]=
         "ICMT", //Comment
         "ICOP", //Copyright
         "ICRD", //Date Created
++       "IDIT", //Digitization Date
         "IENG", //Engineer
         "IGNR", //Genre
         "IKEY", //Keywords
@@ -2549,6 +2552,81 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         //If error
         if (!Message.empty()) 
             IsValid_Errors<<"malformed input, ICRD "<<Message;
+    }
+
+    // IDIT
+    else if (Field=="IDIT")
+    {
+        //Test
+        string Message;
+        if (Rules.INFO_Req)
+        {
+            if (Value.empty())
+                {}
+            else if (!((Value[0]=='S' && Value[1]=='u' && Value[2]=='n')
+                    || (Value[0]=='M' && Value[1]=='o' && Value[2]=='n')
+                    || (Value[0]=='T' && Value[1]=='u' && Value[2]=='e')
+                    || (Value[0]=='W' && Value[1]=='e' && Value[2]=='d')
+                    || (Value[0]=='T' && Value[1]=='h' && Value[2]=='u')
+                    || (Value[0]=='F' && Value[1]=='r' && Value[2]=='i')
+                    || (Value[0]=='S' && Value[1]=='a' && Value[2]=='t')))
+                Message="1st to 3rd characters must be a 3-letter week (first letter uppercase) (INFO Requirements)";
+            else if (Value[3]!=' ')
+                Message="4th character must be space character";
+            else if (!((Value[4]=='J' && Value[5]=='a' && Value[6]=='n')
+                    || (Value[4]=='F' && Value[5]=='e' && Value[6]=='b')
+                    || (Value[4]=='M' && Value[5]=='a' && Value[6]=='r')
+                    || (Value[4]=='A' && Value[5]=='p' && Value[6]=='r')
+                    || (Value[4]=='M' && Value[5]=='a' && Value[6]=='y')
+                    || (Value[4]=='J' && Value[5]=='u' && Value[6]=='n')
+                    || (Value[4]=='J' && Value[5]=='u' && Value[6]=='l')
+                    || (Value[4]=='A' && Value[5]=='u' && Value[6]=='g')
+                   || (Value[4]=='S' && Value[5]=='e' && Value[6]=='p')
+                    || (Value[4]=='O' && Value[5]=='c' && Value[6]=='t')
+                    || (Value[4]=='N' && Value[5]=='o' && Value[6]=='v')
+                    || (Value[4]=='D' && Value[5]=='e' && Value[6]=='c')))
+                Message="5th to 7th characters must be a 3-letter month (first letter uppercase) (INFO Requirements)";
+           else if (Value[7]!=' ')
+                Message="8th character must be space character";
+            else if (Value[8]< '0' || Value[8]> '3') //Days
+                Message="9th and 10th characters (Day) must be between '00' and '31' (INFO Requirements)";
+            else if (Value[9]< '0' || (Value[9]> (Value[8]=='3'?'1':'9'))) //Only 00-31 //Days
+                Message="9th and 10th characters (Day) must be between '00' and '31' (INFO Requirements)";
+            else if (Value[10]!=' ')
+                Message="11th character must be space character";
+            else if (Value[11]< '0' || Value[11]> '2') //Hours
+                Message="12th and 13th characters (Hours) must be between '00' and '23' (INFO Requirements)";
+            else if (Value[12]< '0' || (Value[12]> (Value[11]=='2'?'3':'9'))) //Only 00-23 //Hours
+                Message="12th and 13th characters (Hours) must be between '00' and '23' (INFO Requirements)";
+            else  if (Value[13]!=':') //Separator
+                Message="14th character must be ':' (INFO Requirements)";
+            else if (Value[14]< '0' || Value[14]> '5') //Minutes
+                Message="15th and 16th characters (Minutes) must be between '00' and '59' (INFO Requirements)";
+            else if (Value[15]< '0' || Value[15]> '9' ) //Minutes
+                Message="15th and 16th characters (Minutes) must be between '00' and '59' (INFO Requirements)";
+            else if (Value[16]!=':') //Separator
+                Message="17th character must be ':' (INFO Requirements)";
+            else if (Value[17]< '0' || Value[17]> '5') //Seconds
+                Message="18th and 19th characters (Seconds) must be between '00' and '59' (INFO Requirements)";
+            else if (Value[18]< '0' || Value[18]> '9' ) //Seconds
+                Message="19th and 19th characters (Seconds) must be between '00' and '59' (INFO Requirements)";
+            else if (Value[19]!=' ')
+                Message="20th character must be space character";
+            else if (Value[20]< '0' || Value[20]> '9') //Year
+                Message="21th to 24th characters (Year) must be between '0000' and '9999' (INFO Requirements)";
+            else if (Value[21]< '0' || Value[21]> '9') //Year
+                Message="21th to 24th characters (Year) must be between '0000' and '9999' (INFO Requirements)";
+            else if (Value[22]< '0' || Value[22]> '9') //Year
+                Message="21th to 24th characters (Year) must be between '0000' and '9999' (INFO Requirements)";
+            else if (Value[23]< '0' || Value[23]> '9') //Year
+                Message="21th to 24th characters (Year) must be between '0000' and '9999' (INFO Requirements)";
+            else if (Value.size()!=24)
+                Message="must be \"Www Mmm dd hh:mm:ss yyyy\" (\\n\\0 is added automaticly)";
+        }
+
+        //If error
+        if (!Message.empty())
+            IsValid_Errors<<"malformed input, ISRC "<<Message;
     }
 
     //ISRC
