@@ -29,6 +29,10 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QMessageBox>
+#include <iomanip>
+#include <sstream>
+#include <locale>
+
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -68,7 +72,7 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
         else
             Date=NULL;
     }
-    if (Field=="OriginationTime")
+    else if (Field=="OriginationTime")
     {
         QString TimeQ=QString::fromUtf8(ZenLib::Ztring().From_UTF8(C->FileDate_Get(FileName)).To_UTF8().c_str());
         if (TimeQ.size()>10)
@@ -81,17 +85,48 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
             connect(Date, SIGNAL(clicked()), this, SLOT(OnMenu_Date()));
         }
     }
+    else if (Field=="IDIT")
+    {
+        QString DateQ=QString::fromUtf8(ZenLib::Ztring().From_UTF8(C->FileDate_Get(FileName)).To_UTF8().c_str());
+        if (DateQ.size()>=10+1+8)
+        {
+            DateQ.truncate(10+1+8);
+            QDateTime DateTime=QDateTime::fromString(DateQ, Qt::ISODate);
+
+            struct tm Time;
+            Time.tm_sec=DateTime.time().second();
+            Time.tm_min=DateTime.time().minute();
+            Time.tm_hour=DateTime.time().hour();
+            Time.tm_mday=DateTime.date().day();
+            Time.tm_mon=DateTime.date().month()-1;
+            Time.tm_year=DateTime.date().year()-1900;
+            Time.tm_wday=DateTime.date().dayOfWeek()==Qt::Sunday?0:DateTime.date().dayOfWeek();
+            Time.tm_yday=DateTime.date().dayOfYear();
+            Time.tm_isdst=-1;
+
+            stringstream ss;
+            ss.imbue(std::locale("C"));
+            ss << put_time(&Time, "%a %b %d %H:%M:%S %Y");
+
+            DateQ=QString::fromLatin1(ss.str().c_str());
+            DateQ.truncate(24);
+            DateQ.insert(0, "&Set date and time to "); //If you change this, change the DateDialog button click text too
+            Date=new QPushButton(DateQ);
+            Dialog->addButton(Date, QDialogButtonBox::ResetRole);
+            connect(Date, SIGNAL(clicked()), this, SLOT(OnMenu_Date()));
+        }
+    }
 
     //Central
     TextEdit=new QTextEdit(this);
     connect(TextEdit, SIGNAL(textChanged()), this, SLOT(OnTextChanged()));
     TimeEdit=new QTimeEdit(this);
-    TimeEdit->setVisible(Field=="OriginationTime");
+    TimeEdit->setVisible(Field=="OriginationTime" || Field=="IDIT");
     TimeEdit->setDisplayFormat("hh:mm:ss");
     connect(TimeEdit, SIGNAL(timeChanged (const QTime&)), this, SLOT(OnCalendar_Changed()));
     Central_Calendar=new QWidget(this);
     Central_Calendar_Layout=new QGridLayout();
-    if (Field=="OriginationDate" || Field=="ICRD")
+    if (Field=="OriginationDate" || Field=="ICRD" || Field=="IDIT")
     {
         Calendar=new QCalendarWidget(this);
         connect(Calendar, SIGNAL(selectionChanged()), this, SLOT(OnCalendar_Changed()));
@@ -133,15 +168,21 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
     TextEdit->setPlainText(Value);
     string ValueS=Value.toUtf8().data();
     if (C->IsValid(FileName, Field, ValueS)
-     && (ValueS.empty() || ValueS.size()==((Field=="OriginationDate" || Field=="ICRD")?10:8))
-     && (ValueS.empty() || QDate::fromString(Value, Qt::ISODate)!=QDate() || (Field=="OriginationTime" && QTime::fromString(Value, Qt::ISODate)!=QTime())))
+     && (ValueS.empty() || ValueS.size()==((Field=="OriginationDate" || Field=="ICRD")?10:8) || (Field=="IDIT" && ValueS.size()==24))
+     && (ValueS.empty() || QDate::fromString(Value, Qt::ISODate)!=QDate() || (Field=="OriginationTime" && QTime::fromString(Value, Qt::ISODate)!=QTime()) || (Field=="IDIT")))
         OnMenu_Calendar();
     else
     {
         Central->setCurrentIndex(1);
         OnMenu_Text();
     }
-    
+
+    if (Field=="IDIT")
+    {
+        TimeEdit_Activated->setChecked(true);
+        TimeEdit_Activated->setEnabled(false);
+    }
+
     //Screen
     move(QApplication::desktop()->screenGeometry().width()*3/8, QApplication::desktop()->screenGeometry().height()*3/8);
     resize(QApplication::desktop()->screenGeometry().width()/4, QApplication::desktop()->screenGeometry().height()/4);
@@ -193,6 +234,25 @@ void GUI_Main_xxxx_DateDialog::OnTextChanged ()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_DateDialog::OnCalendar_Changed()
 {
+    if (Field=="IDIT")
+    {
+        struct tm Time;
+        Time.tm_sec=TimeEdit->time().second();
+        Time.tm_min=TimeEdit->time().minute();
+        Time.tm_hour=TimeEdit->time().hour();
+        Time.tm_mday=Calendar->selectedDate().day();
+        Time.tm_mon=Calendar->selectedDate().month()-1;
+        Time.tm_year=Calendar->selectedDate().year()-1900;
+        Time.tm_wday=Calendar->selectedDate().dayOfWeek()==Qt::Sunday?0:Calendar->selectedDate().dayOfWeek();
+        Time.tm_yday=Calendar->selectedDate().dayOfYear();
+        Time.tm_isdst=-1;
+        stringstream ss;
+        ss.imbue(std::locale("C"));
+        ss << put_time(&Time, "%a %b %d %H:%M:%S %Y");
+        TextEdit->setPlainText(QString().fromLatin1(ss.str().c_str()));
+        return;
+    }
+
     TextEdit->setPlainText(
         ( Calendar                                                             ?Calendar->selectedDate().toString(Qt::ISODate):tr(""))
        +((Calendar && TimeEdit_Activated && TimeEdit_Activated->isChecked()   )?tr(" "):tr(""))
@@ -202,23 +262,91 @@ void GUI_Main_xxxx_DateDialog::OnCalendar_Changed()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_DateDialog::OnMenu_Date()
 {
-    if (Date->text().contains("date"))
-        Calendar->setSelectedDate(QDate::fromString(Date->text().replace("&Set date to ", ""), Qt::ISODate)); //If you change this, change the creation text too
-    if (Date->text().contains("time"))
-        TimeEdit->setTime(QTime::fromString(Date->text().replace("&Set time to ", ""), Qt::ISODate)); //If you change this, change the creation text too
-    OnCalendar_Changed();
+    if (Date->text().contains("date and time"))
+    {
+        std::string Value=Date->text().replace("&Set date and time to ", "").toLatin1().data();
+        int Month=0;
+        if (Value[4]=='J' && Value[5]=='a' && Value[6]=='n') Month= 1;
+        if (Value[4]=='F' && Value[5]=='e' && Value[6]=='b') Month= 2;
+        if (Value[4]=='M' && Value[5]=='a' && Value[6]=='r') Month= 3;
+        if (Value[4]=='A' && Value[5]=='p' && Value[6]=='r') Month= 4;
+        if (Value[4]=='M' && Value[5]=='a' && Value[6]=='y') Month= 5;
+        if (Value[4]=='J' && Value[5]=='u' && Value[6]=='n') Month= 6;
+        if (Value[4]=='J' && Value[5]=='u' && Value[6]=='l') Month= 7;
+        if (Value[4]=='A' && Value[5]=='u' && Value[6]=='g') Month= 8;
+        if (Value[4]=='S' && Value[5]=='e' && Value[6]=='p') Month= 9;
+        if (Value[4]=='O' && Value[5]=='c' && Value[6]=='t') Month=10;
+        if (Value[4]=='N' && Value[5]=='o' && Value[6]=='v') Month=11;
+        if (Value[4]=='D' && Value[5]=='e' && Value[6]=='c') Month=12;
+        int Day=(Value[8]-'0')*10+(Value[9]-'0');
+        int Year=(Value[20]-'0')*1000+(Value[21]-'0')*100+(Value[22]-'0')*10+(Value[23]-'0');
+        int Hours  =(Value[11]-'0')*10+(Value[12]-'0');
+        int Minutes=(Value[14]-'0')*10+(Value[15]-'0');
+        int Seconds=(Value[17]-'0')*10+(Value[18]-'0');
+
+        Calendar->setSelectedDate(QDate(Year, Month, Day));
+        TimeEdit->setTime(QTime(Hours, Minutes, Seconds));
+    }
+    else if (Date->text().contains("date"))
+         Calendar->setSelectedDate(QDate::fromString(Date->text().replace("&Set date to ", ""), Qt::ISODate)); //If you change this, change the creation text too
+    else if (Date->text().contains("time"))
+         TimeEdit->setTime(QTime::fromString(Date->text().replace("&Set time to ", ""), Qt::ISODate)); //If you change this, change the creation text too
+     OnCalendar_Changed();
 }
 
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_DateDialog::OnMenu_Calendar ()
 {
     QString PlainText=TextEdit->toPlainText();
-    if (Calendar) Calendar->setSelectedDate(QDate::fromString(PlainText, Qt::ISODate));
+    if (Calendar)
+    {
+        if (Field=="IDIT")
+        {
+            std::string Value=PlainText.toLatin1().data();
+            if (Value.size()==24)
+            {
+                int Month=0;
+                if (Value[4]=='J' && Value[5]=='a' && Value[6]=='n') Month= 1;
+                if (Value[4]=='F' && Value[5]=='e' && Value[6]=='b') Month= 2;
+                if (Value[4]=='M' && Value[5]=='a' && Value[6]=='r') Month= 3;
+                if (Value[4]=='A' && Value[5]=='p' && Value[6]=='r') Month= 4;
+                if (Value[4]=='M' && Value[5]=='a' && Value[6]=='y') Month= 5;
+                if (Value[4]=='J' && Value[5]=='u' && Value[6]=='n') Month= 6;
+                if (Value[4]=='J' && Value[5]=='u' && Value[6]=='l') Month= 7;
+                if (Value[4]=='A' && Value[5]=='u' && Value[6]=='g') Month= 8;
+                if (Value[4]=='S' && Value[5]=='e' && Value[6]=='p') Month= 9;
+                if (Value[4]=='O' && Value[5]=='c' && Value[6]=='t') Month=10;
+                if (Value[4]=='N' && Value[5]=='o' && Value[6]=='v') Month=11;
+                if (Value[4]=='D' && Value[5]=='e' && Value[6]=='c') Month=12;
+                int Day=(Value[8]-'0')*10+(Value[9]-'0');
+                int Year=(Value[20]-'0')*1000+(Value[21]-'0')*100+(Value[22]-'0')*10+(Value[23]-'0');
+
+                Calendar->setSelectedDate(QDate(Year, Month, Day));
+            }
+        }
+        else
+            Calendar->setSelectedDate(QDate::fromString(PlainText, Qt::ISODate));
+    }
+
     Ztring Value=Ztring().From_UTF8(PlainText.toStdString());
-    if ((Field=="OriginationDate" || Field=="OriginationTime"))
+    if ((Field=="OriginationDate" || Field=="OriginationTime" || Field=="IDIT"))
     {
         if (Field=="OriginationDate")
             TimeEdit->setVisible(false);
+        else if (Field=="IDIT")
+        {
+            TimeEdit->setVisible(true);
+            if (TimeEdit_Activated)
+                TimeEdit_Activated->setChecked(true);
+
+            if (Value.size()==24)
+            {
+                int Hours  =(Value[11]-'0')*10+(Value[12]-'0');
+                int Minutes=(Value[14]-'0')*10+(Value[15]-'0');
+                int Seconds=(Value[17]-'0')*10+(Value[18]-'0');
+                TimeEdit->setTime(QTime(Hours, Minutes, Seconds));
+            }
+        }
         else
         {
             TimeEdit->setVisible(true);
@@ -285,6 +413,5 @@ void GUI_Main_xxxx_DateDialog::OnCurrentChanged (int Index)
 void GUI_Main_xxxx_DateDialog::OnTimeActivatedChanged (int State)
 {
     TimeEdit->setVisible(State);
-    OnCalendar_Changed();
 }
 

@@ -68,6 +68,7 @@ Control {
                 ListElement{ name: "ICMT"; label: "Comments (ICMT)"; fieldLength: 185; fieldHeight: 32; multiline: true },
                 ListElement{ name: "ICOP"; label: "Copyright (ICOP)"; fieldLength: 185; fieldHeight: 32; multiline: true },
                 ListElement{ name: "ICRD"; label: "Creation date (ICRD)"; fieldLength: 185; fieldHeight: 32; multiline: true },
+                ListElement{ name: "IDIT"; label: "Digitization date (IDIT)"; fieldLength: 185; fieldHeight: 32; multiline: true },
                 ListElement{ name: "IENG"; label: "Engineer (IENG)"; fieldLength: 185; fieldHeight: 32; multiline: true },
                 ListElement{ name: "IGNR"; label: "Genre (IGNR)"; fieldLength: 185; fieldHeight: 32; multiline: true },
                 ListElement{ name: "IKEY"; label: "Keywords (IKEY)"; fieldLength: 185; fieldHeight: 32; multiline: true },
