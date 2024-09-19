@@ -264,7 +264,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
     }
 
     //OriginationDate / OriginationTime / ICRD
-    if (Field=="OriginationDate" || Field=="OriginationTime" || Field=="ICRD") 
+    if (Field=="OriginationDate" || Field=="OriginationTime" || Field=="ICRD" || Field=="IDIT")
     {
         //User interaction
         GUI_Main_xxxx_DateDialog* Edit=new GUI_Main_xxxx_DateDialog(C, FileName, Field, ModifiedContentQ);
