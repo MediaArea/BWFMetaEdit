@@ -45,9 +45,11 @@ options Groups[Group_Max]=
 {
     {
         "Technical Metadata",
-        21,
+        23,
         {
             {"Tech_FileSize", "FileSize", Type_CheckBox, true},
+            {"Tech_DateCreated", "DateCreated", Type_CheckBox, true},
+            {"Tech_DateModified", "DateModified", Type_CheckBox, true},
             {"Tech_Format", "Format", Type_CheckBox, true},
             {"Tech_CodecID", "CodecID", Type_CheckBox, true},
             {"Tech_Channels", "Channels", Type_CheckBox, true},

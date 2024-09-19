@@ -117,11 +117,13 @@ struct column_text
     const char* Name;
     const char* ToolTip;
 };
-const size_t Columns_Text_Size=18+15+17;
+const size_t Columns_Text_Size=21+15+17;
 column_text Columns[]=
 {
     {"FileName", "In order to provide a concise presentation the filepaths are displayed from the directory path were the files diverge.\nThus if two files are opened from /HardDrive1/audiofiles/music/audiofile.wav and /HardDrive1/audiofiles/spokenword/audiofileB.wav\nthen these will be displayed in the table view as '/music/audiofile.wav' and '/spokenword/audiofileB.wav'\nsince the '/HardDrive1/audiofiles' section of the Filepath is common to the open files.\n\nThe CSV version of the Technical Metadata view displays the full filepath to each file."},
     {"FileSize", "The size of the audio file in bytes."},
+    {"DateCreated", "The audio file creation date and time."},
+    {"DateModified", "The audio file last modification date and time."},
     {"Format", "The format of the RIFF chunk, typically 'Wave' or 'Wave (RF64)'."},
     {"CodecID", "This value represents the type of compression utilized within the audio data."},
     {"Channels", "The number of audio signals that are encoded in the audio data."},

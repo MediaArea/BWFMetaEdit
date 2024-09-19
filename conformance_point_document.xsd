@@ -15,6 +15,8 @@
                 <xsd:complexType>
                   <xsd:sequence>
                     <xsd:element maxOccurs="1" minOccurs="0" name="FileSize" type="xsd:nonNegativeInteger"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="DateCreated" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="DateModified" type="xsd:string"/>
                     <xsd:element maxOccurs="1" minOccurs="0" name="Format" type="xsd:string"/>
                     <xsd:element maxOccurs="1" minOccurs="0" name="CodecID">
                       <xsd:simpleType>

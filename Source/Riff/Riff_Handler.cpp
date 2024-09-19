@@ -513,9 +513,8 @@ bool Riff_Handler::Open_Internal(const string &FileName)
         return false;
     }
     Chunks->Global->File_Size=Chunks->Global->In.Size_Get();
-    Chunks->Global->File_Date=Chunks->Global->In.Created_Local_Get().To_UTF8();
-    if (Chunks->Global->File_Date.empty())
-        Chunks->Global->File_Date=Chunks->Global->In.Modified_Local_Get().To_UTF8();
+    Chunks->Global->File_Date_Created=Chunks->Global->In.Created_Local_Get().To_UTF8();
+    Chunks->Global->File_Date_Modified=Chunks->Global->In.Modified_Local_Get().To_UTF8();
 
     //Base
     Riff_Base::chunk Chunk;
@@ -1309,7 +1308,16 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
     // Use file timestamp
     if ((Field=="originationdate" || Field=="originationtime" || Field=="ICRD") && Value=="TIMESTAMP")
     {
-        Value=Chunks->Global?Chunks->Global->File_Date:string();
+        if (Chunks->Global)
+        {
+            if (!Chunks->Global->File_Date_Created.empty())
+                Value=Chunks->Global->File_Date_Created;
+            else
+                Value=Chunks->Global->File_Date_Modified;
+        }
+        else
+            Value=string();
+
         if (Value.size()<10+1+8)
             return false;
 
@@ -2865,6 +2873,8 @@ string Riff_Handler::Technical_Header()
     ostringstream ToReturn;
     ToReturn<<"FileName"<<',';
     ToReturn<<"FileSize"<<',';
+    ToReturn<<"DateCreated"<<',';
+    ToReturn<<"DateModified"<<',';
     ToReturn<<"Format"<<',';
     ToReturn<<"CodecID"<<',';
     ToReturn<<"Channels"<<',';
@@ -2898,6 +2908,8 @@ string Riff_Handler::Technical_Get()
     List.Separator_Set(0, __T(","));
     List.push_back(Chunks->Global->File_Name);
     List.push_back(Ztring::ToZtring(Chunks->Global->File_Size));
+    List.push_back(Ztring().From_UTF8(Chunks->Global->File_Date_Created.empty()?Chunks->Global->File_Date_Modified:Chunks->Global->File_Date_Created));
+    List.push_back(Ztring().From_UTF8(Chunks->Global->File_Date_Modified));
     List.push_back(Chunks->Global->IsRF64?__T("Wave (RF64)"):__T("Wave"));
     if (Chunks->Global->fmt_==NULL)
         List.push_back(__T(""));
@@ -2963,7 +2975,10 @@ string Riff_Handler::FileDate_Get()
 {
     CriticalSectionLocker CSL(CS);
 
-    return Chunks->Global->File_Date;
+    if (Chunks->Global->File_Date_Created.empty())
+        return Chunks->Global->File_Date_Modified;
+
+    return Chunks->Global->File_Date_Created;
 }
 
 //---------------------------------------------------------------------------
