@@ -376,7 +376,8 @@ public:
         #endif
         Ztring              File_Name;
         int64u              File_Size;
-        string              File_Date;
+        string              File_Date_Created;
+        string              File_Date_Modified;
         string              UnsupportedChunks;
         ostringstream       TruncatedChunks;
         ostringstream       Trace;

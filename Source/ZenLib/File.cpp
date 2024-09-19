@@ -29,6 +29,11 @@
         #include <sys/stat.h>
         #if !defined(WINDOWS)
             #include <unistd.h>
+            #if defined(LINUX)
+                #include <fcntl.h>
+                #include <sys/syscall.h>
+                #include <linux/stat.h>
+            #endif
         #endif //!defined(WINDOWS)
         #include <fstream>
         using namespace std;
@@ -777,7 +782,23 @@ Ztring File::Created_Get()
         return __T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return __T(""); //Not implemented
+            #if defined LINUX && defined STATX_BTIME
+                struct statx Stat;
+                int Result=statx(AT_FDCWD, File_Name.To_Local().c_str(), AT_STATX_SYNC_AS_STAT, STATX_BTIME, &Stat);
+                if (Result<0)
+                    return __T(""); //Error
+                Ztring Time; Time.Date_From_Seconds_1970((int64s)Stat.stx_btime.tv_sec);
+                return Time;
+            #elif defined MACOS || defined MACOSX
+                struct stat Stat;
+                int Result=stat(File_Name.To_Local().c_str(), &Stat);
+                if (Result<0)
+                    return __T(""); //Error
+                Ztring Time; Time.Date_From_Seconds_1970((int64s)Stat.st_birthtime);
+                return Time;
+            #else
+                return __T(""); //Not implemented
+            #endif //defined LINUX && defined STATX_BTIME
         #elif defined WINDOWS
             FILETIME TimeFT;
             if (GetFileTime(File_Handle, &TimeFT, NULL, NULL))
@@ -829,8 +850,24 @@ Ztring File::Created_Local_Get()
     #ifdef ZENLIB_USEWX
         return __T(""); //Not implemented
     #else //ZENLIB_USEWX
-        #ifdef ZENLIB_STANDARD
-            return __T(""); //Not implemented
+        #if defined ZENLIB_STANDARD
+            #if defined LINUX && defined STATX_BTIME
+                struct statx Stat;
+                int Result=statx(AT_FDCWD, File_Name.To_Local().c_str(), AT_STATX_SYNC_AS_STAT, STATX_BTIME, &Stat);
+                if (Result<0)
+                    return __T(""); //Error
+                Ztring Time; Time.Date_From_Seconds_1970_Local(Stat.stx_btime.tv_sec);
+                return Time;
+            #elif defined MACOS || defined MACOSX
+                struct stat Stat;
+                int Result=stat(File_Name.To_Local().c_str(), &Stat);
+                if (Result<0)
+                    return __T(""); //Error
+                Ztring Time; Time.Date_From_Seconds_1970_Local((int64s)Stat.st_birthtime);
+                return Time;
+            #else
+                return __T(""); //Not implemented
+            #endif //defined LINUX && defined STATX_BTIME
         #elif defined WINDOWS
             FILETIME TimeFT;
             if (GetFileTime(File_Handle, &TimeFT, NULL, NULL))
