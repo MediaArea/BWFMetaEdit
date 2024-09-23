@@ -237,6 +237,9 @@ void Riff_WAVE_bext::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_bext::Modify_Internal ()
 {
+    if (Chunk.Content.IsRemovable)
+        return;
+
     if (Global->bext==NULL
      || (Global->bext->Strings["description"].empty()
       && Global->bext->Strings["originator"].empty()

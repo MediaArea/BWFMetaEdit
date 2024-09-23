@@ -1510,6 +1510,14 @@ bool Riff_Handler::Remove(const string &Field)
 }
 
 //---------------------------------------------------------------------------
+bool Riff_Handler::Remove_Chunk(const string &Field)
+{
+    CriticalSectionLocker CSL(CS);
+
+    return Remove_Chunk_Internal(Field);
+}
+
+//---------------------------------------------------------------------------
 bool Riff_Handler::Remove_Internal(const string &Field)
 {
     //Integrity
@@ -1562,6 +1570,74 @@ bool Riff_Handler::Remove_Internal(const string &Field)
         return false;
 
     return Set(Field, string(), *Chunk_Strings, Chunk_Name2_Get(Field), Chunk_Name3_Get(Field));
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::Remove_Chunk_Helper(Riff_Base* Parent, const string& Path, vector<int32u>& ParentsCC4)
+{
+    if (!Parent || Path.empty())
+        return false;
+
+    size_t Separator=Path.find_first_of('/');
+    string Field=Path.substr(0, Separator);
+
+    if (Field.empty()) // handle duplicate slashes
+        return Remove_Chunk_Helper(Parent, Path.substr(Separator+1), ParentsCC4);
+
+    if (Field.size()!=4)
+    {
+        Errors<<"Invalid chunk identifier: "<<Field<<endl;
+        return false;
+    }
+
+    int32u CC4=Ztring().From_UTF8(Field).To_CC4();
+    if (!CC4)
+    {
+        Errors<<"Invalid chunk identifier: "<<Field<<std::endl;
+        return false;
+    }
+
+    if (ParentsCC4.size()==1 && (CC4==Elements::WAVE_data || CC4==Elements::WAVE_ds64 || CC4==Elements::WAVE_fmt_))
+    {
+        Errors<<"Unable to remove mandatory chunk: "<<Field<<endl;
+        return false;
+    }
+
+    ParentsCC4.push_back(CC4);
+    for (size_t Pos=0; Pos<Parent->Subs.size(); Pos++)
+    {
+        if (Parent->Subs[Pos]->Header_Name_Get()==CC4)
+        {
+            if (Separator==string::npos)
+            {
+                Parent->Subs[Pos]->Chunk.Content.IsRemovable=true;
+            }
+            else
+            {
+                if (!Remove_Chunk_Helper(Parent->Subs[Pos], Path.substr(Separator+1), ParentsCC4))
+                    return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+//---------------------------------------------------------------------------
+bool Riff_Handler::Remove_Chunk_Internal(const string &Field)
+{
+    //Integrity
+    if (Chunks==NULL)
+    {
+        Errors<<"(No file name): Internal error"<<endl;
+        return false;
+    }
+
+    vector<int32u> CC4;
+    bool ToReturn=Remove_Chunk_Helper(Chunks, "WAVE/" + Field, CC4);
+    Chunks->Modify(CC4.size()>0?CC4[0]:NULL, CC4.size()>1?CC4[1]:NULL, CC4.size()>2?CC4[2]:NULL);
+
+    return ToReturn;
 }
 
 //---------------------------------------------------------------------------

@@ -173,6 +173,11 @@ std::string Help()
     ToDisplay<<"--MD5-Verify            Verify MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Embed             Embed MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Embed-Overwrite   Embed MD5 for audio data - Allow overwriting"<<std::endl;
+    ToDisplay<<"*******************************************************************************"<<std::endl;
+    ToDisplay<<""<<std::endl;
+    ToDisplay<<"--remove-chunks=        Remove specified items from the WAVE chunk tree (comma separated list)"<<std::endl;
+    ToDisplay<<"                        Chunk identifier must be 4 characters long and is case sensitive"<<std::endl;
+    ToDisplay<<"                        (separate levels with '/' e.g. INFO/IART)"<<std::endl;
     ToDisplay<<""<<std::endl;
 
     return ToDisplay.str();

@@ -19,6 +19,7 @@
 #ifdef MACSTORE
 #include "Common/Mac_Helpers.h"
 #include "ZenLib/Dir.h"
+#include "Riff_Base.h"
 #endif
 
 using namespace std;
@@ -273,6 +274,9 @@ void Riff_Base::Modify (int32u Chunk_Name_1, int32u Chunk_Name_2, int32u Chunk_N
 //---------------------------------------------------------------------------
 void Riff_Base::Modify_Internal_Subs (int32u Chunk_Name_1, int32u Chunk_Name_2, int32u Chunk_Name_3)
 {
+    if (Chunk.Content.IsRemovable)
+        return;
+
    //Special case: multiples chunks
    if (Global->adtl && (Chunk_Name_1==Elements::WAVE_adtl_labl
                      || Chunk_Name_1==Elements::WAVE_adtl_note

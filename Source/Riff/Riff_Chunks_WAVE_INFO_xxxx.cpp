@@ -97,6 +97,9 @@ void Riff_WAVE_INFO_xxxx::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_INFO_xxxx::Modify_Internal ()
 {
+    if (Chunk.Content.IsRemovable)
+        return;
+
     string Field=Ztring().From_CC4(Chunk.Header.Name).MakeUpperCase().To_UTF8();
     if (Global->INFO->Strings[Field].empty())
     {

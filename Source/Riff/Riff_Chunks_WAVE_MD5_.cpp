@@ -43,6 +43,9 @@ void Riff_WAVE_MD5_::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_MD5_::Modify_Internal ()
 {
+    if (Chunk.Content.IsRemovable)
+        return;
+
     if (!Global->EmbedMD5_AuthorizeOverWritting && !(Global->MD5Stored && !Global->MD5Stored->Strings["md5stored"].empty()))
         return; //Should never happen (test in Riff_Handler), but in case of.
 
