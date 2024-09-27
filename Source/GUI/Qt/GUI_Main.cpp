@@ -284,9 +284,9 @@ void GUI_Main::dropEvent(QDropEvent *Event)
         for (size_t Pos=0; Pos<Files.size(); Pos++)
             C->Menu_File_Open_Files_Continue(Files[Pos].To_UTF8());
         //Showing
+        Open_Timer_Init(Timer_DragAndDrop);
         C->Menu_File_Open_Files_Finish_Start();
         C->Menu_File_Open_Files_Finish_Middle_Threaded();
-        Open_Timer_Init(Timer_DragAndDrop);
     }
 }
 
@@ -540,6 +540,8 @@ void GUI_Main::OnOpen_Timer ()
                                           break;
             default                     : C->StdOut("???, finished"); break;
         }
+    if (View_Current==View_PerFile)
+        View->setVisible(true);
 
         //Showing
         if (C->Text_stderr_Updated_Get())
@@ -556,7 +558,9 @@ void GUI_Main::OnOpen_Timer ()
 void GUI_Main::Open_Timer_Init (open_timer_init Action)
 {
     Open_Timer_Action=Action;
-    
+    if (View_Current==View_PerFile)
+        View->setVisible(false);
+
         switch (Open_Timer_Action)
         {
             case Timer_Open_Files       : ProgressDialog=new QProgressDialog("Opening files...", "Abort Opening", 0, 100, this);
