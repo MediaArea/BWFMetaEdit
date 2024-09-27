@@ -990,7 +990,7 @@ size_t Core::Menu_File_Save_End ()
         Canceled=true;
         Handler->second.Riff->Cancel();
         CS.Leave();
-        while(!IsExited())
+        while(!Handler->second.Riff->Canceled_Get())
             Sleep(20);
     }
 
@@ -2304,7 +2304,7 @@ void Core::StdAll(handlers::iterator &Handler)
     time_t Time=time(NULL);
     Ztring TimeS; TimeS.Date_From_Seconds_1970_Local((int32u)Time);
 
-    if (!Handler->second.Riff->Information.str().empty())
+    if (Handler->second.Riff && !Handler->second.Riff->Information.str().empty())
     {
         Text_stdout<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Information.str();
         Text_stdall<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Information.str();
@@ -2319,7 +2319,7 @@ void Core::StdAll(handlers::iterator &Handler)
         }
         Handler->second.Riff->Information.str(string());
     }
-    if (!Handler->second.Riff->Warnings.str().empty())
+    if (Handler->second.Riff && !Handler->second.Riff->Warnings.str().empty())
     {
         Text_stdout<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Warnings.str();
         Text_stdall<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Warnings.str();
@@ -2334,7 +2334,7 @@ void Core::StdAll(handlers::iterator &Handler)
         }
         Handler->second.Riff->Warnings.str(string());
     }
-    if (!Handler->second.Riff->Errors.str().empty())
+    if (Handler->second.Riff && !Handler->second.Riff->Errors.str().empty())
     {
         Text_stderr<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Errors.str();
         Text_stdall<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Errors.str();
