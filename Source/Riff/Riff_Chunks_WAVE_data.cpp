@@ -51,7 +51,7 @@ void Riff_WAVE_data::Read_Internal ()
     }
 
     //Reading
-    if (Global->GenerateMD5)
+    if (Global->GenerateMD5 && (!Global->MD5Generated || Global->MD5Generated->Strings["md5generated"].empty()))
     {
         MD5Context MD5;
         MD5Init(&MD5);
