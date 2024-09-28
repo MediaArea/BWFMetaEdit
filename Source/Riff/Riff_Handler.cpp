@@ -503,10 +503,21 @@ bool Riff_Handler::Open_Internal(const string &FileName)
     File_IsValid=false;
     File_IsCanceled=false;
     bool ReturnValue=true;
-    
+
+    // Preserve already computed data md5
+    string MD5Generated;
+    if (Chunks && Chunks->Global && Chunks->Global->MD5Generated)
+        MD5Generated = Chunks->Global->MD5Generated->Strings["md5generated"];
+
     //Global info
     delete Chunks; Chunks=new Riff();
     Chunks->Global->File_Name=Ztring().From_UTF8(FileName);
+
+    if (!MD5Generated.empty())
+    {
+        Chunks->Global->MD5Generated=new Riff_Base::global::chunk_strings;
+        Chunks->Global->MD5Generated->Strings["md5generated"]=MD5Generated;
+    }
 
     //Opening file
     if (!File::Exists(Ztring().From_UTF8(FileName)) || !Chunks->Global->In.Open(Ztring().From_UTF8(FileName)))
@@ -1087,16 +1098,12 @@ bool Riff_Handler::Save()
 
     //Loading the new file (we are verifying the integraty of the generated file)
     string FileName=Chunks->Global->File_Name.To_UTF8();
-    bool GenerateMD5_Temp=Chunks->Global->GenerateMD5;
-    Chunks->Global->GenerateMD5=false;
     if (!Open_Internal(FileName) && Chunks==NULL) //There may be an error but file is open (eg MD5 error)
     {
         Errors<<FileName<<": WARNING, the resulting file can not be validated, file may be CORRUPTED"<<endl;
         PerFile_Error<<"WARNING, the resulting file can not be validated, file may be CORRUPTED"<<endl;
-        Chunks->Global->GenerateMD5=GenerateMD5_Temp;
         return false;
     }
-    Chunks->Global->GenerateMD5=GenerateMD5_Temp;
 
     CriticalSectionLocker(Chunks->Global->CS);
     Chunks->Global->Progress=1;
