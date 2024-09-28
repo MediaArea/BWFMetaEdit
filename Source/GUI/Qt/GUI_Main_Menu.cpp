@@ -438,9 +438,9 @@ void GUI_Main::OnMenu_File_Open_Files()
     }
 
     //Showing
+    Open_Timer_Init(Timer_Open_Files);
     C->Menu_File_Open_Files_Finish_Start();
     C->Menu_File_Open_Files_Finish_Middle_Threaded();
-    Open_Timer_Init(Timer_Open_Files);
 }
 
 //---------------------------------------------------------------------------
@@ -466,9 +466,9 @@ void GUI_Main::OnMenu_File_Open_Directory()
     #endif
 
     //Showing
+    Open_Timer_Init(Timer_Open_Directory);
     C->Menu_File_Open_Files_Finish_Start();
     C->Menu_File_Open_Files_Finish_Middle_Threaded();
-    Open_Timer_Init(Timer_Open_Directory);
 }
 
 //---------------------------------------------------------------------------
@@ -524,9 +524,9 @@ void GUI_Main::OnMenu_File_Save_All()
     C->StdOut("Saving files...");
 
     //Showing
+    Open_Timer_Init(Timer_Save);
     C->Menu_File_Save_Start();
     C->Menu_File_Save_Middle_Threaded();
-    Open_Timer_Init(Timer_Save);
 }
 
 //---------------------------------------------------------------------------
