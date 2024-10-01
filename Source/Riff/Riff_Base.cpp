@@ -243,7 +243,8 @@ void Riff_Base::Read_Internal_ReadAllInBuffer ()
         if (BytesRead==0)
             break; //Read is finished
         Global->CS.Enter();
-        Global->Progress=(float)Global->In.Position_Get()/Global->In.Size_Get();
+        int64u Skipped=Global->data?Global->data->Size:0;
+        Global->Progress=(float)(Global->In.Position_Get()-Skipped)/Global->In.Size_Get();
         if (Global->Canceling)
         {
             Global->CS.Leave();

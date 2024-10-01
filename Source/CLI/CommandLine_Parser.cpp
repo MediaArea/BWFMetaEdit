@@ -778,7 +778,6 @@ CL_OPTION(MD5_Generate)
 //---------------------------------------------------------------------------
 CL_OPTION(MD5_Verify)
 {
-    C.GenerateMD5=true;
     C.VerifyMD5=true;
     C.VerifyMD5_Force=true;
 
@@ -788,7 +787,6 @@ CL_OPTION(MD5_Verify)
 //---------------------------------------------------------------------------
 CL_OPTION(MD5_Embed)
 {
-    C.GenerateMD5=true;
     C.EmbedMD5=true;
 
     return -2; //Continue
@@ -797,7 +795,6 @@ CL_OPTION(MD5_Embed)
 //---------------------------------------------------------------------------
 CL_OPTION(MD5_Embed_Overwrite)
 {
-    C.GenerateMD5=true;
     C.EmbedMD5=true;
     C.EmbedMD5_AuthorizeOverWritting=true;
 
