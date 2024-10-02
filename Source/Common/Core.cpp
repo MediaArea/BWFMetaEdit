@@ -861,12 +861,16 @@ size_t Core::Menu_File_Save_File (const string &FileName)
     TimeS.FindAndReplace(__T(":"), __T("-"), 0, Ztring_Recursive);
     TimeS.FindAndReplace(__T(" "), __T("-"), 0, Ztring_Recursive);
     Out_Core_CSV_FileName=ApplicationFolder.To_UTF8()+"/Backup-"+TimeS.To_UTF8()+".csv";
+    Batch_Begin();
     Batch_Launch(Handler);
+    Batch_Finish();
     Out_Core_CSV_FileName.clear();
     Batch_IsBackuping=false;
     
     //Running
+    Batch_Begin();
     Batch_Launch(Handler);
+    Batch_Finish();
 
     return 1;
 }
@@ -1813,12 +1817,6 @@ void Core::Batch_Launch_Core(handlers::iterator &Handler)
     //Core chunk (with a Conformance Point Document)
     if (!Out_Core_CSV_FileName.empty() && (!Batch_IsBackuping || Handler->second.Riff->IsModified_Get())) //If backuping, only if file is modified
     {
-        if (!Out_Core_CSV_File.Create(Ztring().From_UTF8(Out_Core_CSV_FileName)))
-        {
-            StdErr("--out-Core-CSV=file: error during file creation");
-            Out_Core_CSV_File.Close();
-            Out_Core_CSV_FileName.clear();
-        }
         if (!Out_Core_CSV_File.Write(Core+EOL)) //Saving file part
         {
             StdErr("--out-Core-CSV=file: error during file writing");
