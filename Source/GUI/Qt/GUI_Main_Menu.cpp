@@ -1353,11 +1353,6 @@ void GUI_Main::OnMenu_Options_GenerateMD5(bool)
                                         C->GenerateMD5=true;
                                         C->Menu_File_Options_Update();
                                         C->Menu_File_Open_Files_Finish(); //TODO: progress bar
-                                        if (C->GenerateMD5==false)
-                                        {
-                                            Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->setChecked(false);
-                                            //OnMenu_Options_EmbedMD5();
-                                        }
 
                                         //Showing
                                         if (C->Text_stderr_Updated_Get())
@@ -1370,11 +1365,6 @@ void GUI_Main::OnMenu_Options_GenerateMD5(bool)
                                         break;
             case QMessageBox::No      : // No was clicked
                                         C->GenerateMD5=true;
-                                        if (C->GenerateMD5==false)
-                                        {
-                                            Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->setChecked(false);
-                                            //OnMenu_Options_EmbedMD5();
-                                        }
                                         break;
             case QMessageBox::Cancel  : // Cancel was clicked
                                         C->GenerateMD5=false;
@@ -1386,13 +1376,6 @@ void GUI_Main::OnMenu_Options_GenerateMD5(bool)
     else
     {
         C->GenerateMD5=Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Generate]->isChecked();
-        if (C->GenerateMD5==false)
-        {
-            Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Verify]->setChecked(false);
-            //OnMenu_Options_VerifyMD5();
-            Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->setChecked(false);
-            //OnMenu_Options_EmbedMD5();
-        }
     }
 }
 
@@ -1402,13 +1385,6 @@ void GUI_Main::OnMenu_Options_VerifyMD5(bool)
     C->VerifyMD5=Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Verify]->isChecked();
     if (C->VerifyMD5==true)
     {
-        Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Generate]->setChecked(true);
-        //OnMenu_Options_GenerateMD5();
-        if (!C->GenerateMD5)
-        {
-            Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Verify]->setChecked(false);
-            //OnMenu_Options_VerifyMD5();
-        }
         C->Menu_File_Options_Update();
 
         //Showing
@@ -1430,11 +1406,6 @@ void GUI_Main::OnMenu_Options_EmbedMD5(bool)
     C->EmbedMD5=Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->isChecked();
     if (C->EmbedMD5==true)
     {
-        Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Generate]->setChecked(true);
-        if (!C->GenerateMD5)
-        {
-            Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->setChecked(false);
-        }
         C->Menu_File_Options_Update();
         View_Refresh();
     }
