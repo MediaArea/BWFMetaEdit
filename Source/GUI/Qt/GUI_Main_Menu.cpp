@@ -1352,21 +1352,9 @@ void GUI_Main::OnMenu_Options_GenerateMD5(bool)
             case QMessageBox::Yes     : // Yes was clicked
                                         C->GenerateMD5=true;
                                         C->Menu_File_Options_Update();
-                                        C->Menu_File_Open_Files_Finish(); //TODO: progress bar
-                                        if (C->GenerateMD5==false)
-                                        {
-                                            Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->setChecked(false);
-                                            //OnMenu_Options_EmbedMD5();
-                                        }
-
-                                        //Showing
-                                        if (C->Text_stderr_Updated_Get())
-                                        {
-                                            Menu_View_Output_stderr->setChecked(true);
-                                            View_Refresh(View_Output_stderr);
-                                        }
-                                        else
-                                            View_Refresh();
+                                        Open_Timer_Init(Timer_Open_Files);
+                                        C->Menu_File_Open_Files_Finish_Start();
+                                        C->Menu_File_Open_Files_Finish_Middle_Threaded();
                                         break;
             case QMessageBox::No      : // No was clicked
                                         C->GenerateMD5=true;
