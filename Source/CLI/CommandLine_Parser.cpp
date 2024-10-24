@@ -853,6 +853,7 @@ CL_OPTION(Chunks_Remove)
 CL_OPTION(Default)
 {
     //Form : --(Field)=(Value)
+    bool Append=false;
     size_t Egal_Pos;
     if (Argument.size()==2)
         Egal_Pos=string::npos;
@@ -864,10 +865,13 @@ CL_OPTION(Default)
         return 1;
     }
 
+    if (Egal_Pos && Argument[Egal_Pos-1]=='+')
+        Append=true;
+
     #ifdef _WIN32
-    Ztring Field(Ztring().From_UTF8(Argument), 2, Egal_Pos-2); Field.MakeLowerCase();
+    Ztring Field(Ztring().From_UTF8(Argument), 2, Egal_Pos-(Append?3:2)); Field.MakeLowerCase();
     #else
-    Ztring Field(Ztring().From_Local(Argument), 2, Egal_Pos-2); Field.MakeLowerCase();
+    Ztring Field(Ztring().From_Local(Argument), 2, Egal_Pos-(Append?3:2)); Field.MakeLowerCase();
     #endif
     if (Field!=__T("description")
      && Field!=__T("originator")
@@ -893,7 +897,10 @@ CL_OPTION(Default)
     }
 
     string Value=string(Argument, Egal_Pos+1, std::string::npos);
-    C.In_Core_Add(Field.To_UTF8(), Value);
+    if (Append)
+        C.In_Core_Append(Field.To_UTF8(), Value);
+    else
+        C.In_Core_Add(Field.To_UTF8(), Value);
 
     return -2; //Continue
 }

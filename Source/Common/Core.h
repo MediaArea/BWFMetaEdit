@@ -108,6 +108,8 @@ public:
     bool                                In_Core_Add                     (const string &FileName, const string &Field, const string &Value);
     bool                                In_Core_Add                     (const string &Field, const string &Value);
     bool                                In_Chunk_Remove                 (const string &Field);
+    bool                                In_Core_Append                  (const string &FileName, const string &Field, const string &Value);
+    bool                                In_Core_Append                  (const string &Field, const string &Value);
     string                              Out_Core_Read                   (const string &FileName, const string &Field);
 
     //Configuration
@@ -186,6 +188,7 @@ protected:
     {
         Riff_Handler       *Riff;
         map<string, Ztring> In_Core;
+        map<string, Ztring> In_Core_Append;
         bool                In_Core_Remove;
         bool                In__PMX_Remove;
         bool                In__PMX_XML;
