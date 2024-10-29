@@ -2721,7 +2721,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
 
         //If error
         if (!Message.empty())
-            IsValid_Errors<<"malformed input, ISRC "<<Message;
+            IsValid_Errors<<"malformed input, IDIT "<<Message;
     }
 
     //ISRC
