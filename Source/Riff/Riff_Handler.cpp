@@ -3233,10 +3233,8 @@ string Riff_Handler::FileDate_Get()
 //---------------------------------------------------------------------------
 float Riff_Handler::Progress_Get()
 {
-    CriticalSectionLocker CSL(CS);
-
     if (Chunks==NULL || Chunks->Global==NULL)
-        return 0;    
+        return 0;
     CriticalSectionLocker(Chunks->Global->CS);
     if (Chunks->Global->Progress==1)
         return (float)0.99; //Must finish opening, see Open()
@@ -3246,11 +3244,8 @@ float Riff_Handler::Progress_Get()
 //---------------------------------------------------------------------------
 void Riff_Handler::Progress_Clear()
 {
-    CriticalSectionLocker CSL(CS);
-
     if (Chunks==NULL || Chunks->Global==NULL)
         return;
-
     CriticalSectionLocker(Chunks->Global->CS);
     Chunks->Global->Progress=0;
 }
@@ -3258,8 +3253,6 @@ void Riff_Handler::Progress_Clear()
 //---------------------------------------------------------------------------
 bool Riff_Handler::Canceled_Get()
 {
-    CriticalSectionLocker CSL(CS);
-
     if (Chunks==NULL || Chunks->Global==NULL)
         return false;    
     CriticalSectionLocker(Chunks->Global->CS);
@@ -3269,8 +3262,6 @@ bool Riff_Handler::Canceled_Get()
 //---------------------------------------------------------------------------
 void Riff_Handler::Cancel()
 {
-    CriticalSectionLocker CSL(CS);
-
     if (Chunks==NULL || Chunks->Global==NULL)
         return;    
     CriticalSectionLocker(Chunks->Global->CS);

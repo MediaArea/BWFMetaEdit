@@ -438,9 +438,9 @@ void GUI_Main::OnMenu_File_Open_Files()
     }
 
     //Showing
+    Open_Timer_Init(Timer_Open_Files);
     C->Menu_File_Open_Files_Finish_Start();
     C->Menu_File_Open_Files_Finish_Middle_Threaded();
-    Open_Timer_Init(Timer_Open_Files);
 }
 
 //---------------------------------------------------------------------------
@@ -466,9 +466,9 @@ void GUI_Main::OnMenu_File_Open_Directory()
     #endif
 
     //Showing
+    Open_Timer_Init(Timer_Open_Directory);
     C->Menu_File_Open_Files_Finish_Start();
     C->Menu_File_Open_Files_Finish_Middle_Threaded();
-    Open_Timer_Init(Timer_Open_Directory);
 }
 
 //---------------------------------------------------------------------------
@@ -505,16 +505,10 @@ void GUI_Main::OnMenu_File_Save_Files()
 void GUI_Main::OnMenu_File_Save_File(const QString& FileName)
 {
     C->StdOut(string("Saving file ") + FileName.toStdString() + string("..."));
-    C->Menu_File_Save_File(FileName.toStdString());
-    C->StdOut("Saving files, finished");
-    //Showing
-    if (C->Text_stderr_Updated_Get())
-    {
-        Menu_View_Output_stderr->setChecked(true);
-        View_Refresh(View_Output_stderr);
-    }
-    else
-        View_Refresh();
+
+    Open_Timer_Init(Timer_Save);
+    C->Menu_File_Save_File_Start(FileName.toStdString());
+    C->Menu_File_Save_Middle_Threaded();
 }
 
 //---------------------------------------------------------------------------
@@ -524,9 +518,9 @@ void GUI_Main::OnMenu_File_Save_All()
     C->StdOut("Saving files...");
 
     //Showing
+    Open_Timer_Init(Timer_Save);
     C->Menu_File_Save_Start();
     C->Menu_File_Save_Middle_Threaded();
-    Open_Timer_Init(Timer_Save);
 }
 
 //---------------------------------------------------------------------------

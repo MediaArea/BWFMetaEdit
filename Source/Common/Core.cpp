@@ -194,6 +194,7 @@ Core::Core()
     Files_Modified_NotWritten_Count=0;
     Canceled=false;
     SaveMode=false;
+    SaveMode_OneFile=false;
     #ifdef _WIN32
         TCHAR Path[MAX_PATH];
         BOOL Result=SHGetSpecialFolderPath(NULL, Path, CSIDL_APPDATA, true);
@@ -659,6 +660,14 @@ bool Core::Menu_File_Open_Files_BackToLastSave()
 float Core::Menu_File_Open_State ()
 {
     CriticalSectionLocker CSL(CS);
+    if (SaveMode_OneFile)
+    {
+        if (Handler!=Handlers.end() && Handler->second.Riff)
+            return Handler->second.Riff->Progress_Get();
+
+        return 1.0;
+    }
+
     if (Menu_File_Open_Files_File_Total==0)
         return 1.0; //No file
     float ToReturn=(float)Menu_File_Open_Files_File_Pos;
@@ -892,9 +901,10 @@ size_t Core::Menu_File_Save_File (const string &FileName)
     TimeS.FindAndReplace(__T(":"), __T("-"), 0, Ztring_Recursive);
     TimeS.FindAndReplace(__T(" "), __T("-"), 0, Ztring_Recursive);
     Out_Core_CSV_FileName=ApplicationFolder.To_UTF8()+"/Backup-"+TimeS.To_UTF8()+".csv";
-    Batch_Begin();
+    bool Simulation_Enabled_Save=Simulation_Enabled;
+    Simulation_Enabled=true;
     Batch_Launch(Handler);
-    Batch_Finish();
+    Simulation_Enabled=Simulation_Enabled_Save;
     Out_Core_CSV_FileName.clear();
     Batch_IsBackuping=false;
     
@@ -907,8 +917,45 @@ size_t Core::Menu_File_Save_File (const string &FileName)
 }
 
 //---------------------------------------------------------------------------
+size_t Core::Menu_File_Save_File_Start (const string &FileName)
+{
+    SaveMode_OneFile=true;
+    if (!Dir::Exists(ApplicationFolder))
+    {
+        Dir::Create(ApplicationFolder);
+        if (!Dir::Exists(ApplicationFolder))
+            return 0;
+    }
+
+    Handler=Handlers.find(FileName);
+
+    if( Handler==Handlers.end())
+        return 0;
+
+    //Backup
+    Batch_IsBackuping=true;
+    time_t Time=time(NULL);
+    Ztring TimeS; TimeS.Date_From_Seconds_1970_Local((int32u)Time);
+    TimeS.FindAndReplace(__T(":"), __T("-"), 0, Ztring_Recursive);
+    TimeS.FindAndReplace(__T(" "), __T("-"), 0, Ztring_Recursive);
+    Out_Core_CSV_FileName=ApplicationFolder.To_UTF8()+"/Backup-"+TimeS.To_UTF8()+".csv";
+    bool Simulation_Enabled_Save=Simulation_Enabled;
+    Simulation_Enabled=true;
+    Batch_Launch(Handler);
+    Simulation_Enabled=Simulation_Enabled_Save;
+    Out_Core_CSV_FileName.clear();
+    Batch_IsBackuping=false;
+
+    //Running
+    bool ToReturn=Batch_Launch_Start();
+
+    return ToReturn;
+}
+
+//---------------------------------------------------------------------------
 size_t Core::Menu_File_Save ()
 {
+    SaveMode_OneFile=false;
     if (!Dir::Exists(ApplicationFolder))
     {
         Dir::Create(ApplicationFolder);
@@ -936,6 +983,7 @@ size_t Core::Menu_File_Save ()
 //---------------------------------------------------------------------------
 bool Core::Menu_File_Save_Start ()
 {
+    SaveMode_OneFile=false;
     if (!Dir::Exists(ApplicationFolder))
     {
         Dir::Create(ApplicationFolder);
@@ -990,7 +1038,7 @@ size_t Core::Menu_File_Save_End ()
         Canceled=true;
         Handler->second.Riff->Cancel();
         CS.Leave();
-        while(!IsExited())
+        while(!Handler->second.Riff->Canceled_Get())
             Sleep(20);
     }
 
@@ -1765,8 +1813,13 @@ float Core::Batch_Launch_Middle()
     
     CriticalSectionLocker CSL(CS);
 
-    Handler++;
+    if (SaveMode_OneFile)
+    {
+        Handler=Handlers.end();
+        return 1.0;
+    }
 
+    Handler++;
     Menu_File_Open_Files_File_Pos++;
     if (Menu_File_Open_Files_File_Total==0)
         return 1.0;
@@ -2304,7 +2357,7 @@ void Core::StdAll(handlers::iterator &Handler)
     time_t Time=time(NULL);
     Ztring TimeS; TimeS.Date_From_Seconds_1970_Local((int32u)Time);
 
-    if (!Handler->second.Riff->Information.str().empty())
+    if (Handler->second.Riff && !Handler->second.Riff->Information.str().empty())
     {
         Text_stdout<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Information.str();
         Text_stdall<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Information.str();
@@ -2319,7 +2372,7 @@ void Core::StdAll(handlers::iterator &Handler)
         }
         Handler->second.Riff->Information.str(string());
     }
-    if (!Handler->second.Riff->Warnings.str().empty())
+    if (Handler->second.Riff && !Handler->second.Riff->Warnings.str().empty())
     {
         Text_stdout<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Warnings.str();
         Text_stdall<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Warnings.str();
@@ -2334,7 +2387,7 @@ void Core::StdAll(handlers::iterator &Handler)
         }
         Handler->second.Riff->Warnings.str(string());
     }
-    if (!Handler->second.Riff->Errors.str().empty())
+    if (Handler->second.Riff && !Handler->second.Riff->Errors.str().empty())
     {
         Text_stderr<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Errors.str();
         Text_stdall<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Errors.str();
