@@ -45,6 +45,9 @@ void Riff_WAVE_adtl_labl::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_adtl_labl::Modify_Internal ()
 {
+    if (Chunk.Content.IsRemovable)
+        return;
+
     if (!Global->adtl || Global->adtl->labels.empty() || Global->adtl->labelsIndex>=Global->adtl->labels.size())
     {
         Chunk.Content.IsRemovable=true;

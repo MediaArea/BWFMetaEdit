@@ -96,6 +96,7 @@ public:
     string          Get                 (const string &Field);
     bool            Set                 (const string &Field, const string &Value, rules Rules);
     bool            Remove              (const string &Field);
+    bool            Remove_Chunk        (const string &Field);
     string          History             (const string &Field);
     bool            IsOriginal          (const string &Field, const string &Value);
     bool            IsValid             (const string &Field, const string &Value, rules Rules, bool IgnoreCoherency=false);
@@ -163,6 +164,8 @@ private:
     string    Get_Internal               (const string &Field);
     bool      Set_Internal               (const string &Field, const string &Value, rules Rules);
     bool      Remove_Internal            (const string &Field);
+    bool      Remove_Chunk_Helper        (Riff_Base *Parent, const string &Path, vector<int32u>& ParentsCC4);
+    bool      Remove_Chunk_Internal      (const string &Field);
     bool      IsValid_Internal           (const string &Field, const string &Value, rules Rules, bool IgnoreCoherency=false);
     bool      IsOriginal_Internal        (const string &Field, const string &Value);
     bool      IsModified_Internal        (const string &Field);

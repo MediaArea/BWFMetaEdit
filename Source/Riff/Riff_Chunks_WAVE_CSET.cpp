@@ -48,6 +48,9 @@ void Riff_WAVE_CSET::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_CSET::Modify_Internal ()
 {
+    if (Chunk.Content.IsRemovable)
+        return;
+
     if (!Global->CSET)
     {
         Chunk.Content.IsRemovable=true;

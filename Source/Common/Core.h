@@ -107,6 +107,7 @@ public:
     void                                Batch_Launch_End                (); //Detailed version
     bool                                In_Core_Add                     (const string &FileName, const string &Field, const string &Value);
     bool                                In_Core_Add                     (const string &Field, const string &Value);
+    bool                                In_Chunk_Remove                 (const string &Field);
     string                              Out_Core_Read                   (const string &FileName, const string &Field);
 
     //Configuration
@@ -199,6 +200,7 @@ protected:
         bool                In_cue__XML;
         string              In_cue__FileName;
         bool                In_CSET_Remove;
+        ZtringList          In_Chunks_Remove;
 
         handler()
         {

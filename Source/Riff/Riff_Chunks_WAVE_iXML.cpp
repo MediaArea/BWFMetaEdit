@@ -39,6 +39,9 @@ void Riff_WAVE_iXML::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_iXML::Modify_Internal ()
 {
+    if (Chunk.Content.IsRemovable)
+        return;
+
     if (Global->iXML==NULL
      || Global->iXML->Strings["ixml"].empty())
     {
