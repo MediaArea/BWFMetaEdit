@@ -35,6 +35,7 @@
 <tr><td>ICMT</td><td>Comments</td></tr>
 <tr><td>ICOP</td><td>Copyright</td></tr>
 <tr><td>ICRD</td><td>Creation Date</td></tr>
+<tr><td>IDIT</td><td>Digitization Date</td></tr>
 <tr><td>IENG</td><td>Engineer</td></tr>
 <tr><td>IGNR</td><td>Genre</td></tr>
 <tr><td>IKEY</td><td>Keywords</td></tr>
@@ -55,8 +56,43 @@ Use either &lt;TimeReference_translated&gt; to express TimeReference in HH:MM:SS
 <div>&nbsp;</div>
 
 <div style="font-family:'Courier'">
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br/>&lt;conformance_point_document&gt;<br/>&nbsp;&lt;File name="/full/file/path/to/audio-A.wav"&gt;<br/>&nbsp;&nbsp;&lt;Core&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;Description&gt;Descriptive info here&lt;/Description&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;Originator&gt;Originator data here&lt;/Originator&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;OriginatorReference&gt;OriginatorReference data here&lt;/OriginatorReference&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;OriginationDate&gt;2010-01-05&lt;/OriginationDate&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;OriginationTime&gt;00:00:00&lt;/OriginationTime&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;TimeReference_translated&gt;00:00:00.000&lt;/TimeReference_translated&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;TimeReference&gt;0&lt;/TimeReference&gt;<br/>
-&nbsp;&nbsp;&nbsp;&lt;BextVersion&gt;1&lt;/BextVersion&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;UMID&gt;FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF&lt;/UMID&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;CodingHistory&gt;A=ANALOGUE,F=48000,B=16,W=16,M=joint-stereo&lt;/CodingHistory&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IARL&gt;Archival Location data here&lt;/IARL&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IART&gt;Artist data here&lt;/IART&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ICMS&gt;Commissioned data here&lt;/ICMS&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ICMT&gt;Comment data here&lt;/ICMT&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ICOP&gt;Copyright data here&lt;/ICOP&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ICRD&gt;2010-01-07&lt;/ICRD&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IENG&gt;Engineer data here&lt;/IENG&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IGNR&gt;Genre data here&lt;/IGNR&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IKEY&gt;Keyword data here&lt;/IKEY&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IMED&gt;Medium data here&lt;/IMED&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;INAM&gt;Title data here&lt;/INAM&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;IPRD&gt;Album or product data here&lt;/IPRD&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ISBJ&gt;Subject data here&lt;/ISBJ&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ISFT&gt;Source data here&lt;/ISFT&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ISRC&gt;Source data here&lt;/ISRC&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ISRF&gt;Software data here&lt;/ISRF&gt;<br/>&nbsp;&nbsp;&nbsp;&lt;ITCH&gt;Technician data here&lt;/ITCH&gt;<br/>&nbsp;&nbsp;&lt;/Core&gt;<br/>&nbsp;&lt;/File&gt;<br/>&nbsp;&lt;File name="/full/file/path/to/audio-B.wav"&gt;<br/>&nbsp;&lt;/File&gt;<br/>&lt;/conformance_point_document&gt;<br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br/>
+&lt;conformance_point_document&gt;<br/>
+&nbsp;&lt;File name="/full/file/path/to/audio-A.wav"&gt;<br/>
+&nbsp;&nbsp;&lt;Core&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;Description&gt;Descriptive info here&lt;/Description&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;Originator&gt;Originator data here&lt;/Originator&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;OriginatorReference&gt;OriginatorReference data here&lt;/OriginatorReference&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;OriginationDate&gt;2010-01-05&lt;/OriginationDate&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;OriginationTime&gt;00:00:00&lt;/OriginationTime&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;TimeReference_translated&gt;00:00:00.000&lt;/TimeReference_translated&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;TimeReference&gt;0&lt;/TimeReference&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;BextVersion&gt;1&lt;/BextVersion&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;UMID&gt;FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF&lt;/UMID&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;CodingHistory&gt;A=ANALOGUE,F=48000,B=16,W=16,M=joint-stereo&lt;/CodingHistory&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;IARL&gt;Archival Location data here&lt;/IARL&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;IART&gt;Artist data here&lt;/IART&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;ICMS&gt;Commissioned data here&lt;/ICMS&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;ICMT&gt;Comment data here&lt;/ICMT&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;ICOP&gt;Copyright data here&lt;/ICOP&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;ICRD&gt;2010-01-07&lt;/ICRD&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;IDIT&gt;Wed Jan 02 02:03:55 1990&lt;/IDIT&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;IENG&gt;Engineer data here&lt;/IENG&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;IGNR&gt;Genre data here&lt;/IGNR&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;IKEY&gt;Keyword data here&lt;/IKEY&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;IMED&gt;Medium data here&lt;/IMED&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;INAM&gt;Title data here&lt;/INAM&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;IPRD&gt;Album or product data here&lt;/IPRD&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;ISBJ&gt;Subject data here&lt;/ISBJ&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;ISFT&gt;Source data here&lt;/ISFT&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;ISRC&gt;Source data here&lt;/ISRC&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;ISRF&gt;Software data here&lt;/ISRF&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;ITCH&gt;Technician data here&lt;/ITCH&gt;<br/>
+&nbsp;&nbsp;&lt;/Core&gt;<br/>
+&nbsp;&lt;/File&gt;<br/>
+&nbsp;&lt;File name="/full/file/path/to/audio-B.wav"&gt;<br/>
+&nbsp;&lt;/File&gt;<br/>
+&lt;/conformance_point_document&gt;<br/>
 </div>
 
 </body>

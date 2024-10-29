@@ -15,8 +15,8 @@
 // Const
 //***************************************************************************
 
-const size_t INFO_Strings_Size=17;
-const char* INFO_Strings[17]=
+const size_t INFO_Strings_Size=18;
+const char* INFO_Strings[18]=
 {
     //Note: there is a duplicate in Riff_Chunks_INFO_xxxx
     "IARL", //Archival Location
@@ -25,6 +25,7 @@ const char* INFO_Strings[17]=
     "ICMT", //Comment
     "ICOP", //Copyright
     "ICRD", //Date Created
+    "IDIT", //Digitization Date
     "IENG", //Engineer
     "IGNR", //Genre
     "IKEY", //Keywords
@@ -75,6 +76,10 @@ void Riff_WAVE_INFO_xxxx::Read_Internal ()
 
     //Filling
     string Field=Ztring().From_CC4(Chunk.Header.Name).To_UTF8();
+
+    if (Field=="IDIT" && Value.size()==25 && Value[24]=='\n')
+        Value.resize(24);
+
     Global->INFO->Strings[Field]=Value;
 
     //Details
@@ -114,9 +119,13 @@ void Riff_WAVE_INFO_xxxx::Modify_Internal ()
     //Creating buffer
     Chunk.Content.Buffer_Offset=0;
     Chunk.Content.Size=Global->INFO->Strings[Field].size()+1;
+    if (Field=="IDIT" && Global->INFO->Strings[Field].size()==24)
+        Chunk.Content.Size+=1;
     delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[Chunk.Content.Size];
 
     string Temp=Global->INFO->Strings[Field];
+    if (Field=="IDIT" && Global->INFO->Strings[Field].size()==24)
+        Temp+="\n";
     Put_String(Temp.size(), Temp);
     Put_L1(0x00); //ZSTR i.e. null terminated text string
 

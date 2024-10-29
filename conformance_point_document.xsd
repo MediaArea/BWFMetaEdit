@@ -124,6 +124,7 @@
                     <xsd:element maxOccurs="1" minOccurs="0" name="ICMT" type="xsd:string"/>
                     <xsd:element maxOccurs="1" minOccurs="0" name="ICOP" type="xsd:string"/>
                     <xsd:element maxOccurs="1" minOccurs="0" name="ICRD" type="xsd:string"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="IDIT" type="xsd:string"/>
                     <xsd:element maxOccurs="1" minOccurs="0" name="IENG" type="xsd:string"/>
                     <xsd:element maxOccurs="1" minOccurs="0" name="IGNR" type="xsd:string"/>
                     <xsd:element maxOccurs="1" minOccurs="0" name="IKEY" type="xsd:string"/>

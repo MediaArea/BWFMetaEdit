@@ -381,7 +381,7 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
         Edit->exec();
         delete Edit; //Edit=NULL;
     }
-    else if (Field=="OriginationDate" || Field=="OriginationTime" || Field=="ICRD") 
+    else if (Field=="OriginationDate" || Field=="OriginationTime" || Field=="ICRD" || Field=="IDIT")
     {
         GUI_Main_xxxx_DateDialog* Edit=new GUI_Main_xxxx_DateDialog(C, FileName.toStdString(), Field.toStdString(), QString::fromUtf8(ModifiedContent.c_str()));
         Edit->exec();

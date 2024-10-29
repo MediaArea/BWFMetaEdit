@@ -77,7 +77,7 @@ options Groups[Group_Max]=
     },
     {
         "Core Metadata",
-        15+17,
+        15+18,
         {
             {"Core_Description", "Description", Type_CheckBox, true},
             {"Core_Originator", "Originator", Type_CheckBox, true},
@@ -100,6 +100,7 @@ options Groups[Group_Max]=
             {"Core_ICMT", "ICMT", Type_CheckBox, true}, //Comment
             {"Core_ICOP", "ICOP", Type_CheckBox, true}, //Copyright
             {"Core_ICRD", "ICRD", Type_CheckBox, true}, //Date Created
+            {"Core_IDIT", "IDIT", Type_CheckBox, true}, //Digitization Date
             {"Core_IENG", "IENG", Type_CheckBox, true}, //Engineer
             {"Core_IGNR", "IGNR", Type_CheckBox, true}, //Genre
             {"Core_IKEY", "IKEY", Type_CheckBox, true}, //Keywords
