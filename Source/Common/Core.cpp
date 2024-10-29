@@ -346,11 +346,28 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
                 if (Handler_in_Core_Item==Handler->second.In_Core.end())
                     Handler->second.In_Core[Ztring().From_UTF8(In_Core_Item->first).MakeLowerCase().To_UTF8()]=In_Core_Item->second;
             }
-            
+
+            for (map<string, Ztring>::iterator In_Core_Item=Handler_Default.In_Core_Append.begin(); In_Core_Item!=Handler_Default.In_Core_Append.end(); In_Core_Item++)
+            {
+                map<string, Ztring>::iterator Handler_in_Core_Item=Handler->second.In_Core_Append.find(Ztring().From_UTF8(In_Core_Item->first).MakeLowerCase().To_UTF8());
+                if (Handler_in_Core_Item==Handler->second.In_Core_Append.end())
+                    Handler->second.In_Core_Append[Ztring().From_UTF8(In_Core_Item->first).MakeLowerCase().To_UTF8()]=In_Core_Item->second;
+            }
+
             //Special Characters
             if (SpecialChars_Enabled)
             {
                 for (map<string, Ztring>::iterator Field=Handler->second.In_Core.begin(); Field!=Handler->second.In_Core.end(); Field++)
+                {
+                    Field->second.FindAndReplace(__T("\\\\"), __T("|SC1|"), 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("\\r"), __T("\r"), 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("\\t"), __T("\t"), 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("\\0"), __T("\0"), 0, Ztring_Recursive);
+                    Field->second.FindAndReplace(__T("|SC1|"), __T("\\"), 0, Ztring_Recursive);
+                }
+
+                for (map<string, Ztring>::iterator Field=Handler->second.In_Core_Append.begin(); Field!=Handler->second.In_Core_Append.end(); Field++)
                 {
                     Field->second.FindAndReplace(__T("\\\\"), __T("|SC1|"), 0, Ztring_Recursive);
                     Field->second.FindAndReplace(__T("\\r"), __T("\r"), 0, Ztring_Recursive);
@@ -392,11 +409,18 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
         }
 
         //Modifying file with --xxx values
-        if (!Handler->second.In_Core.empty())
+        if (!Handler->second.In_Core.empty() || !Handler->second.In_Core_Append.empty())
         {
             for (map<string, Ztring>::iterator In_Core_Item=Handler->second.In_Core.begin(); In_Core_Item!=Handler->second.In_Core.end(); In_Core_Item++)
             {
                 Handler->second.Riff->Set(In_Core_Item->first, In_Core_Item->second.To_UTF8(), Rules);
+                StdAll(Handler);
+            }
+
+            for (map<string, Ztring>::iterator In_Core_Item=Handler->second.In_Core_Append.begin(); In_Core_Item!=Handler->second.In_Core_Append.end(); In_Core_Item++)
+            {
+                string Value=Handler->second.Riff->Get(In_Core_Item->first);
+                Handler->second.Riff->Set(In_Core_Item->first, Value + In_Core_Item->second.To_UTF8(), Rules);
                 StdAll(Handler);
             }
         }
@@ -1262,7 +1286,13 @@ bool Core::In_Core_Add (const string &FileName, const string &Field, const strin
         return true;
    
     if (File::Exists(Ztring().From_UTF8(FileName)))
+    {
+        map<string, Ztring>::iterator ToErase=Handlers[FileName].In_Core_Append.find(Field);
+        if (ToErase!=Handlers[FileName].In_Core_Append.end())
+            Handlers[FileName].In_Core_Append.erase(ToErase);
+
         Handlers[FileName].In_Core[Field]=Ztring().From_UTF8(Value);
+    }
     else
     {
         //Handling wildcards
@@ -1271,7 +1301,13 @@ bool Core::In_Core_Add (const string &FileName, const string &Field, const strin
             List.push_back(Ztring().From_UTF8(FileName));
 
         for (size_t Pos=0; Pos<List.size(); Pos++)
+        {
+            map<string, Ztring>::iterator ToErase=Handlers[List[Pos].To_UTF8()].In_Core_Append.find(Field);
+            if (ToErase!=Handlers[List[Pos].To_UTF8()].In_Core_Append.end())
+                Handlers[FileName].In_Core_Append.erase(ToErase);
+
             Handlers[List[Pos].To_UTF8()].In_Core[Field]=Ztring().From_UTF8(Value);
+        }
     }
 
     return true;
@@ -1282,7 +1318,11 @@ bool Core::In_Core_Add (const string &Field, const string &Value)
 {
     if (Value=="NOCHANGE")
         return true;
-   
+
+    map<string, Ztring>::iterator ToErase=Handler_Default.In_Core_Append.find(Field);
+    if (ToErase!=Handler_Default.In_Core_Append.end())
+        Handler_Default.In_Core_Append.erase(ToErase);
+
     Handler_Default.In_Core[Field]=Ztring().From_UTF8(Value);
 
     return true;
@@ -1292,6 +1332,51 @@ bool Core::In_Core_Add (const string &Field, const string &Value)
 bool Core::In_Chunk_Remove(const string &Field)
 {
     Handler_Default.In_Chunks_Remove.push_back(Ztring().From_UTF8(Field));
+    return true;
+}
+
+//---------------------------------------------------------------------------
+bool Core::In_Core_Append(const string &FileName, const string &Field, const string &Value)
+{
+    if (Value=="NOCHANGE")
+        return true;
+
+    if (File::Exists(Ztring().From_UTF8(FileName)))
+    {
+        map<string, Ztring>::iterator ToErase=Handlers[FileName].In_Core.find(Field);
+        if (ToErase!=Handlers[FileName].In_Core.end())
+            Handlers[FileName].In_Core.erase(ToErase);
+
+        Handlers[FileName].In_Core_Append[Field]=Ztring().From_UTF8(Value);
+    }
+    else
+    {
+        //Handling wildcards
+        ZtringList List=Dir::GetAllFileNames(Ztring().From_UTF8(FileName));
+        if (List.empty())
+            List.push_back(Ztring().From_UTF8(FileName));
+
+        for (size_t Pos=0; Pos<List.size(); Pos++)
+        {
+            map<string, Ztring>::iterator ToErase=Handlers[List[Pos].To_UTF8()].In_Core.find(Field);
+            if (ToErase!=Handlers[List[Pos].To_UTF8()].In_Core.end())
+                Handlers[FileName].In_Core.erase(ToErase);
+            Handlers[List[Pos].To_UTF8()].In_Core_Append[Field]=Ztring().From_UTF8(Value);
+        }
+    }
+
+    return true;
+}
+
+//---------------------------------------------------------------------------
+bool Core::In_Core_Append(const string &Field, const string &Value)
+{
+    map<string, Ztring>::iterator ToErase=Handler_Default.In_Core.find(Field);
+    if (ToErase!=Handler_Default.In_Core.end())
+        Handler_Default.In_Core.erase(ToErase);
+
+    Handler_Default.In_Core_Append[Field]=Ztring().From_UTF8(Value);
+
     return true;
 }
 //---------------------------------------------------------------------------

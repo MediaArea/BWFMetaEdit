@@ -121,9 +121,9 @@ std::string Help()
     ToDisplay<<"--MaxMomentaryLoudness= specified bext max mnomentary loudness"<<std::endl;
     ToDisplay<<"--MaxShortTermLoudness= specified bext maw short term loudness"<<std::endl;
     ToDisplay<<"--History=              specified bext history"<<std::endl;
-    ToDisplay<<"--IARL=                 specified INFO IARL"<<std::endl;
-    ToDisplay<<"--ISFT=                 specified INFO ISFT"<<std::endl;
-    ToDisplay<<"--xxxx=                 specified INFO xxxx..."<<std::endl;
+    ToDisplay<<"--IARL[+]=              Insert or append specified INFO IARL"<<std::endl;
+    ToDisplay<<"--ISFT[+]=              Insert or append specified INFO ISFT"<<std::endl;
+    ToDisplay<<"--xxxx[+]=              Insert or append specified INFO xxxx..."<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"                        Extract Core Document to:"<<std::endl;
     ToDisplay<<"--out-core              current display in CSV format (disable others displays)"<<std::endl;
