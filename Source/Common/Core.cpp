@@ -569,12 +569,13 @@ size_t Core::Menu_File_Open_Files_Finish_End()
     {
         CS.Enter();
         Canceled=true;
-        Handler->second.Riff->Cancel();
+        if (Handler->second.Riff)
+            Handler->second.Riff->Cancel();
         CS.Leave();
-	    while(!IsExited())
+	    while(Handler->second.Riff && !Handler->second.Riff->Canceled_Get())
 		    Sleep(20);
     }
-        
+
     CriticalSectionLocker CSL(CS);
 
     //In case of cancel
@@ -588,7 +589,6 @@ size_t Core::Menu_File_Open_Files_Finish_End()
                 Handler++;
                 Handlers.erase(Handler_ToDelete);
 
-                CriticalSectionLocker CSL(CS);
                 Menu_File_Open_Files_File_Pos--;
                 Menu_File_Open_Files_File_Total--;
             }
