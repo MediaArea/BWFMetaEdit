@@ -9,10 +9,6 @@
 
 //---------------------------------------------------------------------------
 #include "Riff/Riff_Chunks.h"
-extern "C"
-{
-#include "MD5/md5.h"
-}
 #include "ZenLib/Utils.h"
 //---------------------------------------------------------------------------
 
@@ -39,54 +35,6 @@ void Riff_WAVE_data::Read_Internal ()
     Global->data=new Riff_Base::global::chunk_data;
     Global->data->File_Offset=Global->In.Position_Get();
     Global->data->Size=Chunk.Content.Size;
-
-    //MD5
-    try
-    {
-        Chunk.Content.Buffer=new int8u[65536];
-    }
-    catch(...)
-    {
-        throw exception_read_chunk("Problem during memory allocation");
-    }
-
-    //Reading
-    if (Global->GenerateMD5)
-    {
-        MD5Context MD5;
-        MD5Init(&MD5);
-        while(Chunk.Content.Buffer_Offset<Chunk.Content.Size)
-        {
-            size_t ToRead=(size_t)Chunk.Content.Size-Chunk.Content.Buffer_Offset;
-            if (ToRead>65536)
-                ToRead=65536;
-            size_t BytesRead=Global->In.Read(Chunk.Content.Buffer, ToRead);
-            if (BytesRead==0)
-                break; //Read is finished
-            Global->CS.Enter();
-            Global->Progress=(float)Global->In.Position_Get()/Global->In.Size_Get();
-            if (Global->Canceling)
-            {
-                Global->CS.Leave();
-                throw exception_canceled();
-            }
-            Global->CS.Leave();
-            //SleeperThread::msleep(200);
-            Chunk.Content.Buffer_Offset+=BytesRead;
-            MD5Update(&MD5, Chunk.Content.Buffer, (unsigned int)BytesRead);
-        }
-        if (Chunk.Content.Buffer_Offset<Chunk.Content.Size)
-            throw exception_read();
-        delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=NULL;
-        Chunk.Content.Buffer_Offset=0;
-        int8u Digest[16];
-        MD5Final(Digest, &MD5);
-        int128u DigestI=BigEndian2int128u(Digest);
-        Global->MD5Generated=new Riff_Base::global::chunk_strings;
-        Global->MD5Generated->Strings["md5generated"]=Ztring().From_Number(DigestI, 16).To_UTF8();
-        while (Global->MD5Generated->Strings["md5generated"].size()<32)
-            Global->MD5Generated->Strings["md5generated"].insert(Global->MD5Generated->Strings["md5generated"].begin(), '0'); //Padding with 0, this must be a 32-byte string    
-    }
 }
 
 //***************************************************************************

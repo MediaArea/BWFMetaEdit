@@ -18,6 +18,10 @@
 #include "ZenLib/File.h"
 #include "ZenLib/Dir.h"
 #include "TinyXml2/tinyxml2.h"
+extern "C"
+{
+#include "MD5/md5.h"
+}
 
 #ifdef MACSTORE
 #include "Common/Mac_Helpers.h"
@@ -503,10 +507,21 @@ bool Riff_Handler::Open_Internal(const string &FileName)
     File_IsValid=false;
     File_IsCanceled=false;
     bool ReturnValue=true;
-    
+
+    // Preserve already computed data md5
+    string MD5Generated;
+    if (Chunks && Chunks->Global && Chunks->Global->MD5Generated)
+        MD5Generated = Chunks->Global->MD5Generated->Strings["md5generated"];
+
     //Global info
     delete Chunks; Chunks=new Riff();
     Chunks->Global->File_Name=Ztring().From_UTF8(FileName);
+
+    if (!MD5Generated.empty())
+    {
+        Chunks->Global->MD5Generated=new Riff_Base::global::chunk_strings;
+        Chunks->Global->MD5Generated->Strings["md5generated"]=MD5Generated;
+    }
 
     //Opening file
     if (!File::Exists(Ztring().From_UTF8(FileName)) || !Chunks->Global->In.Open(Ztring().From_UTF8(FileName)))
@@ -547,6 +562,90 @@ bool Riff_Handler::Open_Internal(const string &FileName)
         Errors<<Chunks->Global->File_Name.To_UTF8()<<": "<<e.what()<<endl;
         PerFile_Error<<e.what()<<endl;
         ReturnValue=false;
+    }
+
+    //Compute MD5
+    if (Chunks->Global->data &&
+        ((Chunks->Global->GenerateMD5 && (!Chunks->Global->MD5Generated || Chunks->Global->MD5Generated->Strings["md5generated"].empty())) ||
+         (Chunks->Global->VerifyMD5 && (Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty())) ||
+         (Chunks->Global->EmbedMD5 && ((!Chunks->Global->MD5Stored || Chunks->Global->MD5Stored->Strings["md5stored"].empty()) || Chunks->Global->EmbedMD5_AuthorizeOverWritting))))
+    {
+        size_t Buffer_Offset=0;
+        int8u* Buffer=nullptr;
+        try
+        {
+            Buffer=new int8u[65536];
+        }
+        catch(...)
+        {
+            Errors<<Chunks->Global->File_Name.To_UTF8()<<": Problem during memory allocation"<<endl;
+            PerFile_Error<<"Problem during memory allocation"<<endl;
+            ReturnValue=false;
+        }
+
+        if (Buffer)
+        {
+            if (Chunks->Global->In.GoTo(Chunks->Global->data->File_Offset))
+            {
+                MD5Context MD5;
+                MD5Init(&MD5);
+
+                while(Buffer_Offset<Chunks->Global->data->Size)
+                {
+                    size_t ToRead=(size_t)Chunks->Global->data->Size-Buffer_Offset;
+                    if (ToRead>65536)
+                        ToRead=65536;
+                    size_t BytesRead=Chunks->Global->In.Read(Buffer, ToRead);
+                    if (BytesRead==0)
+                        break; //Read is finished
+                    Buffer_Offset+=BytesRead;
+
+                    Chunks->Global->CS.Enter();
+                    int64u Skipped=Chunks->Global->data->Size-Buffer_Offset;
+                    Chunks->Global->Progress=(float)(Chunks->Global->In.Size_Get()-Skipped)/Chunks->Global->In.Size_Get();
+                    if (Chunks->Global->Canceling)
+                    {
+                        Errors<<Chunks->Global->File_Name.To_UTF8()<<": canceled"<<endl;
+                        PerFile_Error<<"canceled"<<endl;
+                        File_IsCanceled=true;
+                        Chunks->Global->Canceling=false;
+                        ReturnValue=false;
+                        Chunks->Global->CS.Leave();
+                        break;
+                    }
+                    Chunks->Global->CS.Leave();
+                    MD5Update(&MD5, Buffer, (unsigned int)BytesRead);
+                }
+                delete[] Buffer;
+
+                if (File_IsCanceled)
+                {
+                    //Nothing to do
+                }
+                else if (Buffer_Offset<Chunks->Global->data->Size)
+                {
+                    Errors<<Chunks->Global->File_Name.To_UTF8()<<": Problem during reading"<<endl;
+                    PerFile_Error<<"Problem during reading"<<endl;
+                    ReturnValue=false;
+                }
+                else
+                {
+                    int8u Digest[16];
+                    MD5Final(Digest, &MD5);
+                    int128u DigestI=BigEndian2int128u(Digest);
+                    Chunks->Global->MD5Generated=new Riff_Base::global::chunk_strings;
+                    Chunks->Global->MD5Generated->Strings["md5generated"]=Ztring().From_Number(DigestI, 16).To_UTF8();
+                    while (Chunks->Global->MD5Generated->Strings["md5generated"].size()<32)
+                        Chunks->Global->MD5Generated->Strings["md5generated"].insert(Chunks->Global->MD5Generated->Strings["md5generated"].begin(), '0'); //Padding with 0, this must be a 32-byte string
+                }
+            }
+            else
+            {
+                Errors<<Chunks->Global->File_Name.To_UTF8()<<": Problem during seeking"<<endl;
+                PerFile_Error<<"Problem during seeking"<<endl;
+                ReturnValue=false;
+            }
+        }
     }
 
     //Cleanup
@@ -1087,16 +1186,12 @@ bool Riff_Handler::Save()
 
     //Loading the new file (we are verifying the integraty of the generated file)
     string FileName=Chunks->Global->File_Name.To_UTF8();
-    bool GenerateMD5_Temp=Chunks->Global->GenerateMD5;
-    Chunks->Global->GenerateMD5=false;
     if (!Open_Internal(FileName) && Chunks==NULL) //There may be an error but file is open (eg MD5 error)
     {
         Errors<<FileName<<": WARNING, the resulting file can not be validated, file may be CORRUPTED"<<endl;
         PerFile_Error<<"WARNING, the resulting file can not be validated, file may be CORRUPTED"<<endl;
-        Chunks->Global->GenerateMD5=GenerateMD5_Temp;
         return false;
     }
-    Chunks->Global->GenerateMD5=GenerateMD5_Temp;
 
     CriticalSectionLocker(Chunks->Global->CS);
     Chunks->Global->Progress=1;
