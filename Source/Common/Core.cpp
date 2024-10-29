@@ -903,7 +903,7 @@ size_t Core::Menu_File_Save_File (const string &FileName)
     Out_Core_CSV_FileName=ApplicationFolder.To_UTF8()+"/Backup-"+TimeS.To_UTF8()+".csv";
     bool Simulation_Enabled_Save=Simulation_Enabled;
     Simulation_Enabled=true;
-    Batch_Launch(Handler);
+    Batch_Launch();
     Simulation_Enabled=Simulation_Enabled_Save;
     Out_Core_CSV_FileName.clear();
     Batch_IsBackuping=false;
@@ -941,7 +941,7 @@ size_t Core::Menu_File_Save_File_Start (const string &FileName)
     Out_Core_CSV_FileName=ApplicationFolder.To_UTF8()+"/Backup-"+TimeS.To_UTF8()+".csv";
     bool Simulation_Enabled_Save=Simulation_Enabled;
     Simulation_Enabled=true;
-    Batch_Launch(Handler);
+    Batch_Launch();
     Simulation_Enabled=Simulation_Enabled_Save;
     Out_Core_CSV_FileName.clear();
     Batch_IsBackuping=false;

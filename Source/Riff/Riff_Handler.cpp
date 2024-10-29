@@ -567,8 +567,8 @@ bool Riff_Handler::Open_Internal(const string &FileName)
     //Compute MD5
     if (Chunks->Global->data &&
         ((Chunks->Global->GenerateMD5 && (!Chunks->Global->MD5Generated || Chunks->Global->MD5Generated->Strings["md5generated"].empty())) ||
-         (Chunks->Global->VerifyMD5 && (Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty())) ||
-         (Chunks->Global->EmbedMD5 && ((!Chunks->Global->MD5Stored || Chunks->Global->MD5Stored->Strings["md5stored"].empty()) || Chunks->Global->EmbedMD5_AuthorizeOverWritting))))
+         (Chunks->Global->VerifyMD5 && (Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()) && (!Chunks->Global->MD5Generated || Chunks->Global->MD5Generated->Strings["md5generated"].empty())) ||
+         (Chunks->Global->EmbedMD5 && ((!Chunks->Global->MD5Stored || Chunks->Global->MD5Stored->Strings["md5stored"].empty()) || Chunks->Global->EmbedMD5_AuthorizeOverWritting) && (!Chunks->Global->MD5Generated || Chunks->Global->MD5Generated->Strings["md5generated"].empty()))))
     {
         size_t Buffer_Offset=0;
         int8u* Buffer=nullptr;
@@ -2721,7 +2721,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
 
         //If error
         if (!Message.empty())
-            IsValid_Errors<<"malformed input, ISRC "<<Message;
+            IsValid_Errors<<"malformed input, IDIT "<<Message;
     }
 
     //ISRC
