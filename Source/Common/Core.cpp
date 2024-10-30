@@ -556,7 +556,7 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
         CriticalSectionLocker CSL(CS);
 
         StdAll(Handler);
-        if (!FileNotValid_Skip)
+        if (!FileNotValid_Skip && !Canceled)
         {
             //We handle it as a normal file
             Handler++;
@@ -596,9 +596,10 @@ size_t Core::Menu_File_Open_Files_Finish_End()
         Canceled=true;
         if (Handler->second.Riff)
             Handler->second.Riff->Cancel();
+
+	while(Handler->second.Riff && !Handler->second.Riff->Canceled_Get())
+	    Sleep(20);
         CS.Leave();
-	    while(Handler->second.Riff && !Handler->second.Riff->Canceled_Get())
-		    Sleep(20);
     }
 
     CriticalSectionLocker CSL(CS);
