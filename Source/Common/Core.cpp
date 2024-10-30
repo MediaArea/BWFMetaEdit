@@ -556,7 +556,7 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
         CriticalSectionLocker CSL(CS);
 
         StdAll(Handler);
-        if (!FileNotValid_Skip)
+        if (!FileNotValid_Skip && !Canceled)
         {
             //We handle it as a normal file
             Handler++;
