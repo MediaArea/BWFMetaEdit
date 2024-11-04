@@ -4,6 +4,18 @@ Notes:
 - Deleted
 x Correction
 
+Version 24.10, 2024-11-04
+-------------
++ Add file creation and last modification date to technical output
++ Add IDIT field in LIST-INFO
+x Fix crash or hang in some cases
+x Generate MD5 in separate thread
+x Generate data MD5 only when necessary
+x Avoid recomputing data MD5 after file save
+x Fix issue causing freeze despite progress bar dialog
+x Display progress dialog when saving a single file or generating data MD5
+x Fix export of core CSV
+
 Version 24.05, 2024-05-14
 -------------
 x Better support of big (but not too big) XML content

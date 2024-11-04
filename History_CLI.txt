@@ -4,6 +4,15 @@ Notes:
 - Deleted
 x Correction
 
+Version 24.10, 2024-11-04
+-------------
++ Add ability to append values to text fields with +=
++ Add file creation and last modification date to technical output
++ Add IDIT field in LIST-INFO
+x Generate data MD5 only when necessary
+x Avoid recomputing data MD5 after file save
+x Fix export of core CSV
+
 Version 24.05, 2024-05-14
 -------------
 x Better support of big (but not too big) XML content
