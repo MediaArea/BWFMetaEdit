@@ -140,8 +140,8 @@ When you have done all the prerequisite for your configuration, then build BWF M
 
 ```bat
 git clone https://github.com/MediaArea/BWFMetaEdit.git
-devenv BWFMetaEdit\Project\MSVC2017\CLI\BWF_MetaEdit_CLI.vcxproj /upgrade
-MSBuild BWFMetaEdit\Project\MSVC2017\CLI\BWF_MetaEdit_CLI.vcxproj
+devenv BWFMetaEdit\Project\MSVC2022\CLI\BWF_MetaEdit_CLI.vcxproj /upgrade
+MSBuild BWFMetaEdit\Project\MSVC2022\CLI\BWF_MetaEdit_CLI.vcxproj
 ```
 
 ### Build BWF MetaEdit GUI
