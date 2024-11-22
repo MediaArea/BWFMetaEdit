@@ -15,7 +15,7 @@ rmdir BWFMetaEdit_CLI_Windows_x64 /S /Q
 mkdir BWFMetaEdit_CLI_Windows_x64
 
 rem --- Copying : Exe ---
-xcopy ..\Project\MSVC2017\CLI\x64\Release\bwfmetaedit.exe BWFMetaEdit_CLI_Windows_x64\ /S
+xcopy ..\Project\MSVC2022\CLI\x64\Release\bwfmetaedit.exe BWFMetaEdit_CLI_Windows_x64\ /S
 
 rem --- Copying : Plugins ---
 xcopy ..\Source\Ressource\Plugin\Custom\* BWFMetaEdit_CLI_Windows_x64\Plugin\Custom\ /S
