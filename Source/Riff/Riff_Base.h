@@ -411,6 +411,8 @@ public:
         bool                IsRF64;
         bool                Trace_UseDec;
         bool                Read_Only;
+        bool                BextDescriptionFromFileName;
+        bool                OriginatorReferenceFromFileName;
 
         CriticalSection     CS;
         float               Progress;
@@ -450,6 +452,8 @@ public:
             IsRF64=false;
             Trace_UseDec=false;
             Read_Only=false;
+            BextDescriptionFromFileName=false;
+            OriginatorReferenceFromFileName=false;
             Progress=0;
             Canceling=false;
         }
