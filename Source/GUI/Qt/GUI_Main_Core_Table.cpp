@@ -131,7 +131,7 @@ void GUI_Main_Core_Table::contextMenuEvent (QContextMenuEvent* Event)
 }
 
 //---------------------------------------------------------------------------
-bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, QEvent *Event) 
+bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, QEvent *Event)
 {
     //Must we edit or not
     if (!index.isValid())
@@ -154,7 +154,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
 
     //Should we handle edition manualy?
     if (trigger!=DoubleClicked && trigger!=AnyKeyPressed)
-        return QTableWidget::edit(index, trigger, Event); //Normal editing 
+        return QTableWidget::edit(index, trigger, Event); //Normal editing
 
     //Retrieving data
     QString ModifiedContentQ;
@@ -168,7 +168,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         ModifiedContentQ=index.model()->data(index.model()->index(index.row(), index.column(), rootIndex())).toString(); //Old value
 
     //Description / Originator / OriginatorReference
-    if (Field=="Description" || Field=="Originator" || Field=="OriginatorReference" || Field=="IARL" || Field=="IART" || Field=="ICMS" || Field=="ICMT" || Field=="ICOP" || Field=="IENG" || Field=="IGNR" || Field=="IKEY" || Field=="IMED" || Field=="INAM" || Field=="IPRD" || Field=="ISBJ" || Field=="ISFT" || Field=="ISRC" || Field=="ISRF" || Field=="ITCH") //Most INFO fields added in order to permit to show warning 
+    if (Field=="Description" || Field=="Originator" || Field=="OriginatorReference" || Field=="IARL" || Field=="IART" || Field=="ICMS" || Field=="ICMT" || Field=="ICOP" || Field=="IENG" || Field=="IGNR" || Field=="IKEY" || Field=="IMED" || Field=="INAM" || Field=="IPRD" || Field=="ISBJ" || Field=="ISFT" || Field=="ISRC" || Field=="ISRF" || Field=="ITCH") //Most INFO fields added in order to permit to show warning
     {
         //User interaction
         GUI_Main_xxxx_TextEditDialog* Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName, Field, ModifiedContentQ);
@@ -194,7 +194,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
     }
 
     //Description / Originator / OriginatorReference
-    if (Field=="UMID") 
+    if (Field=="UMID")
     {
         //User interaction
         GUI_Main_xxxx_UmidDialog* Edit=new GUI_Main_xxxx_UmidDialog(C, FileName, Field, ModifiedContentQ, this);
@@ -218,7 +218,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
     }
 
     //BextVersion
-    if (Field=="BextVersion") 
+    if (Field=="BextVersion")
     {
         if (Main->Bext_Toggle_Get())
         {
@@ -235,7 +235,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
                 else
                     NewValue=2;
             }
-            else 
+            else
                 NewValue++;
 
             //Filling
@@ -288,7 +288,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
     }
 
     //TimeReference
-    if (Field=="TimeReference (translated)" || Field=="TimeReference") 
+    if (Field=="TimeReference (translated)" || Field=="TimeReference")
     {
         //User interaction
         GUI_Main_xxxx_TimeReferenceDialog* Edit=new GUI_Main_xxxx_TimeReferenceDialog(C, FileName, "TimeReference");
@@ -311,7 +311,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
     }
 
     //History
-    if (Field=="CodingHistory") 
+    if (Field=="CodingHistory")
     {
         //User interaction
         GUI_Main_xxxx_CodingHistoryDialog* Edit=new GUI_Main_xxxx_CodingHistoryDialog(C, FileName, Field, ModifiedContentQ, C->Rules);
@@ -335,7 +335,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
     }
 
     //f
-    if (Field=="LoudnessValue" || Field=="LoudnessRange" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness") 
+    if (Field=="LoudnessValue" || Field=="LoudnessRange" || Field=="MaxTruePeakLevel" || Field=="MaxMomentaryLoudness" || Field=="MaxShortTermLoudness")
     {
         //User interaction
         GUI_Main_xxxx_Loudness* Edit=new GUI_Main_xxxx_Loudness(C, FileName, Field, ModifiedContentQ, C->Rules.Tech3285_Req);
@@ -358,7 +358,7 @@ bool GUI_Main_Core_Table::edit (const QModelIndex &index, EditTrigger trigger, Q
         return false;
     }
 
-    return QTableWidget::edit(index, trigger, Event); //Normal editing 
+    return QTableWidget::edit(index, trigger, Event); //Normal editing
 }
 
 //---------------------------------------------------------------------------
@@ -457,13 +457,13 @@ void GUI_Main_Core_Table::onValuesChanged(bool onlySelected)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-const string &GUI_Main_Core_Table::Fill_Content () 
+const string &GUI_Main_Core_Table::Fill_Content ()
 {
     return C->Core_Get();
 }
 
 //---------------------------------------------------------------------------
-group GUI_Main_Core_Table::Fill_Group () 
+group GUI_Main_Core_Table::Fill_Group ()
 {
     return Group_Core;
 }
@@ -484,6 +484,6 @@ bool GUI_Main_Core_Table::Fill_Enabled (const string &FileName, const string &Fi
 
     if (!C->Overwrite_Reject)
         return true;
-    
+
     return Value.empty();
 }

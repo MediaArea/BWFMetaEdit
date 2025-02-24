@@ -96,4 +96,3 @@ void GUI_Main_xxxx_CodePageDialog::OnAccept ()
     accept();
 }
 
-

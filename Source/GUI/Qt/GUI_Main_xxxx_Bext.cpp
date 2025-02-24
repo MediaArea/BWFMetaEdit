@@ -45,7 +45,7 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, i
     Dialog=new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(Dialog, SIGNAL(accepted()), this, SLOT(OnAccept()));
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
-    
+
     //Extra - Bext
     Version=new QDoubleSpinBox(this);
     Version->setMaximum(Maximum);

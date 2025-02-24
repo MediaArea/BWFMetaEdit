@@ -103,7 +103,6 @@ void OriginationTimeDelegate::updateEditorGeometry(QWidget *editor, const QStyle
     editor->setGeometry(option.rect);
 }
 
-   
 //***************************************************************************
 // TimeReferenceDelegate
 //***************************************************************************
@@ -194,7 +193,7 @@ GUI_Main_xxxx__Common::GUI_Main_xxxx__Common(Core* _C, GUI_Main* parent)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool GUI_Main_xxxx__Common::event (QEvent* Event) 
+bool GUI_Main_xxxx__Common::event (QEvent* Event)
 {
     //Should fill data
     if (Event->type()==QEvent::User)
@@ -228,7 +227,7 @@ bool GUI_Main_xxxx__Common::event (QEvent* Event)
         Fill();
         Colors_Update();
         setFocus();
-        
+
         Event->accept();
         return true;
     }
@@ -240,7 +239,7 @@ bool GUI_Main_xxxx__Common::event (QEvent* Event)
         Fill();
         Colors_Update();
         setFocus();
-        
+
         Event->accept();
         return true;
     }
@@ -274,7 +273,7 @@ QStyleOptionViewItem GUI_Main_xxxx__Common::viewOptions() const
 #endif
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) 
+void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles)
 {
     //Preparing
     if (Updating)
@@ -285,7 +284,7 @@ void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QMo
     string FileName=FileName_Before+item(topLeft.row(), FILENAME_COL)->text().toUtf8().data();
     string Field=horizontalHeaderItem(topLeft.column())->text().toUtf8().data();
     string ModifiedContent=topLeft.model()->data(topLeft.model()->index(topLeft.row(), topLeft.column(), rootIndex())).toString().toUtf8().data();
-    
+
     //Filling
     if (!(Field=="Cue" || Field=="XMP" || Field=="aXML" || Field=="iXML" || Field =="bext")) //this is special cases
         C->Set(FileName, Field, ModifiedContent);
@@ -305,7 +304,7 @@ void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QMo
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx__Common::Colors_Update () 
+void GUI_Main_xxxx__Common::Colors_Update ()
 {
     for (int Row=0; Row<rowCount(); Row++)
     {
@@ -320,7 +319,7 @@ void GUI_Main_xxxx__Common::Colors_Update ()
 }
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string &FileName, const string &Field) 
+void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string &FileName, const string &Field)
 {
     if (!C->IsValid_Get(FileName) || C->IsReadOnly_Get(FileName) || !Fill_Enabled(FileName, Field, C->Get(FileName, Field=="Cue"?"cuexml":Field)))
     {
@@ -370,7 +369,7 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
 }
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx__Common::SetEnabled (int Row, const QString &Field) 
+void GUI_Main_xxxx__Common::SetEnabled (int Row, const QString &Field)
 {
     for (int Column=FILENAME_COL; Column<columnCount(); Column++)
     {
@@ -386,7 +385,7 @@ void GUI_Main_xxxx__Common::SetEnabled (int Row, const QString &Field)
 }
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx__Common::SetText (int Row, const QString &Field) 
+void GUI_Main_xxxx__Common::SetText (int Row, const QString &Field)
 {
     for (int Column=FILENAME_COL; Column<columnCount(); Column++)
     {
@@ -406,11 +405,11 @@ void GUI_Main_xxxx__Common::SetText (int Row, const QString &Field)
 }
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx__Common::Fill () 
+void GUI_Main_xxxx__Common::Fill ()
 {
     //Preparing
     Updating=true;
-    
+
     //Showing
     ZtringListList List;
     List.Separator_Set(0, EOL);
@@ -492,7 +491,7 @@ void GUI_Main_xxxx__Common::Fill ()
         else
             ColumnMissing_Count++;
 
-    //Filling - VerticalHeader and content 
+    //Filling - VerticalHeader and content
     for (size_t File_Pos=1; File_Pos<List.size(); File_Pos++)
     {
         //Add close button
@@ -560,7 +559,7 @@ void GUI_Main_xxxx__Common::Fill ()
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx__Common::OnItemSelectionChanged () 
+void GUI_Main_xxxx__Common::OnItemSelectionChanged ()
 {
     C->Menu_File_Close_File_FileName_Clear();
 

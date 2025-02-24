@@ -35,14 +35,14 @@ GUI_Main_Core_Text::GUI_Main_Core_Text(Core* _C, QWidget* parent)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool GUI_Main_Core_Text::event (QEvent *Event) 
+bool GUI_Main_Core_Text::event (QEvent *Event)
 {
     if (Event->type()==QEvent::User)
     {
         //Showing
         clear();
         insertPlainText(QString::fromUtf8(C->Core_Get().c_str()));
-        
+
         //Event accepting
         Event->accept();
         return true;

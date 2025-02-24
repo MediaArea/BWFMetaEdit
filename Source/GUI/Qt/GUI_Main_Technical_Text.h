@@ -31,7 +31,7 @@ public:
     GUI_Main_Technical_Text(Core* C, QWidget* parent);
 
     //Events
-    bool event (QEvent *Event); 
+    bool event (QEvent *Event);
 
 private:
     //Internal

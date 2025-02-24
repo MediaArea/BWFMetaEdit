@@ -46,7 +46,7 @@ class GUI_Main_xxxx_Loudness : public QDialog
 {
     Q_OBJECT
 
-public:   
+public:
     //Constructor/Destructor
     GUI_Main_xxxx_Loudness(Core* C, const std::string &FileName_, const std::string &Field_, const QString &Value, bool Rules_Requirements_, QWidget* parent=NULL);
 

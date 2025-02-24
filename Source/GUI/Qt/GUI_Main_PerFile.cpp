@@ -138,7 +138,6 @@ QVariant PerFileModel::data(const QModelIndex &index, int role) const
     if (index.row()<0 || index.row()>=Count)
         return toReturn;
 
-
     switch (role)
     {
     case FileRole:
@@ -201,7 +200,6 @@ Q_INVOKABLE void PerFileModel::closeFile(const QString& FileName)
     Main->OnMenu_File_Close_Files();
     Fill();
 };
-
 
 //---------------------------------------------------------------------------
 Q_INVOKABLE bool PerFileModel::valid(const QString& FileName) const
@@ -318,7 +316,6 @@ Q_INVOKABLE bool PerFileModel::readOnly(const QString& FileName) const {
 Q_INVOKABLE bool PerFileModel::isWritable(const QString& FileName) const {
     return valid(FileName) && !readOnly(FileName);
 }
-
 
 //---------------------------------------------------------------------------
 Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString& Field)
@@ -460,7 +457,6 @@ void PerFileModel::onValuesChanged(bool onlySelected)
 
     Main->Menu_Update();
 }
-
 
 //---------------------------------------------------------------------------
 void PerFileModel::Fill()

@@ -31,7 +31,7 @@ public:
     GUI_Main_Output_Log(Core* C, int KindOfLog, QWidget* parent);
 
     //Events
-    bool event (QEvent *Event); 
+    bool event (QEvent *Event);
 
 private:
     //Internal

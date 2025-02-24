@@ -257,7 +257,7 @@ GUI_Preferences::GUI_Preferences(GUI_Main* parent)
 : QDialog(parent)
 {
     Main=parent;
-    
+
     setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
     setWindowTitle("BWF MetaEdit preferences");
     Dialog=new QDialogButtonBox(QDialogButtonBox::RestoreDefaults | QDialogButtonBox::Save | QDialogButtonBox::Cancel);
@@ -315,7 +315,7 @@ size_t GUI_Preferences::Group_Options_Count_Get(group Group, bool ForTemporaryPr
 {
     if (ForTemporaryPrefs && !Groups[Group].InTemporaryPrefs)
         return 0;
-        
+
     return Groups[Group].Option_Size;
 }
 
@@ -371,11 +371,11 @@ std::string GUI_Preferences::ConfigDirectory_Get()
     #else //_WIN32
         ApplicationFolder=Ztring().From_Local(std::getenv("HOME"))+__T("/.bwfmetaedit");
     #endif //_WIN32
-    
+
     //Creating the directory
     if (!Dir::Exists(ApplicationFolder))
         Dir::Create(ApplicationFolder);
-    
+
     //Testing
     if (!Dir::Exists(ApplicationFolder))
         return string();
@@ -408,7 +408,7 @@ void GUI_Preferences::OnLoad()
     {
         //No config file, creating a default one
         LoadOriginalConfig();
-        
+
         OnSave();
         Config.Load();
         if (Config.empty())
@@ -428,7 +428,7 @@ void GUI_Preferences::OnLoad()
         for (size_t Option=0; Option<Groups[Group].Option_Size; Option++)
         {
             if (Config(Groups[Group].Option[Option].UniqueName).empty())
-                Config(Groups[Group].Option[Option].UniqueName).From_Number(Groups[Group].Option[Option].DefaultConfigValue);    
+                Config(Groups[Group].Option[Option].UniqueName).From_Number(Groups[Group].Option[Option].DefaultConfigValue);
             switch (Groups[Group].Option[Option].Type)
             {
                 case Type_CheckBox     : CheckBoxes  [Group*options::MaxCount+Option]->setChecked((bool)Config(Groups[Group].Option[Option].UniqueName).To_int64u()); connect(CheckBoxes  [Group*options::MaxCount+Option], SIGNAL(clicked()), this, SLOT(OnClicked())); break;
@@ -541,7 +541,7 @@ void GUI_Preferences::OnSave()
                 case Type_RadioButton  : Content+=RadioButtons[Group*options::MaxCount+Option]->isChecked()?__T('1'):__T('0'); break;
                 default                 : ;
             }
-            
+
             Content+=EOL;
             Prefs.Write(Content);
         }
@@ -608,7 +608,7 @@ void GUI_Preferences::OnSave()
         Prefs.Write(Content);
         Main->Bext_Toggle_Set(Data.To_int8u()?true:false);
     }
-        
+
     //Menu
     Main->Menu_Update();
 
@@ -618,9 +618,9 @@ void GUI_Preferences::OnSave()
 //---------------------------------------------------------------------------
 void GUI_Preferences::OnRejected()
 {
-    //Loading the original config file 
+    //Loading the original config file
     OnLoad();
-    
+
     //Configuring the main view
     OnClicked();
 }
@@ -784,7 +784,7 @@ void GUI_Preferences::Create()
     for (size_t Kind=0; Kind<Group_Max; Kind++)
     {
         QVBoxLayout* Columns=new QVBoxLayout();
-        
+
         switch (Kind)
         {
             case Group_Tech     : Columns->addWidget(new QLabel("Select which technical values should appear on the 'Tech' table view of BWF MetaEdit, others will be hidden.")); break;
@@ -793,7 +793,7 @@ void GUI_Preferences::Create()
             case Group_Encoding : Columns->addWidget(new QLabel("If there is not CSET chunk or if it should be ignored, consider non ASCII bytes as:")); break;
             case Group_Encoding_Fallback : Columns->addWidget(new QLabel("If UTF8 is not selected or UTF8 detection fails, fallback on:")); break;
         }
-        
+
         for (size_t Option=0; Option<Groups[Kind].Option_Size; Option++)
         {
             switch (Groups[Kind].Option[Option].Type)
@@ -837,7 +837,6 @@ void GUI_Preferences::Create()
         Central->addTab(ScrollArea, "Encoding");
     }
 
-
     //Views related options
     {
         QScrollArea* ScrollArea=new QScrollArea();
@@ -872,7 +871,6 @@ void GUI_Preferences::Create()
     Extra_BackupDirectory_Specific=new QLineEdit();
     Extra_BackupDirectory_Specific_Browse=new QPushButton(QCommonStyle().standardIcon(QStyle::SP_DirOpenIcon), "Browse...");
     connect(Extra_BackupDirectory_Specific_Browse, SIGNAL(clicked(bool)), this, SLOT(OnExtra_BackupDirectory_Specific_BrowseClicked(bool)));
-
 
     QGridLayout* Extra_BackupDirectory_Layout=new QGridLayout();
     Extra_BackupDirectory_Layout->addWidget(Extra_BackupDirectory_Default, 0, 0);

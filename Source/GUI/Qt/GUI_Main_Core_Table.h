@@ -28,7 +28,7 @@ using namespace std;
 // GUI_Main_Core_Table
 //***************************************************************************
 
-class GUI_Main_Core_Table : public GUI_Main_xxxx__Common  
+class GUI_Main_Core_Table : public GUI_Main_xxxx__Common
 {
     Q_OBJECT
 

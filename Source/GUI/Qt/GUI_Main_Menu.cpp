@@ -407,7 +407,6 @@ class SleeperThread : public QThread
     }
 };
 
-
 //---------------------------------------------------------------------------
 void GUI_Main::OnMenu_File_Open_Files()
 {
@@ -715,7 +714,7 @@ void GUI_Main::OnMenu_Export_Technical_CSV_Global()
     {
         //Configuring
         C->Out_Tech_CSV_FileName.clear();
-        
+
         //Display
         Menu_Export_Technical_CSV_Global->setChecked(false);
         return;
@@ -723,12 +722,12 @@ void GUI_Main::OnMenu_Export_Technical_CSV_Global()
 
     //Configuring
     C->Out_Tech_CSV_FileName=FileNamesQ.toUtf8().data();
-    
+
     //Running
     C->Simulation_Enabled=true;
     C->Batch_Launch();
     C->Simulation_Enabled=false;
-    
+
     //Clearing
     C->Out_Tech_CSV_FileName.clear();
 }
@@ -790,7 +789,7 @@ void GUI_Main::OnMenu_Export_Core_CSV_Global()
     {
         //Configuring
         C->Out_Core_CSV_FileName.clear();
-        
+
         //Display
         Menu_Export_Core_CSV_Global->setChecked(false);
         return;
@@ -798,12 +797,12 @@ void GUI_Main::OnMenu_Export_Core_CSV_Global()
 
     //Configuring
     C->Out_Core_CSV_FileName=FileNamesQ.toUtf8().data();
-    
+
     //Running
     C->Simulation_Enabled=true;
     C->Batch_Launch();
     C->Simulation_Enabled=false;
-    
+
     //Clearing
     C->Out_Core_CSV_FileName.clear();
 }
@@ -820,7 +819,7 @@ void GUI_Main::OnMenu_Export_Core_XML_Global()
     {
         //Configuring
         C->Out_Core_XML_FileName.clear();
-        
+
         //Display
         Menu_Export_Core_XML_Global->setChecked(false);
         return;
@@ -828,12 +827,12 @@ void GUI_Main::OnMenu_Export_Core_XML_Global()
 
     //Configuring
     C->Out_Core_XML_FileName=FileNamesQ.toUtf8().data();
-    
+
     //Running
     C->Simulation_Enabled=true;
     C->Batch_Launch();
     C->Simulation_Enabled=false;
-    
+
     //Clearing
     C->Out_Core_XML_FileName.clear();
 }
@@ -843,12 +842,12 @@ void GUI_Main::OnMenu_Export_Core_XML_PerFile()
 {
     //Configuring
     C->Out_Core_XML=true;
-    
+
     //Running
     C->Simulation_Enabled=true;
     C->Batch_Launch();
     C->Simulation_Enabled=false;
-    
+
     //Clearing
     C->Out_Core_XML=false;
 }
@@ -858,12 +857,12 @@ void GUI_Main::OnMenu_Import__PMX_XML()
 {
     //Configuring
     C->In__PMX_XML=true;
-    
+
     //Running
     C->Simulation_Enabled=true;
     C->Batch_Launch();
     C->Simulation_Enabled=false;
-    
+
     //Clearing
     C->In__PMX_XML=false;
 }
@@ -873,12 +872,12 @@ void GUI_Main::OnMenu_Export__PMX_XML_PerFile()
 {
     //Configuring
     C->Out__PMX_XML=true;
-    
+
     //Running
     C->Simulation_Enabled=true;
     C->Batch_Launch();
     C->Simulation_Enabled=false;
-    
+
     //Clearing
     C->Out__PMX_XML=false;
 }
@@ -888,12 +887,12 @@ void GUI_Main::OnMenu_Export_aXML_XML_PerFile()
 {
     //Configuring
     C->Out_aXML_XML=true;
-    
+
     //Running
     C->Simulation_Enabled=true;
     C->Batch_Launch();
     C->Simulation_Enabled=false;
-    
+
     //Clearing
     C->Out_aXML_XML=false;
 }
@@ -903,12 +902,12 @@ void GUI_Main::OnMenu_Export_iXML_XML_PerFile()
 {
     //Configuring
     C->Out_iXML_XML=true;
-    
+
     //Running
     C->Simulation_Enabled=true;
     C->Batch_Launch();
     C->Simulation_Enabled=false;
-    
+
     //Clearing
     C->Out_iXML_XML=false;
 }
@@ -1290,7 +1289,7 @@ void GUI_Main::OnMenu_Options_Overwrite_Reject(bool)
                                         Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Overwrite_Reject]->setChecked(false);
                                         break;
             default:                    ; // Should never be reached
-        } 
+        }
     }
     else
     {
@@ -1358,7 +1357,7 @@ void GUI_Main::OnMenu_Options_GenerateMD5(bool)
                                         Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Generate]->setChecked(false);
                                         break;
             default:                    ; // Should never be reached
-        } 
+        }
     }
     else
     {
@@ -1419,7 +1418,7 @@ void GUI_Main::OnMenu_Options_EmbedMD5(bool)
                 case QMessageBox::No      : // No was clicked
                                             return;
                 default:                    ; // Should never be reached
-            } 
+            }
         }
 
         Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed_AuthorizeOverWritting]->setChecked(false);
@@ -1453,7 +1452,7 @@ void GUI_Main::OnMenu_Options_EmbedMD5_AuthorizeOverWritting(bool)
                 case QMessageBox::No      : // No was clicked
                                             return;
                 default:                    ; // Should never be reached
-            } 
+            }
         }
 
         Menu_Fields_CheckBoxes[Group_MD5*options::MaxCount+Option_MD5_Embed]->setChecked(true);
@@ -1536,7 +1535,7 @@ void GUI_Main::OnMenu_Options_Preferences()
             case QMessageBox::Cancel  : // Cancel was clicked
                                         return;
             default:                    ; // Should never be reached
-        } 
+        }
     }
 
     //Showing
@@ -1576,7 +1575,7 @@ void GUI_Main::ToolBar_Create()
 {
     ToolBar=new QToolBar(tr("ToolBar"));
     ToolBar->setIconSize(QSize(32, 32));
-        
+
     ToolBar->addAction(Menu_File_Open_Files);
     ToolBar->addAction(Menu_File_Open_Directory);
     ToolBar->addSeparator();

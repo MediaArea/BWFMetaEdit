@@ -137,7 +137,6 @@ string CC4ToHex(string Id)
     return Ztring(__T("0x")+Ztring().From_Number(Value, 16)).To_UTF8();
 }
 
-
 //***************************************************************************
 // CueDialog_SampleRateDialog
 //***************************************************************************
@@ -797,7 +796,6 @@ void GUI_Main_xxxx_CueDialog::OnMenu_Load()
     }
 }
 
-
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_CueDialog::OnAccept()
 {
@@ -1006,7 +1004,6 @@ void GUI_Main_xxxx_CueDialog::Xml2List()
         Updating=false;
         return;
     }
-
 
     for(tinyxml2::XMLNode* Node=Root->FirstChildElement("Cue"); Node; Node=Node->NextSibling())
     {

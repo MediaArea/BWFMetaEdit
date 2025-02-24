@@ -130,4 +130,3 @@ void GUI_Main_xxxx_Loudness::OnAccept ()
     accept();
 }
 
-

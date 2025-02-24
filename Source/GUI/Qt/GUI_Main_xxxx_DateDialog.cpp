@@ -150,7 +150,7 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
         Central_Calendar_Layout->setContentsMargins(0, 0, 0, 0);
     #endif
     Central_Calendar->setLayout(Central_Calendar_Layout);
-        
+
     Label=new QLabel(this);
 
     QVBoxLayout* L=new QVBoxLayout();
@@ -163,7 +163,7 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
     L->addWidget(Dialog);
 
     setLayout(L);
-        
+
     //Filling
     TextEdit->setPlainText(Value);
     string ValueS=Value.toUtf8().data();
@@ -359,29 +359,29 @@ void GUI_Main_xxxx_DateDialog::OnMenu_Calendar ()
         }
     }
     else if (Value.size()<10
-      ||  Value[0]< '1' || Value[0]> '9' 
-      ||  Value[1]< '0' || Value[1]> '9' 
-      ||  Value[2]< '0' || Value[2]> '9' 
-      ||  Value[3]< '0' || Value[3]> '9' 
+      ||  Value[0]< '1' || Value[0]> '9'
+      ||  Value[1]< '0' || Value[1]> '9'
+      ||  Value[2]< '0' || Value[2]> '9'
+      ||  Value[3]< '0' || Value[3]> '9'
       ||  Value[4]!='-'
-      ||  Value[5]< '0' || Value[5]> '1' 
+      ||  Value[5]< '0' || Value[5]> '1'
       || (Value[6]< (Value[5]=='0'?'1':'0')) || (Value[6]> (Value[5]=='1'?'2':'9')) //Only 01-12
       ||  Value[7]!='-'
-      ||  Value[8]< '0' || Value[8]> '3' 
+      ||  Value[8]< '0' || Value[8]> '3'
       || (Value[9]< (Value[8]=='0'?'1':'0')) || (Value[9]> (Value[8]=='3'?'1':'9'))) //Only 01-31
         ; //
     else
     {
         Value.erase(0, 11);
         if (Value.size()<8
-          ||  Value[0]< '0' || Value[0]> '9' 
+          ||  Value[0]< '0' || Value[0]> '9'
           ||  Value[1]< '0' || (Value[1]> (Value[0]=='2'?'3':'9')) //Only 00-23
           ||  Value[2]!=':'
-          ||  Value[3]< '0' || Value[3]> '5' 
-          ||  Value[4]< '0' || Value[4]> '9' 
+          ||  Value[3]< '0' || Value[3]> '5'
+          ||  Value[4]< '0' || Value[4]> '9'
           ||  Value[5]!=':'
-          ||  Value[6]< '0' || Value[6]> '5' 
-          ||  Value[7]< '0' || Value[7]> '9') 
+          ||  Value[6]< '0' || Value[6]> '5'
+          ||  Value[7]< '0' || Value[7]> '9')
         {
             TimeEdit->setVisible(false);
             TimeEdit_Activated->setChecked(false);

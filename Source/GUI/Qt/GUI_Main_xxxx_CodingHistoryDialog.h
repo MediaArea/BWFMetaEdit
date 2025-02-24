@@ -82,7 +82,7 @@ private Q_SLOTS:
 protected:
     //Events
     void hideEvent (QHideEvent* Event);
-    
+
 private:
     //Internal
     Core*   C;

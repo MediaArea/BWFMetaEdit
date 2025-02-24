@@ -147,7 +147,6 @@ enum option_directories
     Option_Directories_Max
 };
 
-
 enum type
 {
     Type_CheckBox,

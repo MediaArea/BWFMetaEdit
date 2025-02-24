@@ -61,7 +61,7 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
     connect(LineEdit, SIGNAL(valueChanged (const QString &)), this, SLOT(OnValueEdited (const QString &)));
     LimeEdit_Label=new QLabel(this);
     LimeEdit_Label->setText(tr("(in samples)"));
-        
+
     QGridLayout* L=new QGridLayout();
     L->addWidget(TimeEdit, 0, 0);
     L->addWidget(TimeEdit_Label, 0, 1);

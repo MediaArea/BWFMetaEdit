@@ -37,7 +37,7 @@ GUI_Main_Output_stderr::GUI_Main_Output_stderr(Core* _C, QWidget* parent)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool GUI_Main_Output_stderr::event (QEvent *Event) 
+bool GUI_Main_Output_stderr::event (QEvent *Event)
 {
     if (Event->type()==QEvent::User)
     {

@@ -40,7 +40,7 @@ CodingHistoryDialog_TableWidget::CodingHistoryDialog_TableWidget (ZtringListList
 }
 
 //---------------------------------------------------------------------------
-void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) 
+void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles)
 {
     if (Updating)
         return;
@@ -71,9 +71,9 @@ void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft,
     }
     //Sizing
     if (Row>=List->size())
-        List->resize(Row+1);    
+        List->resize(Row+1);
     if (Column>=(*List)[Row].size())
-        (*List)[Row].resize(Column+1);    
+        (*List)[Row].resize(Column+1);
 
     //Filling
     (*List)[Row][Column]=Ztring().From_UTF8(Value);
@@ -148,7 +148,6 @@ void CodingHistoryDialog_Delegate::updateEditorGeometry(QWidget *editor, const Q
 {
     editor->setGeometry(option.rect);
 }
-
 
 //***************************************************************************
 // CodingAlgorithmDelegate
@@ -336,7 +335,7 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
     TextEdit->setPlainText(OldText);
     string Text=OldText.toUtf8().data();
     if (Text.find("Coding History ")==0)
-        Text.erase(0, 15);    
+        Text.erase(0, 15);
     if (Text.size()==0
      || (Text.size()>=2
       && Text[1]=='='
@@ -355,7 +354,7 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
 void GUI_Main_xxxx_CodingHistoryDialog::OnAccept ()
 {
     IsAccepted=true;
-    
+
     accept();
 }
 
@@ -364,7 +363,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Load()
 {
     //User interaction
     QString FileNamesQ = QFileDialog::getOpenFileName(this, "", QString::fromUtf8(C->OpenSaveFolder.c_str()), "");
-    
+
     if (FileNamesQ.isEmpty())
         return;
 
@@ -409,7 +408,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::OnMenu_Save()
 
     //User interaction
     QString FileNamesQ = QFileDialog::getSaveFileName(this, "", QString::fromUtf8(C->OpenSaveFolder.c_str()), "");
-    
+
     if (FileNamesQ.isEmpty())
         return;
 
@@ -463,7 +462,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::List2Text ()
                     ToReturn+=',';
             }
         }
-        
+
         while (!ToReturn.empty() && (*(ToReturn.end()-1))==',')
             ToReturn.erase(ToReturn.end()-1);
 
@@ -472,7 +471,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::List2Text ()
 
         ToReturn+='\n';
     }
-    
+
     if (!ToReturn.empty())
         TextEdit->setPlainText(QString::fromUtf8(ToReturn.To_UTF8().c_str()));
 }
@@ -482,7 +481,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
 {
     //Preparing
     Table->Updating=true;
-	Table->clearContents();
+    Table->clearContents();
     //Warning display
     bool Ununderstable=false;
     bool Modified=false;
@@ -493,16 +492,14 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
     if ((!Rules.CodingHistory_Rec || Rules.CodingHistory_Rec_Ex_Comma))
         AddComma->setChecked(Text.find(__T(",\n"))!=string::npos);
 
-//	if(Text.empty())
-//		return;
-	List.clear();
+    List.clear();
     List.Separator_Set(0, "\n");
     if (Text.find(__T(", "))==string::npos)
         List.Separator_Set(1, ",");
     else
         List.Separator_Set(1, ", ");
     List.Write(Text);
-	int size = List.size();
+    int size = List.size();
 
     Table->setRowCount((int)List.size()+1);
     Table->setColumnCount(6);
@@ -619,7 +616,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
                                         Central->setCurrentIndex(1);
                                         return;
             default                 : ; //Continue
-        } 
+        }
     }
 
     //Preparing
