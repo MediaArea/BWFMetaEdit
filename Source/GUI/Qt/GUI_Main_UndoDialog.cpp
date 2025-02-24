@@ -75,7 +75,7 @@ GUI_Main_UndoDialog::GUI_Main_UndoDialog(Core* _C, QWidget* parent)
 // Menu actions
 //***************************************************************************
 
-void GUI_Main_UndoDialog::currentItemChanged (QListWidgetItem* Current, QListWidgetItem* Previous)
+void GUI_Main_UndoDialog::currentItemChanged (QListWidgetItem*, QListWidgetItem*)
 {
     string ToDisplay=C->Menu_File_Undo_ListModifiedFiles(ListWidget->currentRow());
 

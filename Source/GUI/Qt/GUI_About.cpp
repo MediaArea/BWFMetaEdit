@@ -117,13 +117,13 @@ void GUI_About::OnContact()
     Button_Contact->setEnabled(false);
 }
 
-void GUI_About::showEvent(QShowEvent* Event)
+void GUI_About::showEvent(QShowEvent*)
 {
     NameVersion->setBackgroundRole(QPalette::Window);
     resizeEvent(NULL);
 }
 
-void GUI_About::resizeEvent(QResizeEvent* Event)
+void GUI_About::resizeEvent(QResizeEvent*)
 {
     NameVersion->setMaximumHeight((int)NameVersion->document()->documentLayout()->documentSize().height()+6);
 }

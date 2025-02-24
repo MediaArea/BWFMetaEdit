@@ -46,7 +46,7 @@ void Loudness_SpinBox::fixup(QString &input) const
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &FileName_, const std::string &Field_, const QString &Value, bool Rules_Requirements_, QWidget* parent)
+GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &FileName_, const std::string &Field_, const QString&, bool Rules_Requirements_, QWidget* parent)
 : QDialog(parent)
 {
     //Internal
@@ -55,7 +55,7 @@ GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &File
     Field=Field_;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle(Field.c_str());
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 

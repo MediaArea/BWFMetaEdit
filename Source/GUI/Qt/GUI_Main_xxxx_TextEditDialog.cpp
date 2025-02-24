@@ -39,7 +39,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
     ReadOnly=ReadOnly_;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle(QString::fromUtf8(Field.c_str()));
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -206,7 +206,7 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Save()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_TextEditDialog::Display(const QString& Value)
 {
-    static const size_t MaxSize=0x100000;
+    static const int MaxSize=0x100000;
     if (Value.size()<MaxSize)
     {
         BigValue.clear();

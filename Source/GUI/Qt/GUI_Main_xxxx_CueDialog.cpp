@@ -149,7 +149,7 @@ CueDialog_SampleRateDialog::CueDialog_SampleRateDialog(int32u Value, int32u Samp
     IsChanging=false;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("Edit");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -422,7 +422,6 @@ void CueDialogCombo_Delegate::setEditorData(QWidget* editor, const QModelIndex& 
         Value=index.model()->data(index, Qt::UserRole+1).toString();
 
         Editor->addItem("");
-        int Width=Editor->fontMetrics().maxWidth()*4;
         const codes* CSETCountries=CSETCountries_Get();
         for (codes::const_iterator It=CSETCountries->begin(); It!=CSETCountries->end(); It++)
         {
@@ -649,7 +648,7 @@ GUI_Main_xxxx_CueDialog::GUI_Main_xxxx_CueDialog(Core* C, const string& FileName
     IsAccepted=false;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("Cue editor");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -1320,7 +1319,7 @@ void GUI_Main_xxxx_CueDialog::List2Xml()
                     Ids.append(Value);
                 }
 
-                for (size_t Pos2=1; Pos2<0xFFFFFFFF; Pos2++)
+                for (long Pos2=1; Pos2<0xFFFFFFFF; Pos2++)
                 {
                     if (!Ids.contains(Pos2))
                     {

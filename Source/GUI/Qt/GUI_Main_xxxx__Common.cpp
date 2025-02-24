@@ -273,7 +273,7 @@ QStyleOptionViewItem GUI_Main_xxxx__Common::viewOptions() const
 #endif
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles)
+void GUI_Main_xxxx__Common::dataChanged ( const QModelIndex& topLeft, const QModelIndex&, const QVector<int>&)
 {
     //Preparing
     if (Updating)
@@ -460,8 +460,6 @@ void GUI_Main_xxxx__Common::Fill ()
 
         return;
     }
-
-    bool AddingMode=rowCount()>0;
 
     //Forcing reset, else this seems to be some Qt bug in the table display
     setRowCount(0);

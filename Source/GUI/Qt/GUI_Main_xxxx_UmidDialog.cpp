@@ -519,7 +519,7 @@ float HexStringToFloat(string &hexString)
 
     int j = 0;
 
-    for(int i = 0; i < hexString.size() ; i += 2)
+    for(size_t i = 0; i < hexString.size() ; i += 2)
     {
         sscanf(&hexString[i], "%02x", &number);
         byte_string[j] = (unsigned char)number;
@@ -578,7 +578,7 @@ qint64 FromHex64(const string &Value, size_t Pos, size_t Size)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &FileName_, const std::string &Field_, const QString &OldText, QWidget* parent)
+GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &FileName_, const std::string &Field_, const QString&, QWidget* parent)
 : QDialog(parent)
 {
     //Internal
@@ -593,7 +593,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
         SampleRate/=2;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("Unique Material IDentifier");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 

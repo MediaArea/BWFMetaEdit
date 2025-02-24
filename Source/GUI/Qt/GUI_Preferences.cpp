@@ -257,8 +257,8 @@ GUI_Preferences::GUI_Preferences(GUI_Main* parent)
 : QDialog(parent)
 {
     Main=parent;
-
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("BWF MetaEdit preferences");
     Dialog=new QDialogButtonBox(QDialogButtonBox::RestoreDefaults | QDialogButtonBox::Save | QDialogButtonBox::Cancel);
     connect(Dialog, SIGNAL(accepted()), this, SLOT(OnSave()));
@@ -284,7 +284,7 @@ GUI_Preferences::GUI_Preferences(GUI_Main* parent)
 }
 
 //---------------------------------------------------------------------------
-void GUI_Preferences::showEvent(QShowEvent* Event)
+void GUI_Preferences::showEvent(QShowEvent*)
 {
     QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
     if (Screen)

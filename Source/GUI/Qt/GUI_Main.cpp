@@ -544,8 +544,9 @@ void GUI_Main::OnOpen_Timer ()
                                           break;
             default                     : C->StdOut("???, finished"); break;
         }
-    if (View_Current==View_PerFile)
-        View->setVisible(true);
+
+        if (View_Current==View_PerFile)
+            View->setVisible(true);
 
         //Showing
         if (C->Text_stderr_Updated_Get())
@@ -565,18 +566,18 @@ void GUI_Main::Open_Timer_Init (open_timer_init Action)
     if (View_Current==View_PerFile)
         View->setVisible(false);
 
-        switch (Open_Timer_Action)
-        {
-            case Timer_Open_Files       : ProgressDialog=new QProgressDialog("Opening files...", "Abort Opening", 0, 100, this);
-                                          break;
-            case Timer_Open_Directory   : ProgressDialog=new QProgressDialog("Opening directory...", "Abort Opening", 0, 100, this);
-                                          break;
-            case Timer_DragAndDrop      : ProgressDialog=new QProgressDialog("Opening files...", "Abort Opening", 0, 100, this);
-                                          break;
-            case Timer_Save             : ProgressDialog=new QProgressDialog("Saving files...", "Abort Saving", 0, 100, this);
-                                          break;
-            default                     : ProgressDialog=new QProgressDialog("???...", "Abort ???", 0, 100, this);
-        }
+    switch (Open_Timer_Action)
+    {
+        case Timer_Open_Files       : ProgressDialog=new QProgressDialog("Opening files...", "Abort Opening", 0, 100, this);
+                                      break;
+        case Timer_Open_Directory   : ProgressDialog=new QProgressDialog("Opening directory...", "Abort Opening", 0, 100, this);
+                                      break;
+        case Timer_DragAndDrop      : ProgressDialog=new QProgressDialog("Opening files...", "Abort Opening", 0, 100, this);
+                                      break;
+        case Timer_Save             : ProgressDialog=new QProgressDialog("Saving files...", "Abort Saving", 0, 100, this);
+                                      break;
+        default                     : ProgressDialog=new QProgressDialog("???...", "Abort ???", 0, 100, this);
+    }
 
     ProgressDialog->setWindowModality(Qt::WindowModal);
     ProgressDialog->setMinimumDuration(0);

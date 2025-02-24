@@ -307,6 +307,7 @@ void GUI_Main::Menu_Create()
                 Menu_Fields_Menus[Group]->addAction(Menu_Fields_RadioButtons[Group*options::MaxCount+Option]);
                 Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setCheckable(true);
             break;
+            default:;
             }
         }
     }
@@ -363,6 +364,7 @@ void GUI_Main::Menu_Create()
             case Type_RadioButton:
                 Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setChecked(Preferences->Group_Option_Checked_Get((group)Group, Option));
             break;
+            default:;
             }
 
     bool Value=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec]->isChecked();
@@ -1499,6 +1501,7 @@ void GUI_Main::OnMenu_Options_Preferences()
                 if (Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked()!=Preferences->Group_Option_Checked_Get((group)Group, Option))
                     HasChanged=true;
             break;
+            default:;
             }
 
     if (HasChanged)
@@ -1528,6 +1531,7 @@ void GUI_Main::OnMenu_Options_Preferences()
                                                 case Type_RadioButton:
                                                     Preferences->Group_Option_Checked_Set((group)Group, Option, Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->isChecked());
                                                 break;
+                                                default:;
                                                 }
                                         break;
             case QMessageBox::No      : // Yes was clicked

@@ -37,7 +37,7 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, i
     int8u BextVersion=Ztring().From_UTF8(C->Get(FileName, "BextVersion")).To_int8u();
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("bext version");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 

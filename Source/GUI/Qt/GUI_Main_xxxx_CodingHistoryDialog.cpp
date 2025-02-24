@@ -40,7 +40,7 @@ CodingHistoryDialog_TableWidget::CodingHistoryDialog_TableWidget (ZtringListList
 }
 
 //---------------------------------------------------------------------------
-void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles)
+void CodingHistoryDialog_TableWidget::dataChanged ( const QModelIndex & topLeft, const QModelIndex&, const QVector<int>&)
 {
     if (Updating)
         return;
@@ -287,7 +287,7 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
     IsAccepted=false;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("Coding History");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -499,7 +499,6 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
     else
         List.Separator_Set(1, ", ");
     List.Write(Text);
-    int size = List.size();
 
     Table->setRowCount((int)List.size()+1);
     Table->setColumnCount(6);
@@ -510,7 +509,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
     Table->setHorizontalHeaderItem(3, new QTableWidgetItem("Word length"));
     Table->setHorizontalHeaderItem(4, new QTableWidgetItem("Mode             "));
     Table->setHorizontalHeaderItem(5, new QTableWidgetItem("Text, free string"));
-    for (size_t Line_Pos=0; Line_Pos<List.size(); Line_Pos++)
+    for (size_t Line_Pos=0; Line_Pos<(size_t)List.size(); Line_Pos++)
     {
         for (size_t Data_Pos=0; Data_Pos<List[Line_Pos].size(); Data_Pos++)
         {
@@ -536,7 +535,7 @@ void GUI_Main_xxxx_CodingHistoryDialog::Text2List ()
             }
             else
                 Ununderstable=true;
-            if (Column==Data_Pos)
+            if (Column==(long)Data_Pos)
             {
                 string Header=Value.substr(0, 2);
                 Value.erase(0, 2);

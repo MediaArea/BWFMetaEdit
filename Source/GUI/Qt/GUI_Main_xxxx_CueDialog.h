@@ -166,8 +166,8 @@ protected:
 
 private:
     //Internal
-    std::string FileName;
     Core*       C;
+    std::string FileName;
     int32u      SampleRate;
     bool        ReadOnly;
 };
