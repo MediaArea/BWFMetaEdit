@@ -32,8 +32,7 @@
   <file>Documentation/workflows.html</file>
   <file>Documentation/xml_chunks.html</file>
   <file>License.html</file>
-  <!-- BUG: Qt5.9 fail to detect and link to qml plugins libraries if the qml file is not placed on the project directory -->
-  <file alias="PerFile.qml">../../Project/QtCreator/PerFile.qml</file>
-  <file alias="qtquickcontrols2.conf">../../Project/QtCreator/qtquickcontrols2.conf</file>
+  <file alias="PerFile.qml">../GUI/Qt/PerFile.qml</file>
+  <file alias="qtquickcontrols2.conf">../GUI/Qt/qtquickcontrols2.conf</file>
  </qresource>
 </RCC>
