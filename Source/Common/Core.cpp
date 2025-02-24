@@ -1104,7 +1104,7 @@ int Core::Menu_File_Import_Core(const string &FileName)
             throw "--in-core=: not a valid file";
 
         //Testing if this is a valid file - Begins with "FileName"
-        if (Buffer_Offset>=8
+        if (Buffer_Offset>=9
          && Buffer[0]=='F'
          && Buffer[1]=='i'
          && Buffer[2]=='l'
@@ -1112,11 +1112,13 @@ int Core::Menu_File_Import_Core(const string &FileName)
          && Buffer[4]=='N'
          && Buffer[5]=='a'
          && Buffer[6]=='m'
-         && Buffer[7]=='e')
+         && Buffer[7]=='e'
+         && (Buffer[8]==',' || Buffer[8]==';'))
         {
             //CSV
             //Loading data in an array
-            List.Separator_Set(1, ",");
+            string Sep=string(1, char(Buffer[8]));
+            List.Separator_Set(1, Sep.c_str());
             List.Write((const char*)Buffer);
             delete[] Buffer; Buffer=NULL;
             if (List.empty())
