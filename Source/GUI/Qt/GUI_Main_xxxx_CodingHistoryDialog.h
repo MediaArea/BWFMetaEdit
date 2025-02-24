@@ -82,7 +82,7 @@ private Q_SLOTS:
 protected:
     //Events
     void hideEvent (QHideEvent* Event);
-    
+
 private:
     //Internal
     Core*   C;
@@ -117,7 +117,7 @@ public:
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
 protected:
-    virtual void Fill(QComboBox* Editor) const {}
+    virtual void Fill(QComboBox*) const {}
     Riff_Handler::rules Rules;
 };
 

@@ -30,7 +30,7 @@ using namespace std;
 // GUI_Main_xxxx__Common
 //***************************************************************************
 
-class GUI_Main_xxxx__Common : public QTableWidget  
+class GUI_Main_xxxx__Common : public QTableWidget
 {
     Q_OBJECT
 
@@ -45,11 +45,15 @@ protected Q_SLOTS:
 
 protected:
     //Events
-    bool                    event               (QEvent *Event); 
+    bool                    event               (QEvent *Event);
     void                    dataChanged         (const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> & roles = QVector<int> ());
 
     //Override
-    QStyleOptionViewItem    viewOptions() const;
+    #if QT_VERSION >= 0x060000
+    void                    initViewItemOption  (QStyleOptionViewItem* option) const;
+    #else
+    QStyleOptionViewItem    viewOptions         () const;
+    #endif
 
     //Helpers
     void                    Colors_Update       ();

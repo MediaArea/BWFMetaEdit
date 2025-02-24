@@ -39,7 +39,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
     ReadOnly=ReadOnly_;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle(QString::fromUtf8(Field.c_str()));
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -69,7 +69,7 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
 
     Message=new QLabel(this);
     Message->setOpenExternalLinks(true);
-    
+
     QVBoxLayout* L=new QVBoxLayout();
     L->addWidget(TextEdit);
     L->addWidget(Label);
@@ -143,7 +143,7 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Load()
                                                         tr("Import file..."),
                                                         QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                         (Field=="XMP" || Field=="aXML" || Field=="iXML")?"XML files (*.xml);;All files (*.*)":"Text files (*.txt);;All files (*.*)");
-    
+
     if (FileNamesQ.isEmpty())
         return;
 
@@ -186,7 +186,7 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Save()
                                                         tr("Export file..."),
                                                         QString::fromUtf8(C->OpenSaveFolder.c_str()),
                                                         (Field=="XMP" || Field=="aXML" || Field=="iXML")?"XML files (*.xml);;All files (*.*)":"Text files (*.txt);;All files (*.*)");
-    
+
     if (FileNamesQ.isEmpty())
         return;
 
@@ -206,7 +206,7 @@ void GUI_Main_xxxx_TextEditDialog::OnMenu_Save()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_TextEditDialog::Display(const QString& Value)
 {
-    static const size_t MaxSize=0x100000;
+    static const int MaxSize=0x100000;
     if (Value.size()<MaxSize)
     {
         BigValue.clear();

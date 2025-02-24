@@ -19,7 +19,6 @@
 #include <QDoubleSpinBox>
 #include <QGridLayout>
 #include <QDialogButtonBox>
-#include <QDesktopWidget>
 #include <QApplication>
 #include <QMessageBox>
 //---------------------------------------------------------------------------
@@ -38,7 +37,7 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, i
     int8u BextVersion=Ztring().From_UTF8(C->Get(FileName, "BextVersion")).To_int8u();
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("bext version");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -46,7 +45,7 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, i
     Dialog=new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(Dialog, SIGNAL(accepted()), this, SLOT(OnAccept()));
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
-    
+
     //Extra - Bext
     Version=new QDoubleSpinBox(this);
     Version->setMaximum(Maximum);

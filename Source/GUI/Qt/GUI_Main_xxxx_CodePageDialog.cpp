@@ -14,7 +14,6 @@
 #include <QEvent>
 #include <QGridLayout>
 #include <QDialogButtonBox>
-#include <QDesktopWidget>
 #include <QApplication>
 #include <QIcon>
 //---------------------------------------------------------------------------
@@ -32,7 +31,7 @@ GUI_Main_xxxx_CodePageDialog::GUI_Main_xxxx_CodePageDialog(Core* _C, const std::
     FileName=FileName_;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("File Encoding");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -96,5 +95,4 @@ void GUI_Main_xxxx_CodePageDialog::OnAccept ()
 
     accept();
 }
-
 

@@ -97,7 +97,7 @@ private Q_SLOTS:
 protected:
     //Events
     void hideEvent (QHideEvent* Event);
-    
+
 private:
     //Internal
     Core*   C;
@@ -106,7 +106,7 @@ private:
     bool    Updating;
     ZtringListList List;
     int16u  SampleRate;
-	bool bSigUpdated;
+    bool bSigUpdated;
     //Helpers
     void Fill();
     void List2Text();

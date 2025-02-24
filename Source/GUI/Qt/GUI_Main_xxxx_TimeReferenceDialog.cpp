@@ -38,7 +38,7 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
     Field=Field_;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("TimeReference");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -61,7 +61,7 @@ GUI_Main_xxxx_TimeReferenceDialog::GUI_Main_xxxx_TimeReferenceDialog(Core* _C, c
     connect(LineEdit, SIGNAL(valueChanged (const QString &)), this, SLOT(OnValueEdited (const QString &)));
     LimeEdit_Label=new QLabel(this);
     LimeEdit_Label->setText(tr("(in samples)"));
-        
+
     QGridLayout* L=new QGridLayout();
     L->addWidget(TimeEdit, 0, 0);
     L->addWidget(TimeEdit_Label, 0, 1);
@@ -118,7 +118,7 @@ void GUI_Main_xxxx_TimeReferenceDialog::OnTimeChanged (const QTime &Time)
 }
 
 //---------------------------------------------------------------------------
-void GUI_Main_xxxx_TimeReferenceDialog::OnValueEdited (const QString &Value)
+void GUI_Main_xxxx_TimeReferenceDialog::OnValueEdited (const QString&)
 {
     if (IsChanging || SampleRate==0)
         return;

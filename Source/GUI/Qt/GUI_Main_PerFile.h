@@ -57,7 +57,7 @@ public:
 
     int rowCount(const QModelIndex &parent) const;
     QHash<int, QByteArray> roleNames() const;
- 
+
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
@@ -97,8 +97,8 @@ private:
     QString Get_Technical_Field(const QString FileName, const QString FieldName) const;
     QString Technical_Info(const QString FileName) const;
 
-    Core* C;
     GUI_Main* Main;
+    Core* C;
     GUI_Main_xxxx_EditMenu* MenuHandler;
 
     int Count;

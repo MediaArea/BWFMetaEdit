@@ -79,7 +79,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     if (Field=="MD5Stored" && Fill_Enabled(FileName, Field, C->Get(FileName, "MD5Stored")))
     {
         if (!C->Get(FileName, "MD5Generated").empty() && C->Get(FileName, "MD5Stored")!=C->Get(FileName, "MD5Generated"))
-            Fill="Fill with MD5Generated"; //If you change this, change at the end of method too      
+            Fill="Fill with MD5Generated"; //If you change this, change at the end of method too
         if (!item(Item->row(), Item->column())->text().isEmpty())
             Remove="Remove it"; //If you change this, change at the end of method too
     }
@@ -98,7 +98,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
     //Do we need a context menu?
     if (Import.empty() && Export.empty() && Fill.empty() && Remove.empty() && History.empty())
         return;
-    
+
     //Creating menu
     QMenu menu(this);
 
@@ -132,7 +132,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
             }
         }
         while (Pos>0);
-    
+
     //Handling remove display
     if (!Remove.empty())
     {
@@ -261,7 +261,7 @@ void GUI_Main_Technical_Table::contextMenuEvent (QContextMenuEvent* Event)
 }
 
 //---------------------------------------------------------------------------
-bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigger, QEvent *Event) 
+bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigger, QEvent *Event)
 {
     //Must we edit or not
     if (!index.isValid())
@@ -273,21 +273,21 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
 
     //Should we handle edition manualy?
     if (trigger!=DoubleClicked && trigger!=AnyKeyPressed)
-        return QTableWidget::edit(index, trigger, Event); //Normal editing 
+        return QTableWidget::edit(index, trigger, Event); //Normal editing
 
     //Retrieving data
     QString ModifiedContentQ;
     if (trigger==AnyKeyPressed)
     {
         ModifiedContentQ=((QKeyEvent*)Event)->text(); //What the user has pressed
-        if (!ModifiedContentQ.isEmpty() && ModifiedContentQ[0]==127)
+        if (!ModifiedContentQ.isEmpty() && ModifiedContentQ[0]==QChar(127))
             ModifiedContentQ.clear();
     }
     else
         ModifiedContentQ=QString::fromUtf8(C->Get(FileName, Field).c_str()); //Old value
 
     //bext
-    if (Field=="bext") 
+    if (Field=="bext")
     {
         if (Main->Bext_Toggle_Get())
         {
@@ -304,7 +304,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
                 else
                     NewValue=2;
             }
-            else 
+            else
                 NewValue++;
 
             //Filling
@@ -335,7 +335,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
     //XML
     if (Field=="XMP"
      || Field=="aXML"
-     || Field=="iXML") 
+     || Field=="iXML")
     {
         //Retrieving data
         if (!ModifiedContentQ.isEmpty())
@@ -379,7 +379,7 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
     }
 
     //MD5Stored
-    if (Field=="MD5Stored") 
+    if (Field=="MD5Stored")
     {
         //User interaction
         GUI_Main_xxxx_TextEditDialog* Edit=new GUI_Main_xxxx_TextEditDialog(C, FileName, Field, ModifiedContentQ);
@@ -424,13 +424,13 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-const string &GUI_Main_Technical_Table::Fill_Content () 
+const string &GUI_Main_Technical_Table::Fill_Content ()
 {
     return C->Technical_Get();
 }
 
 //---------------------------------------------------------------------------
-group GUI_Main_Technical_Table::Fill_Group () 
+group GUI_Main_Technical_Table::Fill_Group ()
 {
     return Group_Tech;
 }

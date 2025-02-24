@@ -27,7 +27,7 @@ class GUI_Main_xxxx_CodePageDialog : public QDialog
 {
     Q_OBJECT
 
-public:   
+public:
     //Constructor/Destructor
     GUI_Main_xxxx_CodePageDialog(Core* C, const std::string &FileName_, QWidget* parent=NULL);
 

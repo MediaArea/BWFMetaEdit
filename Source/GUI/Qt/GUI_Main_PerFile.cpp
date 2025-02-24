@@ -94,7 +94,7 @@ QString Human_Readable_Rate(QString Rate, QString Suffix)
 
 //---------------------------------------------------------------------------
 PerFileModel::PerFileModel(GUI_Main* Main, Core* _C, QObject *parent)
-: Main(Main), C(_C), Count(0), QAbstractListModel(parent)
+: QAbstractListModel(parent), Main(Main), C(_C), Count(0)
 {
     MenuHandler=new GUI_Main_xxxx_EditMenu(Main, _C);
     connect(MenuHandler, SIGNAL(valuesChanged(bool)), this, SLOT(onValuesChanged(bool)));
@@ -111,10 +111,8 @@ PerFileModel::~PerFileModel()
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-int PerFileModel::rowCount(const QModelIndex &parent) const
+int PerFileModel::rowCount(const QModelIndex&) const
 {
-    Q_UNUSED(parent);
-
     return Count;
 }
 
@@ -137,7 +135,6 @@ QVariant PerFileModel::data(const QModelIndex &index, int role) const
     QVariant toReturn = QVariant();
     if (index.row()<0 || index.row()>=Count)
         return toReturn;
-
 
     switch (role)
     {
@@ -201,7 +198,6 @@ Q_INVOKABLE void PerFileModel::closeFile(const QString& FileName)
     Main->OnMenu_File_Close_Files();
     Fill();
 };
-
 
 //---------------------------------------------------------------------------
 Q_INVOKABLE bool PerFileModel::valid(const QString& FileName) const
@@ -319,7 +315,6 @@ Q_INVOKABLE bool PerFileModel::isWritable(const QString& FileName) const {
     return valid(FileName) && !readOnly(FileName);
 }
 
-
 //---------------------------------------------------------------------------
 Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString& Field)
 {
@@ -416,7 +411,7 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
     Main->Menu_Update();
 }
 
-Q_INVOKABLE void PerFileModel::showCoreMenu(const QPoint& globalPos, const QString& FileName, const QString& Field)
+Q_INVOKABLE void PerFileModel::showCoreMenu(const QPoint& globalPos, const QString&, const QString&)
 {
     MenuHandler->showContextMenu(globalPos);
 }
@@ -430,7 +425,7 @@ Q_INVOKABLE void PerFileModel::setSelected(const QString& FileName, const QStrin
     C->Menu_File_Close_File_FileName_Set(FileName.toStdString());
 
     QList<QPair<string, string> > Items;
-    Items.append(qMakePair(FileName.toUtf8(), Field.toUtf8()));
+    Items.append(qMakePair(FileName.toStdString(), Field.toStdString()));
     MenuHandler->updateEditMenu(Items);
 
     Main->Menu_Update();
@@ -460,7 +455,6 @@ void PerFileModel::onValuesChanged(bool onlySelected)
 
     Main->Menu_Update();
 }
-
 
 //---------------------------------------------------------------------------
 void PerFileModel::Fill()
@@ -610,18 +604,14 @@ QString PerFileModel::Technical_Info(const QString FileName) const
 }
 
 //---------------------------------------------------------------------------
-bool PerFileModel::canFetchMore(const QModelIndex &parent) const
+bool PerFileModel::canFetchMore(const QModelIndex&) const
 {
-    Q_UNUSED(parent);
-
     return (Count<FileNames.size());
 }
 
 //---------------------------------------------------------------------------
-void PerFileModel::fetchMore(const QModelIndex &parent)
+void PerFileModel::fetchMore(const QModelIndex&)
 {
-    Q_UNUSED(parent);
-
     int ToFetch=qMin(FETCH_COUNT, FileNames.size()-Count);
     if (ToFetch<=0)
         return;
@@ -664,7 +654,7 @@ GUI_Main_PerFile::~GUI_Main_PerFile()
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-void GUI_Main_PerFile::dragEnterEvent(QDragEnterEvent* event)
+void GUI_Main_PerFile::dragEnterEvent(QDragEnterEvent*)
 {
 }
 

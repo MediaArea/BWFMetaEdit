@@ -37,7 +37,7 @@ GUI_About::GUI_About(QWidget * parent)
     #else
         resize(840, 540);
     #endif
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("About BWF MetaEdit");
 
     Close=new QPushButton("&Close");
@@ -117,13 +117,13 @@ void GUI_About::OnContact()
     Button_Contact->setEnabled(false);
 }
 
-void GUI_About::showEvent(QShowEvent* Event)
+void GUI_About::showEvent(QShowEvent*)
 {
     NameVersion->setBackgroundRole(QPalette::Window);
     resizeEvent(NULL);
 }
 
-void GUI_About::resizeEvent(QResizeEvent* Event)
+void GUI_About::resizeEvent(QResizeEvent*)
 {
     NameVersion->setMaximumHeight((int)NameVersion->document()->documentLayout()->documentSize().height()+6);
 }

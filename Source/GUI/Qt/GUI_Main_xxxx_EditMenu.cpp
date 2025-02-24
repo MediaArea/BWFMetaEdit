@@ -63,7 +63,7 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
 
         //History data
         ZtringList History; History.Write(Ztring().From_UTF8(C->History(FileName, Field)));
-        
+
         //Data data
         string Date;
         if (Field=="OriginationDate" || Field=="OriginationTime" || Field=="ICRD")

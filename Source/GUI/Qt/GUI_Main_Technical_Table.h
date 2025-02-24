@@ -37,7 +37,7 @@ public:
 protected:
     //Events
     void                    contextMenuEvent   (QContextMenuEvent* Event);
-    bool                    edit               (const QModelIndex &index, EditTrigger trigger, QEvent *Event); 
+    bool                    edit               (const QModelIndex &index, EditTrigger trigger, QEvent *Event);
 
     //Helpers
     const string           &Fill_Content        ();

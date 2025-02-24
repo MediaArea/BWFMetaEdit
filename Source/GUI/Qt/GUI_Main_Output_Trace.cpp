@@ -44,7 +44,7 @@ GUI_Main_Trace::GUI_Main_Trace(Core* _C, QWidget* parent)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool GUI_Main_Trace::event (QEvent *Event) 
+bool GUI_Main_Trace::event (QEvent *Event)
 {
     if (Event->type()==QEvent::User)
     {

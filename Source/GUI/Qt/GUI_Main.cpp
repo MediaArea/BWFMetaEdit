@@ -29,7 +29,7 @@
 #include <QDropEvent>
 #include <QDragEnterEvent>
 #include <QMessageBox>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QProgressDialog>
 #include <QThread>
 #include <QTimer>
@@ -78,8 +78,12 @@ GUI_Main::GUI_Main(Core* _C)
 
     //CenterOnScreen();
     setStatusBar(new QStatusBar());
-    move(40, (QApplication::desktop()->screenGeometry().height()-440)/2);
-    resize(QApplication::desktop()->screenGeometry().width()-80, 440);
+    QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+    if (Screen)
+    {
+        move(40, (Screen->availableGeometry().height()-440)/2);
+        resize(Screen->availableGeometry().width()-80, 440);
+    }
 
     //Drag n drop
     setAcceptDrops(true);
@@ -143,7 +147,7 @@ GUI_Main::GUI_Main(Core* _C)
     Menu_Options_WrongExtension_Skip->setChecked(true);
     emit OnMenu_Options_WrongExtension_Skip();
     */
-    
+
     //GUI
     setWindowTitle("BWF MetaEdit - Audio-Visual Working Group of the Federal Agencies Digital Guidelines Initiative");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
@@ -167,7 +171,7 @@ void GUI_Main::View_Refresh(view View_New)
         View_Current=View_New;
         MustCreate=true;
     }
-        
+
     if (MustCreate)
     {
         switch (View_Current)
@@ -192,7 +196,7 @@ void GUI_Main::View_Refresh(view View_New)
         QEvent Event(QEvent::User);
         QApplication::sendEvent(View, &Event);
     }
-    
+
     //Menu
     Menu_Update();
 
@@ -213,7 +217,7 @@ void GUI_Main::dragEnterEvent(QDragEnterEvent *Event)
 {
     Event->acceptProposedAction();
 }
- 
+
 void GUI_Main::dropEvent(QDropEvent *Event)
 {
     ZtringList Files;
@@ -337,7 +341,7 @@ bool GUI_Main::Close(const string &FileName, bool AndExit)
                                             return false;
                                             break;
                 default:                    return false; // Should never be reached
-            } 
+            }
         }
         else
         {
@@ -376,7 +380,7 @@ bool GUI_Main::Close(const string &FileName, bool AndExit)
                                             return false;
                                             break;
                 default:                    return false; // Should never be reached
-            } 
+            }
         }
         else
         {
@@ -391,7 +395,7 @@ void GUI_Main::Menu_Update()
 {
     //File_Backup
     Menu_File_Undo->setEnabled(C->Menu_File_Undo_BackupFilesExist());
-    
+
     //File_Save
     ZtringList List=C->Menu_File_Close_File_FileName_Get();
     if (List.empty())
@@ -423,7 +427,7 @@ void GUI_Main::Menu_Update()
     //Options_ResetFieldSizes
     switch (View_Current)
     {
-        case View_Technical_Table           : 
+        case View_Technical_Table           :
         case View_Core_Table                : Menu_Options_ResetFieldSizes->setVisible(true); break;
         default                             : Menu_Options_ResetFieldSizes->setVisible(false);
     }
@@ -494,8 +498,8 @@ void GUI_Main::LogFile_Set(const string &Value)
 void GUI_Main::OnOpen_Timer ()
 {
     if (ProgressDialog==NULL)
-        return;    
-        
+        return;
+
     float Result=C->Menu_File_Open_State();
     ProgressDialog->setValue((int)(Result*100));
 
@@ -540,8 +544,9 @@ void GUI_Main::OnOpen_Timer ()
                                           break;
             default                     : C->StdOut("???, finished"); break;
         }
-    if (View_Current==View_PerFile)
-        View->setVisible(true);
+
+        if (View_Current==View_PerFile)
+            View->setVisible(true);
 
         //Showing
         if (C->Text_stderr_Updated_Get())
@@ -552,8 +557,8 @@ void GUI_Main::OnOpen_Timer ()
         else
             View_Refresh();
     }
-}     
-     
+}
+
 //---------------------------------------------------------------------------
 void GUI_Main::Open_Timer_Init (open_timer_init Action)
 {
@@ -561,21 +566,19 @@ void GUI_Main::Open_Timer_Init (open_timer_init Action)
     if (View_Current==View_PerFile)
         View->setVisible(false);
 
-        switch (Open_Timer_Action)
-        {
-            case Timer_Open_Files       : ProgressDialog=new QProgressDialog("Opening files...", "Abort Opening", 0, 100, this);
-                                          break;
-            case Timer_Open_Directory   : ProgressDialog=new QProgressDialog("Opening directory...", "Abort Opening", 0, 100, this);
-                                          break;
-            case Timer_DragAndDrop      : ProgressDialog=new QProgressDialog("Opening files...", "Abort Opening", 0, 100, this);
-                                          break;
-            case Timer_Save             : ProgressDialog=new QProgressDialog("Saving files...", "Abort Saving", 0, 100, this);
-                                          break;
-            default                     : ProgressDialog=new QProgressDialog("???...", "Abort ???", 0, 100, this);
-        }
+    switch (Open_Timer_Action)
+    {
+        case Timer_Open_Files       : ProgressDialog=new QProgressDialog("Opening files...", "Abort Opening", 0, 100, this);
+                                      break;
+        case Timer_Open_Directory   : ProgressDialog=new QProgressDialog("Opening directory...", "Abort Opening", 0, 100, this);
+                                      break;
+        case Timer_DragAndDrop      : ProgressDialog=new QProgressDialog("Opening files...", "Abort Opening", 0, 100, this);
+                                      break;
+        case Timer_Save             : ProgressDialog=new QProgressDialog("Saving files...", "Abort Saving", 0, 100, this);
+                                      break;
+        default                     : ProgressDialog=new QProgressDialog("???...", "Abort ???", 0, 100, this);
+    }
 
-
-    
     ProgressDialog->setWindowModality(Qt::WindowModal);
     ProgressDialog->setMinimumDuration(0);
     ProgressDialog->setWindowTitle("BWF MetaEdit");
@@ -586,7 +589,7 @@ void GUI_Main::Open_Timer_Init (open_timer_init Action)
         connect(Timer, SIGNAL(timeout()), this, SLOT(OnOpen_Timer()));
         Timer->start(100);
     }
-}     
+}
 
 bool GUI_Main::ShouldApplyDarkTheme()
 {

@@ -37,7 +37,7 @@ GUI_Main_Technical_Text::GUI_Main_Technical_Text(Core* _C, QWidget* parent)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool GUI_Main_Technical_Text::event (QEvent *Event) 
+bool GUI_Main_Technical_Text::event (QEvent *Event)
 {
     if (Event->type()==QEvent::User)
     {

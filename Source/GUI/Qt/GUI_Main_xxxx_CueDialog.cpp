@@ -26,7 +26,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QFontMetrics>
-#include <QDesktopWidget>
+#include <QScreen>
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -137,7 +137,6 @@ string CC4ToHex(string Id)
     return Ztring(__T("0x")+Ztring().From_Number(Value, 16)).To_UTF8();
 }
 
-
 //***************************************************************************
 // CueDialog_SampleRateDialog
 //***************************************************************************
@@ -150,7 +149,7 @@ CueDialog_SampleRateDialog::CueDialog_SampleRateDialog(int32u Value, int32u Samp
     IsChanging=false;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("Edit");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -423,7 +422,6 @@ void CueDialogCombo_Delegate::setEditorData(QWidget* editor, const QModelIndex& 
         Value=index.model()->data(index, Qt::UserRole+1).toString();
 
         Editor->addItem("");
-        int Width=Editor->fontMetrics().maxWidth()*4;
         const codes* CSETCountries=CSETCountries_Get();
         for (codes::const_iterator It=CSETCountries->begin(); It!=CSETCountries->end(); It++)
         {
@@ -650,7 +648,7 @@ GUI_Main_xxxx_CueDialog::GUI_Main_xxxx_CueDialog(Core* C, const string& FileName
     IsAccepted=false;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("Cue editor");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -697,7 +695,11 @@ GUI_Main_xxxx_CueDialog::GUI_Main_xxxx_CueDialog(Core* C, const string& FileName
     setLayout(L);
 
     Dialog->button(QDialogButtonBox::Ok)->setEnabled(ReadOnly || C->IsValid(FileName, "cuexml", Xml));
-    resize(QApplication::desktop()->screenGeometry().width()/2, QApplication::desktop()->screenGeometry().height()/3);
+    QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+    if (Screen)
+    {
+        resize(Screen->availableGeometry().width()/2, Screen->availableGeometry().height()/3);
+    }
 }
 
 //***************************************************************************
@@ -792,7 +794,6 @@ void GUI_Main_xxxx_CueDialog::OnMenu_Load()
         MessageBox.exec();
     }
 }
-
 
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_CueDialog::OnAccept()
@@ -1002,7 +1003,6 @@ void GUI_Main_xxxx_CueDialog::Xml2List()
         Updating=false;
         return;
     }
-
 
     for(tinyxml2::XMLNode* Node=Root->FirstChildElement("Cue"); Node; Node=Node->NextSibling())
     {
@@ -1319,7 +1319,7 @@ void GUI_Main_xxxx_CueDialog::List2Xml()
                     Ids.append(Value);
                 }
 
-                for (size_t Pos2=1; Pos2<0xFFFFFFFF; Pos2++)
+                for (long Pos2=1; Pos2<0xFFFFFFFF; Pos2++)
                 {
                     if (!Ids.contains(Pos2))
                     {

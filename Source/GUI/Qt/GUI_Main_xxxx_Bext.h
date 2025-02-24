@@ -27,7 +27,7 @@ class GUI_Main_xxxx_Bext : public QDialog
 {
     Q_OBJECT
 
-public:   
+public:
     //Constructor/Destructor
     GUI_Main_xxxx_Bext(Core* C, const std::string &FileName_, int Maximum, QWidget* parent=NULL);
 

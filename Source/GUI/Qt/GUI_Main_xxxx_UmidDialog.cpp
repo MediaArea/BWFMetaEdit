@@ -21,11 +21,10 @@
 #include <QTableWidget>
 #include <QFileDialog>
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QMessageBox>
-#include <QDesktopWidget>
 #include <QGroupBox>
 #include <QCheckBox>
 #include <QDateEdit>
@@ -35,7 +34,6 @@
 #include <QComboBox>
 #include <QValidator>
 #include <QScrollArea>
-#include <QMessageBox>
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -49,7 +47,7 @@ public :
 
     QWidget* Smpte330;
 
-    QSize sizeHint () const    
+    QSize sizeHint () const
     {
         QSize ToReturn;
         ToReturn.setWidth(Smpte330->frameGeometry().width()+2);
@@ -66,11 +64,11 @@ class Umid_AlphaNumeric_Validator : public QValidator
 {
 public :
     Umid_AlphaNumeric_Validator(QObject * parent) : QValidator(parent) {}
-         
+
     State validate (QString &input, int &pos) const
     {
         for (pos=0; pos<input.size(); pos++)
-            if (input[pos]<0x20 || input[pos]>0x7F)
+            if (input[pos]<QChar(0x20) || input[pos]>QChar(0x7F))
                 return Invalid;
 
         return Acceptable;
@@ -270,10 +268,10 @@ void Country_Fill(QComboBox* Box)
     Box->addItem("COD - Congo, the Democratic Republic of the");
     Box->addItem("COK - Cook Islands");
     Box->addItem("CRI - Costa Rica");
-    Box->addItem("CIV - Côte d'Ivoire");
+    Box->addItem("CIV - Cï¿½te d'Ivoire");
     Box->addItem("HRV - Croatia");
     Box->addItem("CUB - Cuba");
-    Box->addItem("CUW - Curaçao");
+    Box->addItem("CUW - Curaï¿½ao");
     Box->addItem("CYP - Cyprus");
     Box->addItem("CZE - Czech Republic");
     Box->addItem("DNK - Denmark");
@@ -396,11 +394,11 @@ void Country_Fill(QComboBox* Box)
     Box->addItem("PRT - Portugal");
     Box->addItem("PRI - Puerto Rico");
     Box->addItem("QAT - Qatar");
-    Box->addItem("REU - Réunion");
+    Box->addItem("REU - Rï¿½union");
     Box->addItem("ROU - Romania");
     Box->addItem("RUS - Russian Federation");
     Box->addItem("RWA - Rwanda");
-    Box->addItem("BLM - Saint Barthélemy");
+    Box->addItem("BLM - Saint Barthï¿½lemy");
     Box->addItem("SHN - Saint Helena, Ascension and Tristan da Cunha");
     Box->addItem("KNA - Saint Kitts and Nevis");
     Box->addItem("LCA - Saint Lucia");
@@ -497,28 +495,22 @@ void Unpack(char packed, char &c, bool &b) {
   b = UnpackBool(packed);
 }
 
-
-
 std::string FloatToHexString(float d)
 {
     unsigned char *buffer = (unsigned char*)&d;
     const int bufferSize = sizeof(float);
 
     char converted[bufferSize * 2 + 1];
-	//char converted[bufferSize];
 
     int j = 0;
     for(int i = 0 ; i < bufferSize ; ++i)
     {
         sprintf(&converted[j*2], "%02X", buffer[i]);
-		//sprintf(&converted[j], "%X", buffer[i]);
         ++j;
     }
     string hex_string(converted);
     return hex_string;
 }
-
-
 
 float HexStringToFloat(string &hexString)
 {
@@ -527,7 +519,7 @@ float HexStringToFloat(string &hexString)
 
     int j = 0;
 
-    for(int i = 0; i < hexString.size() ; i += 2)
+    for(size_t i = 0; i < hexString.size() ; i += 2)
     {
         sscanf(&hexString[i], "%02x", &number);
         byte_string[j] = (unsigned char)number;
@@ -537,8 +529,6 @@ float HexStringToFloat(string &hexString)
     float p = (float&)byte_string;
     return p;
 }
-
-
 
 char ToHex(int Value)
 {
@@ -561,7 +551,7 @@ int32u FromBCD(const string &Value, size_t Pos, size_t Size, bool &Fail)
 {
     if (Fail)
         return 0;
-    
+
     int Temp=0;
     for (size_t Offset=0; Offset<Size; Offset++)
     {
@@ -588,7 +578,7 @@ qint64 FromHex64(const string &Value, size_t Pos, size_t Size)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &FileName_, const std::string &Field_, const QString &OldText, QWidget* parent)
+GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &FileName_, const std::string &Field_, const QString&, QWidget* parent)
 : QDialog(parent)
 {
     //Internal
@@ -596,14 +586,14 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     FileName=FileName_;
     Field=Field_;
     Updating=false;
-	bSigUpdated=true;
+    bSigUpdated=true;
 
     SampleRate=Ztring().From_UTF8(C->Get(FileName, "SampleRate")).To_int16u();
     while (((qint64)SampleRate)*24*60*60>=0x100000000LL)
         SampleRate/=2;
 
     //Configuration
-    setWindowFlags(windowFlags()&(0xFFFFFFFF-Qt::WindowContextHelpButtonHint));
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("Unique Material IDentifier");
     setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
 
@@ -785,7 +775,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     Signature_Spatial_Altitude=new QDoubleSpinBox(this);
     Signature_Spatial_Altitude->setDecimals(0);
     Signature_Spatial_Altitude->setMaximum(99999999);
-	QLabel* Signature_Spatial_Longitudinal_Label=new QLabel(tr("Longitudinal"), this);
+    QLabel* Signature_Spatial_Longitudinal_Label=new QLabel(tr("Longitudinal"), this);
     Signature_Spatial_Longitudinal=new QDoubleSpinBox(this);
     Signature_Spatial_Longitudinal->setDecimals(5);
     Signature_Spatial_Longitudinal->setMinimum(-180);
@@ -818,7 +808,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     QLabel* Signature_Other_Country_Label=new QLabel(tr("Country"), this);
     Signature_Other_Country=new QComboBox(this);
     Signature_Other_Country->setEditable(true);
-    QLineEdit* Signature_Other_Country_Edit=new QLineEdit(this); 
+    QLineEdit* Signature_Other_Country_Edit=new QLineEdit(this);
     Signature_Other_Country_Edit->setMaxLength(4);
     Signature_Other_Country_Edit->setValidator(new Umid_AlphaNumeric_Validator(this));
     Signature_Other_Country->setLineEdit(Signature_Other_Country_Edit);
@@ -892,14 +882,12 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     QWidget* FreeText=new QWidget(this);
     FreeText->setLayout(FreeText_Layout);
 
-
-        
     //Central
     Central=new QTabWidget(this);
     Central->addTab(Smpte330_SA, tr("S&MPTE 330M-2000"));
     Central->addTab(FreeText, tr("&Free text"));
     connect(Central, SIGNAL(currentChanged (int)), this, SLOT(OnCurrentChanged(int)));
-        
+
     Label=new QLabel(this);
     QVBoxLayout* L=new QVBoxLayout();
     L->addWidget(Central);
@@ -914,11 +902,14 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     show();
     if (size().width()<Smpte330_SA->Smpte330->size().width())
     {
-        int ScreenNumber=QApplication::desktop()->screenNumber(this);
-        int Extra_x=frameGeometry().width()-geometry().width();
-        int Extra_y=frameGeometry().height()-geometry().height();
-        move(QApplication::desktop()->screenGeometry(ScreenNumber).left()+40, QApplication::desktop()->screenGeometry(ScreenNumber).top()+40);
-        resize(QApplication::desktop()->screenGeometry(ScreenNumber).width()-80-Extra_x, QApplication::desktop()->screenGeometry(ScreenNumber).height()-80-Extra_y);
+        QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
+        if (Screen)
+        {
+            int Extra_x=frameGeometry().width()-geometry().width();
+            int Extra_y=frameGeometry().height()-geometry().height();
+            move(Screen->availableGeometry().left()+40, Screen->availableGeometry().top()+40);
+            resize(Screen->availableGeometry().width()-80-Extra_x, Screen->availableGeometry().height()-80-Extra_y);
+        }
     }
 
     //Filling
@@ -950,9 +941,9 @@ void GUI_Main_xxxx_UmidDialog::OnAccept ()
 {
     bSigUpdated = true;
 
-	if (Central->currentIndex()!=1)
+    if (Central->currentIndex()!=1)
         OnCurrentChanged(1);
-    
+
     std::string Value=(Free_Basic->text()+Free_Signature->text()).toUtf8().data();
     if (!C->IsValid(FileName, Field, Value))
     {
@@ -999,7 +990,7 @@ void GUI_Main_xxxx_UmidDialog::OnMenu_Load()
 {
     //User interaction
     QString FileNamesQ = QFileDialog::getOpenFileName(this, "", QString::fromUtf8(C->OpenSaveFolder.c_str()), "");
-    
+
     if (FileNamesQ.isEmpty())
         return;
 
@@ -1043,7 +1034,7 @@ void GUI_Main_xxxx_UmidDialog::OnMenu_Save()
 {
     //User interaction
     QString FileNamesQ = QFileDialog::getSaveFileName(this, "", QString::fromUtf8(C->OpenSaveFolder.c_str()), "");
-    
+
     if (FileNamesQ.isEmpty())
         return;
 
@@ -1162,10 +1153,10 @@ void GUI_Main_xxxx_UmidDialog::OnvalueChanged_S_S (double Value)
 void GUI_Main_xxxx_UmidDialog::List2Text ()
 {
     if (Updating)
-        return;    
-        
+        return;
+
     std::string Temp;
-    
+
     //Basic_UL
     Temp+="060A2B340101010101010";
     Temp+='0'+Basic_Ul_Umid->currentIndex();
@@ -1183,8 +1174,6 @@ void GUI_Main_xxxx_UmidDialog::List2Text ()
     Temp+=ToHex((Basic_Ul_Instance->value()    )&0xF);
 
     //Basic_Material
-	
-	
     int32u TempI=Basic_Material_TimeDate_Samples->value(); //Time
     Temp+=ToHex((TempI>> 4)&0xF);
     Temp+=ToHex((TempI    )&0xF);
@@ -1193,8 +1182,7 @@ void GUI_Main_xxxx_UmidDialog::List2Text ()
     Temp+=ToHex((TempI>>20)&0xF);
     Temp+=ToHex((TempI>>16)&0xF);
     Temp+=ToHex((TempI>>28)&0xF);
-    Temp+=ToHex((TempI>>24)&0xF);	
-
+    Temp+=ToHex((TempI>>24)&0xF);
 
     TempI=Basic_Material_TimeDate_Date->date().toJulianDay()-2400001;
     Temp+=ToHex((TempI/      10)%10); //Date
@@ -1224,14 +1212,14 @@ void GUI_Main_xxxx_UmidDialog::List2Text ()
     Temp+=ToHex((Machine>> 4)&0xF);
     Temp+=ToHex((Machine    )&0xF);
 
-	Free_Basic->setText(Temp.c_str());
-	Temp.clear();
-	
+    Free_Basic->setText(Temp.c_str());
+    Temp.clear();
+
     if (Signature_Enabled->isChecked())
     {
         //Signature_TimeDate
-		bSigUpdated = true;
-		/*
+        bSigUpdated = true;
+        /*
         int32u Milliseconds=Signature_TimeDate_Time->time().hour()*60*60*1000
                    + Signature_TimeDate_Time->time().minute()*60*1000
                    + Signature_TimeDate_Time->time().second()*1000
@@ -1245,18 +1233,17 @@ void GUI_Main_xxxx_UmidDialog::List2Text ()
         Temp+=ToHex((TempI>>16)&0xF);
         Temp+=ToHex((TempI>>28)&0xF);
         Temp+=ToHex((TempI>>24)&0xF);
-	
-		*/
+        */
 
-		int32u TempI=Signature_TimeDate_Samples->value();
-		Temp+=ToHex((TempI>> 4)&0xF);
-		Temp+=ToHex((TempI    )&0xF);
-		Temp+=ToHex((TempI>>12)&0xF);
-		Temp+=ToHex((TempI>> 8)&0xF);
-		Temp+=ToHex((TempI>>20)&0xF);
-		Temp+=ToHex((TempI>>16)&0xF);
-		Temp+=ToHex((TempI>>28)&0xF);
-		Temp+=ToHex((TempI>>24)&0xF);
+        int32u TempI=Signature_TimeDate_Samples->value();
+        Temp+=ToHex((TempI>> 4)&0xF);
+        Temp+=ToHex((TempI    )&0xF);
+        Temp+=ToHex((TempI>>12)&0xF);
+        Temp+=ToHex((TempI>> 8)&0xF);
+        Temp+=ToHex((TempI>>20)&0xF);
+        Temp+=ToHex((TempI>>16)&0xF);
+        Temp+=ToHex((TempI>>28)&0xF);
+        Temp+=ToHex((TempI>>24)&0xF);
 
         TempI=Signature_TimeDate_Date->date().toJulianDay()-2400001;
         Temp+=ToHex((TempI/      10)%10); //Date
@@ -1281,7 +1268,7 @@ void GUI_Main_xxxx_UmidDialog::List2Text ()
         Temp+=ToHex((TempI/ 1000000)%10);
 
         /*
-		TempI=(int)Signature_Spatial_Longitudinal->value();
+        TempI=(int)Signature_Spatial_Longitudinal->value();
         Temp+=ToHex((TempI/      10)%10);
         Temp+=ToHex((TempI         )%10);
         Temp+=ToHex((TempI/    1000)%10);
@@ -1290,21 +1277,20 @@ void GUI_Main_xxxx_UmidDialog::List2Text ()
         Temp+=ToHex((TempI/   10000)%10);
         Temp+=ToHex((Signature_Spatial_Longitudinal_Orientation->currentIndex()?0xE:0x0)|((TempI/10000000)%10));
         Temp+=ToHex((TempI/ 1000000)%10);
-		*/
-	
-		
-		float TempF=(float)Signature_Spatial_Longitudinal->value();
-		bool index = Signature_Spatial_Longitudinal_Orientation->currentIndex();
+        */
 
-		string hexStr = FloatToHexString(TempF);
-		unsigned char c = hexStr.at(hexStr.length()-1);
-		c = Pack(c,index);
-		if(index)
-			c = c - 128;
-		
-		hexStr.at(hexStr.length()-1) = c;
-		Temp += hexStr;
-		
+        float TempF=(float)Signature_Spatial_Longitudinal->value();
+        bool index = Signature_Spatial_Longitudinal_Orientation->currentIndex();
+
+        string hexStr = FloatToHexString(TempF);
+        unsigned char c = hexStr.at(hexStr.length()-1);
+        c = Pack(c,index);
+        if(index)
+            c = c - 128;
+
+        hexStr.at(hexStr.length()-1) = c;
+        Temp += hexStr;
+
 /*
         TempI=(int)Signature_Spatial_Latitude->value();
         Temp+=ToHex((TempI/      10)%10);
@@ -1317,18 +1303,17 @@ void GUI_Main_xxxx_UmidDialog::List2Text ()
         Temp+=ToHex((TempI/ 1000000)%10);
 */
 
-		TempF=(float)Signature_Spatial_Latitude->value();
-		index = Signature_Spatial_Latitude_Orientation->currentIndex();
-		hexStr="";
-		hexStr = FloatToHexString(TempF);
-		c = hexStr.at(hexStr.length()-1);
-		c = Pack(c,index);
-		if(index)
-			c = c - 128;
-		
-		hexStr.at(hexStr.length()-1) = c;
-		Temp += hexStr;
+        TempF=(float)Signature_Spatial_Latitude->value();
+        index = Signature_Spatial_Latitude_Orientation->currentIndex();
+        hexStr="";
+        hexStr = FloatToHexString(TempF);
+        c = hexStr.at(hexStr.length()-1);
+        c = Pack(c,index);
+        if(index)
+            c = c - 128;
 
+        hexStr.at(hexStr.length()-1) = c;
+        Temp += hexStr;
 
         string TempS=Signature_Other_Country->lineEdit()->text().toStdString();
         if (TempS.size()<4)
@@ -1374,8 +1359,8 @@ void GUI_Main_xxxx_UmidDialog::List2Text ()
 void GUI_Main_xxxx_UmidDialog::Text2List ()
 {
     if (Updating)
-        return;    
-        
+        return;
+
     TryList((Free_Basic->text()+Free_Signature->text()).toUtf8().data());
     Label->setText("Limitations: SMPTE ST330-2000 only, Audio UMID only, SMPTE Material Number Generation Method only");
 }
@@ -1385,7 +1370,7 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
 {
     Value.MakeUpperCase();
     bool Fail=false;
-    
+
     if (!C->IsValid(FileName, Field, Value.To_UTF8()))
         return false;
 
@@ -1396,7 +1381,7 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
     if (Value.find(__T("060A2B34010101010101021"))!=0)
         return false;
     Basic_Ul_InstanceMethod->setCurrentIndex(Value[23]-(Value[23]<='9'?'0':'A'));
-    
+
     //Basic_Other
     switch (FromHex(Value.To_UTF8(), 24, 2))
     {
@@ -1414,7 +1399,7 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
 
     //Basic_Material
     double bm_var = (double)(FromHex(Value.To_UTF8(), 32, 2)+(FromHex(Value.To_UTF8(), 34, 2)<<8)+(FromHex(Value.To_UTF8(), 36, 2)<<16)+(FromHex(Value.To_UTF8(), 38, 2)<<24));
-	Basic_Material_TimeDate_Samples->setValue(bm_var);
+    Basic_Material_TimeDate_Samples->setValue(bm_var);
     if (SampleRate)
     {
         int64s TimeReference=float64_int64s(bm_var/SampleRate*1000);
@@ -1431,7 +1416,7 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
     if (Fail)
         return false;
     if ((FromHex(Value.To_UTF8(), 46, 1)&0x8)!=0x8)
-        return false;    
+        return false;
     int8u Zone=(int8u)(((FromHex(Value.To_UTF8(), 46, 1)&0x3)<<4)|FromHex(Value.To_UTF8(), 47, 1));
     for (int Pos=0; Pos<64; Pos++)
         if (Zone_IndexToInt[Pos]==Zone)
@@ -1443,11 +1428,11 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
     if (Value.size()==128 && bSigUpdated )
     {
         string str="";
-		Signature_Enabled->setChecked(true);
+        Signature_Enabled->setChecked(true);
 
         //Signature_TimeDate
         double sig_var = (double)(FromHex(Value.To_UTF8(), 64, 2)+(FromHex(Value.To_UTF8(), 66, 2)<<8)+(FromHex(Value.To_UTF8(), 68, 2)<<16)+(FromHex(Value.To_UTF8(), 70, 2)<<24));
-		Signature_TimeDate_Samples->setValue(sig_var);
+        Signature_TimeDate_Samples->setValue(sig_var);
         if (SampleRate)
         {
             int64s TimeReference=float64_int64s(sig_var/SampleRate*1000);
@@ -1463,7 +1448,7 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
         if (Fail)
             return false;
         if ((FromHex(Value.To_UTF8(), 78, 1)&0x8)!=0x8)
-            return false;    
+            return false;
         int8u TempI8=(int8u)(((FromHex(Value.To_UTF8(), 78, 1)&0x3)<<4)|FromHex(Value.To_UTF8(), 79, 1));
         for (int Pos=0; Pos<64; Pos++)
             if (Zone_IndexToInt[Pos]==TempI8)
@@ -1481,7 +1466,7 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
         if (Fail)
             return false;
 
-		/*
+        /*
         Signature_Spatial_Longitudinal->setValue(FromBCD(Value, 88, 1, Fail)*10
                                                + FromBCD(Value, 89, 1, Fail)
                                                + FromBCD(Value, 90, 1, Fail)*1000
@@ -1498,33 +1483,30 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
             case 0xE: Signature_Spatial_Longitudinal_Orientation->setCurrentIndex(1); break;
             default : return false;
         }
-		*/
+        */
 
-		str="";
-		for(int i=88; i<88+8; i++)
-		str += Value[i];
-		
-		unsigned char c;
-		char res;
-		bool orientation;
+        str="";
+        for(int i=88; i<88+8; i++)
+            str += Value[i];
 
-		c = str.at(str.length()-1);
-		bool checkOrientation = UnpackBool(c+128);
-		if(checkOrientation)
-			c = c + 128;
-		Unpack(c,res,orientation);
-		
-		str.at(str.length()-1) = res;
-		float fLongitude = HexStringToFloat(str);
+        unsigned char c;
+        char res;
+        bool orientation;
 
+        c = str.at(str.length()-1);
+        bool checkOrientation = UnpackBool(c+128);
+        if(checkOrientation)
+            c = c + 128;
+        Unpack(c,res,orientation);
 
-		Signature_Spatial_Longitudinal->setValue(fLongitude);
-		Signature_Spatial_Longitudinal_Orientation->setCurrentIndex(orientation);
+        str.at(str.length()-1) = res;
+        float fLongitude = HexStringToFloat(str);
 
-
+        Signature_Spatial_Longitudinal->setValue(fLongitude);
+        Signature_Spatial_Longitudinal_Orientation->setCurrentIndex(orientation);
 
 /*
-		Signature_Spatial_Latitude->setValue(FromBCD(Value, 96, 1, Fail)*10
+        Signature_Spatial_Latitude->setValue(FromBCD(Value, 96, 1, Fail)*10
                                            + FromBCD(Value, 97, 1, Fail)
                                            + FromBCD(Value, 98, 1, Fail)*1000
                                            + FromBCD(Value, 99, 1, Fail)*100
@@ -1541,25 +1523,21 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
         }
 */
 
+        str="";
+        for(int i=96; i<96+8; i++)
+        str += Value[i];
 
-		str="";
-		for(int i=96; i<96+8; i++)
-		str += Value[i];
-		
-		c = str.at(str.length()-1);
-		checkOrientation = UnpackBool(c+128);
-		if(checkOrientation)
-			c = c + 128;
-		Unpack(c,res,orientation);
-		
-		str.at(str.length()-1) = res;
-		float fLatitude = HexStringToFloat(str);
+        c = str.at(str.length()-1);
+        checkOrientation = UnpackBool(c+128);
+        if(checkOrientation)
+            c = c + 128;
+        Unpack(c,res,orientation);
 
+    str.at(str.length()-1) = res;
+    float fLatitude = HexStringToFloat(str);
 
-		Signature_Spatial_Latitude->setValue(fLatitude);
-		Signature_Spatial_Latitude_Orientation->setCurrentIndex(orientation);
-
-
+    Signature_Spatial_Latitude->setValue(fLatitude);
+    Signature_Spatial_Latitude_Orientation->setCurrentIndex(orientation);
 
        string TempS;
         TempI8=FromHex(Value.To_UTF8(), 104, 2);
@@ -1615,8 +1593,7 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
             return false;
         TempS+=(char)TempI8;
         Signature_Other_User->setText(TempS.c_str());
-		
-		
+
         //Signature_Other
         //string TempS;
         TempI8=FromHex(Value.To_UTF8(), 104, 2);
@@ -1673,15 +1650,11 @@ bool GUI_Main_xxxx_UmidDialog::TryList (Ztring Value)
         TempS+=(char)TempI8;
         Signature_Other_User->setText(TempS.c_str());
 
-		bSigUpdated = false;
-		
+        bSigUpdated = false;
     }
-    
-	if(Value.size() != 128)
-        Signature_Enabled->setChecked(false);
 
-	// else
-	// Signature_Enabled->setChecked(false);
+    if(Value.size() != 128)
+        Signature_Enabled->setChecked(false);
 
     return true;
 }

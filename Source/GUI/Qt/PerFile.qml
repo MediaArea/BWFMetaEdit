@@ -265,6 +265,7 @@ Control {
                             text: tech
                         }
                         Label {
+                            id: encoding_label
                             font.pointSize: 10
                             elide: Text.ElideRight
                             text: "Encoding:"
@@ -272,9 +273,9 @@ Control {
                         ComboBox {
                             id: encoding
                             font.pointSize: 10
+                            indicator.implicitHeight: encoding_label.height
+                            background.implicitHeight: encoding_label.height * 2
                             flat: true
-                            bottomInset: 0; rightInset: 0; leftInset: 0; topInset: 0
-                            bottomPadding: 4; rightPadding: 4; leftPadding: 4; topPadding: 4
                             currentIndex: {
                                 var value = Model.value(file, "Encoding")
                                 if (value === "UTF-8")
@@ -312,6 +313,7 @@ Control {
                                 background: Rectangle {
                                     color: highlighted ? root.Material.accent : root.Material.background
                                 }
+                                font.pointSize: 10
                                 font.weight: encoding.currentIndex === index ? Font.DemiBold : Font.Normal
                                 highlighted: ListView.isCurrentItem
                                 enabled: modelData.enabled
@@ -472,7 +474,6 @@ Control {
                                             text: label + ": "
                                         }
                                         ScrollView {
-                                            id: scollarea
                                             height: fieldHeight
                                             width: fieldLength
                                             clip: true

@@ -38,7 +38,7 @@ GUI_Main_Output_Log::GUI_Main_Output_Log(Core* _C, int KindOfLog_, QWidget* pare
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool GUI_Main_Output_Log::event (QEvent *Event) 
+bool GUI_Main_Output_Log::event (QEvent *Event)
 {
     if (Event->type()==QEvent::User)
     {
