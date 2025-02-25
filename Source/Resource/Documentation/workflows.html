@@ -35,5 +35,28 @@ Objective: Take metadata from an external resource and embed that data into a se
 <li>Under the File Menu, select 'Save Modified Files'.</li>
 <li>Review the Log of Operations and Errors for any problems that may have occurred during the save operation.</li>
 </ol>
+
+<h4>Workflow #3: Editing Existing Metadata in a Spreadsheet Editor and Importing It Back</h4>
+<p>Objective: Export metadata from a set of audio files, modify it in a spreadsheet editor, and embed it back into the audio files.</p>
+<ol>
+<li>Open a set of files in BWF MetaEdit and click <strong>Core Document (One global CSV file)...</strong> in the <strong>Export</strong> menu to save the metadata.</li>
+<li>Import the generated CSV document into the spreadsheet application, ensuring the following import settings are set:
+<ol>
+<li>File type: CSV document</li>
+<li>Encoding: Your metadata charset (usually ASCII or UTF-8)</li>
+<li>Separator: Comma (",")</li>
+<li>Text identifier: Double-quote ("")</li>
+<li>Do not merge consecutive blank columns.</li>
+</ol>
+<strong>Also, ensure all fields are treated as text fields to prevent the spreadsheet editor from changing the format of the imported data.</strong>
+</li>
+<li>Review the imported data consistency.</li>
+<li>Edit the necessary fields.</li>
+<li>Save the spreadsheet as a CSV.</li>
+<li>Import the CSV into BWF MetaEdit.</li>
+<li>Review the open files and the 'Log of Errors' for any technical errors that may have occurred while BWF MetaEdit read the CSV.</li>
+<li>Under the File menu, select 'Save Modified Files'.</li>
+<li>Review the Log of Operations and Errors for any issues that may have occurred during the save operation.</li>
+</ol>
 </body>
 </html>
