@@ -1081,6 +1081,13 @@ int Core::Menu_File_Import_Core(const string &FileName)
             throw "--in-core=: error during reading";
         Buffer[Buffer_Offset]='\0';
 
+        // Checking for UTF-8 BOM (ignoring other UTF versions BOM for now, as they are unhandled)
+        if (Buffer_Offset>=3 && Buffer[0]==0xEF && Buffer[1]==0xBB && Buffer[2]==0xBF)
+        {
+            Buffer_Offset-=3;
+            memmove(Buffer, Buffer+3, Buffer_Offset);
+        }
+
         //Finding the right line separator
         ZtringListList List;
         size_t CRLF_Pos=0;
@@ -1117,7 +1124,7 @@ int Core::Menu_File_Import_Core(const string &FileName)
         {
             //CSV
             //Loading data in an array
-            string Sep=string(1, char(Buffer[8]));
+            string Sep=string(1, (char)Buffer[8]);
             List.Separator_Set(1, Sep.c_str());
             List.Write((const char*)Buffer);
             delete[] Buffer; Buffer=NULL;
