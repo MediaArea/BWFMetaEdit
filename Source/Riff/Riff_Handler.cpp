@@ -298,6 +298,7 @@ Riff_Handler::Riff_Handler ()
     EmbedMD5=false;
     EmbedMD5_AuthorizeOverWritting=false;
     Trace_UseDec=false;
+    RevertToRiff=false;
     Encoding=Encoding_UTF8;
     Fallback_Encoding=Encoding_8859_1;
     Write_Encoding=Encoding_Max;
@@ -1729,6 +1730,39 @@ bool Riff_Handler::Remove_Chunk_Internal(const string &Field)
     {
         Errors<<"(No file name): Internal error"<<endl;
         return false;
+    }
+
+    //Special case: ds64
+    if (Field=="ds64" && RevertToRiff) // Check if the removal is called trough the right parameter
+    {
+        if (!Chunks->Global->ds64)
+        {
+            Warnings<<"Unable to revert to RIFF: already a RIFF file"<<endl;
+            return false;
+        }
+
+        if (Chunks->Global->ds64->riffSize>RIFF_Size_Limit ||
+            Chunks->Global->ds64->dataSize>RIFF_Size_Limit ||
+            Chunks->Global->ds64->sampleCount>RIFF_Size_Limit ||
+            Chunks->Subs.empty() ||
+            Chunks->Subs[0]->Subs.empty() ||
+            Chunks->Subs[0]->Header_Name_Get()!=Elements::WAVE ||
+            Chunks->Subs[0]->Subs[0]->Header_Name_Get()!=Elements::WAVE_ds64)
+        {
+            Warnings<<"Unable to revert to RIFF: incompatible feature"<<endl;
+            return false;
+        }
+
+        delete Chunks->Global->ds64;
+        Chunks->Global->ds64=NULL;
+        Chunks->Global->IsRF64=false;
+
+        Chunks->Modify(Elements::WAVE, Elements::WAVE_ds64, NULL);
+        Chunks->Modify(Elements::WAVE, Elements::WAVE_data, NULL);
+        Chunks->Subs[0]->Subs[0]->Chunk.Header.Name=Elements::WAVE_JUNK;
+        Chunks->Subs[0]->Chunk.Header.List=Elements::RIFF;
+
+        return true;
     }
 
     vector<int32u> CC4;

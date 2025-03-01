@@ -68,6 +68,7 @@ int Parse(Core &C, string &Argument)
     OPTION("--fallback-encoding=",                          Fallback_Encoding)
     OPTION("--write-encoding=",                             Write_Encoding)
     OPTION("--write-encoding",                              Write_CodePage)
+    OPTION("--revert-to-riff",                              RevertToRiff)
 
     OPTION("--out-xml=",                                    Out_XML_File)
     OPTION("--out-xml",                                     Out_XML_cout)
@@ -841,6 +842,15 @@ CL_OPTION(Chunks_Remove)
     }
 
     return -2;
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(RevertToRiff)
+{
+    C.RevertToRiff=true;
+    C.In_Chunk_Remove("ds64");
+
+    return -2; //Continue
 }
 
 //***************************************************************************

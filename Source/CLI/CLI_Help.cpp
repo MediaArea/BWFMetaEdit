@@ -178,6 +178,7 @@ std::string Help()
     ToDisplay<<"--remove-chunks=        Remove specified items from the WAVE chunk tree (comma separated list)"<<std::endl;
     ToDisplay<<"                        Chunk identifier must be 4 characters long and is case sensitive"<<std::endl;
     ToDisplay<<"                        (separate levels with '/' e.g. INFO/IART)"<<std::endl;
+    ToDisplay<<"--revert-to-riff        Revert RF64 file to RIFF if no incompatibility is found"<<std::endl;
     ToDisplay<<""<<std::endl;
 
     return ToDisplay.str();

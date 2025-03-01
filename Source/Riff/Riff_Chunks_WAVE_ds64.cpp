@@ -65,23 +65,26 @@ void Riff_WAVE_ds64::Read_Internal ()
 //---------------------------------------------------------------------------
 void Riff_WAVE_ds64::Modify_Internal ()
 {
-    //Some files are corrupted by bad software (including BWF MetaEdit prior to v1.3.1), recreating sampleCount
-    if (Global->ds64->sampleCount==0 && Global->fmt_ && Global->fmt_->blockAlignment)
-        Global->ds64->sampleCount=Global->ds64->dataSize/Global->fmt_->blockAlignment;
-
-    //Creating buffer
-    Chunk.Content.Buffer_Offset=0;
-    if (Chunk.Content.Size<28)
+    if (Global->ds64)
     {
-        Chunk.Content.Size=28;
-        delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[28];
-    }
-    memset(Chunk.Content.Buffer, '\0', 28);
+        //Some files are corrupted by bad software (including BWF MetaEdit prior to v1.3.1), recreating sampleCount
+        if (Global->ds64->sampleCount==0 && Global->fmt_ && Global->fmt_->blockAlignment)
+            Global->ds64->sampleCount=Global->ds64->dataSize/Global->fmt_->blockAlignment;
 
-    Put_L8(Global->ds64->riffSize);
-    Put_L8(Global->ds64->dataSize);
-    Put_L8(Global->ds64->sampleCount);
-    Put_L4(0); //tableLength
+        //Creating buffer
+        Chunk.Content.Buffer_Offset=0;
+        if (Chunk.Content.Size<28)
+        {
+            Chunk.Content.Size=28;
+            delete[] Chunk.Content.Buffer; Chunk.Content.Buffer=new int8u[28];
+        }
+        memset(Chunk.Content.Buffer, '\0', 28);
+
+        Put_L8(Global->ds64->riffSize);
+        Put_L8(Global->ds64->dataSize);
+        Put_L8(Global->ds64->sampleCount);
+        Put_L4(0); //tableLength
+    }
 
     Chunk.Content.IsModified=true;
     Chunk.Content.Size_IsModified=true;
