@@ -46,7 +46,7 @@ void Loudness_SpinBox::fixup(QString &input) const
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &FileName_, const std::string &Field_, const QString&, bool Rules_Requirements_, QWidget* parent)
+GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &FileName_, const std::string &Field_, const QString& Value, bool Rules_Requirements_, QWidget* parent)
 : QDialog(parent)
 {
     //Internal
@@ -96,7 +96,21 @@ GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &File
     Loudness->setFocus();
 
     //Default settings
-    Loudness->setValue(Ztring().From_UTF8(C->Get(FileName, Field)).To_float32());
+    float Value_Float=Value_Float=Value.toFloat();
+    if (!FileName.empty())
+        Value_Float=Ztring().From_UTF8(C->Get(FileName, Field)).To_float32();
+
+    Loudness->setValue(Value_Float);
+}
+
+//***************************************************************************
+// Public functions
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+QString GUI_Main_xxxx_Loudness::Value() const
+{
+    return QString::number(Loudness->value());
 }
 
 //***************************************************************************
@@ -106,6 +120,12 @@ GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &File
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_Loudness::OnAccept ()
 {
+    if (FileName.empty())
+    {
+        accept();
+        return;
+    }
+
     std::string Value = "";
     if(Loudness->value() != Loudness->minimum())
     {

@@ -204,6 +204,8 @@ Core::Core()
     #else //_WIN32
         ApplicationFolder=Ztring().From_Local(std::getenv("HOME"))+__T("/.bwfmetaedit");
     #endif //_WIN32
+
+    Handler_Default.Riff=new Riff_Handler();
 }
 
 Core::~Core()
@@ -1548,6 +1550,9 @@ bool Core::IsReadOnly_Get (const string &FileName)
 //---------------------------------------------------------------------------
 bool Core::IsValid (const string &FileName, const string &Field, const string &Value, bool IgnoreCoherency)
 {
+  if (FileName.empty())
+    return Handler_Default.Riff->IsValid(Ztring().From_UTF8(Field).MakeLowerCase().To_UTF8(), Value, Rules, IgnoreCoherency);
+
     handlers::iterator Handler=Handlers.find(FileName);
     if (Handler==Handlers.end())
         return false; //file is not registred
@@ -1561,6 +1566,9 @@ bool Core::IsValid (const string &FileName, const string &Field, const string &V
 //---------------------------------------------------------------------------
 string Core::IsValid_LastError (const string &FileName)
 {
+    if (FileName.empty())
+        return Handler_Default.Riff->IsValid_LastError();
+
     handlers::iterator Handler=Handlers.find(FileName);
     if (Handler==Handlers.end())
         return string(); //file is not registred
@@ -1574,6 +1582,9 @@ string Core::IsValid_LastError (const string &FileName)
 //---------------------------------------------------------------------------
 string Core::IsValid_LastWarning (const string &FileName)
 {
+    if (FileName.empty())
+        return Handler_Default.Riff->IsValid_LastWarning();
+
     handlers::iterator Handler=Handlers.find(FileName);
     if (Handler==Handlers.end())
         return string(); //file is not registred

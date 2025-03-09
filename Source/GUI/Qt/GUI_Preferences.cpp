@@ -9,6 +9,12 @@
 
 //---------------------------------------------------------------------------
 #include "GUI/Qt/GUI_Preferences.h"
+#include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_DateDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_Bext.h"
+#include "GUI/Qt/GUI_Main_xxxx_UmidDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_CodingHistoryDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_Loudness.h"
 #include "Common/Core.h"
 #include <QTextBrowser>
 #include <QGridLayout>
@@ -19,6 +25,7 @@
 #include <QScreen>
 #include <QTabWidget>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QRadioButton>
 #include <QPushButton>
 #include <QLineEdit>
@@ -36,6 +43,7 @@
     #undef _TEXT
     #undef __TEXT
     #include "shlobj.h"
+#include "GUI_Preferences.h"
 #endif //_WIN32
 using namespace std;
 using namespace ZenLib;
@@ -247,17 +255,18 @@ options Groups[Group_Max]=
         false,
     },
 };
+
+const char* DefaultValueSuffix="DefaultValue";
+const char* DefaultOverwriteSuffix="DefaultOverwrite";
 //***************************************************************************
 // Constructor/Destructor
 //***************************************************************************
 
 //---------------------------------------------------------------------------
 // Constructor
-GUI_Preferences::GUI_Preferences(GUI_Main* parent)
-: QDialog(parent)
+GUI_Preferences::GUI_Preferences(GUI_Main* Parent, Core* C)
+: QDialog(Parent), Main(Parent), C(C)
 {
-    Main=parent;
-    
     setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
     setWindowTitle("BWF MetaEdit preferences");
     Dialog=new QDialogButtonBox(QDialogButtonBox::RestoreDefaults | QDialogButtonBox::Save | QDialogButtonBox::Cancel);
@@ -266,7 +275,7 @@ GUI_Preferences::GUI_Preferences(GUI_Main* parent)
     connect(Dialog, SIGNAL(clicked(QAbstractButton*)), this, SLOT(OnDialogClicked(QAbstractButton*)));
 
     QVBoxLayout* L=new QVBoxLayout();
-    Central=new QTabWidget(this);
+    Central=new QTabWidget();
 
     Create();
 
@@ -275,22 +284,23 @@ GUI_Preferences::GUI_Preferences(GUI_Main* parent)
 
     setLayout(L);
 
-    OnLoad();
-
-    Central->setCurrentIndex(Group_Rules);
     QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
     if (Screen)
-        resize(width(), Screen->availableGeometry().height()*3/4);
+    {
+        move((Screen->availableGeometry().width()-780)/2, 80);
+        resize(780, Screen->availableGeometry().height()*3/4);
+    }
+
+    OnLoad();
+
+    Central->blockSignals(true);
+    Central->setCurrentIndex(Group_Rules);
+    Central->blockSignals(false);
 }
 
 //---------------------------------------------------------------------------
 void GUI_Preferences::showEvent(QShowEvent*)
 {
-    QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0,0)));
-    if (Screen)
-        move((Screen->availableGeometry().width()-780)/2, 80);
-    resize(780, height());
-
     OnClicked();
 }
 
@@ -353,6 +363,19 @@ bool GUI_Preferences::Group_Option_Checked_Set(group Group, size_t Option, bool 
     }
 
     return true;
+}
+
+//---------------------------------------------------------------------------
+std::string GUI_Preferences::Group_Option_Default_Get(group Group, size_t Option, bool &Overwrite)
+{
+    if (Group!=Group_Core || Option>=Groups[Group].Option_Size)
+        return "";
+
+    Overwrite=DefaultCoreOverwriteCheckBoxes[Option]->isChecked();
+    if (DefaultCoreValueComboBoxes[Option]->currentData().toString()=="VALUE")
+        return DefaultCoreValueComboBoxes[Option]->currentText().toStdString();
+
+    return DefaultCoreValueComboBoxes[Option]->currentData().toString().toStdString();
 }
 
 //***************************************************************************
@@ -437,6 +460,31 @@ void GUI_Preferences::OnLoad()
             }
         }
 
+    // Defaults
+    for (size_t Option=0; Option<Groups[Group_Core].Option_Size; Option++)
+    {
+        if (!DefaultCoreValueComboBoxes[Option])
+            continue;
+
+        string OptionName=string(Groups[Group_Core].Option[Option].UniqueName)+DefaultValueSuffix;
+        if ((!strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_OriginationDate") ||
+             !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_OriginationTime") ||
+             !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_ICRD")) && Config(OptionName.c_str())==__T("TIMESTAMP"))
+            DefaultCoreValueComboBoxes[Option]->setCurrentIndex(2);
+        else if ((!strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_OriginatorReference") ||
+                  !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_Description")) && Config(OptionName.c_str())==__T("FILENAME"))
+            DefaultCoreValueComboBoxes[Option]->setCurrentIndex(2);
+        else
+        {
+            DefaultCoreValueComboBoxes[Option]->setItemText(0, QString(QByteArray::fromBase64(Config(OptionName.c_str()).To_UTF8().c_str())));
+            DefaultCoreValueComboBoxes[Option]->setCurrentIndex(0);
+        }
+        connect(DefaultCoreValueComboBoxes[Option], SIGNAL(currentIndexChanged(int)), this, SLOT(CurrentIndexChanged()));
+
+        OptionName=string(Groups[Group_Core].Option[Option].UniqueName)+DefaultOverwriteSuffix;
+        DefaultCoreOverwriteCheckBoxes[Option]->setChecked((bool)Config(OptionName.c_str()).To_int64u());
+    }
+
     //Extra
     if (Config("Extra_OpenSaveDirectory").empty())
     {
@@ -511,8 +559,6 @@ void GUI_Preferences::OnLoad()
     Main->Bext_MaxVersion_Set(Extra_Bext_MaxVersion->value());
     Extra_Bext_Toggle->setChecked(Config("Extra_Bext_Toggle").To_int64u()?true:false);
     Main->Bext_Toggle_Set(Extra_Bext_Toggle->isChecked());
-
-    close();
 }
 
 //---------------------------------------------------------------------------
@@ -539,12 +585,30 @@ void GUI_Preferences::OnSave()
             {
                 case Type_CheckBox     : Content+=CheckBoxes  [Group*options::MaxCount+Option]->isChecked()?__T('1'):__T('0'); break;
                 case Type_RadioButton  : Content+=RadioButtons[Group*options::MaxCount+Option]->isChecked()?__T('1'):__T('0'); break;
-                default                 : ;
+                default                : ;
             }
 
             Content+=EOL;
             Prefs.Write(Content);
         }
+    }
+
+    // Defaults
+    for (size_t Option=0; Option<Groups[Group_Core].Option_Size; Option++)
+    {
+        Ztring Content;
+        Content+=Ztring().From_UTF8(string(Groups[Group_Core].Option[Option].UniqueName)+DefaultValueSuffix);
+        Content+=__T(" = ");
+        if (DefaultCoreValueComboBoxes[Option]->currentData().toString()=="VALUE")
+            Content+=Ztring().From_UTF8(QString(DefaultCoreValueComboBoxes[Option]->currentText().toUtf8().toBase64()).toStdString());
+        else
+            Content+=Ztring().From_UTF8(DefaultCoreValueComboBoxes[Option]->currentData().toString().toStdString());
+        Content+=EOL;
+        Content+=Ztring().From_UTF8(string(Groups[Group_Core].Option[Option].UniqueName)+DefaultOverwriteSuffix);
+        Content+=__T(" = ");
+        Content+=Ztring().From_UTF8(DefaultCoreOverwriteCheckBoxes[Option]->isChecked()?"1":"0");
+        Content+=EOL;
+        Prefs.Write(Content);
     }
 
     //Extra
@@ -623,6 +687,8 @@ void GUI_Preferences::OnRejected()
 
     //Configuring the main view
     OnClicked();
+
+    close();
 }
 
 //---------------------------------------------------------------------------
@@ -683,6 +749,83 @@ void GUI_Preferences::OnClicked ()
         CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Analog]->setEnabled(false);
         CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_Frequency]->setEnabled(false);
         CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec_Ex_WordLength]->setEnabled(false);
+    }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Preferences::CurrentIndexChanged()
+{
+    for (size_t Option=0; Option<Groups[Group_Core].Option_Size; Option++)
+    {
+        if (sender()==DefaultCoreValueComboBoxes[Option])
+        {
+            if (DefaultCoreValueComboBoxes[Option]->currentData().toString()=="EDIT")
+            {
+                if (!strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_OriginationDate") ||
+                    !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_OriginationTime") ||
+                    !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_ICRD") ||
+                    !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_IDIT"))
+                {
+                    GUI_Main_xxxx_DateDialog* Dialog=new GUI_Main_xxxx_DateDialog(C, "", Groups[Group_Core].Option[Option].Description, DefaultCoreValueComboBoxes[Option]->itemText(0), this);
+                    Dialog->exec();
+                    if (Dialog->result()==QDialog::Accepted)
+                        DefaultCoreValueComboBoxes[Option]->setItemText(0, Dialog->Value());
+
+                    delete Dialog;
+                }
+                else if (!strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_BextVersion"))
+                {
+                    GUI_Main_xxxx_Bext* Dialog=new GUI_Main_xxxx_Bext(C, DefaultCoreValueComboBoxes[Option]->itemText(0).toUInt(), Main->Bext_MaxVersion_Get(), this);
+                    Dialog->exec();
+                    if (Dialog->result()==QDialog::Accepted)
+                        DefaultCoreValueComboBoxes[Option]->setItemText(0, Dialog->Value());
+
+                    delete Dialog;
+                }
+                else if (!strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_UMID"))
+                {
+                    GUI_Main_xxxx_UmidDialog* Dialog=new GUI_Main_xxxx_UmidDialog(C, "", Groups[Group_Core].Option[Option].Description, DefaultCoreValueComboBoxes[Option]->itemText(0), this);
+                    Dialog->exec();
+                    if (Dialog->result()==QDialog::Accepted)
+                        DefaultCoreValueComboBoxes[Option]->setItemText(0, Dialog->Value());
+
+                    delete Dialog;
+                }
+                else if (!strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_CodingHistory"))
+                {
+                    GUI_Main_xxxx_CodingHistoryDialog* Dialog=new GUI_Main_xxxx_CodingHistoryDialog(C, "", Groups[Group_Core].Option[Option].Description, DefaultCoreValueComboBoxes[Option]->itemText(0), C->Rules, this);
+                    Dialog->exec();
+                    if (Dialog->result()==QDialog::Accepted)
+                        DefaultCoreValueComboBoxes[Option]->setItemText(0, Dialog->Value());
+
+                    delete Dialog;
+                }
+                else if (!strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_LoudnessValue") ||
+                         !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_LoudnessRange") ||
+                         !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_MaxTruePeakLevel") ||
+                         !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_MaxMomentaryLoudness") ||
+                         !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_MaxShortTermLoudness"))
+                {
+                    GUI_Main_xxxx_Loudness* Dialog=new GUI_Main_xxxx_Loudness(C, "", Groups[Group_Core].Option[Option].Description, DefaultCoreValueComboBoxes[Option]->itemText(0), C->Rules.Tech3285_Req, this);
+                    Dialog->exec();
+                    if (Dialog->result()==QDialog::Accepted)
+                        DefaultCoreValueComboBoxes[Option]->setItemText(0, Dialog->Value());
+
+                    delete Dialog;
+                }
+                else
+                {
+                    GUI_Main_xxxx_TextEditDialog* Dialog=new GUI_Main_xxxx_TextEditDialog(C, "", Groups[Group_Core].Option[Option].Description, DefaultCoreValueComboBoxes[Option]->itemText(0), false, this);
+                    Dialog->exec();
+                    if (Dialog->result()==QDialog::Accepted)
+                        DefaultCoreValueComboBoxes[Option]->setItemText(0, Dialog->Value());
+
+                    delete Dialog;
+                }
+                DefaultCoreValueComboBoxes[Option]->setCurrentIndex(0);
+            }
+            break;
+        }
     }
 }
 
@@ -772,10 +915,59 @@ void GUI_Preferences::OnExtra_LogFile_Activated_BrowseClicked (bool)
 }
 
 //---------------------------------------------------------------------------
+void GUI_Preferences::CreateCoreDefaults(QVBoxLayout* Columns)
+{
+    QGridLayout* Grid=new QGridLayout();
+
+    Grid->addWidget(new QLabel("Field:", this), 0, 0, Qt::AlignHCenter);
+    Grid->addWidget(new QLabel("Display:", this), 0, 1, Qt::AlignHCenter);
+    Grid->addWidget(new QLabel("Default:", this), 0, 2, Qt::AlignHCenter);
+    Grid->addWidget(new QLabel("Overwrite:", this), 0, 3, Qt::AlignHCenter);
+    for (size_t Option=0; Option<Groups[Group_Core].Option_Size; Option++)
+    {
+        QLabel* DescriptionLabel=new QLabel(Groups[Group_Core].Option[Option].Description, this);
+        Grid->addWidget(DescriptionLabel, Option+1, 0);
+        //Grid->addWidget(new QLabel("Display: ", this), Option, 1);
+
+        CheckBoxes[Group_Core*options::MaxCount+Option]=new QCheckBox();
+        Grid->addWidget(CheckBoxes[Group_Core*options::MaxCount+Option], Option+1, 1, Qt::AlignHCenter);
+
+        //Grid->addWidget(new QLabel("Default: ", this), Option, 3);
+        DefaultCoreValueComboBoxes[Option]=new QComboBox();
+        DefaultCoreValueComboBoxes[Option]->setEditable(false);
+        DefaultCoreValueComboBoxes[Option]->addItem("", QString("VALUE"));
+        DefaultCoreValueComboBoxes[Option]->addItem("Edit", QString("EDIT"));
+        if (!strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_OriginationDate") ||
+            !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_OriginationTime") ||
+            !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_ICRD"))
+            DefaultCoreValueComboBoxes[Option]->addItem("Use file creation timestamp", QString("TIMESTAMP"));
+        else if (!strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_OriginatorReference") ||
+                 !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_Description"))
+            DefaultCoreValueComboBoxes[Option]->addItem("Use file name", QString("FILENAME"));
+        Grid->addWidget(DefaultCoreValueComboBoxes[Option], Option+1, 2);
+        //Grid->addWidget(new QLabel("Overwrite: ", this), Option, 5);
+        DefaultCoreOverwriteCheckBoxes[Option]=new QCheckBox();
+        Grid->addWidget(DefaultCoreOverwriteCheckBoxes[Option], Option+1, 3, Qt::AlignHCenter);
+
+        if (!strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_TimeReference_Translated"))
+        {
+            DefaultCoreValueComboBoxes[Option]->setEnabled(false);
+            DefaultCoreOverwriteCheckBoxes[Option]->setEnabled(false);
+        }
+    }
+
+    Columns->addLayout(Grid);
+}
+
+//---------------------------------------------------------------------------
 void GUI_Preferences::Create()
 {
     CheckBoxes=new QCheckBox*[Group_Max*options::MaxCount];
     RadioButtons=new QRadioButton*[Group_Max*options::MaxCount];
+
+    DefaultCoreValueComboBoxes=new QComboBox*[Groups[Group_Core].Option_Size];
+    DefaultCoreOverwriteCheckBoxes=new QCheckBox*[Groups[Group_Core].Option_Size];
+
     QVBoxLayout* ViewsOptions=new QVBoxLayout();
     ViewsOptions->addStretch();
     QVBoxLayout* EncodingOptions=new QVBoxLayout();
@@ -785,22 +977,46 @@ void GUI_Preferences::Create()
     {
         QVBoxLayout* Columns=new QVBoxLayout();
 
+        QLabel* HeaderLabel=new QLabel(this);
+        HeaderLabel->setWordWrap(true);
+        QLabel* FooterLabel=new QLabel(this);
+        FooterLabel->setWordWrap(true);
+
         switch (Kind)
         {
-            case Group_Tech     : Columns->addWidget(new QLabel("Select which technical values should appear on the 'Tech' table view of BWF MetaEdit, others will be hidden.")); break;
-            case Group_Core     : Columns->addWidget(new QLabel("Select which technical values should appear on the 'Core' table view of BWF MetaEdit, others will be hidden.\nThese options affect only the displayed table and not the handling of imported or exported Core documents.\nBe aware that even if a column is hidden, metadata can be imported, exported and saved within these fields.")); break;
-            case Group_Rules    : Columns->addWidget(new QLabel("Select which standards and rule sets to follow during use of BWF MetaEdit.\nSelection of rule sets will constrained the allowed data entry and may add additional metadata requirements.\nSee documentation on BWF MetaEdit Rules within the Help documentation.")); break;
-            case Group_Encoding : Columns->addWidget(new QLabel("If there is not CSET chunk or if it should be ignored, consider non ASCII bytes as:")); break;
-            case Group_Encoding_Fallback : Columns->addWidget(new QLabel("If UTF8 is not selected or UTF8 detection fails, fallback on:")); break;
+            case Group_Tech:
+                HeaderLabel->setText("Select which technical values should appear on the 'Tech' table view of BWF MetaEdit, others will be hidden.");
+                break;
+            case Group_Core:
+                HeaderLabel->setText("Display: Select which technical values should appear on the 'Core' table view of BWF MetaEdit, others will be hidden.\n"
+                                     "Default: Value to set if the field is empty when the file is opened.\n"
+                                     "Overwrite: Replace existing value by the default one when the file is opened.\n");
+                FooterLabel->setText("\nDisplay option affect only the displayed table and not the handling of imported or exported Core documents. Be aware that even if a column is hidden, metadata can be imported, exported and saved within these fields.");
+                                     break;
+            case Group_Rules:
+                HeaderLabel->setText("Select which standards and rule sets to follow during use of BWF MetaEdit. Selection of rule sets will constrained the allowed data entry and may add additional metadata requirements. See documentation on BWF MetaEdit Rules within the Help documentation.");
+                break;
+            case Group_Encoding:
+                HeaderLabel->setText("If there is not CSET chunk or if it should be ignored, consider non ASCII bytes as:");
+                break;
+            case Group_Encoding_Fallback:
+                HeaderLabel->setText("If UTF8 is not selected or UTF8 detection fails, fallback on:");
+                break;
         }
+        Columns->addWidget(HeaderLabel);
 
-        for (size_t Option=0; Option<Groups[Kind].Option_Size; Option++)
+        if (Kind==Group_Core)
+            CreateCoreDefaults(Columns);
+        else
         {
-            switch (Groups[Kind].Option[Option].Type)
+            for (size_t Option=0; Option<Groups[Kind].Option_Size; Option++)
             {
-                case Type_CheckBox              : CheckBoxes[Kind*options::MaxCount+Option]=new QCheckBox(Groups[Kind].Option[Option].Description); Columns->addWidget(CheckBoxes[Kind*options::MaxCount+Option]); break;
-                case Type_RadioButton           : RadioButtons[Kind*options::MaxCount+Option]=new QRadioButton(Groups[Kind].Option[Option].Description); Columns->addWidget(RadioButtons[Kind*options::MaxCount+Option]); break;
-                default                         : ;
+                switch (Groups[Kind].Option[Option].Type)
+                {
+                    case Type_CheckBox              : CheckBoxes[Kind*options::MaxCount+Option]=new QCheckBox(Groups[Kind].Option[Option].Description); Columns->addWidget(CheckBoxes[Kind*options::MaxCount+Option]); break;
+                    case Type_RadioButton           : RadioButtons[Kind*options::MaxCount+Option]=new QRadioButton(Groups[Kind].Option[Option].Description); Columns->addWidget(RadioButtons[Kind*options::MaxCount+Option]); break;
+                    default                         : ;
+                }
             }
         }
 
@@ -820,6 +1036,7 @@ void GUI_Preferences::Create()
         {
             QWidget* Columns_Widget=new QWidget();
             Columns->addStretch();
+            Columns->addWidget(FooterLabel);
             Columns_Widget->setLayout(Columns);
             QScrollArea* ScrollArea=new QScrollArea();
             ScrollArea->setWidget(Columns_Widget);

@@ -280,7 +280,7 @@ void GUI_Main::Menu_Create()
     Menu_Options->addSeparator();
     Menu_Options->addAction(Menu_Options_ResetFieldSizes);
 
-    Preferences=new GUI_Preferences(this);
+    Preferences=new GUI_Preferences(this, C);
     Menu_Fields_Menus=new QMenu*[Preferences->Groups_Count_Get()];
     Menu_Fields_CheckBoxes=new QAction*[Preferences->Groups_Count_Get()*options::MaxCount];
     Menu_Fields_ActionGroups=new QActionGroup*[Preferences->Groups_Count_Get()];

@@ -70,6 +70,9 @@ public:
     QPushButton*                        Load;
     QPushButton*                        Save;
 
+    // Public functions
+    QString Value() const;
+
 private Q_SLOTS:
     //Actions
     void OnAccept                   ();

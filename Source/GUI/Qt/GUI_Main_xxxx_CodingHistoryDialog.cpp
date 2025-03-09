@@ -296,7 +296,8 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
     Save=new QPushButton("&Save file...");
     QDialogButtonBox* Dialog=new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     Dialog->addButton(Load, QDialogButtonBox::ResetRole);
-    Dialog->addButton(Save, QDialogButtonBox::ResetRole);
+    if (!FileName.empty())
+        Dialog->addButton(Save, QDialogButtonBox::ResetRole);
     connect(Dialog, SIGNAL(accepted()), this, SLOT(OnAccept()));
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
     connect(Load, SIGNAL(clicked()), this, SLOT(OnMenu_Load()));
@@ -344,6 +345,16 @@ GUI_Main_xxxx_CodingHistoryDialog::GUI_Main_xxxx_CodingHistoryDialog(Core* C_, c
         OnCurrentChanged(0); //By default, index=0
     else
         Central->setCurrentIndex(1);
+}
+
+//***************************************************************************
+// Public functions
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+QString GUI_Main_xxxx_CodingHistoryDialog::Value() const
+{
+    return TextEdit->toPlainText();
 }
 
 //***************************************************************************
@@ -634,6 +645,9 @@ void GUI_Main_xxxx_CodingHistoryDialog::hideEvent (QHideEvent*)
     //if not Text, convert to text first
     if (Central->currentIndex()==0)
         List2Text();
+
+    if (FileName.empty())
+        return;
 
     //Save content
     std::string Value=TextEdit->toPlainText().toUtf8().data();

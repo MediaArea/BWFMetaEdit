@@ -394,6 +394,19 @@ bool GUI_Main::Close(const string &FileName, bool AndExit)
 }
 
 //---------------------------------------------------------------------------
+void GUI_Main::Apply_Defaults(const QString& FileName)
+{
+    for (size_t Option=0; Option<Preferences->Group_Options_Count_Get(Group_Core); Option++)
+    {
+        bool Overwrite;
+        string Default=Preferences->Group_Option_Default_Get(Group_Core, Option, Overwrite);
+        string Current=C->Get(FileName.toStdString(), Preferences->Group_Option_Description_Get(Group_Core, Option));
+        if (Current!=Default && (Current.empty() || Overwrite))
+            C->Set(FileName.toStdString(), Preferences->Group_Option_Description_Get(Group_Core, Option), Default);
+    }
+}
+
+//---------------------------------------------------------------------------
 void GUI_Main::Menu_Update()
 {
     //File_Backup
@@ -508,10 +521,7 @@ void GUI_Main::OnOpen_Timer ()
 
     if (Result==1.0 || ProgressDialog->wasCanceled())
     {
-        ProgressDialog->hide();
         Timer->stop();
-
-        delete ProgressDialog; ProgressDialog=NULL;
         delete Timer; Timer=NULL;
 
         switch (Open_Timer_Action)
@@ -547,6 +557,28 @@ void GUI_Main::OnOpen_Timer ()
                                           break;
             default                     : C->StdOut("???, finished"); break;
         }
+
+        //Applying defaults to newly opened files
+        QStringList OpenedFiles_New;
+        ZtringListList Core;
+        Core.Separator_Set(0, EOL);
+        Core.Separator_Set(1, __T(","));
+        Core.Write(C->Core_Get().c_str());
+        for (size_t Pos=1; Pos<Core.size(); Pos++)
+        {
+            if (Core(Pos).empty())
+                continue;
+
+                QString FileName=QString().fromStdString(Core(Pos)[0].To_UTF8());
+                OpenedFiles_New.push_back(FileName);
+
+                if (Open_Timer_Action<Timer_Save && !OpenedFiles.contains(FileName))
+                    Apply_Defaults(FileName);
+        }
+        OpenedFiles=OpenedFiles_New;
+
+        ProgressDialog->hide();
+        delete ProgressDialog; ProgressDialog=NULL;
 
         //Showing errors
         string Errors=C->Text_stderr_Last_Get();

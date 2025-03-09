@@ -46,6 +46,9 @@ public:
     //Constructor/Destructor
     GUI_Main_xxxx_UmidDialog(Core* C, const std::string &FileName_, const std::string &Field_, const QString &OldText, QWidget* parent=NULL);
 
+    // Public functions
+    QString Value() const;
+
     //Widgets
     QTabWidget*                         Central;
     QLabel*                             Label;

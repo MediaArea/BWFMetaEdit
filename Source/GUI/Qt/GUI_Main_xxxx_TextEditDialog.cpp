@@ -53,7 +53,8 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
     Dialog=new QDialogButtonBox(Buttons, Qt::Horizontal, this);
     if (!ReadOnly)
         Dialog->addButton(Load, QDialogButtonBox::ResetRole);
-    Dialog->addButton(Save, QDialogButtonBox::ResetRole);
+    if (!FileName.empty())
+        Dialog->addButton(Save, QDialogButtonBox::ResetRole);
     connect(Dialog, SIGNAL(accepted()), this, SLOT(OnAccept()));
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
     connect(Load, SIGNAL(clicked()), this, SLOT(OnMenu_Load()));
@@ -92,12 +93,28 @@ GUI_Main_xxxx_TextEditDialog::GUI_Main_xxxx_TextEditDialog(Core* _C, const std::
 }
 
 //***************************************************************************
+// Public functions
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+QString GUI_Main_xxxx_TextEditDialog::Value() const
+{
+    return BigValue.isEmpty()?TextEdit->toPlainText():BigValue;
+}
+
+//***************************************************************************
 // Menu actions
 //***************************************************************************
 
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_TextEditDialog::OnAccept ()
 {
+    if (FileName.empty())
+    {
+        accept();
+        return;
+    }
+
     std::string Value=(BigValue.isEmpty()?TextEdit->toPlainText():BigValue).toUtf8().data();
     if (!C->IsValid(FileName, Field, Value, true))
     {

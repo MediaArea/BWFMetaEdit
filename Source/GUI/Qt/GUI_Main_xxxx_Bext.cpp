@@ -72,6 +72,53 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, i
     Version->setValue(BextVersion);
 }
 
+//---------------------------------------------------------------------------
+GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, int Value, int Maximum, QWidget* parent)
+: QDialog(parent)
+{
+    //Internal
+    C=_C;
+
+    //Configuration
+    setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
+    setWindowTitle("bext version");
+    setWindowIcon (QIcon(":/Image/Logo/Logo.png"));
+
+    //Buttons
+    Dialog=new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(Dialog, SIGNAL(accepted()), this, SLOT(OnAccept()));
+    connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
+
+    //Extra - Bext
+    Version=new QDoubleSpinBox(this);
+    Version->setMaximum(Maximum);
+    Version->setDecimals(0);
+    Version->setMinimum(0);
+
+    QLabel* Version_Label=new QLabel("bext version:");
+
+    QGridLayout* L=new QGridLayout();
+    L->addWidget(Version_Label, 0, 0);
+    L->addWidget(Version, 0, 1);
+    L->addWidget(Dialog, 1, 0, 1, 2);
+
+    setLayout(L);
+    Version->setFocus();
+
+    //Default settings
+    Version->setValue(Value);
+}
+
+//***************************************************************************
+// Public functions
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+QString GUI_Main_xxxx_Bext::Value() const
+{
+    return QString::number(Version->value());
+}
+
 //***************************************************************************
 // Menu actions
 //***************************************************************************
@@ -79,6 +126,12 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, const std::string &FileName_, i
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_Bext::OnAccept ()
 {
+    if (FileName.empty())
+    {
+        accept();
+        return;
+    }
+
     std::string Value=Ztring::ToZtring(Version->value(), 0).To_UTF8();
     if (!C->IsValid(FileName, "BextVersion", Value))
     {

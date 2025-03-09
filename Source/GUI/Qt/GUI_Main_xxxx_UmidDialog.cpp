@@ -578,7 +578,7 @@ qint64 FromHex64(const string &Value, size_t Pos, size_t Size)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &FileName_, const std::string &Field_, const QString&, QWidget* parent)
+GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &FileName_, const std::string &Field_, const QString& OldText, QWidget* parent)
 : QDialog(parent)
 {
     //Internal
@@ -588,7 +588,7 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     Updating=false;
     bSigUpdated=true;
 
-    SampleRate=Ztring().From_UTF8(C->Get(FileName, "SampleRate")).To_int16u();
+    SampleRate=(!FileName.empty()?Ztring().From_UTF8(C->Get(FileName, "SampleRate")).To_int16u():0);
     while (((qint64)SampleRate)*24*60*60>=0x100000000LL)
         SampleRate/=2;
 
@@ -602,7 +602,8 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
     Save=new QPushButton("&Save file...");
     Dialog=new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     Dialog->addButton(Load, QDialogButtonBox::ResetRole);
-    Dialog->addButton(Save, QDialogButtonBox::ResetRole);
+    if (!FileName.empty())
+        Dialog->addButton(Save, QDialogButtonBox::ResetRole);
     connect(Dialog, SIGNAL(accepted()), this, SLOT(OnAccept()));
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
     connect(Load, SIGNAL(clicked()), this, SLOT(OnMenu_Load()));
@@ -914,7 +915,9 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
 
     //Filling
     Updating=true;
-    string Value=C->Get(FileName, Field);
+    string Value=OldText.toStdString();
+    if (!FileName.empty())
+        Value=C->Get(FileName, Field);
     if (!Value.empty())
         Free_Basic->setText(Value.substr(0, 64).c_str());
     if (Value.size()>=64)
@@ -933,6 +936,16 @@ GUI_Main_xxxx_UmidDialog::GUI_Main_xxxx_UmidDialog(Core* C_, const std::string &
 }
 
 //***************************************************************************
+// Public functions
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+QString GUI_Main_xxxx_UmidDialog::Value() const
+{
+    return Free_Basic->text()+Free_Signature->text();
+}
+
+//***************************************************************************
 // Menu actions
 //***************************************************************************
 
@@ -943,6 +956,12 @@ void GUI_Main_xxxx_UmidDialog::OnAccept ()
 
     if (Central->currentIndex()!=1)
         OnCurrentChanged(1);
+
+    if (FileName.empty())
+    {
+        accept();
+        return;
+    }
 
     std::string Value=(Free_Basic->text()+Free_Signature->text()).toUtf8().data();
     if (!C->IsValid(FileName, Field, Value))

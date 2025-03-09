@@ -38,6 +38,9 @@ public:
     //Constructor/Destructor
     GUI_Main_xxxx_DateDialog(Core* C, const std::string &FileName_, const std::string &Field_, const QString &Value, QWidget* parent=NULL);
 
+    // Public functions
+    QString Value() const;
+
     //Widgets
     QTabWidget*         Central;
     QWidget*            Central_Calendar;
