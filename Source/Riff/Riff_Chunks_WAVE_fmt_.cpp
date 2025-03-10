@@ -24,7 +24,7 @@ void Riff_WAVE_fmt_::Read_Internal ()
 
     //Reading
     Read_Internal_ReadAllInBuffer();
-    
+
     //Parsing
     int32u sampleRate, bytesPerSecond;
     int16u formatType, channelCount, blockAlignment, bitsPerSample, cbSize=0;
@@ -54,7 +54,7 @@ void Riff_WAVE_fmt_::Read_Internal ()
        ((int16u)((((extFormatType.hi>>48)&0xFF)<<8) | (extFormatType.hi>>56)))==1)) &&
        bitsPerSample!=0 && channelCount*sampleRate*bitsPerSample!=bytesPerSecond*8) //if PCM
         throw exception_valid("fmt_");
-    
+
     //Filling
     Global->fmt_=new Riff_Base::global::chunk_fmt_;
     Global->fmt_->formatType=formatType;

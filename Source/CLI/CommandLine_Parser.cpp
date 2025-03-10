@@ -175,7 +175,7 @@ CL_OPTION(Overwrite_Reject)
     UNUSED_PARAMETER(Argument);
 
     C.Overwrite_Reject=true;
-    
+
     return -2; //Continue
 }
 
@@ -185,7 +185,7 @@ CL_OPTION(NoPadding_Accept)
     UNUSED_PARAMETER(Argument);
 
     C.NoPadding_Accept=true;
-    
+
     return -2; //Continue
 }
 
@@ -195,7 +195,7 @@ CL_OPTION(Errors_Continue)
     UNUSED_PARAMETER(Argument);
 
     C.Errors_Continue=true;
-    
+
     return -2; //Continue
 }
 
@@ -205,7 +205,7 @@ CL_OPTION(Append)
     UNUSED_PARAMETER(Argument);
 
     C.NewChunksAtTheEnd=true;
-    
+
     return -2; //Continue
 }
 
@@ -340,7 +340,6 @@ CL_OPTION(In_CSET_Remove)
     return -2; //Continue
 }
 
-
 //---------------------------------------------------------------------------
 CL_OPTION(Log_cout)
 {
@@ -461,7 +460,7 @@ CL_OPTION(In_Core_File)
     #else
     In_Core_File_List.push_back(Ztring(Ztring().From_Local(Argument), 10, std::string::npos));
     #endif
-    
+
     return -2; //Continue
 }
 
@@ -754,7 +753,6 @@ CL_OPTION(Out_iXML_File)
 
     return -3; //Continue, one file mode
 }
-
 
 //***************************************************************************
 // Options - cue

@@ -24,7 +24,7 @@ void Riff_WAVE__PMX::Read_Internal ()
 
     //Reading
     Read_Internal_ReadAllInBuffer();
-    
+
     //Filling
     Global->XMP=new Riff_Base::global::chunk_strings;
     string Temp;

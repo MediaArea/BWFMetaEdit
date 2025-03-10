@@ -85,4 +85,3 @@ void Riff_WAVE_CSET::Write_Internal ()
     Riff_Base::Write_Internal(Chunk.Content.Buffer, (size_t)Chunk.Content.Size);
 }
 
-

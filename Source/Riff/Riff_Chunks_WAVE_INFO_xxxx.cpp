@@ -69,7 +69,7 @@ void Riff_WAVE_INFO_xxxx::Read_Internal ()
 
     //Reading
     Read_Internal_ReadAllInBuffer();
-    
+
     //Parsing
     string Value;
     Get_String(Chunk.Content.Size, Value);

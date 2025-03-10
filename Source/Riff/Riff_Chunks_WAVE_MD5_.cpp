@@ -25,7 +25,7 @@ void Riff_WAVE_MD5_::Read_Internal ()
 
     //Reading
     Read_Internal_ReadAllInBuffer();
-    
+
     //Parsing
     int128u MD5Stored;
     Get_L16   (     MD5Stored);
@@ -33,7 +33,7 @@ void Riff_WAVE_MD5_::Read_Internal ()
     Global->MD5Stored=new Riff_Base::global::chunk_strings;
     Global->MD5Stored->Strings["md5stored"]=Ztring().From_Number(MD5Stored, 16).To_UTF8();
     while (Global->MD5Stored->Strings["md5stored"].size()<32)
-        Global->MD5Stored->Strings["md5stored"].insert(Global->MD5Stored->Strings["md5stored"].begin(), '0'); //Padding with 0, this must be a 32-byte string    
+        Global->MD5Stored->Strings["md5stored"].insert(Global->MD5Stored->Strings["md5stored"].begin(), '0'); //Padding with 0, this must be a 32-byte string
 }
 
 //***************************************************************************
