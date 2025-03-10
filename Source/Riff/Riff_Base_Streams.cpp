@@ -302,7 +302,6 @@ void Riff_Base::Get_String(int64u Value_Size, string &Value)
     Chunk.Content.Buffer_Offset+=(size_t)Value_Size;
 }
 
-
 //---------------------------------------------------------------------------
 void Riff_Base::Put_String(int64u Value_Size, string Value)
 {

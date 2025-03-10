@@ -25,7 +25,7 @@ void Riff_WAVE_ds64::Read_Internal ()
 
     //Reading
     Read_Internal_ReadAllInBuffer();
-    
+
     //Parsing
     int64u riffSize, dataSize, sampleCount;
     int32u tableLength;
@@ -33,13 +33,13 @@ void Riff_WAVE_ds64::Read_Internal ()
     Get_L8(dataSize);
     Get_L8(sampleCount);
     Get_L4(tableLength);
-    
+
     //Test
     if (riffSize<4)
         throw exception_valid("riffSize");
     if (tableLength)
         throw exception_valid("extended ds64 is not supported");
-    
+
     //Filling
     Global->ds64=new Riff_Base::global::chunk_ds64;
     Global->ds64->riffSize=riffSize;
@@ -96,5 +96,4 @@ void Riff_WAVE_ds64::Write_Internal ()
 {
     Riff_Base::Write_Internal(Chunk.Content.Buffer, (size_t)Chunk.Content.Size);
 }
-
 

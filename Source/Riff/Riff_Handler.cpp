@@ -242,36 +242,13 @@ static const string Test[][2]=
     { "x\r\nx\r\n\r\nx", "\r\nx\r\nx\r\n\r\nx\r\n" },
     { "x\nx\r\n\n\rx", "\rx\nx\r\n\n\rx\n\r" },
 };
-static bool TestAdaptEOL()
-{
-    for (size_t i=0; i<sizeof(Test)/sizeof(Test[0]); i++)
-    {
-        for (size_t j=0; j<sizeof(Test[0])/sizeof(Test[0][0]); j++)
-        {
-            string Test1(Test[i][j]);
-            string Test2;
-            AdaptEOL_Internal(Test1, Test2, false);
-            if (Test2.empty())
-                Test2=Test1;
-            if (Test2!=Test[0][j])
-                return true;
-            Test2.clear();
-            AdaptEOL_Internal(Test1, Test2, true);
-            if (Test2.empty())
-                Test2=Test1;
-            if (Test2!=Test[3][j])
-                return true;
-        }
-    }
-    return false;
-}
-void AdaptEOL(const string& Value, string& Value2, adapteol Adapt=adapt_platform) { AdaptEOL_Internal(Value, Value2, Adapt==adapt_platform?adapt_rn:Adapt==adapt_rn); }
+void AdaptEOL(const string& Value, string& Value2, adapteol Adapt=adapt_platform) { AdaptEOL_Internal(Value, Value2, Adapt==adapt_platform?true:Adapt==adapt_rn); }
 #ifdef WINDOWS
 static const adapteol Adapt_Platform=adapt_rn;
 #else
 static const adapteol Adapt_Platform=adapt_n;
 #endif
-void AdaptEOL(string& Value, string& Value2, adapteol Adapt=adapt_platform) { AdaptEOL_Internal(Value, Value2, Adapt==adapt_platform?Adapt_Platform:Adapt==adapt_rn); }
+void AdaptEOL(string& Value, string& Value2, adapteol Adapt=adapt_platform) { AdaptEOL_Internal(Value, Value2, Adapt==adapt_platform?Adapt_Platform==adapt_rn:Adapt==adapt_rn); }
 void AdaptEOL(string& Value, adapteol Adapt=adapt_platform)
 {
     string Value2;
@@ -874,7 +851,7 @@ bool Riff_Handler::Open_Internal(const string &FileName)
             PerFile_Information_Temp.FindAndReplace(Ztring("MD5, no existing MD5 chunk\n"), Ztring());
             PerFile_Information_Temp.FindAndReplace(Ztring("MD5, verified\n"), Ztring());
             PerFile_Information.str(PerFile_Information_Temp.To_UTF8());
-            
+
             //Checking
             if (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()))
             {
@@ -912,7 +889,7 @@ bool Riff_Handler::Open_Internal(const string &FileName)
 
     CriticalSectionLocker(Chunks->Global->CS);
     Chunks->Global->Progress=1;
-    
+
     return ReturnValue;
 }
 
@@ -924,7 +901,7 @@ bool Riff_Handler::Save()
     Chunks->Global->CS.Enter();
     Chunks->Global->Progress=(float)0.05;
     Chunks->Global->CS.Leave();
-    
+
     //Init
     PerFile_Error.str(string());
     PerFile_Warning.str(string());
@@ -973,7 +950,7 @@ bool Riff_Handler::Save()
                 }
             }
             if (Modified)
-                Chunks->Modify(Elements::WAVE, Elements::WAVE_bext, NULL);
+                Chunks->Modify(Elements::WAVE, Elements::WAVE_bext, 0x00000000);
         }
 
         if (Chunks->Global->adtl)
@@ -1026,7 +1003,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=65001;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_CP437:
@@ -1034,7 +1011,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=437;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_CP850:
@@ -1042,7 +1019,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=850;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_CP858:
@@ -1050,7 +1027,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=858;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_CP1252:
@@ -1058,7 +1035,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=1252;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_8859_1:
@@ -1066,7 +1043,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=28591;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_8859_2:
@@ -1074,7 +1051,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=28592;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         default:;
@@ -1121,7 +1098,7 @@ bool Riff_Handler::Save()
     }
 
     //Old temporary file
-    #if MACSTORE
+    #ifdef MACSTORE
     if (Chunks->Global->Temp_Path.size() && Chunks->Global->Temp_Name.size() && File::Exists(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name) && !File::Delete(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name))
     #else
     if (File::Exists(Chunks->Global->File_Name+__T(".tmp")) && !File::Delete(Chunks->Global->File_Name+__T(".tmp")))
@@ -1215,7 +1192,7 @@ bool Riff_Handler::BackToLastSave()
         }
 
     Chunks->IsModified_Clear();
-        
+
     return true;
 }
 
@@ -1327,7 +1304,7 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
     }
 
     string Field=Field_Get(Field_);
-    
+
     //Testing if useful
     if (Field=="filename"
      || Field=="version"
@@ -1336,7 +1313,7 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
      || Field=="information"
      || Value_=="NOCHANGE")
         return true;
-    
+
     string Value;
 
     if (Value_.size() > 7 && Value_.rfind("file://", 0)!=string::npos)
@@ -1389,18 +1366,18 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
 
     //Legacy
     if (Field=="timereference" && !(Value.size()<12
-          ||  Value[Value.size()-12]< '0' || Value[Value.size()-12]> '9' 
-          ||  Value[Value.size()-11]< '0' || Value[Value.size()-11]> '9' 
-          || (Value[Value.size()-10]!='-' && Value[Value.size()-10]!='_' && Value[Value.size()-10]!=':' && Value[Value.size()-10]!=' ' && Value[Value.size()-10]!='.') 
-          ||  Value[Value.size()- 9]< '0' || Value[Value.size()- 9]> '5' 
-          ||  Value[Value.size()- 8]< '0' || Value[Value.size()- 8]> '9' 
-          || (Value[Value.size()- 7]!='-' && Value[Value.size()- 7]!='_' && Value[Value.size()- 7]!=':' && Value[Value.size()- 7]!=' ' && Value[Value.size()- 7]!='.') 
-          ||  Value[Value.size()- 6]< '0' || Value[Value.size()- 6]> '5' 
-          ||  Value[Value.size()- 5]< '0' || Value[Value.size()- 5]> '9' 
-          || (Value[Value.size()- 4]!='-' && Value[Value.size()- 4]!='_' && Value[Value.size()- 4]!=':' && Value[Value.size()- 4]!=' ' && Value[Value.size()- 4]!='.') 
-          ||  Value[Value.size()- 3]< '0' || Value[Value.size()- 3]> '9' 
-          ||  Value[Value.size()- 2]< '0' || Value[Value.size()- 2]> '9' 
-          ||  Value[Value.size()- 1]< '0' || Value[Value.size()- 1]> '9')) 
+          ||  Value[Value.size()-12]< '0' || Value[Value.size()-12]> '9'
+          ||  Value[Value.size()-11]< '0' || Value[Value.size()-11]> '9'
+          || (Value[Value.size()-10]!='-' && Value[Value.size()-10]!='_' && Value[Value.size()-10]!=':' && Value[Value.size()-10]!=' ' && Value[Value.size()-10]!='.')
+          ||  Value[Value.size()- 9]< '0' || Value[Value.size()- 9]> '5'
+          ||  Value[Value.size()- 8]< '0' || Value[Value.size()- 8]> '9'
+          || (Value[Value.size()- 7]!='-' && Value[Value.size()- 7]!='_' && Value[Value.size()- 7]!=':' && Value[Value.size()- 7]!=' ' && Value[Value.size()- 7]!='.')
+          ||  Value[Value.size()- 6]< '0' || Value[Value.size()- 6]> '5'
+          ||  Value[Value.size()- 5]< '0' || Value[Value.size()- 5]> '9'
+          || (Value[Value.size()- 4]!='-' && Value[Value.size()- 4]!='_' && Value[Value.size()- 4]!=':' && Value[Value.size()- 4]!=' ' && Value[Value.size()- 4]!='.')
+          ||  Value[Value.size()- 3]< '0' || Value[Value.size()- 3]> '9'
+          ||  Value[Value.size()- 2]< '0' || Value[Value.size()- 2]> '9'
+          ||  Value[Value.size()- 1]< '0' || Value[Value.size()- 1]> '9'))
         Field="timereference (translated)";
 
     // Use file timestamp
@@ -1534,7 +1511,7 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
                         + SS*      1000
                         + MS;
             TimeReference=(int64u)(((float64)TimeReference)/1000*Chunks->Global->fmt_->sampleRate);
-            
+
             if (Value!=Get_Internal("timereference (translated)"))
                 return Set_Internal("timereference", Ztring().From_Number(TimeReference).To_UTF8(), Rules);
             else
@@ -1548,7 +1525,7 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
 
     //Special case - CueXml
     if (Field=="cuexml")
-        return Cue_Xml_Set(Value, Rules);
+        return Cue_Xml_Set(Value);
 
     //Special case - Encoding
     if (Field=="encoding")
@@ -1654,14 +1631,14 @@ bool Riff_Handler::Remove_Internal(const string &Field)
         delete Chunks->Global->CSET;
         Chunks->Global->CSET=NULL;
 
-        Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
 
         return true;
     }
 
     //Special case: CueXml
     if (Ztring().From_UTF8(Field).MakeLowerCase()==__T("cuexml"))
-        return Cue_Xml_Set("", rules());
+        return Cue_Xml_Set("");
 
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings)
@@ -1733,7 +1710,7 @@ bool Riff_Handler::Remove_Chunk_Internal(const string &Field)
 
     vector<int32u> CC4;
     bool ToReturn=Remove_Chunk_Helper(Chunks, "WAVE/" + Field, CC4);
-    Chunks->Modify(CC4.size()>0?CC4[0]:NULL, CC4.size()>1?CC4[1]:NULL, CC4.size()>2?CC4[2]:NULL);
+    Chunks->Modify(CC4.size()>0?CC4[0]:0x00000000, CC4.size()>1?CC4[1]:0x00000000, CC4.size()>2?CC4[2]:0x00000000);
 
     return ToReturn;
 }
@@ -1803,7 +1780,7 @@ bool Riff_Handler::IsModified_Internal(const string &Field)
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return false;
-    
+
     return IsModified(Field_Get(Field=="timereference (translated)"?string("timereference"):Field), *Chunk_Strings);
 }
 
@@ -1933,7 +1910,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             Message=PerFile_Error.str();
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed file, "<<Message;
     }
 
@@ -1952,7 +1929,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, MD5Stored "<<Message;
     }
 
@@ -1973,7 +1950,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, MD5Generated "<<Message;
     }
 
@@ -1988,7 +1965,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             Message="must not be empty (FADGI recommandations)";
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, Description "<<Message;
     }
 
@@ -2016,7 +1993,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, Originator "<<Message;
     }
 
@@ -2076,7 +2053,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, OriginatorReference "<<Message;
     }
 
@@ -2093,7 +2070,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                 Message="must not be empty (FADGI recommandations)";
             else if (Value.size()!=4 && Value.size()!=7 && Value.size()!=9 && Value.size()!=10)
                 Message="must be YYYY, YYYY--YYYY, YYYY/YYYY, YYYY-MM, or YYYY-MM-DD (FADGI recommandations)";
-			else
+            else
             {
                      if (Value[0]< '0' || Value[0]> '9') //Year
                     Message="1st to 4th characters (Year) must be between '0000' and '9999' (BWF requirements)";
@@ -2147,13 +2124,13 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                 Message="1st to 4th characters (Year) must be between '0000' and '9999' (BWF requirements)";
             else if (Value[3]< '0' || Value[3]> '9') //Year
                 Message="1st to 4th characters (Year) must be between '0000' and '9999' (BWF requirements)";
-            else if (Rules.Tech3285_Rec && Value[4]!='-' && Value[4]!='_' && Value[4]!=':' && Value[4]!=' ' && Value[4]!='.') //Hyphen 
+            else if (Rules.Tech3285_Rec && Value[4]!='-' && Value[4]!='_' && Value[4]!=':' && Value[4]!=' ' && Value[4]!='.') //Hyphen
                 Message="5th character must be '-', '_', ':', ' ', or '.' (BWF recommandation)";
             else if (Value[5]< '0' || Value[5]> '1') //Month
                 Message="6th and 7th characters (Month) must be between '01' and '12' (BWF requirements)";
             else if ((Value[6]< (Value[5]=='0'?'1':'0')) || (Value[6]> (Value[5]=='1'?'2':'9'))) //Only 01-12 //Month
                 Message="6th and 7th characters (Month) must be between '01' and '12' (BWF requirements)";
-            else if (Rules.Tech3285_Rec && Value[7]!='-' && Value[7]!='_' && Value[7]!=':' && Value[7]!=' ' && Value[7]!='.') //Hyphen 
+            else if (Rules.Tech3285_Rec && Value[7]!='-' && Value[7]!='_' && Value[7]!=':' && Value[7]!=' ' && Value[7]!='.') //Hyphen
                 Message="8th character must be '-', '_', ':', ' ', or '.' (BWF recommendations)";
             else if (Value[8]< '0' || Value[8]> '3') //Day
                 Message="9th and 10th characters (Day) must be between '01' and '23' (BWF requirements)";
@@ -2162,7 +2139,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, OriginationDate "<<Message;
     }
 
@@ -2172,7 +2149,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         string Message;
         if (Value.size()>8)
             Message="length is maximum 8 characters (format limitation)";
-		else if (Rules.FADGI_Rec && !Value.empty())
+        else if (Rules.FADGI_Rec && !Value.empty())
         {
         //    if (Value.empty())
         //        Message="must not be empty (FADGI recommandations)";
@@ -2212,13 +2189,13 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                 Message="1st and 2nd characters (Hours) must be between '00' and '23'";
             else if (Value[1]< '0' || (Value[1]> (Value[0]=='2'?'3':'9'))) //Only 00-23 //Hours
                 Message="1st and 2nd characters (Hours) must be between '00' and '23'";
-            else if (Rules.Tech3285_Rec && Value[2]!='-' && Value[2]!='_' && Value[2]!=':' && Value[2]!=' ' && Value[2]!='.') //Separator 
+            else if (Rules.Tech3285_Rec && Value[2]!='-' && Value[2]!='_' && Value[2]!=':' && Value[2]!=' ' && Value[2]!='.') //Separator
                 Message="3rd character must be '-', '_', ':', ' ', or '.' (BWF recommendations)";
             else if (Value[3]< '0' || Value[3]> '5') //Minutes
                 Message="4th and 5th characters (Minutes) must be between '00' and '59'";
             else if (Value[4]< '0' || Value[4]> '9' ) //Minutes
                 Message="4th and 5th characters (Minutes) must be between '00' and '59'";
-            else if (Rules.Tech3285_Rec && Value[5]!='-' && Value[5]!='_' && Value[5]!=':' && Value[5]!=' ' && Value[5]!='.') //Separator 
+            else if (Rules.Tech3285_Rec && Value[5]!='-' && Value[5]!='_' && Value[5]!=':' && Value[5]!=' ' && Value[5]!='.') //Separator
                 Message="6th character must be '-', '_', ':', ' ', or '.' (BWF recommendations)";
             else if (Value[6]< '0' || Value[6]> '5') //Seconds
                 Message="7th and 8th characters (Seconds) must be between '00' and '59'";
@@ -2227,7 +2204,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, OriginationTime "<<Message;
     }
 
@@ -2238,22 +2215,22 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         if (Value.empty())
             {}
         else if (Value.size()<12
-          ||  Value[Value.size()-12]< '0' || Value[Value.size()-12]> '9' 
-          ||  Value[Value.size()-11]< '0' || Value[Value.size()-11]> '9' 
-          || (Value[Value.size()-10]!='-' && Value[Value.size()-10]!='_' && Value[Value.size()-10]!=':' && Value[Value.size()-10]!=' ' && Value[Value.size()-10]!='.') 
-          ||  Value[Value.size()- 9]< '0' || Value[Value.size()- 9]> '5' 
-          ||  Value[Value.size()- 8]< '0' || Value[Value.size()- 8]> '9' 
-          || (Value[Value.size()- 7]!='-' && Value[Value.size()- 7]!='_' && Value[Value.size()- 7]!=':' && Value[Value.size()- 7]!=' ' && Value[Value.size()- 7]!='.') 
-          ||  Value[Value.size()- 6]< '0' || Value[Value.size()- 6]> '5' 
-          ||  Value[Value.size()- 5]< '0' || Value[Value.size()- 5]> '9' 
-          || (Value[Value.size()- 4]!='-' && Value[Value.size()- 4]!='_' && Value[Value.size()- 4]!=':' && Value[Value.size()- 4]!=' ' && Value[Value.size()- 4]!='.') 
-          ||  Value[Value.size()- 3]< '0' || Value[Value.size()- 3]> '9' 
-          ||  Value[Value.size()- 2]< '0' || Value[Value.size()- 2]> '9' 
+          ||  Value[Value.size()-12]< '0' || Value[Value.size()-12]> '9'
+          ||  Value[Value.size()-11]< '0' || Value[Value.size()-11]> '9'
+          || (Value[Value.size()-10]!='-' && Value[Value.size()-10]!='_' && Value[Value.size()-10]!=':' && Value[Value.size()-10]!=' ' && Value[Value.size()-10]!='.')
+          ||  Value[Value.size()- 9]< '0' || Value[Value.size()- 9]> '5'
+          ||  Value[Value.size()- 8]< '0' || Value[Value.size()- 8]> '9'
+          || (Value[Value.size()- 7]!='-' && Value[Value.size()- 7]!='_' && Value[Value.size()- 7]!=':' && Value[Value.size()- 7]!=' ' && Value[Value.size()- 7]!='.')
+          ||  Value[Value.size()- 6]< '0' || Value[Value.size()- 6]> '5'
+          ||  Value[Value.size()- 5]< '0' || Value[Value.size()- 5]> '9'
+          || (Value[Value.size()- 4]!='-' && Value[Value.size()- 4]!='_' && Value[Value.size()- 4]!=':' && Value[Value.size()- 4]!=' ' && Value[Value.size()- 4]!='.')
+          ||  Value[Value.size()- 3]< '0' || Value[Value.size()- 3]> '9'
+          ||  Value[Value.size()- 2]< '0' || Value[Value.size()- 2]> '9'
           ||  Value[Value.size()- 1]< '0' || Value[Value.size()- 1]> '9')
                 Message="format must be HH:MM:SS.mmm";
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, TimeReference (translated) "<<Message;
     }
 
@@ -2269,7 +2246,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                     Message="must be a number";
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, TimeReference "<<Message;
     }
 
@@ -2281,7 +2258,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             Message="must be empty, 0, 1 or 2";
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, BextVersion "<<Message;
     }
 
@@ -2308,15 +2285,15 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                         Message="must contain only 0-9 and A-F (hexadecimal)";
                         break;
                     }
-                if (Message.empty()) 
+                if (Message.empty())
                 {
-                    
+
                 }
             }
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, UMID "<<Message;
     }
 
@@ -2328,7 +2305,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             Message="must be empty, 0, 1 or 2";
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, bext version "<<Message;
     }
 
@@ -2397,7 +2374,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, "<<Field<<" "<<Message;
     }
 
@@ -2420,7 +2397,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                 Data.Write(Lines[Line_Pos]);
                 for (size_t Data_Pos=0; Data_Pos<Data.size(); Data_Pos++)
                 {
-                    int Column=-1;
+                    int8u Column=(int8u)-1;
                     Ztring &Value=Data[Data_Pos];
                     if (Value.size()>=2 && Value[1]==__T('='))
                     {
@@ -2455,7 +2432,6 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                                          || Value!=__T("ANALOG")))
                                         Wrong=true;
                                         break;
-                                     
 
                             case 1 :    if (Value!=__T("")
                                          && Value!=__T("11000")
@@ -2531,7 +2507,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                             default :   ;
                         }
                     }
-                    else if (Column!=-1 || Data_Pos>5)
+                    else if (Column!=(int8u)-1 || Data_Pos>5)
                     {
                         Data.insert(Data.begin()+Data_Pos, Ztring());
                         if (Data.size()>6)
@@ -2547,7 +2523,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                         Message="comma at the end of line";
                 }
             }
-            
+
             if (Wrong)
                 Message="does not respect rules ";
             else if (!Value.empty() && (Value.size()<2 || Value[Value.size()-2]!=__T('\r') || Value[Value.size()-1]!=__T('\n') ))
@@ -2555,7 +2531,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, CodingHistory "<<Message;
     }
 
@@ -2576,7 +2552,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input (IARL "<<Message<<")";
     }
 
@@ -2645,7 +2621,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, ICRD "<<Message;
     }
 
@@ -2747,7 +2723,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         }
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, ISRC "<<Message;
     }
 
@@ -2760,7 +2736,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
             Message="does not equal MD5Stored";
 
         //If error
-        if (!Message.empty()) 
+        if (!Message.empty())
             IsValid_Errors<<"malformed input, MD5Generated "<<Message;
     }
 
@@ -2905,7 +2881,6 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                         IsValid_Warnings_Save<<endl;
                     IsValid_Warnings_Save<<IsValid_Warnings.str();
 
-
                     IsValid_Internal("cue_ltxt_country", Country, Rules, IgnoreCoherency);
 
                     if (!IsValid_Errors.str().empty() && !IsValid_Errors_Save.str().empty())
@@ -3047,7 +3022,7 @@ bool Riff_Handler::IsOriginal_Internal(const string &Field, const string &Value)
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return true;
-    
+
     return IsOriginal(Field_Get(Field=="timereference (translated)"?Ztring("timereference").To_UTF8():Field), Value, *Chunk_Strings);
 }
 
@@ -3063,7 +3038,7 @@ string Riff_Handler::History(const string &Field)
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
         return string();
-    
+
     return History(Field_Get(Field), *Chunk_Strings);
 }
 
@@ -3104,7 +3079,7 @@ string Riff_Handler::Core_Get_Internal(bool Batch_IsBackuping)
     //FromFile
     if (Batch_IsBackuping)
         return Core_FromFile.To_UTF8();
-    
+
     ZtringList List;
     List.Separator_Set(0, ",");
 
@@ -3254,7 +3229,7 @@ void Riff_Handler::Progress_Clear()
 bool Riff_Handler::Canceled_Get()
 {
     if (Chunks==NULL || Chunks->Global==NULL)
-        return false;    
+        return false;
     CriticalSectionLocker(Chunks->Global->CS);
     return File_IsCanceled;
 }
@@ -3263,7 +3238,7 @@ bool Riff_Handler::Canceled_Get()
 void Riff_Handler::Cancel()
 {
     if (Chunks==NULL || Chunks->Global==NULL)
-        return;    
+        return;
     CriticalSectionLocker(Chunks->Global->CS);
     Chunks->Global->Canceling=true;
 }
@@ -3288,7 +3263,6 @@ bool Riff_Handler::IsModified_Get_Internal()
     if (IsModified_Internal("Encoding"))
         ToReturn=true;
 
-
     if (!ToReturn && Chunks)
         ToReturn=Chunks->IsModified();
 
@@ -3311,7 +3285,6 @@ bool Riff_Handler::IsReadOnly_Get_Internal()
 
     return Chunks->Global->Read_Only;
 }
-
 
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsValid_Get()
@@ -3338,16 +3311,16 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      ).To_UTF8()));
 
     //Special cases
-    if (Field=="bext" && &Chunk_Strings && Chunk_Strings)
+    if (Field=="bext" && Chunk_Strings)
     {
         bool timereference_Display=true;
         if (Chunk_Strings->Strings["description"].empty()
-         && Chunk_Strings->Strings["originator"].empty()   
-         && Chunk_Strings->Strings["originatorreference"].empty()   
-         && Chunk_Strings->Strings["originationdate"].empty()   
-         && Chunk_Strings->Strings["originationtime"].empty()   
-         && Chunk_Strings->Strings["timereference"].empty()   
-         && Chunk_Strings->Strings["umid"].empty()   
+         && Chunk_Strings->Strings["originator"].empty()
+         && Chunk_Strings->Strings["originatorreference"].empty()
+         && Chunk_Strings->Strings["originationdate"].empty()
+         && Chunk_Strings->Strings["originationtime"].empty()
+         && Chunk_Strings->Strings["timereference"].empty()
+         && Chunk_Strings->Strings["umid"].empty()
          && Chunk_Strings->Strings["loudnessvalue"].empty()
          && Chunk_Strings->Strings["loudnessrange"].empty()
          && Chunk_Strings->Strings["maxtruepeaklevel"].empty()
@@ -3375,7 +3348,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         return List.Read().To_UTF8();
     }
     //Special cases
-    if (Field=="INFO" && &Chunk_Strings && Chunk_Strings)
+    if (Field=="INFO" && Chunk_Strings)
     {
         ZtringList List;
         List.Separator_Set(0, __T(","));
@@ -3403,9 +3376,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         return bextversion_Display?Chunk_Strings->Strings["bextversion"]:string();
     }
 
-
-
-    if (&Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
+    if (Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
         return Chunk_Strings->Strings[Field];
 
     return Riff_Handler_EmptyZtring_Const.To_UTF8();
@@ -3435,7 +3406,7 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
     Value_ToDisplay.FindAndReplace(__T("\r"), __T(" "), 0, Ztring_Recursive);
     Value_ToDisplay.FindAndReplace(__T("\n"), __T(" "), 0, Ztring_Recursive);
     Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": "<<Field<<", "<<((Chunk_Strings==NULL || Chunk_Strings->Strings[Field].empty())?"(empty)":((Field=="xmp" || Field=="axml" || Field=="ixml" || Field=="cuexml")?"(XML data)":Chunk_Strings->Strings[Field].c_str()))<<" --> "<<(Value.empty()?"(removed)":((Field=="xmp" || Field=="axml" || Field=="ixml" || Field=="cuexml")?"(XML data)":Value_ToDisplay.To_UTF8().c_str()))<<endl;
-       
+
     //Special cases - Before
     if (Chunk_Strings==NULL)
         Chunk_Strings=new Riff_Base::global::chunk_strings();
@@ -3478,11 +3449,11 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsOriginal(const string &Field, const string &Value, Riff_Base::global::chunk_strings* &Chunk_Strings)
 {
-    if (!File_IsValid || &Chunk_Strings==NULL || Chunk_Strings==NULL)
+    if (!File_IsValid || Chunk_Strings==NULL)
         return Value.empty();
-   
+
     //Special cases
-    if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
+    if (Field=="timereference (translated)" && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
         return IsOriginal_Internal("timereference", Get_Internal("timereference"));
 
     if (Chunk_Strings->Histories[Field].empty())
@@ -3498,10 +3469,10 @@ bool Riff_Handler::IsModified(const string &Field, Riff_Base::global::chunk_stri
         return false;
 
     //Special cases
-    if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
+    if (Field=="timereference (translated)" && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
         return IsModified_Internal("timereference");
 
-    if (&Chunk_Strings && Chunk_Strings && Chunk_Strings->Histories.find(Field)!=Chunk_Strings->Histories.end())
+    if (Chunk_Strings && Chunk_Strings->Histories.find(Field)!=Chunk_Strings->Histories.end())
     {
         //Special cases
         if (Field=="bextversion")
@@ -3517,12 +3488,12 @@ bool Riff_Handler::IsModified(const string &Field, Riff_Base::global::chunk_stri
 string Riff_Handler::History(const string &Field, Riff_Base::global::chunk_strings* &Chunk_Strings)
 {
     //Special cases
-    if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end() && Chunks->Global->fmt_ && Chunks->Global->fmt_->sampleRate)
+    if (Field=="timereference (translated)" && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end() && Chunks->Global->fmt_ && Chunks->Global->fmt_->sampleRate)
     {
         ZtringList List; List.Write(Ztring().From_UTF8(History("timereference", Chunk_Strings)));
         for (size_t Pos=0; Pos<List.size(); Pos++)
             List[Pos].Duration_From_Milliseconds((int64u)(((float64)List[Pos].To_int64u())*1000/Chunks->Global->fmt_->sampleRate));
-        
+
         //Removing Duplicate (Zero only, others are already done in timereference)
         bool ZeroAlreadyDone=false;
         for (size_t Pos=0; Pos<List.size(); Pos++)
@@ -3541,7 +3512,7 @@ string Riff_Handler::History(const string &Field, Riff_Base::global::chunk_strin
         return List.Read().To_UTF8();
     }
 
-    if (&Chunk_Strings!=NULL && Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
+    if (Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
         return Chunk_Strings->Histories[Field].Read().To_UTF8();
     else
         return Riff_Handler_EmptyZtring_Const.To_UTF8();
@@ -3585,7 +3556,7 @@ void Riff_Handler::Options_Update_Internal(bool Update)
         PerFile_Information_Temp.FindAndReplace(Ztring("MD5, no existing MD5 chunk\n"), Ztring());
         PerFile_Information_Temp.FindAndReplace(Ztring("MD5, verified\n"), Ztring());
         PerFile_Information.str(PerFile_Information_Temp.To_UTF8());
-        
+
         //Checking
         if (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()))
         {
@@ -3826,7 +3797,7 @@ string Riff_Handler::Cue_Xml_Get()
 }
 
 //---------------------------------------------------------------------------
-bool Riff_Handler::Cue_Xml_Set (const string& Xml, rules Rules)
+bool Riff_Handler::Cue_Xml_Set (const string& Xml)
 {
     std::vector<Riff_Base::global::chunk_cue_::point> Points;
     std::vector<Riff_Base::global::chunk_labl> Labels;
@@ -3848,7 +3819,7 @@ bool Riff_Handler::Cue_Xml_Set (const string& Xml, rules Rules)
     Chunks->Global->adtl->notes=Notes;
     Chunks->Global->adtl->texts=Texts;
 
-    Set("cuexml", Cue_Xml_Get(), Chunks->Global->cuexml, NULL, NULL);
+    Set("cuexml", Cue_Xml_Get(), Chunks->Global->cuexml, 0x00000000, 0x00000000);
 
     return true;
 }
@@ -3951,8 +3922,8 @@ bool Riff_Handler::Cue_Xml_To_Fields (const string& Xml, std::vector<Riff_Base::
 Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string &Field)
 {
     if (Chunks==NULL || Chunks->Global==NULL)
-        return NULL;    
-        
+        return NULL;
+
     string Field_Lowered=Ztring().From_UTF8(Field).MakeLowerCase().To_UTF8();
     if (Field_Lowered=="history")
         Field_Lowered="codinghistory";
@@ -3983,7 +3954,7 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
     //aXML
     else if (Field_Lowered=="axml")
         return &Chunks->Global->aXML;
-    
+
     //iXML
     else if (Field_Lowered=="ixml")
         return &Chunks->Global->iXML;
@@ -3995,7 +3966,7 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
     //MD5Stored
     else if (Field_Lowered=="md5stored")
         return &Chunks->Global->MD5Stored;
-    
+
     //MD5Stored
     else if (Field_Lowered=="md5generated")
         return &Chunks->Global->MD5Generated;
@@ -4003,7 +3974,7 @@ Riff_Base::global::chunk_strings** Riff_Handler::chunk_strings_Get(const string 
     //INFO
     else if (Field.size()==4)
         return &Chunks->Global->INFO;
-    
+
     //Unknown
     else
         return NULL;
@@ -4039,7 +4010,7 @@ string Riff_Handler::Field_Get(const string &Field)
      || Field_Lowered=="cuexml"
      || Field_Lowered=="md5stored"
      || Field_Lowered=="md5generated")
-        return Field_Lowered; 
+        return Field_Lowered;
 
     //Unknown 4 chars --> In INFO chunk, in uppercase
     if (Field.size()==4)
@@ -4055,7 +4026,7 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
     string Field_Lowered=Ztring().From_UTF8(Field).MakeLowerCase().To_UTF8();
     if (Field_Lowered=="history")
         Field_Lowered="codinghistory";
-        
+
     //bext
     if (Field_Lowered=="bext"
      || Field_Lowered=="description"
@@ -4073,15 +4044,15 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
      || Field_Lowered=="maxmomentaryloudness"
      || Field_Lowered=="maxshorttermloudness"
      || Field_Lowered=="codinghistory")
-        return Elements::WAVE_bext; 
+        return Elements::WAVE_bext;
 
     //XMP
     else if (Field_Lowered=="xmp")
-        return Elements::WAVE__PMX; 
+        return Elements::WAVE__PMX;
 
     //aXML
     else if (Field_Lowered=="axml")
-        return Elements::WAVE_axml; 
+        return Elements::WAVE_axml;
 
     //iXML
     else if (Field_Lowered=="ixml")
@@ -4092,11 +4063,11 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
         return Elements::WAVE_cue_;
     //MD5Stored
     else if (Field_Lowered=="md5stored")
-        return Elements::WAVE_MD5_; 
+        return Elements::WAVE_MD5_;
 
     //MD5Generated
     else if (Field_Lowered=="md5generated")
-        return Elements::WAVE_MD5_; 
+        return Elements::WAVE_MD5_;
 
     else if (Field_Lowered=="labl"
           || Field_Lowered=="note"
@@ -4106,7 +4077,7 @@ int32u Riff_Handler::Chunk_Name2_Get(const string &Field)
     //INFO
     else if (Field.size()==4)
         return Elements::WAVE_INFO;
-    
+
     //Unknown
     return 0x00000000;
 }

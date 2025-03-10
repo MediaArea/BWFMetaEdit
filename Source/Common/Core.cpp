@@ -164,11 +164,11 @@ Core::Core()
     In__PMX_XML=false;
     In__PMX_Remove=false;
     Out__PMX_XML=false;
-    
+
     In_aXML_XML=false;
     In_aXML_Remove=false;
     Out_aXML_XML=false;
-    
+
     In_iXML_XML=false;
     In_iXML_Remove=false;
     Out_iXML_XML=false;
@@ -322,7 +322,7 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
 
             //Options
             Options_Update(Handler);
-            
+
             //Settings - Removal
             Handler->second.In_Core_Remove=In_Core_Remove;
             Handler->second.In__PMX_Remove=In__PMX_Remove;
@@ -597,8 +597,8 @@ size_t Core::Menu_File_Open_Files_Finish_End()
         if (Handler->second.Riff)
             Handler->second.Riff->Cancel();
 
-	while(Handler->second.Riff && !Handler->second.Riff->Canceled_Get())
-	    Sleep(20);
+        while(Handler->second.Riff && !Handler->second.Riff->Canceled_Get())
+            Sleep(20);
         CS.Leave();
     }
 
@@ -606,7 +606,7 @@ size_t Core::Menu_File_Open_Files_Finish_End()
 
     //In case of cancel
     if (Menu_File_Open_Files_File_Pos!=Menu_File_Open_Files_File_Total)
-        for (Handler=Handlers.begin(); Handler!=Handlers.begin(); Handler++) 
+        for (Handler=Handlers.begin(); Handler!=Handlers.begin(); Handler++)
         {
             if (Handler->second.Riff==NULL)
             {
@@ -744,10 +744,10 @@ ZtringList Core::Menu_File_Undo_ListBackupFiles()
 {
     if (!Dir::Exists(ApplicationFolder))
         return ZtringList();
-    
+
     BackupFiles=Dir::GetAllFileNames(ApplicationFolder+PathSeparator+__T("Backup-*.csv"));
     std::sort(BackupFiles.begin(), BackupFiles.end(), Menu_File_Undo_ListBackupFiles_sort_function);
-    
+
     ZtringList BackupFiles_ToReturn=BackupFiles;
     for (size_t Pos=0; Pos<BackupFiles_ToReturn.size(); Pos++)
     {
@@ -849,7 +849,7 @@ string Core::Menu_File_Undo_ListModifiedFiles(size_t Pos)
         if (!List[File_Pos].empty())
             ToDisplay+=List[File_Pos][0]+__T("\n");
     }
-    
+
     return ToDisplay.To_UTF8();
 }
 
@@ -908,7 +908,7 @@ size_t Core::Menu_File_Save_File (const string &FileName)
     Simulation_Enabled=Simulation_Enabled_Save;
     Out_Core_CSV_FileName.clear();
     Batch_IsBackuping=false;
-    
+
     //Running
     Batch_Begin();
     Batch_Launch(Handler);
@@ -974,10 +974,10 @@ size_t Core::Menu_File_Save ()
     Batch_Launch();
     Out_Core_CSV_FileName.clear();
     Batch_IsBackuping=false;
-    
+
     //Running
     Batch_Launch();
-    
+
     return Handlers.size();
 }
 
@@ -991,7 +991,7 @@ bool Core::Menu_File_Save_Start ()
         if (!Dir::Exists(ApplicationFolder))
             return 0;
     }
-    
+
     //Backup
     Batch_IsBackuping=true;
     time_t Time=time(NULL);
@@ -1005,12 +1005,12 @@ bool Core::Menu_File_Save_Start ()
     Simulation_Enabled=Simulation_Enabled_Save;
     Out_Core_CSV_FileName.clear();
     Batch_IsBackuping=false;
-    
+
     bool ToReturn=Batch_Launch_Start();
 
     //Menu_File_Open_Files_File_Pos=0;
     //Menu_File_Open_Files_File_Total=Files_Modified_NotWritten_Count;
-    
+
     return ToReturn;
 }
 
@@ -1044,7 +1044,7 @@ size_t Core::Menu_File_Save_End ()
     }
 
     Batch_Launch_End();
-    
+
     return Handlers.size();
 }
 
@@ -1134,7 +1134,7 @@ int Core::Menu_File_Import_Core(const string &FileName)
                     #else
                         List[File_Pos][0].FindAndReplace(__T("\\"), __T("/"));
                     #endif
-                    
+
                     //Saving core items
                     for (size_t Pos=0; Pos<List[0].size(); Pos++)
                     {
@@ -1159,19 +1159,19 @@ int Core::Menu_File_Import_Core(const string &FileName)
             tinyxml2::XMLDocument document;
             if (document.LoadFile(FileName.c_str())==tinyxml2::XML_SUCCESS)
             {
-	            tinyxml2::XMLElement* Root=document.FirstChildElement("conformance_point_document");
-	            if (Root)
-	            {
-		            tinyxml2::XMLElement* File=Root->FirstChildElement("File");
+                tinyxml2::XMLElement* Root=document.FirstChildElement("conformance_point_document");
+                if (Root)
+                {
+                    tinyxml2::XMLElement* File=Root->FirstChildElement("File");
                     while (File)
-	                {
+                    {
                         string FileName=File->Attribute("name");
                         tinyxml2::XMLElement* Core=File->FirstChildElement("Core");
-		                if (Core)
-		                {
-			                tinyxml2::XMLElement* Element=Core->FirstChildElement();
-			                while (Element)
-			                {
+                        if (Core)
+                        {
+                            tinyxml2::XMLElement* Element=Core->FirstChildElement();
+                            while (Element)
+                            {
                                 string Field=Element->Name();
                                 const char* Value=Element->GetText();
                                 if (!Field.empty())
@@ -1189,7 +1189,6 @@ int Core::Menu_File_Import_Core(const string &FileName)
         }
         else
             throw "--in-core=: not a valid file";
-
 
         if (Errors_Validity_Detected)
         {
@@ -1210,7 +1209,7 @@ int Core::Menu_File_Import_Core(const string &FileName)
     catch (...) {}
 
     delete[] Buffer; Buffer=NULL;
-    
+
     return ReturnValue;
 }
 
@@ -1219,7 +1218,7 @@ bool Core::Menu_File_Options_Update()
 {
     for (handlers::iterator Handler=Handlers.begin(); Handler!=Handlers.end(); Handler++)
         Options_Update(Handler);
-    
+
     return true;
 }
 
@@ -1333,7 +1332,7 @@ bool Core::In_Core_Add (const string &FileName, const string &Field, const strin
 {
     if (Value=="NOCHANGE")
         return true;
-   
+
     if (File::Exists(Ztring().From_UTF8(FileName)))
     {
         map<string, Ztring>::iterator ToErase=Handlers[FileName].In_Core_Append.find(Field);
@@ -1811,7 +1810,7 @@ float Core::Batch_Launch_Middle()
     //Batch - Activate
     Handler->second.Riff->riff2rf64_Reject=riff2rf64_Reject;
     Batch_Launch(Handler);
-    
+
     CriticalSectionLocker CSL(CS);
 
     if (SaveMode_OneFile)
@@ -2084,7 +2083,6 @@ void Core::Batch_Launch_PMX(handlers::iterator &Handler)
             catch (...) {}
         }
 
-
         if (Out_XML_Doc)
         {
             if (Prepare_Xml_For_Nesting(Content))
@@ -2109,7 +2107,7 @@ void Core::Batch_Launch_PMX(handlers::iterator &Handler)
 void Core::Batch_Launch_aXML(handlers::iterator &Handler)
 {
     string Content=Handler->second.Riff->Get("axml");
-        
+
     if (!Content.empty())
     {
         //Saving file
@@ -2448,6 +2446,6 @@ bool Core::Text_stderr_Updated_Get()
 {
     bool Temp=Text_stderr_Updated;
     Text_stderr_Updated=false;
-    
+
     return Temp;
 }

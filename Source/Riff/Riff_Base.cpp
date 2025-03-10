@@ -74,7 +74,7 @@ void Riff_Base::Read (chunk &Chunk_In)
         for (size_t Pos=1; Pos<Chunk.Header.Level; Pos++)
             Global->Trace<<"     ";
         Global->Trace<<Ztring().From_CC4(Chunk.Header.Name).To_UTF8();
-        
+
         //Size
         /*
         for (size_t Pos=Chunk.Header.Level; Pos<4; Pos++)
@@ -84,7 +84,7 @@ void Riff_Base::Read (chunk &Chunk_In)
             Global->Trace<<"+1";
         Global->Trace<<" bytes)";
         */
-        
+
         Global->Trace<<endl;
     }
 
@@ -148,7 +148,7 @@ void Riff_Base::Read (chunk &Chunk_In)
 bool Riff_Base::Read_Header (chunk &NewChunk)
 {
     int8u Temp[4];
-   
+
     //Chunk name
     if (Global->In.Position_Get()+8>Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size)
         throw exception_valid("small");
@@ -177,7 +177,7 @@ bool Riff_Base::Read_Header (chunk &NewChunk)
     }
     if (NewChunk.Content.Size==0xFFFFFFFF && Global->IsRF64 && Global->ds64 && NewChunk.Header.Name==Elements::WAVE_data)
         NewChunk.Content.Size=Global->ds64->dataSize; //Setting real WAVE_data size
-    
+
     //List management (if present)
     if (NewChunk.Header.Name==Elements::LIST || NewChunk.Header.Name==Elements::RIFF || NewChunk.Header.Name==Elements::RF64)
     {
@@ -331,12 +331,11 @@ void Riff_Base::Modify_Internal_Subs (int32u Chunk_Name_1, int32u Chunk_Name_2, 
    }
 
     //Parsing subs
-    bool Sub_IsFound=false;
     size_t Sub_Pos=0;
     for (; Sub_Pos<Subs.size(); Sub_Pos++)
         if (Subs[Sub_Pos]->Chunk.Header.Name==Chunk_Name_1)
             break;
-    
+
     //Handling when sub is not present
     if (Sub_Pos>=Subs.size())
     {
@@ -488,7 +487,7 @@ void Riff_Base::Write ()
         }
         while (DataChunkMustBeMoved);
     }
-    
+
     //Content
     if (Chunk.Content.IsModified)
     {
@@ -498,7 +497,7 @@ void Riff_Base::Write ()
         else
         {
             Write_Internal();
-            
+
             //Padding
             if (Chunk.Content.Size%2)
             {
@@ -511,7 +510,7 @@ void Riff_Base::Write ()
     else
     {
         Write_Internal();
-        
+
         //Padding
         if (Chunk.Content.Size%2)
         {
@@ -646,7 +645,7 @@ void Riff_Base::Read_Internal ()
                                         Global->UnsupportedChunks+=" ";
                                     Global->UnsupportedChunks+=Ztring().From_CC4(Chunk.Header.Name).To_UTF8();
     }
-        
+
     Read_Internal_ReadAllInBuffer();
 }
 
@@ -654,7 +653,7 @@ void Riff_Base::Read_Internal ()
 void Riff_Base::Write_Internal ()
 {
     Global->In.GoTo(Chunk.File_In_Position+Chunk.Header.Size);
-    
+
     int8u Temp[32768];
     while(Global->In.Position_Get()<Chunk.File_In_Position+Chunk.Header.Size+Chunk.Content.Size)
     {
@@ -772,7 +771,7 @@ int64u Riff_Base::Block_Size_Get ()
         return (Chunk.Header.List==0x00000000?8:12)+((Chunk.Content.Size%2)?(Chunk.Content.Size+1):Chunk.Content.Size);
     if (Subs.empty())
         return 8+((Chunk.Content.Size%2)?(Chunk.Content.Size+1):Chunk.Content.Size);
-    
+
     //Parsing subs
     int64u Size=0;
     for (size_t Pos=0; Pos<Subs.size(); Pos++)

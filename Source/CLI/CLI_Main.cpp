@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
     #ifdef _WIN32
     LocalFree(ArgvW);
     #endif
-     
+
     //Parsing
     C.Menu_File_Open_Files_Begin();
     for (size_t Pos=0; Pos<In_Core_File_List.size(); Pos++)

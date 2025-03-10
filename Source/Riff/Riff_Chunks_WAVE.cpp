@@ -21,7 +21,7 @@ void Riff_WAVE::Read_Internal ()
     //Integrity
     if (Global->WAVE)
         throw exception_valid("2 WAVE chunks");
-    
+
     //Filling
     Global->WAVE=new Riff_Base::global::chunk_WAVE;
     Global->WAVE->Size_Original=Chunk.Content.Size;

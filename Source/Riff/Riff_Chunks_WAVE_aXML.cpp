@@ -24,7 +24,7 @@ void Riff_WAVE_axml::Read_Internal ()
 
     //Reading
     Read_Internal_ReadAllInBuffer();
-    
+
     //Filling
     Global->aXML=new Riff_Base::global::chunk_strings;
     string Temp;

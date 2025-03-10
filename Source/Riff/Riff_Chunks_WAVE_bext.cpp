@@ -156,7 +156,7 @@ void Riff_WAVE_bext::Read_Internal ()
 
     //Reading
     Read_Internal_ReadAllInBuffer();
-    
+
     //Parsing
     string Description, Originator, OriginatorReference, OriginationDate, OriginationTime, UMID, CodingHistory;
     int64u TimeReference;
@@ -279,7 +279,7 @@ void Riff_WAVE_bext::Modify_Internal ()
 
     //Preparing
     int64u TimeReference=Ztring().From_UTF8(Global->bext->Strings["timereference"]).To_int64u();
-    
+
     //Creating buffer
     Chunk.Content.Buffer_Offset=0;
     if (TargetedSize>Chunk.Content.Size)
@@ -313,7 +313,6 @@ void Riff_WAVE_bext::Modify_Internal ()
         BextVersion=1;
     if (BextVersion<2 && (LoudnessValue!=0x7FFF || LoudnessRange!=0x7FFF || MaxTruePeakLevel!=0x7FFF || MaxMomentaryLoudness!=0x7FFF || MaxShortTermLoudness!=0x7FFF))
         BextVersion=2;
-
 
     Put_String(256, Description);
     Put_String( 32, Originator);

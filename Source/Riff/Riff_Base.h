@@ -142,7 +142,7 @@ public:
     }
 
 protected:
-    string text;    
+    string text;
 };
 
 class exception_read_chunk : public exception
@@ -156,7 +156,7 @@ public:
     }
 
 protected:
-    string text;    
+    string text;
 };
 
 class exception_write : public exception
@@ -171,9 +171,8 @@ public:
     }
 
 protected:
-    string text;    
+    string text;
 };
-
 
 //***************************************************************************
 // Riff_Base
@@ -234,7 +233,7 @@ public:
             int32u          bytesPerSecond;
             int16u          blockAlignment;
             int16u          bitsPerSample;
- 
+
             chunk_fmt_()
             {
                 formatType=0;
@@ -480,7 +479,7 @@ public:
             int8u   Size;
             int32u  List; //If header is 12 byte long
             int32u  Name;
-            
+
             header()
             {
                 Level=0;
@@ -497,7 +496,7 @@ public:
             bool    IsModified;
             bool    IsRemovable;
             bool    Size_IsModified;
-            
+
             content()
             {
                 Buffer=NULL;
@@ -532,7 +531,7 @@ public:
     //Constructor/Destructor
              Riff_Base          (global* Global, size_t Level);
     virtual ~Riff_Base          ();
-    
+
     //---------------------------------------------------------------------------
     //Read/Write
     void Read                   (chunk &Chunk_In);

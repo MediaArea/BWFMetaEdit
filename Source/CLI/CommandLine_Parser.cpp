@@ -31,6 +31,10 @@ ZtringList In_Core_File_List;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
+#define UNUSED_PARAMETER(ARG) (void)ARG;
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
 //Parse Command Line
 #define OPTION(_TEXT, _TOLAUNCH) \
     else if (Argument.find(_TEXT)==0)        return CL_##_TOLAUNCH(C, Argument); \
@@ -143,6 +147,9 @@ CL_OPTION(Help)
 //---------------------------------------------------------------------------
 CL_OPTION(Version)
 {
+    UNUSED_PARAMETER(C);
+    UNUSED_PARAMETER(Argument);
+
     std::cout<<NameVersion_Text()<<std::endl;
 
     return 0;
@@ -155,6 +162,8 @@ CL_OPTION(Version)
 //---------------------------------------------------------------------------
 CL_OPTION(riff2rf64_Reject)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.riff2rf64_Reject=true;
 
     return -2; //Continue
@@ -163,38 +172,48 @@ CL_OPTION(riff2rf64_Reject)
 //---------------------------------------------------------------------------
 CL_OPTION(Overwrite_Reject)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Overwrite_Reject=true;
-    
+
     return -2; //Continue
 }
 
 //---------------------------------------------------------------------------
 CL_OPTION(NoPadding_Accept)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.NoPadding_Accept=true;
-    
+
     return -2; //Continue
 }
 
 //---------------------------------------------------------------------------
 CL_OPTION(Errors_Continue)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Errors_Continue=true;
-    
+
     return -2; //Continue
 }
 
 //---------------------------------------------------------------------------
 CL_OPTION(Append)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.NewChunksAtTheEnd=true;
-    
+
     return -2; //Continue
 }
 
 //---------------------------------------------------------------------------
 CL_OPTION(Simulate)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Simulation_Enabled=true;
 
     return -2; //Continue
@@ -284,6 +303,8 @@ CL_OPTION(Write_Encoding)
 //---------------------------------------------------------------------------
 CL_OPTION(Write_CodePage)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Write_CodePage=true;
 
     return -2; //Continue
@@ -292,6 +313,8 @@ CL_OPTION(Write_CodePage)
 //---------------------------------------------------------------------------
 CL_OPTION(Ignore_File_Encoding)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Ignore_File_Encoding=true;
 
     return -2; //Continue
@@ -300,6 +323,8 @@ CL_OPTION(Ignore_File_Encoding)
 //---------------------------------------------------------------------------
 CL_OPTION(SpecialChars)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.SpecialChars_Enabled=true;
 
     return -2; //Continue
@@ -308,15 +333,18 @@ CL_OPTION(SpecialChars)
 //---------------------------------------------------------------------------
 CL_OPTION(In_CSET_Remove)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In_CSET_Remove=true;
 
     return -2; //Continue
 }
 
-
 //---------------------------------------------------------------------------
 CL_OPTION(Log_cout)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Out_Log_cout=true;
 
     return -2; //Continue
@@ -389,6 +417,8 @@ CL_OPTION(Out_Tech_File)
 //---------------------------------------------------------------------------
 CL_OPTION(Out_Tech_XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Out_Tech_XML=true;
 
     return -2; //Continue
@@ -422,19 +452,23 @@ CL_OPTION(Out_Tech_XML_File)
 //---------------------------------------------------------------------------
 CL_OPTION(In_Core_File)
 {
+    UNUSED_PARAMETER(C);
+
     //Form : --in-Core=(FileName)
     #ifdef _WIN32
     In_Core_File_List.push_back(Ztring(Ztring().From_UTF8(Argument), 10, std::string::npos));
     #else
     In_Core_File_List.push_back(Ztring(Ztring().From_Local(Argument), 10, std::string::npos));
     #endif
-    
+
     return -2; //Continue
 }
 
 //---------------------------------------------------------------------------
 CL_OPTION(In_Core_Remove)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In_Core_Remove=true;
 
     return -2; //Continue
@@ -443,6 +477,8 @@ CL_OPTION(In_Core_Remove)
 //---------------------------------------------------------------------------
 CL_OPTION(In_Core_XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In_Core_XML=true;
 
     return -2; //Continue
@@ -480,6 +516,8 @@ CL_OPTION(Out_Core_File)
 //---------------------------------------------------------------------------
 CL_OPTION(Out_Core_XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Out_Core_XML=true;
 
     return -2; //Continue
@@ -522,6 +560,8 @@ CL_OPTION(In__PMX_File)
 //---------------------------------------------------------------------------
 CL_OPTION(In__PMX_Remove)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In__PMX_Remove=true;
 
     return -2; //Continue
@@ -530,6 +570,8 @@ CL_OPTION(In__PMX_Remove)
 //---------------------------------------------------------------------------
 CL_OPTION(In__PMX_XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In__PMX_XML=true;
 
     return -2; //Continue
@@ -552,6 +594,8 @@ CL_OPTION(Out__PMX_cout)
 //---------------------------------------------------------------------------
 CL_OPTION(Out__PMX_XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Out__PMX_XML=true;
 
     return -2; //Continue
@@ -586,6 +630,8 @@ CL_OPTION(In_aXML_File)
 //---------------------------------------------------------------------------
 CL_OPTION(In_aXML_Remove)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In_aXML_Remove=true;
 
     return -2; //Continue
@@ -594,6 +640,8 @@ CL_OPTION(In_aXML_Remove)
 //---------------------------------------------------------------------------
 CL_OPTION(In_aXML_XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In_aXML_XML=true;
 
     return -2; //Continue
@@ -616,6 +664,8 @@ CL_OPTION(Out_aXML_cout)
 //---------------------------------------------------------------------------
 CL_OPTION(Out_aXML_XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Out_aXML_XML=true;
 
     return -2; //Continue
@@ -650,6 +700,8 @@ CL_OPTION(In_iXML_File)
 //---------------------------------------------------------------------------
 CL_OPTION(In_iXML_Remove)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In_iXML_Remove=true;
 
     return -2; //Continue
@@ -658,6 +710,8 @@ CL_OPTION(In_iXML_Remove)
 //---------------------------------------------------------------------------
 CL_OPTION(In_iXML_XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In_iXML_XML=true;
 
     return -2; //Continue
@@ -680,6 +734,8 @@ CL_OPTION(Out_iXML_cout)
 //---------------------------------------------------------------------------
 CL_OPTION(Out_iXML_XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Out_iXML_XML=true;
 
     return -2; //Continue
@@ -698,7 +754,6 @@ CL_OPTION(Out_iXML_File)
     return -3; //Continue, one file mode
 }
 
-
 //***************************************************************************
 // Options - cue
 //***************************************************************************
@@ -715,6 +770,8 @@ CL_OPTION(In_cue__File)
 //---------------------------------------------------------------------------
 CL_OPTION(In_cue__Remove)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In_cue__Remove=true;
 
     return -2; //Continue
@@ -723,6 +780,8 @@ CL_OPTION(In_cue__Remove)
 //---------------------------------------------------------------------------
 CL_OPTION(In_cue__XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.In_cue__XML=true;
 
     return -2; //Continue
@@ -745,6 +804,8 @@ CL_OPTION(Out_cue__cout)
 //---------------------------------------------------------------------------
 CL_OPTION(Out_cue__XML)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.Out_cue__XML=true;
 
     return -2; //Continue
@@ -770,6 +831,8 @@ CL_OPTION(Out_cue__File)
 //---------------------------------------------------------------------------
 CL_OPTION(MD5_Generate)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.GenerateMD5=true;
 
     return -2; //Continue
@@ -778,6 +841,8 @@ CL_OPTION(MD5_Generate)
 //---------------------------------------------------------------------------
 CL_OPTION(MD5_Verify)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.VerifyMD5=true;
     C.VerifyMD5_Force=true;
 
@@ -787,6 +852,8 @@ CL_OPTION(MD5_Verify)
 //---------------------------------------------------------------------------
 CL_OPTION(MD5_Embed)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.EmbedMD5=true;
 
     return -2; //Continue
@@ -795,6 +862,8 @@ CL_OPTION(MD5_Embed)
 //---------------------------------------------------------------------------
 CL_OPTION(MD5_Embed_Overwrite)
 {
+    UNUSED_PARAMETER(Argument);
+
     C.EmbedMD5=true;
     C.EmbedMD5_AuthorizeOverWritting=true;
 

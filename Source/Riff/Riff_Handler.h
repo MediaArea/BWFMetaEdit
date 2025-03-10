@@ -35,7 +35,7 @@ void AdaptEOL(string& Value, string& Value2, adapteol Adapt);
 void AdaptEOL(string& Value, adapteol Adapt);
 
 //***************************************************************************
-// 
+//
 //***************************************************************************
 
 class Riff_Handler
@@ -103,14 +103,14 @@ public:
     string          IsValid_LastError   () {CriticalSectionLocker(this->CS); return IsValid_Errors.str();}
     string          IsValid_LastWarning () {CriticalSectionLocker(this->CS); return IsValid_Warnings.str();}
     bool            IsModified          (const string &Field);
-    
+
     //---------------------------------------------------------------------------
     //Global
     static string   Core_Header();
     string          Core_Get(bool IsBackuping=false); //FromFile=before modifications
     static string   Technical_Header();
     string          Technical_Get();
-    
+
     //---------------------------------------------------------------------------
     //Info
     string          Trace_Get();
@@ -123,7 +123,6 @@ public:
     bool            IsValid_Get();
     bool            IsModified_Get();
     bool            IsReadOnly_Get();
-
 
     //---------------------------------------------------------------------------
     //Configuration
@@ -174,7 +173,7 @@ private:
     bool      IsReadOnly_Get_Internal    ();
     void      Options_Update_Internal    (bool Update=true);
     string    Cue_Xml_Get                ();
-    bool      Cue_Xml_Set                (const string& Xml, rules Rules);
+    bool      Cue_Xml_Set                (const string& Xml);
     bool      Cue_Xml_To_Fields          (const string& Xml, std::vector<Riff_Base::global::chunk_cue_::point>& Points,
                                                              std::vector<Riff_Base::global::chunk_labl>& Labels,
                                                              std::vector<Riff_Base::global::chunk_note>& Notes,
@@ -187,7 +186,7 @@ private:
     bool            IsModified      (const string &Field,                       Riff_Base::global::chunk_strings* &Chunk_Strings);
     bool            IsOriginal      (const string &Field, const string &Value,  Riff_Base::global::chunk_strings* &Chunk_Strings);
     string          History         (const string &Field,                       Riff_Base::global::chunk_strings* &Chunk_Strings);
-    
+
     //---------------------------------------------------------------------------
     //Helpers - Retrieval of chunks info
     Riff_Base::global::chunk_strings** chunk_strings_Get    (const string &Field);
