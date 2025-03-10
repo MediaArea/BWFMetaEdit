@@ -181,7 +181,9 @@ public:
     ostringstream                       Text_stdall;
     ostringstream                       Text_stdout;
     ostringstream                       Text_stderr;
+    ostringstream                       Text_stderr_last;
     bool                                Text_stderr_Updated_Get();
+    string                              Text_stderr_Last_Get();
     size_t                              Files_Modified_NotWritten_Count;
 
 protected:
