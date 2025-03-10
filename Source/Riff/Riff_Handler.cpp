@@ -242,36 +242,13 @@ static const string Test[][2]=
     { "x\r\nx\r\n\r\nx", "\r\nx\r\nx\r\n\r\nx\r\n" },
     { "x\nx\r\n\n\rx", "\rx\nx\r\n\n\rx\n\r" },
 };
-static bool TestAdaptEOL()
-{
-    for (size_t i=0; i<sizeof(Test)/sizeof(Test[0]); i++)
-    {
-        for (size_t j=0; j<sizeof(Test[0])/sizeof(Test[0][0]); j++)
-        {
-            string Test1(Test[i][j]);
-            string Test2;
-            AdaptEOL_Internal(Test1, Test2, false);
-            if (Test2.empty())
-                Test2=Test1;
-            if (Test2!=Test[0][j])
-                return true;
-            Test2.clear();
-            AdaptEOL_Internal(Test1, Test2, true);
-            if (Test2.empty())
-                Test2=Test1;
-            if (Test2!=Test[3][j])
-                return true;
-        }
-    }
-    return false;
-}
-void AdaptEOL(const string& Value, string& Value2, adapteol Adapt=adapt_platform) { AdaptEOL_Internal(Value, Value2, Adapt==adapt_platform?adapt_rn:Adapt==adapt_rn); }
+void AdaptEOL(const string& Value, string& Value2, adapteol Adapt=adapt_platform) { AdaptEOL_Internal(Value, Value2, Adapt==adapt_platform?true:Adapt==adapt_rn); }
 #ifdef WINDOWS
 static const adapteol Adapt_Platform=adapt_rn;
 #else
 static const adapteol Adapt_Platform=adapt_n;
 #endif
-void AdaptEOL(string& Value, string& Value2, adapteol Adapt=adapt_platform) { AdaptEOL_Internal(Value, Value2, Adapt==adapt_platform?Adapt_Platform:Adapt==adapt_rn); }
+void AdaptEOL(string& Value, string& Value2, adapteol Adapt=adapt_platform) { AdaptEOL_Internal(Value, Value2, Adapt==adapt_platform?Adapt_Platform==adapt_rn:Adapt==adapt_rn); }
 void AdaptEOL(string& Value, adapteol Adapt=adapt_platform)
 {
     string Value2;
@@ -973,7 +950,7 @@ bool Riff_Handler::Save()
                 }
             }
             if (Modified)
-                Chunks->Modify(Elements::WAVE, Elements::WAVE_bext, NULL);
+                Chunks->Modify(Elements::WAVE, Elements::WAVE_bext, 0x00000000);
         }
 
         if (Chunks->Global->adtl)
@@ -1026,7 +1003,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=65001;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_CP437:
@@ -1034,7 +1011,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=437;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_CP850:
@@ -1042,7 +1019,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=850;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_CP858:
@@ -1050,7 +1027,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=858;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_CP1252:
@@ -1058,7 +1035,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=1252;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_8859_1:
@@ -1066,7 +1043,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=28591;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         case Encoding_8859_2:
@@ -1074,7 +1051,7 @@ bool Riff_Handler::Save()
             if (!Chunks->Global->CSET)
                 Chunks->Global->CSET=new Riff_Base::global::chunk_CSET();
             Chunks->Global->CSET->codePage=28592;
-            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+            Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
         }
         break;
         default:;
@@ -1121,7 +1098,7 @@ bool Riff_Handler::Save()
     }
 
     //Old temporary file
-    #if MACSTORE
+    #ifdef MACSTORE
     if (Chunks->Global->Temp_Path.size() && Chunks->Global->Temp_Name.size() && File::Exists(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name) && !File::Delete(Chunks->Global->Temp_Path+Chunks->Global->Temp_Name))
     #else
     if (File::Exists(Chunks->Global->File_Name+__T(".tmp")) && !File::Delete(Chunks->Global->File_Name+__T(".tmp")))
@@ -1548,7 +1525,7 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
 
     //Special case - CueXml
     if (Field=="cuexml")
-        return Cue_Xml_Set(Value, Rules);
+        return Cue_Xml_Set(Value);
 
     //Special case - Encoding
     if (Field=="encoding")
@@ -1654,14 +1631,14 @@ bool Riff_Handler::Remove_Internal(const string &Field)
         delete Chunks->Global->CSET;
         Chunks->Global->CSET=NULL;
 
-        Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, NULL);
+        Chunks->Modify(Elements::WAVE, Elements::WAVE_CSET, 0x00000000);
 
         return true;
     }
 
     //Special case: CueXml
     if (Ztring().From_UTF8(Field).MakeLowerCase()==__T("cuexml"))
-        return Cue_Xml_Set("", rules());
+        return Cue_Xml_Set("");
 
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings)
@@ -1733,7 +1710,7 @@ bool Riff_Handler::Remove_Chunk_Internal(const string &Field)
 
     vector<int32u> CC4;
     bool ToReturn=Remove_Chunk_Helper(Chunks, "WAVE/" + Field, CC4);
-    Chunks->Modify(CC4.size()>0?CC4[0]:NULL, CC4.size()>1?CC4[1]:NULL, CC4.size()>2?CC4[2]:NULL);
+    Chunks->Modify(CC4.size()>0?CC4[0]:0x00000000, CC4.size()>1?CC4[1]:0x00000000, CC4.size()>2?CC4[2]:0x00000000);
 
     return ToReturn;
 }
@@ -2420,7 +2397,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                 Data.Write(Lines[Line_Pos]);
                 for (size_t Data_Pos=0; Data_Pos<Data.size(); Data_Pos++)
                 {
-                    int Column=-1;
+                    int8u Column=(int8u)-1;
                     Ztring &Value=Data[Data_Pos];
                     if (Value.size()>=2 && Value[1]==__T('='))
                     {
@@ -2531,7 +2508,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                             default :   ;
                         }
                     }
-                    else if (Column!=-1 || Data_Pos>5)
+                    else if (Column!=(int8u)-1 || Data_Pos>5)
                     {
                         Data.insert(Data.begin()+Data_Pos, Ztring());
                         if (Data.size()>6)
@@ -3338,7 +3315,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         return (((Chunks->Global->fmt_==NULL || Chunks->Global->fmt_->sampleRate    ==0)?"":Ztring::ToZtring(Chunks->Global->fmt_->sampleRate      ).To_UTF8()));
 
     //Special cases
-    if (Field=="bext" && &Chunk_Strings && Chunk_Strings)
+    if (Field=="bext" && Chunk_Strings)
     {
         bool timereference_Display=true;
         if (Chunk_Strings->Strings["description"].empty()
@@ -3375,7 +3352,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
         return List.Read().To_UTF8();
     }
     //Special cases
-    if (Field=="INFO" && &Chunk_Strings && Chunk_Strings)
+    if (Field=="INFO" && Chunk_Strings)
     {
         ZtringList List;
         List.Separator_Set(0, __T(","));
@@ -3405,7 +3382,7 @@ string Riff_Handler::Get(const string &Field, Riff_Base::global::chunk_strings* 
 
 
 
-    if (&Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
+    if (Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
         return Chunk_Strings->Strings[Field];
 
     return Riff_Handler_EmptyZtring_Const.To_UTF8();
@@ -3478,11 +3455,11 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
 //---------------------------------------------------------------------------
 bool Riff_Handler::IsOriginal(const string &Field, const string &Value, Riff_Base::global::chunk_strings* &Chunk_Strings)
 {
-    if (!File_IsValid || &Chunk_Strings==NULL || Chunk_Strings==NULL)
+    if (!File_IsValid || Chunk_Strings==NULL)
         return Value.empty();
    
     //Special cases
-    if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
+    if (Field=="timereference (translated)" && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
         return IsOriginal_Internal("timereference", Get_Internal("timereference"));
 
     if (Chunk_Strings->Histories[Field].empty())
@@ -3498,10 +3475,10 @@ bool Riff_Handler::IsModified(const string &Field, Riff_Base::global::chunk_stri
         return false;
 
     //Special cases
-    if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
+    if (Field=="timereference (translated)" && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
         return IsModified_Internal("timereference");
 
-    if (&Chunk_Strings && Chunk_Strings && Chunk_Strings->Histories.find(Field)!=Chunk_Strings->Histories.end())
+    if (Chunk_Strings && Chunk_Strings->Histories.find(Field)!=Chunk_Strings->Histories.end())
     {
         //Special cases
         if (Field=="bextversion")
@@ -3517,7 +3494,7 @@ bool Riff_Handler::IsModified(const string &Field, Riff_Base::global::chunk_stri
 string Riff_Handler::History(const string &Field, Riff_Base::global::chunk_strings* &Chunk_Strings)
 {
     //Special cases
-    if (Field=="timereference (translated)" && &Chunk_Strings && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end() && Chunks->Global->fmt_ && Chunks->Global->fmt_->sampleRate)
+    if (Field=="timereference (translated)" && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end() && Chunks->Global->fmt_ && Chunks->Global->fmt_->sampleRate)
     {
         ZtringList List; List.Write(Ztring().From_UTF8(History("timereference", Chunk_Strings)));
         for (size_t Pos=0; Pos<List.size(); Pos++)
@@ -3541,7 +3518,7 @@ string Riff_Handler::History(const string &Field, Riff_Base::global::chunk_strin
         return List.Read().To_UTF8();
     }
 
-    if (&Chunk_Strings!=NULL && Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
+    if (Chunk_Strings && Chunk_Strings->Strings.find(Field)!=Chunk_Strings->Strings.end())
         return Chunk_Strings->Histories[Field].Read().To_UTF8();
     else
         return Riff_Handler_EmptyZtring_Const.To_UTF8();
@@ -3826,7 +3803,7 @@ string Riff_Handler::Cue_Xml_Get()
 }
 
 //---------------------------------------------------------------------------
-bool Riff_Handler::Cue_Xml_Set (const string& Xml, rules Rules)
+bool Riff_Handler::Cue_Xml_Set (const string& Xml)
 {
     std::vector<Riff_Base::global::chunk_cue_::point> Points;
     std::vector<Riff_Base::global::chunk_labl> Labels;
@@ -3848,7 +3825,7 @@ bool Riff_Handler::Cue_Xml_Set (const string& Xml, rules Rules)
     Chunks->Global->adtl->notes=Notes;
     Chunks->Global->adtl->texts=Texts;
 
-    Set("cuexml", Cue_Xml_Get(), Chunks->Global->cuexml, NULL, NULL);
+    Set("cuexml", Cue_Xml_Get(), Chunks->Global->cuexml, 0x00000000, 0x00000000);
 
     return true;
 }

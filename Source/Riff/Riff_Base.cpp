@@ -331,7 +331,6 @@ void Riff_Base::Modify_Internal_Subs (int32u Chunk_Name_1, int32u Chunk_Name_2, 
    }
 
     //Parsing subs
-    bool Sub_IsFound=false;
     size_t Sub_Pos=0;
     for (; Sub_Pos<Subs.size(); Sub_Pos++)
         if (Subs[Sub_Pos]->Chunk.Header.Name==Chunk_Name_1)

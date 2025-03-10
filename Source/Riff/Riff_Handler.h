@@ -174,7 +174,7 @@ private:
     bool      IsReadOnly_Get_Internal    ();
     void      Options_Update_Internal    (bool Update=true);
     string    Cue_Xml_Get                ();
-    bool      Cue_Xml_Set                (const string& Xml, rules Rules);
+    bool      Cue_Xml_Set                (const string& Xml);
     bool      Cue_Xml_To_Fields          (const string& Xml, std::vector<Riff_Base::global::chunk_cue_::point>& Points,
                                                              std::vector<Riff_Base::global::chunk_labl>& Labels,
                                                              std::vector<Riff_Base::global::chunk_note>& Notes,
