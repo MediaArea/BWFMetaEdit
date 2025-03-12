@@ -182,6 +182,8 @@ Core::Core()
 
     Trace_UseDec=false;
 
+    RevertToRiff=false;
+
     Encoding=Encoding_UTF8;
     Fallback_Encoding=Encoding_8859_1;
     Write_Encoding=Encoding_Max;
@@ -2345,6 +2347,7 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->Bext_DefaultVersion=Bext_DefaultVersion;
         Handler->second.Riff->Bext_MaxVersion=Bext_MaxVersion;
         Handler->second.Riff->Trace_UseDec=Trace_UseDec;
+        Handler->second.Riff->RevertToRiff=RevertToRiff;
         Handler->second.Riff->Encoding=Encoding;
         Handler->second.Riff->Fallback_Encoding=Fallback_Encoding;
         Handler->second.Riff->Write_Encoding=Write_Encoding;

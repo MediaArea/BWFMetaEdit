@@ -174,6 +174,7 @@ public:
     bool                                Write_CodePage;
     bool                                Ignore_File_Encoding;
     bool                                In_CSET_Remove;
+    bool                                RevertToRiff;
 
     //Status
     void                                StdOut(string Text);

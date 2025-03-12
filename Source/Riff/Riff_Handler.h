@@ -136,6 +136,7 @@ public:
     bool            EmbedMD5;
     bool            EmbedMD5_AuthorizeOverWritting;
     bool            Trace_UseDec;
+    bool            RevertToRiff;
     Riff_Encoding   Encoding;
     Riff_Encoding   Fallback_Encoding;
     Riff_Encoding   Write_Encoding;
