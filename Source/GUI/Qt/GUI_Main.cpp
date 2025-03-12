@@ -13,7 +13,10 @@
 #include <vector>
 #include <algorithm>
 #include <QStatusBar>
+#include <QLabel>
 #include <QTextEdit>
+#include <QVBoxLayout>
+#include <QPushButton>
 #include "GUI/Qt/GUI_Main_Technical_Table.h"
 #include "GUI/Qt/GUI_Main_Technical_Text.h"
 #include "GUI/Qt/GUI_Main_Core_Table.h"
@@ -545,17 +548,57 @@ void GUI_Main::OnOpen_Timer ()
             default                     : C->StdOut("???, finished"); break;
         }
 
+        //Showing errors
+        string Errors=C->Text_stderr_Last_Get();
+        if (!Errors.empty())
+        {
+            QDialog ErrorDialog(this);
+            ErrorDialog.setWindowTitle("BWF MetaEdit");
+            ErrorDialog.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
+            ErrorDialog.setModal(true);
+
+            // Calculate maximum width based on screen size
+            QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0, 0)));
+            int MaxWidth=Screen?(Screen->availableGeometry().width()*2/3):800; // Default to 800 if no screen
+            int MaxHeight=Screen?(Screen->availableGeometry().height()*2/4):600; // Default to 600 if no screen
+
+            QVBoxLayout* Layout=new QVBoxLayout(&ErrorDialog);
+
+            // Message
+            QString Message=QString("The following error(s) have occurred during the %1 operation:").arg(Open_Timer_Action<Timer_Save?"open":"save");
+            QLabel *MessageLabel=new QLabel(Message, &ErrorDialog);
+            Layout->addWidget(MessageLabel);
+
+            // Error text
+            QTextEdit *ErrorTextEdit = new QTextEdit(&ErrorDialog);
+            ErrorTextEdit->setReadOnly(true);
+            ErrorTextEdit->setFontFamily("Monospace");
+            ErrorTextEdit->setLineWrapMode(QTextEdit::NoWrap);
+            ErrorTextEdit->setPlainText(QString::fromStdString(Errors));
+            Layout->addWidget(ErrorTextEdit);
+
+            // Close button
+            QHBoxLayout* ButtonLayout=new QHBoxLayout;
+            ButtonLayout->addStretch(1);
+            QPushButton *CloseButton=new QPushButton("&Close", &ErrorDialog);
+            QObject::connect(CloseButton, &QPushButton::clicked, &ErrorDialog, &QDialog::close);
+            ButtonLayout->addWidget(CloseButton);
+            Layout->addLayout(ButtonLayout);
+
+            // Size dialog
+            QFontMetrics FontMetrics(ErrorTextEdit->font());
+            QRect BoundingRect = FontMetrics.boundingRect(QString().fromStdString(C->Text_stderr.str()));
+            int Width=min(MaxWidth, BoundingRect.width()+150);
+            int Height=min(MaxHeight, BoundingRect.height()+150); // Add some padding and space for buttons
+            ErrorDialog.resize(Width, Height);
+
+            ErrorDialog.exec();
+        }
+
         if (View_Current==View_PerFile)
             View->setVisible(true);
 
-        //Showing
-        if (C->Text_stderr_Updated_Get())
-        {
-            Menu_View_Output_stderr->setChecked(true);
-            View_Refresh(View_Output_stderr);
-        }
-        else
-            View_Refresh();
+        View_Refresh();
     }
 }
 

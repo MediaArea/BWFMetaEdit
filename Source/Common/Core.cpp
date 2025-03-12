@@ -311,8 +311,23 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
         if (Handler->second.Riff)
         {
             if (Handler->second.Riff->IsModified_Get())
+            {
                 Files_Modified_NotWritten_Count--;
-            delete Handler->second.Riff; Handler->second.Riff=NULL;
+                delete Handler->second.Riff; Handler->second.Riff=NULL;
+            }
+            else
+            {
+                Handler++; //Already opened
+
+                CriticalSectionLocker CSL(CS);
+                if (Canceled)
+                    return 1.0;
+
+                Menu_File_Open_Files_File_Pos++;
+                if (Menu_File_Open_Files_File_Total==0)
+                    return 1.0;
+                return ((float)Menu_File_Open_Files_File_Pos)/Menu_File_Open_Files_File_Total;
+            }
         }
         if (Handler->second.Riff==NULL || !Handler->second.Riff->IsValid_Get())
         {
@@ -2397,8 +2412,7 @@ void Core::StdAll(handlers::iterator &Handler)
     }
     if (Handler->second.Riff && !Handler->second.Riff->Errors.str().empty())
     {
-        Text_stderr<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Errors.str();
-        Text_stdall<<TimeS.To_UTF8()<<" "<<Handler->second.Riff->Errors.str();
+        StdErr(Handler->second.Riff->Errors.str());
         if (!LogFile.empty())
         {
             Ztring Data;
@@ -2409,7 +2423,6 @@ void Core::StdAll(handlers::iterator &Handler)
             F.Write(Data);
         }
         Handler->second.Riff->Errors.str(string());
-        Text_stderr_Updated=true;
     }
 }
 
@@ -2445,6 +2458,7 @@ void Core::StdErr(string Text)
     time_t Time=time(NULL);
     Ztring TimeS; TimeS.Date_From_Seconds_1970_Local((int32u)Time);
 
+    Text_stderr_last<<Text<<endl;
     Text_stderr<<TimeS.To_UTF8()<<" "<<Text<<endl;
     Text_stdall<<TimeS.To_UTF8()<<" "<<Text<<endl;
     Text_stderr_Updated=true;
@@ -2455,6 +2469,15 @@ bool Core::Text_stderr_Updated_Get()
 {
     bool Temp=Text_stderr_Updated;
     Text_stderr_Updated=false;
+
+    return Temp;
+}
+
+//---------------------------------------------------------------------------
+string Core::Text_stderr_Last_Get()
+{
+    string Temp=Text_stderr_last.str();
+    Text_stderr_last.str(string());
 
     return Temp;
 }
