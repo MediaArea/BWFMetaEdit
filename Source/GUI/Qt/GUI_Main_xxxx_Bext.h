@@ -30,6 +30,10 @@ class GUI_Main_xxxx_Bext : public QDialog
 public:
     //Constructor/Destructor
     GUI_Main_xxxx_Bext(Core* C, const std::string &FileName_, int Maximum, QWidget* parent=NULL);
+    GUI_Main_xxxx_Bext(Core* C, int Value, int Maximum, QWidget* parent=NULL);
+
+    // Public functions
+    QString Value() const;
 
     //Widgets
     QDoubleSpinBox*     Version;

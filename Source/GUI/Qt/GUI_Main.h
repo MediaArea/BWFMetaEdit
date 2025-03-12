@@ -229,6 +229,8 @@ private:
     view View_Current;
     bool MustCreate;
 
+    QStringList OpenedFiles;
+
     void dragEnterEvent(QDragEnterEvent *Event);
     void dropEvent(QDropEvent *Event);
     void closeEvent(QCloseEvent *Event);
@@ -238,6 +240,7 @@ private:
     //Helpers
     void View_Refresh(view View_New=View_None);
     bool Close(const std::string &FileName=std::string(), bool AndExit=false);
+    void Apply_Defaults(const QString &FileName);
     std::string* ToClose_FileName;
     bool Exit;
     enum open_timer_init

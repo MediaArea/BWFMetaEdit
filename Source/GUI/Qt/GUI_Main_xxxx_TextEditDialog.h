@@ -34,6 +34,9 @@ public:
     //Constructor/Destructor
     GUI_Main_xxxx_TextEditDialog(Core* C, const std::string &FileName, const std::string &Field, const QString &Value, bool ReadOnly=false, QWidget* parent=NULL);
 
+    // Public functions
+    QString Value() const;
+
     //Widgets
     QTextEdit*          TextEdit;
     QLabel*             Label;

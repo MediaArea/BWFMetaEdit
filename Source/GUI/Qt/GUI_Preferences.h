@@ -23,6 +23,8 @@ class QUrl;
 class QCheckBox;
 class QRadioButton;
 class QLineEdit;
+class QComboBox;
+class QVBoxLayout;
 class QDoubleSpinBox;
 class QDialogButtonBox;
 class QAbstractButton;
@@ -178,7 +180,7 @@ class GUI_Preferences : public QDialog
     Q_OBJECT
 
 public:
-    GUI_Preferences (GUI_Main* parent);
+    GUI_Preferences (GUI_Main* Parent, Core* C);
 
     size_t      Groups_Count_Get();
     std::string Group_Name_Get(group Group);
@@ -187,6 +189,7 @@ public:
     std::string Group_Option_Description_Get(group Group, size_t Option);
     bool        Group_Option_Checked_Get(group Group, size_t Option);
     bool        Group_Option_Checked_Set(group Group, size_t Option, bool Value);
+    std::string Group_Option_Default_Get(group Group, size_t Option, bool& Overwrite);
 
 private:
     //GUI
@@ -202,6 +205,7 @@ private:
     void OnRejected();
     void OnDialogClicked(QAbstractButton*);
     void OnClicked();
+    void CurrentIndexChanged();
     void OnExtra_OpenSaveDirectory_Specific_RadioToggled(bool Checked);
     void OnExtra_OpenSaveDirectory_Specific_BrowseClicked(bool Checked);
     void OnExtra_BackupDirectory_Specific_RadioToggled(bool Checked);
@@ -210,6 +214,7 @@ private:
     void OnExtra_LogFile_Activated_BrowseClicked(bool Checked);
 
 private:
+    void CreateCoreDefaults(QVBoxLayout *Columns);
     void Create();
     void LoadOriginalConfig();
     std::string ConfigDirectory_Get();
@@ -218,7 +223,11 @@ private:
     void showEvent(QShowEvent* Event);
 
     GUI_Main* Main;
+    Core* C;
     QDialogButtonBox* Dialog;
+
+    QComboBox**     DefaultCoreValueComboBoxes;
+    QCheckBox**     DefaultCoreOverwriteCheckBoxes;
 
     QRadioButton*   Extra_OpenSaveDirectory_Default;
     QRadioButton*   Extra_OpenSaveDirectory_Specific_Radio;

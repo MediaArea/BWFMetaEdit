@@ -193,12 +193,28 @@ GUI_Main_xxxx_DateDialog::GUI_Main_xxxx_DateDialog(Core* _C, const std::string &
 }
 
 //***************************************************************************
+// Public functions
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+QString GUI_Main_xxxx_DateDialog::Value() const
+{
+    return TextEdit->toPlainText();
+}
+
+//***************************************************************************
 // Menu actions
 //***************************************************************************
 
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx_DateDialog::OnAccept ()
 {
+    if (FileName.empty())
+    {
+        accept();
+        return;
+    }
+
     std::string Value=TextEdit->toPlainText().toUtf8().data();
     if (!C->IsValid(FileName, Field, Value))
     {

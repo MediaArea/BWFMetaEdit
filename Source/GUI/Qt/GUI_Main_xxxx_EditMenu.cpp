@@ -9,6 +9,7 @@
 
 //---------------------------------------------------------------------------
 #include "GUI/Qt/GUI_Main_xxxx_EditMenu.h"
+#include "GUI/Qt/GUI_Preferences.h"
 #include "GUI/Qt/GUI_Main.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
@@ -56,10 +57,22 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
     clearNSMenu((void*)Main->Menu_Edit->toNSMenu());
     #endif //__MACOSX__
 
+    bool ShowApplyDefault=true;
     if (Items.count()==1)
     {
         string FileName=Items.first().first;
         string Field=Items.first().second;
+
+        bool Found=false;
+        for (size_t Option=0; Option<Main->Preferences->Group_Options_Count_Get(Group_Core); Option++)
+        {
+            if (Field==Main->Preferences->Group_Option_Description_Get(Group_Core, Option))
+            {
+                Found=true;
+                break;
+            }
+        }
+        ShowApplyDefault|=Found;
 
         //History data
         ZtringList History; History.Write(Ztring().From_UTF8(C->History(FileName, Field)));
@@ -121,6 +134,16 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
         if (FileList.size()>1) {
             QAction* Action=new QAction("Fill all open files with this field value");
             Action->setProperty("Action", "Fill");
+            Main->Menu_Edit->addAction(Action);
+            Main->Menu_Edit->addSeparator();
+            connect(Action, SIGNAL(triggered(bool)), this, SLOT(onActionTriggered()));
+        }
+
+        //Handling ApplyDefault display
+        if (ShowApplyDefault)
+        {
+            QAction* Action=new QAction("Apply default value for this field");
+            Action->setProperty("Action", "ApplyDefault");
             Main->Menu_Edit->addAction(Action);
             Main->Menu_Edit->addSeparator();
             connect(Action, SIGNAL(triggered(bool)), this, SLOT(onActionTriggered()));
@@ -203,6 +226,17 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
             string FileName=Items.at(Pos).first;
             string Field=Items.at(Pos).second;
 
+            bool Found=false;
+            for (size_t Option=0; Option<Main->Preferences->Group_Options_Count_Get(Group_Core); Option++)
+            {
+                if (Field==Main->Preferences->Group_Option_Description_Get(Group_Core, Option))
+                {
+                    Found=true;
+                    break;
+                }
+            }
+            ShowApplyDefault|=Found;
+
             if (!C->Get(FileName, Field).empty() && C->IsValid(FileName, Field, string()) && Field!="BextVersion")
                 ShowClear=true;
 
@@ -243,6 +277,16 @@ void  GUI_Main_xxxx_EditMenu::updateEditMenu( QList<QPair<string, string> > forI
             QAction* Action=new QAction("Clear these values");
             Action->setProperty("Action", "Clear");
             Main->Menu_Edit->addAction(Action);
+            connect(Action, SIGNAL(triggered(bool)), this, SLOT(onActionTriggered()));
+        }
+
+        //Handling ApplyDefault display
+        if (ShowApplyDefault)
+        {
+            QAction* Action=new QAction("Apply default values to these fields");
+            Action->setProperty("Action", "ApplyDefault");
+            Main->Menu_Edit->addAction(Action);
+            Main->Menu_Edit->addSeparator();
             connect(Action, SIGNAL(triggered(bool)), this, SLOT(onActionTriggered()));
         }
 
@@ -370,6 +414,30 @@ void GUI_Main_xxxx_EditMenu::onActionTriggered()
             }
             else
                 C->Set(FileName, Field, "TIMESTAMP");
+        }
+        Q_EMIT valuesChanged(true);
+    }
+    else if (Action->property("Action")=="ApplyDefault")
+    {
+        for (int Pos=0; Pos<Items.size(); Pos++)
+        {
+            string FileName=Items.at(Pos).first;
+            string Field=Items.at(Pos).second;
+            for (size_t Option=0; Option<Main->Preferences->Group_Options_Count_Get(Group_Core); Option++)
+            {
+                if (Field==Main->Preferences->Group_Option_Description_Get(Group_Core, Option))
+                {
+                    if (Main->Preferences->Group_Option_Description_Get(Group_Core, Option)=="TimeReference (translated)")
+                    {
+                        Option++;
+                        Field="TimeReference";
+                    }
+
+                    bool Overwrite;
+                    string Default=Main->Preferences->Group_Option_Default_Get(Group_Core, Option, Overwrite);
+                    C->Set(FileName, Field, Default);
+                }
+            }
         }
         Q_EMIT valuesChanged(true);
     }

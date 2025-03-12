@@ -311,7 +311,8 @@ Riff_Handler::Riff_Handler ()
 //---------------------------------------------------------------------------
 Riff_Handler::~Riff_Handler ()
 {
-    delete Chunks; //Chunks=NULL;
+    if (Chunks)
+        delete Chunks; //Chunks=NULL;
 }
 
 //***************************************************************************
@@ -2826,7 +2827,7 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
     {
         //Test
         string Message;
-        if (!(Chunks->Global->MD5Generated && !Chunks->Global->MD5Generated->Strings["md5generated"].empty()) && !(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()) && Chunks->Global->MD5Generated->Strings["md5generated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
+        if (Chunks && !(Chunks->Global->MD5Generated && !Chunks->Global->MD5Generated->Strings["md5generated"].empty()) && !(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty()) && Chunks->Global->MD5Generated->Strings["md5generated"]!=Chunks->Global->MD5Stored->Strings["md5stored"])
             Message="does not equal MD5Stored";
 
         //If error
