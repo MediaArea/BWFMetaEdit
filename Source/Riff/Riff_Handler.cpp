@@ -257,6 +257,24 @@ void AdaptEOL(string& Value, adapteol Adapt=adapt_platform)
         Value=Value2;
 }
 
+//---------------------------------------------------------------------------
+inline string BaseFileName(const string& FileName)
+{
+    if (FileName.empty())
+        return FileName;
+
+    string ToReturn=FileName;
+    #ifdef _WIN32
+        size_t Pos=ToReturn.find_last_of("\\");
+    #else
+        size_t Pos=ToReturn.find_last_of("/");
+    #endif
+    if (Pos!=string::npos && Pos+1<ToReturn.size())
+        ToReturn=ToReturn.substr(Pos+1);
+
+    return ToReturn.substr(0, ToReturn.find_last_of('.'));
+}
+
 //***************************************************************************
 // Constructor/Destructor
 //***************************************************************************
@@ -1406,6 +1424,36 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
         }
     }
 
+    // Use file name
+    if (Field=="originatorreference" || Field=="description")
+    {
+        if (Value=="FILENAME")
+        {
+            if (Chunks->Global)
+            {
+                Value=BaseFileName(Chunks->Global->File_Name.To_UTF8());
+                if (Field=="originatorreference" && Value.size()>32)
+                    Value=Value.erase(32);
+                else if (Field=="description" && Value.size()>256)
+                    Value=Value.erase(256);
+            }
+            else
+                Value=string();
+
+            if (Field=="originatorreference")
+                Chunks->Global->OriginatorReferenceFromFileName=true;
+            else
+                Chunks->Global->BextDescriptionFromFileName=true;
+        }
+        else
+        {
+            if (Field=="originatorreference" && Chunks->Global->OriginatorReferenceFromFileName && Value!=Get_Internal(Field))
+                    Chunks->Global->OriginatorReferenceFromFileName=false;
+            else if (Field=="description" && Chunks->Global->BextDescriptionFromFileName && Value!=Get_Internal(Field))
+                    Chunks->Global->BextDescriptionFromFileName=false;
+        }
+    }
+
     // EBU ISRC recommandations, link aXML ISRC and INFO ISRC
     string FieldToFill, ValueToFill;
     if (Rules.EBU_ISRC_Rec)
@@ -1967,6 +2015,12 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         //If error
         if (!Message.empty())
             IsValid_Errors<<"malformed input, Description "<<Message;
+
+        if (Chunks && Chunks->Global && Chunks->Global->BextDescriptionFromFileName)
+        {
+            if (Value.size()<BaseFileName(Chunks->Global->File_Name.To_UTF8()).size())
+                IsValid_Warnings<<"full file name does not fit in Description field";
+        }
     }
 
     //Originator
@@ -2055,6 +2109,12 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
         //If error
         if (!Message.empty())
             IsValid_Errors<<"malformed input, OriginatorReference "<<Message;
+
+        if (Chunks && Chunks->Global && Chunks->Global->OriginatorReferenceFromFileName)
+        {
+            if (Value.size()<BaseFileName(Chunks->Global->File_Name.To_UTF8()).size())
+                IsValid_Warnings<<"full file name does not fit in OriginatorReference field";
+        }
     }
 
     //OriginationDate
