@@ -4,6 +4,11 @@ Notes:
 - Deleted
 x Correction
 
+Version 25.03, 2024-03-13
+-------------
++ Option to revert RF64 to RIFF format
++ Improve compatibilty with CSV exported from spreadsheets
+
 Version 24.10, 2024-11-04
 -------------
 + Add ability to append values to text fields with +=

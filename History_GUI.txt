@@ -4,6 +4,13 @@ Notes:
 - Deleted
 x Correction
 
+Version 25.03, 2024-03-13
+-------------
++ Show errors in popup instead in switching view
++ Default value option for core fields
++ Improve compatibilty with CSV exported from spreadsheets
++ Peek reference and description from filename
+
 Version 24.10, 2024-11-04
 -------------
 + Add file creation and last modification date to technical output
