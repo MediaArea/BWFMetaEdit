@@ -2,6 +2,7 @@
 <!-- Copyright 2016-2019 MediaArea.net <info@mediaarea.net> -->
 <component type="desktop">
   <id type="desktop">bwfmetaedit-gui.desktop</id>
+  <launchable type="desktop-id">bwfmetaedit-gui.desktop</launchable>
   <metadata_license>CC-BY-3.0</metadata_license>
   <project_license>0BSD</project_license>
   <name>BWF MetaEdit</name>
@@ -18,12 +19,15 @@
   <screenshots>
     <screenshot type="default">
       <image>https://mediaarea.net/bundles/bwfmetaedit/img/Screenshot/BWFMetaEdit_Linux_Core_en.png</image>
+      <caption>Core metadata view</caption>
     </screenshot>
     <screenshot type="source">
       <image>https://mediaarea.net/bundles/bwfmetaedit/img/Screenshot/BWFMetaEdit_Linux_Tech_en.png</image>
+      <caption>Technical data view</caption>
     </screenshot>
     <screenshot type="source">
       <image>https://mediaarea.net/bundles/bwfmetaedit/img/Screenshot/BWFMetaEdit_Linux_Prefs_en.png</image>
+      <caption>Preferences</caption>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.0">
