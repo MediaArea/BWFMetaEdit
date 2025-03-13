@@ -18,9 +18,9 @@ macx {
     ICON = ../Mac/Logo.icns
 
     contains(MACSTORE, yes|1) {
-        QMAKE_CFLAGS += -gdwarf-2
+        DEFINES        += MACSTORE
+        QMAKE_CFLAGS   += -gdwarf-2
         QMAKE_CXXFLAGS += -gdwarf-2
-        QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
     }
 }
 
@@ -167,9 +167,6 @@ SOURCES = \
 
 
 macx {
-    contains(MACSTORE, yes|1) {
-        DEFINES       += MACSTORE
-    }
     HEADERS           += ../../Source/Common/Mac_Helpers.h
     OBJECTIVE_SOURCES += ../../Source/Common/Mac_Helpers.mm
     LIBS              += -framework Foundation
