@@ -1,8 +1,8 @@
 #include <winresrc.h>
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 24,10,0,0
- PRODUCTVERSION 24,10,0,0
+ FILEVERSION 25,03,0,0
+ PRODUCTVERSION 25,03,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19,12 +19,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "http://www.digitizationguidelines.gov"
             VALUE "FileDescription", "BWF MetaEdit"
-            VALUE "FileVersion", "24,10,0,0"
+            VALUE "FileVersion", "25,03,0,0"
             VALUE "InternalName", "BWF_MetaEdit - GUI - MSVC 2015"
             VALUE "LegalCopyright", "BSD License"
             VALUE "OriginalFilename", "BWF MetaEdit.exe"
             VALUE "ProductName", "BWF MetaEdit GUI"
-            VALUE "ProductVersion", "24,10,0,0"
+            VALUE "ProductVersion", "25,03,0,0"
         END
     END
     BLOCK "VarFileInfo"

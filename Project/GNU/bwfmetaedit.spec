@@ -4,7 +4,7 @@
 
 # norootforbuild
 
-%global bwfmetaedit_version		24.10
+%global bwfmetaedit_version		25.03
 
 Name:			bwfmetaedit
 Version:		%bwfmetaedit_version
@@ -170,5 +170,5 @@ install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datad
 %endif
 
 %changelog
-* Tue Jan 01 2010 Jerome Martinez <info@mediaarea.net> - 24.10-0
+* Tue Jan 01 2010 Jerome Martinez <info@mediaarea.net> - 25.03-0
 - See History.txt for more info and real dates
