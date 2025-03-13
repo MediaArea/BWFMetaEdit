@@ -4,7 +4,7 @@ Notes:
 - Deleted
 x Correction
 
-Version 25.03, 2024-03-13
+Version 25.03, 2025-03-13
 -------------
 + Option to revert RF64 to RIFF format
 + Improve compatibilty with CSV exported from spreadsheets
