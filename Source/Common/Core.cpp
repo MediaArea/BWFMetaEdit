@@ -197,6 +197,7 @@ Core::Core()
     Canceled=false;
     SaveMode=false;
     SaveMode_OneFile=false;
+    Reopen=false;
     #ifdef _WIN32
         TCHAR Path[MAX_PATH];
         BOOL Result=SHGetSpecialFolderPath(NULL, Path, CSIDL_APPDATA, true);
@@ -319,7 +320,7 @@ float Core::Menu_File_Open_Files_Finish_Middle ()
                 Files_Modified_NotWritten_Count--;
                 delete Handler->second.Riff; Handler->second.Riff=NULL;
             }
-            else
+            else if (!Reopen)
             {
                 Handler++; //Already opened
 
@@ -1174,7 +1175,9 @@ int Core::Menu_File_Import_Core(const string &FileName)
                     ReturnValue++;
                 }
 
+            Reopen=true; // Apply imported core to already opened files
             Menu_File_Open_Files_Finish();
+            Reopen=false;
         }
         else if (Buffer_Offset>=8
          && Buffer[0]=='<'
@@ -1213,7 +1216,9 @@ int Core::Menu_File_Import_Core(const string &FileName)
                 }
             }
 
+            Reopen=true; // Apply imported core to already opened files
             Menu_File_Open_Files_Finish();
+            Reopen=false;
         }
         else
             throw "--in-core=: not a valid file";

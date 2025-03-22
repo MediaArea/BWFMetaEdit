@@ -273,6 +273,7 @@ protected:
     ZtringList                          Menu_Close_File_FileNames;
     bool                                SaveMode;
     bool                                SaveMode_OneFile;
+    bool                                Reopen;
 };
 
 #endif
