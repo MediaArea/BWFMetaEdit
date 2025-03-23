@@ -927,12 +927,10 @@ void GUI_Preferences::CreateCoreDefaults(QVBoxLayout* Columns)
     {
         QLabel* DescriptionLabel=new QLabel(Groups[Group_Core].Option[Option].Description, this);
         Grid->addWidget(DescriptionLabel, Option+1, 0);
-        //Grid->addWidget(new QLabel("Display: ", this), Option, 1);
 
         CheckBoxes[Group_Core*options::MaxCount+Option]=new QCheckBox();
         Grid->addWidget(CheckBoxes[Group_Core*options::MaxCount+Option], Option+1, 1, Qt::AlignHCenter);
 
-        //Grid->addWidget(new QLabel("Default: ", this), Option, 3);
         DefaultCoreValueComboBoxes[Option]=new QComboBox();
         DefaultCoreValueComboBoxes[Option]->setEditable(false);
         DefaultCoreValueComboBoxes[Option]->addItem("", QString("VALUE"));
@@ -945,7 +943,6 @@ void GUI_Preferences::CreateCoreDefaults(QVBoxLayout* Columns)
                  !strcmp(Groups[Group_Core].Option[Option].UniqueName, "Core_Description"))
             DefaultCoreValueComboBoxes[Option]->addItem("Use file name", QString("FILENAME"));
         Grid->addWidget(DefaultCoreValueComboBoxes[Option], Option+1, 2);
-        //Grid->addWidget(new QLabel("Overwrite: ", this), Option, 5);
         DefaultCoreOverwriteCheckBoxes[Option]=new QCheckBox();
         Grid->addWidget(DefaultCoreOverwriteCheckBoxes[Option], Option+1, 3, Qt::AlignHCenter);
 

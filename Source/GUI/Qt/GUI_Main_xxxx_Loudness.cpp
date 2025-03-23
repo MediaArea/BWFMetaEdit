@@ -110,6 +110,9 @@ GUI_Main_xxxx_Loudness::GUI_Main_xxxx_Loudness(Core* _C, const std::string &File
 //---------------------------------------------------------------------------
 QString GUI_Main_xxxx_Loudness::Value() const
 {
+    if (Loudness->value()==Loudness->minimum())
+        return QString();
+
     return QString::number(Loudness->value());
 }
 
