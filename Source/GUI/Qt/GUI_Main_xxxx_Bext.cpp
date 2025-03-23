@@ -91,9 +91,10 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, int Value, int Maximum, QWidget
 
     //Extra - Bext
     Version=new QDoubleSpinBox(this);
+    Version->setSpecialValueText("None");
     Version->setMaximum(Maximum);
     Version->setDecimals(0);
-    Version->setMinimum(0);
+    Version->setMinimum(-1);
 
     QLabel* Version_Label=new QLabel("bext version:");
 
@@ -116,6 +117,9 @@ GUI_Main_xxxx_Bext::GUI_Main_xxxx_Bext(Core* _C, int Value, int Maximum, QWidget
 //---------------------------------------------------------------------------
 QString GUI_Main_xxxx_Bext::Value() const
 {
+    if (Version->value()==Version->minimum())
+        return QString();
+
     return QString::number(Version->value());
 }
 
