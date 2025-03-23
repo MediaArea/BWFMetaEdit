@@ -695,10 +695,7 @@ void GUI_Preferences::OnRejected()
 void GUI_Preferences::OnDialogClicked(QAbstractButton* Button)
 {
     if (Dialog->buttonRole(Button)==QDialogButtonBox::ResetRole)
-    {
         LoadOriginalConfig();
-        OnClicked();
-    }
 }
 
 //***************************************************************************
@@ -1154,11 +1151,37 @@ void GUI_Preferences::Create()
 void GUI_Preferences::LoadOriginalConfig()
 {
     for (size_t Kind=0; Kind<Group_Max; Kind++)
+    {
         for (size_t Content_Pos=0; Content_Pos<Groups[Kind].Option_Size; Content_Pos++)
+        {
             switch (Groups[Kind].Option[Content_Pos].Type)
             {
-                case Type_CheckBox      : CheckBoxes  [Kind*options::MaxCount+Content_Pos]->setChecked(Groups[Kind].Option[Content_Pos].DefaultConfigValue); break;
-                case Type_RadioButton   : RadioButtons[Kind*options::MaxCount+Content_Pos]->setChecked(Groups[Kind].Option[Content_Pos].DefaultConfigValue); break;
+                case Type_CheckBox      : CheckBoxes  [Kind*options::MaxCount+Content_Pos]->setChecked(Groups[Kind].Option[Content_Pos].DefaultConfigValue); OnClicked(); break;
+                case Type_RadioButton   : RadioButtons[Kind*options::MaxCount+Content_Pos]->setChecked(Groups[Kind].Option[Content_Pos].DefaultConfigValue); OnClicked(); break;
                 default                 : ;
             }
+
+            // Reset defaults
+            if (Kind==Group_Core)
+            {
+                DefaultCoreValueComboBoxes[Content_Pos]->setItemText(0, QString());
+                DefaultCoreValueComboBoxes[Content_Pos]->setCurrentIndex(0);
+                DefaultCoreOverwriteCheckBoxes[Content_Pos]->setChecked(false);
+            }
+        }
+    }
+
+    // Reset extra
+    Extra_OpenSaveDirectory_Default->setChecked(true);
+    OnExtra_OpenSaveDirectory_Specific_RadioToggled(false);
+
+    Extra_BackupDirectory_Default->setChecked(true);
+    OnExtra_BackupDirectory_Specific_RadioToggled(false);
+
+    Extra_LogFile_Deactivated->setChecked(true);
+    OnExtra_LogFile_Activated_RadioToggled(false);
+
+    Extra_Bext_DefaultVersion->setValue(0);
+    Extra_Bext_MaxVersion->setValue(2);
+    Extra_Bext_Toggle->setChecked(false);
 }
