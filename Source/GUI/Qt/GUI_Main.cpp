@@ -273,14 +273,55 @@ void GUI_Main::dropEvent(QDropEvent *Event)
         for (size_t Pos=0; Pos<Cores.size(); Pos++)
             C->Menu_File_Import_Core(Cores[Pos].To_UTF8());
         C->StdOut("Importing Core file, finished");
-        //Showing
-        if (C->Text_stderr_Updated_Get())
+
+        //Showing errors
+        string Errors=C->Text_stderr_Last_Get();
+        if (!Errors.empty())
         {
-            Menu_View_Output_stderr->setChecked(true);
-            View_Refresh(View_Output_stderr);
+            QDialog ErrorDialog(this);
+            ErrorDialog.setWindowTitle("BWF MetaEdit");
+            ErrorDialog.setWindowIcon(QIcon(":/Image/Logo/Logo.png"));
+            ErrorDialog.setModal(true);
+
+            // Calculate maximum width based on screen size
+            QScreen* Screen=QApplication::screenAt(mapToGlobal(QPoint(0, 0)));
+            int MaxWidth=Screen?(Screen->availableGeometry().width()*2/3):800; // Default to 800 if no screen
+            int MaxHeight=Screen?(Screen->availableGeometry().height()*2/4):600; // Default to 600 if no screen
+
+            QVBoxLayout* Layout=new QVBoxLayout(&ErrorDialog);
+
+            // Message
+            QString Message=QString("The following error(s) have occurred during the import operation:");
+            QLabel *MessageLabel=new QLabel(Message, &ErrorDialog);
+            Layout->addWidget(MessageLabel);
+
+            // Error text
+            QTextEdit *ErrorTextEdit = new QTextEdit(&ErrorDialog);
+            ErrorTextEdit->setReadOnly(true);
+            ErrorTextEdit->setFontFamily("Monospace");
+            ErrorTextEdit->setLineWrapMode(QTextEdit::NoWrap);
+            ErrorTextEdit->setPlainText(QString::fromStdString(Errors));
+            Layout->addWidget(ErrorTextEdit);
+
+            // Close button
+            QHBoxLayout* ButtonLayout=new QHBoxLayout;
+            ButtonLayout->addStretch(1);
+            QPushButton *CloseButton=new QPushButton("&Close", &ErrorDialog);
+            QObject::connect(CloseButton, &QPushButton::clicked, &ErrorDialog, &QDialog::close);
+            ButtonLayout->addWidget(CloseButton);
+            Layout->addLayout(ButtonLayout);
+
+            // Size dialog
+            QFontMetrics FontMetrics(ErrorTextEdit->font());
+            QRect BoundingRect = FontMetrics.boundingRect(QString().fromStdString(C->Text_stderr.str()));
+            int Width=min(MaxWidth, BoundingRect.width()+150);
+            int Height=min(MaxHeight, BoundingRect.height()+150); // Add some padding and space for buttons
+            ErrorDialog.resize(Width, Height);
+
+            ErrorDialog.exec();
         }
-        else
-            View_Refresh();
+
+        View_Refresh();
     }
 
     if (Files.size())
