@@ -56,6 +56,21 @@
 #endif
 
 //---------------------------------------------------------------------------
+//Windows UWP
+#if defined(WIN32) || defined(WIN64)
+    #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY==WINAPI_FAMILY_APP)
+        #ifndef WINDOWS_UWP
+            #define WINDOWS_UWP
+        #endif
+    #endif
+    #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY==WINAPI_FAMILY_GAMES)
+        #ifndef WINDOWS_GAMES
+            #define WINDOWS_GAMES
+        #endif
+    #endif
+#endif
+
+//---------------------------------------------------------------------------
 //Unix (Linux, HP, Sun, BeOS...)
 #if defined(UNIX) || defined(_UNIX) || defined(__UNIX__) \
     || defined(__unix) || defined(__unix__) \
@@ -193,7 +208,7 @@
 //---------------------------------------------------------------------------
 //(-1) is known to be the MAX of an unsigned int but GCC complains about it
 #ifdef __cplusplus
-    #include <new> //for size_t
+    #include <cstddef> //for size_t
 #else /* __cplusplus */
     #include <stddef.h> //for size_t
 #endif /* __cplusplus */

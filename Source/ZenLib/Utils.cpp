@@ -971,12 +971,18 @@ void   int64u_int32u (int64u BigInt, int32u &High, int32u &Low)
 // Floats and ints
 int32s float32_int32s (float32 F, bool Rounded)
 {
+    //Out of boundaries
+    if (F>=(int32s)0x7FFFFFFF)
+        return (int32s)0x7FFFFFFF;
+    if (F<=(int32s)0x80000000)
+        return (int32s)0x80000000;
+
     //Not rounded
     if (!Rounded)
         return (int32s)F;
     //Rounded
     int I1=(int)F;
-    if (F-I1>=0.5)
+    if (F-I1>=0.5f)
         return I1+1;
     else
         return I1;
@@ -984,12 +990,18 @@ int32s float32_int32s (float32 F, bool Rounded)
 
 int64s float32_int64s (float32 F, bool Rounded)
 {
+    //Out of boundaries
+    if (F>=(int64s)0x7FFFFFFFFFFFFFFFLL)
+        return (int64s)0x7FFFFFFFFFFFFFFFLL;
+    if (F<=(int64s)0x8000000000000000LL)
+        return (int64s)0x8000000000000000LL;
+
     //Not rounded
     if (!Rounded)
         return (int64s)F;
     //Rounded
     int I1=(int)F;
-    if (F-I1>=0.5)
+    if (F-I1>=0.5f)
         return I1+1;
     else
         return I1;
@@ -997,6 +1009,12 @@ int64s float32_int64s (float32 F, bool Rounded)
 
 int32s float64_int32s (float64 F, bool Rounded)
 {
+    //Out of boundaries
+    if (F>=(int32s)0x7FFFFFFF)
+        return (int32s)0x7FFFFFFF;
+    if (F<=(int32s)0x80000000)
+        return (int32s)0x80000000;
+
     //Not rounded
     if (!Rounded)
         return (int32s)F;
@@ -1010,6 +1028,12 @@ int32s float64_int32s (float64 F, bool Rounded)
 
 int64s float64_int64s (float64 F, bool Rounded)
 {
+    //Out of boundaries
+    if (F>=(int64s)0x7FFFFFFFFFFFFFFFLL)
+        return (int64s)0x7FFFFFFFFFFFFFFFLL;
+    if (F<=(int64s)0x8000000000000000LL)
+        return (int64s)0x8000000000000000LL;
+
     //Not rounded
     if (!Rounded)
         return (int64s)F;
