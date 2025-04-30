@@ -32,7 +32,9 @@
     #ifdef WINDOWS
         #undef __TEXT
         #include <windows.h>
-        #include <tchar.h>
+        #ifndef WINDOWS_GAMES
+            #include <tchar.h>
+        #endif
     #endif
 #endif //ZENLIB_USEWX
 #ifdef __MINGW32__
@@ -266,7 +268,7 @@ Ztring& Ztring::From_Unicode (const wchar_t* S)
                 if (Size!=0 && Size!=(size_t)-1)
                 {
                     char* AnsiString=new char[Size+1];
-                    Size=wcstombs(AnsiString, S, wcslen(S));
+                    Size=wcstombs(AnsiString, S, Size+1);
                     AnsiString[Size]='\0';
                     assign (AnsiString);
                     delete[] AnsiString;
@@ -589,11 +591,11 @@ Ztring& Ztring::From_Local (const char* S)
                 else
                     clear();
             #else //WINDOWS
-                size_t Size=mbstowcs(NULL, S, 0);
+                size_t Size=mbsrtowcs(NULL, &S, 0, NULL);
                 if (Size!=0 && Size!=(size_t)-1)
                 {
                     wchar_t* WideString=new wchar_t[Size+1];
-                    Size=mbstowcs(WideString, S, Size);
+                    Size=mbsrtowcs(WideString, &S, Size, NULL);
                     WideString[Size]=L'\0';
                     assign (WideString);
                     delete[] WideString; //WideString=NULL;
@@ -649,17 +651,13 @@ Ztring& Ztring::From_ISO_8859_1(const char* S, size_type Start, size_type Length
 
     if (Length==Error)
         Length=strlen(S+Start);
-    #ifdef _UNICODE
-        char* Temp = new char[Length+1];
-        strncpy(Temp, S +Start, Length);
-        Temp[Length] = '\0';
-        From_ISO_8859_1(Temp);
-        delete[] Temp;
-    #else
-        assign(S +Start, Length);
-        if (find(__T('\0')) != std::string::npos)
-            resize(find(__T('\0')));
-    #endif
+
+    char* Temp = new char[Length+1];
+    strncpy(Temp, S +Start, Length);
+    Temp[Length] = '\0';
+    From_ISO_8859_1(Temp);
+    delete[] Temp;
+
     return *this;
 }
 
@@ -688,17 +686,13 @@ Ztring& Ztring::From_ISO_8859_2(const char* S, size_type Start, size_type Length
 
     if (Length==Error)
         Length=strlen(S+Start);
-    #ifdef _UNICODE
-        char* Temp = new char[Length+1];
-        strncpy(Temp, S +Start, Length);
-        Temp[Length] = '\0';
-        From_ISO_8859_2(Temp);
-        delete[] Temp;
-    #else
-        assign(S +Start, Length);
-        if (find(__T('\0')) != std::string::npos)
-            resize(find(__T('\0')));
-    #endif
+
+    char* Temp = new char[Length+1];
+    strncpy(Temp, S +Start, Length);
+    Temp[Length] = '\0';
+    From_ISO_8859_2(Temp);
+    delete[] Temp;
+
     return *this;
 }
 
@@ -738,43 +732,50 @@ Ztring& Ztring::From_UUID (const int128u S)
 
 Ztring& Ztring::From_CC4 (const int32u S)
 {
-    std::string S1;
-    S1.append(1, (char)((S&0xFF000000)>>24));
-    S1.append(1, (char)((S&0x00FF0000)>>16));
-    S1.append(1, (char)((S&0x0000FF00)>> 8));
-    S1.append(1, (char)((S&0x000000FF)    ));
-    From_Local(S1.c_str());
-
-    // Validity Test
-    if ( size()==4
-     || (size()==3 && (S&0x000000FF)==0x00000000 && at(0)>=0x20 && at(1)>=0x20 && at(2)>=0x20)
-     || (size()==2 && (S&0x0000FFFF)==0x00000000 && at(0)>=0x20 && at(1)>=0x20)
-     || (size()==1 && (S&0x00FFFFFF)==0x00000000 && at(0)>=0x20))
-        return *this;
-
-    // Not valid, using 0x as fallback
     clear();
-    append(__T("0x"));
-    append(Ztring().From_CC1((int8u)((S&0xFF000000)>>24)));
-    append(Ztring().From_CC1((int8u)((S&0x00FF0000)>>16)));
-    append(Ztring().From_CC1((int8u)((S&0x0000FF00)>> 8)));
-    append(Ztring().From_CC1((int8u)((S&0x000000FF)    )));
+    for (int8s i=(4-1)*8; i>=0; i-=8)
+    {
+        int32u Value=(S&(0xFF<<i))>>i;
+        if (Value<0x20)
+        {
+            if (!i || (i!=24  && !(S&(0xFFFFFFFF>>(32-i)))))
+                return *this; // Trailing 0 are fine
 
+            // Not valid, using 0x as fallback
+            clear();
+            append(__T("0x"));
+            append(Ztring().From_CC1((int8u)((S&0xFF000000)>>24)));
+            append(Ztring().From_CC1((int8u)((S&0x00FF0000)>>16)));
+            append(Ztring().From_CC1((int8u)((S&0x0000FF00)>> 8)));
+            append(Ztring().From_CC1((int8u)((S&0x000000FF)    )));
+            return *this;
+        }
+        append(1, (Char)(Value));
+    }
     return *this;
 }
 
 Ztring& Ztring::From_CC3 (const int32u S)
 {
-    std::string S1;
-    S1.append(1, (char)((S&0x00FF0000)>>16));
-    S1.append(1, (char)((S&0x0000FF00)>> 8));
-    S1.append(1, (char)((S&0x000000FF)>> 0));
-    From_Local(S1.c_str());
+    clear();
+    for (int8s i=(3-1)*8; i>=0; i-=8)
+    {
+        int32u Value=(S&(0xFF<<i))>>i;
+        if (Value<0x20)
+        {
+            if (!i || (i!=16  && !(S&(0xFFFFFF>>(24-i)))))
+                return *this; // Trailing 0 are fine
 
-    //Test
-    if (empty())
-        assign(__T("(empty)"));
-
+            // Not valid, using 0x as fallback
+            clear();
+            append(__T("0x"));
+            append(Ztring().From_CC1((int8u)((S&0x00FF0000)>>16)));
+            append(Ztring().From_CC1((int8u)((S&0x0000FF00)>> 8)));
+            append(Ztring().From_CC1((int8u)((S&0x000000FF)    )));
+            return *this;
+        }
+        append(1, (Char)(Value));
+    }
     return *this;
 }
 
@@ -1305,7 +1306,19 @@ Ztring& Ztring::Date_From_Seconds_1970 (const int32s Value)
 Ztring& Ztring::Date_From_Seconds_1970 (const int64s Value)
 {
     time_t Time=(time_t)Value;
+    #if defined(HAVE_GMTIME_R)
+    struct tm Gmt_Temp;
+    struct tm *Gmt=gmtime_r(&Time, &Gmt_Temp);
+    #elif defined(_MSC_VER)
+    struct tm Gmt_Temp;
+    errno_t gmtime_s_Result=gmtime_s(&Gmt_Temp , &Time);
+    struct tm* Gmt=gmtime_s_Result?NULL:&Gmt_Temp;
+    #else
+    #ifdef __GNUC__
+    #warning "This version of ZenLib is not thread safe"
+    #endif
     struct tm *Gmt=gmtime(&Time);
+    #endif
     if (!Gmt)
     {
         clear();
@@ -1336,9 +1349,23 @@ Ztring& Ztring::Date_From_Seconds_1970 (const int64s Value)
 Ztring& Ztring::Date_From_Seconds_1970_Local (const int32u Value)
 {
     time_t Time=(time_t)Value;
+    #if defined(HAVE_LOCALTIME_R)
+    struct tm Gmt_Temp;
+    struct tm *Gmt=localtime_r(&Time, &Gmt_Temp);
+    #elif defined(_MSC_VER)
+    struct tm Gmt_Temp;
+    errno_t localtime_s_Result=localtime_s(&Gmt_Temp , &Time);
+    struct tm* Gmt=localtime_s_Result?NULL:&Gmt_Temp;
+    #else
+    #ifdef __GNUC__
+    #warning "This version of ZenLib is not thread safe"
+    #endif
     struct tm *Gmt=localtime(&Time);
+    #endif
     Ztring DateT;
     Ztring Date;
+    if (Gmt)
+    {
     Date+=Ztring::ToZtring((Gmt->tm_year+1900));
     Date+=__T("-");
     DateT.From_Number(Gmt->tm_mon+1); if (DateT.size()<2){DateT=Ztring(__T("0"))+Ztring::ToZtring(Gmt->tm_mon+1);}
@@ -1356,6 +1383,7 @@ Ztring& Ztring::Date_From_Seconds_1970_Local (const int32u Value)
     DateT.From_Number(Gmt->tm_sec); if (DateT.size()<2){DateT=Ztring(__T("0"))+Ztring::ToZtring(Gmt->tm_sec);}
     Date+=DateT;
     assign (Date.c_str());
+    }
     return *this;
 }
 
@@ -1364,7 +1392,7 @@ Ztring& Ztring::Date_From_String (const char* Value, size_t Value_Size)
     //Only the year
     if (Value_Size<10)
     {
-        From_Local(Value, 0, Value_Size);
+        From_UTF8(Value, 0, Value_Size);
         return *this;
     }
 
@@ -1401,7 +1429,7 @@ Ztring& Ztring::Date_From_String (const char* Value, size_t Value_Size)
 
         assign (ToReturn.c_str());
     #else //ZENLIB_USEWX
-        Ztring DateS; DateS.From_Local(Value, 0, Value_Size);
+        Ztring DateS; DateS.From_UTF8(Value, 0, Value_Size);
         //Unix style formating : exactly 24 bytes (or 25 with 0x0A at the end) and Year is at the end
         if ((DateS.size()==24 || (DateS.size()==25 && DateS[24]==__T('\n'))) && DateS[23]>=__T('0') && DateS[23]<=__T('9') && DateS[21]>=__T('0') && DateS[21]<=__T('9') && DateS[19]==__T(' '))
         {
@@ -1503,7 +1531,7 @@ Ztring& Ztring::Date_From_String (const char* Value, size_t Value_Size)
             append(DateS);
         }
         else
-            From_Local(Value, 0, Value_Size); //Not implemented
+            From_UTF8(Value, 0, Value_Size); //Not implemented
     #endif //ZENLIB_USEWX
     return *this;
 }
@@ -1618,18 +1646,23 @@ std::string Ztring::To_UTF8 () const
             case 6:
                 utf8chars[5] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0x4000000;
+                [[fallthrough]];
             case 5:
                 utf8chars[4] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0x200000;
+                [[fallthrough]];
             case 4:
                 utf8chars[3] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0x10000;
+                [[fallthrough]];
             case 3:
                 utf8chars[2] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0x800;
+                [[fallthrough]];
             case 2:
                 utf8chars[1] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0xc0;
+                [[fallthrough]];
             case 1:
                 utf8chars[0] = (char) wc;
             }
@@ -1698,8 +1731,8 @@ std::string Ztring::To_Local () const
                 std::string AnsiString;
                 for (size_t Pos=0; Pos<size(); Pos++)
                 {
-                    int Result_Size=wctomb(Result, operator[](Pos));
-                    if (Result_Size>=0)
+                    size_t Result_Size=wcrtomb(Result, operator[](Pos), 0);
+                    if (Result_Size && Result_Size!=(size_t)-1)
                         AnsiString.append(Result, Result_Size);
                     else
                         AnsiString+='?';
@@ -1826,11 +1859,11 @@ int8s Ztring::To_int8s (int8u Radix, ztring_t Options) const
     #endif
 
     //Rounded
-    if (Options==Ztring_Rounded && find(__T('.'))!=Error)
+    if (Options&Ztring_Rounded && find(__T('.'))!=Error)
     {
         float80 F=To_float80();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return (int8s)I+1;
     }
 
@@ -1864,11 +1897,11 @@ int8u Ztring::To_int8u (int8u Radix, ztring_t Options) const
     #endif
 
     //Rounded
-    if (Options==Ztring_Rounded && find(__T('.'))!=std::string::npos)
+    if (Options&Ztring_Rounded && find(__T('.'))!=std::string::npos)
     {
         float32 F=To_float32();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return (int8u)I+1;
     }
 
@@ -1902,11 +1935,11 @@ int16s Ztring::To_int16s (int8u Radix, ztring_t Options) const
     #endif
 
     //Rounded
-    if (Options==Ztring_Rounded && find(__T('.'))!=Error)
+    if (Options&Ztring_Rounded && find(__T('.'))!=Error)
     {
         float80 F=To_float80();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return (int16s)I+1;
     }
 
@@ -1940,11 +1973,11 @@ int16u Ztring::To_int16u (int8u Radix, ztring_t Options) const
     #endif
 
     //Rounded
-    if (Options==Ztring_Rounded && find(__T('.'))!=std::string::npos)
+    if (Options&Ztring_Rounded && find(__T('.'))!=std::string::npos)
     {
         float32 F=To_float32();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return (int16u)I+1;
     }
 
@@ -1978,11 +2011,11 @@ int32s Ztring::To_int32s (int8u Radix, ztring_t Options) const
     #endif
 
     //Rounded
-    if (Options==Ztring_Rounded && find(__T('.'))!=Error)
+    if (Options&Ztring_Rounded && find(__T('.'))!=Error)
     {
         float80 F=To_float80();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return I+1;
     }
 
@@ -2016,11 +2049,11 @@ int32u Ztring::To_int32u (int8u Radix, ztring_t Options) const
     #endif
 
     //Rounded
-    if (Options==Ztring_Rounded && find(__T('.'))!=std::string::npos)
+    if (Options&Ztring_Rounded && find(__T('.'))!=std::string::npos)
     {
         float32 F=To_float32();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return I+1;
     }
 
@@ -2054,11 +2087,11 @@ int64s Ztring::To_int64s (int8u Radix, ztring_t Options) const
     #endif
 
     //Rounded
-    if (Options==Ztring_Rounded && find(__T('.'))!=std::string::npos)
+    if (Options&Ztring_Rounded && find(__T('.'))!=std::string::npos)
     {
         float32 F=To_float32();
         F-=I;
-        if (F>0.5)
+        if (F>0.5f)
             return I+1;
     }
 
@@ -2092,11 +2125,11 @@ int64u Ztring::To_int64u (int8u Radix, ztring_t Options) const
     #endif
 
     //Rounded
-    if (Options==Ztring_Rounded && find(__T('.'))!=std::string::npos)
+    if (Options&Ztring_Rounded && find(__T('.'))!=std::string::npos)
     {
         float32 F=To_float32();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return I+1;
     }
 

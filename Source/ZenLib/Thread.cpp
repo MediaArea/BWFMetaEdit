@@ -298,15 +298,21 @@ Thread::returnvalue Thread::RequestTerminate()
 //---------------------------------------------------------------------------
 Thread::returnvalue Thread::ForceTerminate()
 {
-    CriticalSectionLocker CSL(C);
+    #ifdef WINDOWS_UWP
+        return Incoherent;
+    #else
+        CriticalSectionLocker CSL(C);
 
-    //Terminating (not clean)
-    TerminateThread((HANDLE)ThreadPointer, 1); ThreadPointer=NULL;
+        //Terminating (not clean)
+        #pragma warning ( suppress : 6258 ) //C6258: Using TerminateThread does not allow proper thread clean up.
+        TerminateThread((HANDLE)ThreadPointer, 1);
+        ThreadPointer=NULL;
 
-    //Configuring
-    State=State_Terminated;
+        //Configuring
+        State=State_Terminated;
 
-    return Ok;
+        return Ok;
+    #endif
 }
 
 //***************************************************************************
@@ -315,25 +321,19 @@ Thread::returnvalue Thread::ForceTerminate()
 
 bool Thread::IsRunning()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_Running || State==State_Terminating;
-    return ToReturn;
+    return State==State_Running;
 }
 
 //---------------------------------------------------------------------------
 bool Thread::IsTerminating()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_Terminating;
-    return ToReturn;
+    return State==State_Terminating;
 }
 
 //---------------------------------------------------------------------------
 bool Thread::IsExited()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_New || State==State_Terminated;
-    return ToReturn;
+    return State==State_Terminated;
 }
 
 //***************************************************************************
@@ -519,6 +519,9 @@ Thread::returnvalue Thread::RequestTerminate()
 Thread::returnvalue Thread::ForceTerminate()
 {
     //Terminating (not clean)
+    #if !defined(__ANDROID_API__)
+    pthread_cancel((pthread_t)ThreadPointer);
+    #endif
 
     //Configuring
     State=State_Terminated;
@@ -533,33 +536,28 @@ Thread::returnvalue Thread::ForceTerminate()
 //---------------------------------------------------------------------------
 bool Thread::IsRunning()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_Running;
-    return ToReturn;
+    return State==State_Running;
 }
 
 //---------------------------------------------------------------------------
 bool Thread::IsTerminating()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_Terminating;
-    return ToReturn;
+    return State==State_Terminating;
 }
 
 //---------------------------------------------------------------------------
 bool Thread::IsExited()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_New || State==State_Terminating;
-    return ToReturn;
+    return State==State_Terminated;
 }
 
 //***************************************************************************
 // Communicating
 //***************************************************************************
 
-void Thread::Sleep(size_t)
+void Thread::Sleep(size_t Millisecond)
 {
+    usleep(Millisecond*1000);
 }
 
 void Thread::Yield()
