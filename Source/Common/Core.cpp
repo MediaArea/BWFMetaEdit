@@ -1145,9 +1145,13 @@ int Core::Menu_File_Import_Core(const string &FileName)
             //CSV
             //Loading data in an array
             string Sep=string(1, (char)Buffer[8]);
-            List.Separator_Set(1, Sep.c_str());
-            List.Write((const char*)Buffer);
+            Ztring ToWrite=Ztring().From_UTF8((const char*)Buffer);
+            if (ToWrite.empty())
+                ToWrite=Ztring().From_ISO_8859_1((const char*)Buffer); //Trying to read as plausible ISO-8859-1
+
             delete[] Buffer; Buffer=NULL;
+            List.Separator_Set(1, Sep.c_str());
+            List.Write(ToWrite);
             if (List.empty())
                 throw "--in-core=: not a valid file";
             for (size_t Pos=0; Pos<List[0].size(); Pos++)
