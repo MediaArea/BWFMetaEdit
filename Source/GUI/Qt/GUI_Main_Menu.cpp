@@ -294,29 +294,28 @@ void GUI_Main::Menu_Create()
     Menu_Options->addSeparator();
     Menu_Options->addAction(Menu_Options_ResetFieldSizes);
 
-    Preferences=new GUI_Preferences(this, C);
-    Menu_Fields_Menus=new QMenu*[Preferences->Groups_Count_Get()];
-    Menu_Fields_CheckBoxes=new QAction*[Preferences->Groups_Count_Get()*options::MaxCount];
-    Menu_Fields_ActionGroups=new QActionGroup*[Preferences->Groups_Count_Get()];
+    Menu_Fields_Menus=new QMenu*[GUI_Preferences::Groups_Count_Get()];
+    Menu_Fields_CheckBoxes=new QAction*[GUI_Preferences::Groups_Count_Get()*options::MaxCount];
+    Menu_Fields_ActionGroups=new QActionGroup*[GUI_Preferences::Groups_Count_Get()];
 
-    for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
+    for (size_t Group=0; Group<GUI_Preferences::Groups_Count_Get(); Group++)
     {
-        if (Preferences->Group_Options_Count_Get((group)Group, true))
+        if (GUI_Preferences::Group_Options_Count_Get((group)Group, true))
         {
             Menu_Fields_ActionGroups[Group]=new QActionGroup(this);
-            Menu_Fields_Menus[Group]=Menu_Fields_Main->addMenu(QString::fromUtf8(Preferences->Group_Name_Get((group)Group).c_str()));
+            Menu_Fields_Menus[Group]=Menu_Fields_Main->addMenu(QString::fromUtf8(GUI_Preferences::Group_Name_Get((group)Group).c_str()));
         }
-        for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
+        for (size_t Option=0; Option<GUI_Preferences::Group_Options_Count_Get((group)Group, true); Option++)
         {
-            switch (Preferences->Group_Option_Type_Get((group)Group, Option))
+            switch (GUI_Preferences::Group_Option_Type_Get((group)Group, Option))
             {
             case Type_CheckBox:
-                Menu_Fields_CheckBoxes[Group*options::MaxCount+Option] = new QAction(QString::fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
+                Menu_Fields_CheckBoxes[Group*options::MaxCount+Option] = new QAction(QString::fromUtf8(GUI_Preferences::Group_Option_Description_Get((group)Group, Option).c_str()), this);
                 Menu_Fields_Menus[Group]->addAction(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]);
                 Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setCheckable(true);
             break;
             case Type_RadioButton:
-                Menu_Fields_RadioButtons[Group*options::MaxCount+Option] = new QAction(QString::fromUtf8(Preferences->Group_Option_Description_Get((group)Group, Option).c_str()), this);
+                Menu_Fields_RadioButtons[Group*options::MaxCount+Option] = new QAction(QString::fromUtf8(GUI_Preferences::Group_Option_Description_Get((group)Group, Option).c_str()), this);
                 Menu_Fields_ActionGroups[Group]->addAction(Menu_Fields_RadioButtons[Group*options::MaxCount+Option]);
                 Menu_Fields_Menus[Group]->addAction(Menu_Fields_RadioButtons[Group*options::MaxCount+Option]);
                 Menu_Fields_RadioButtons[Group*options::MaxCount+Option]->setCheckable(true);
@@ -325,6 +324,7 @@ void GUI_Main::Menu_Create()
             }
         }
     }
+
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_Tech3285_Req                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_Tech3285_Req(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_Tech3285_Rec                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_Tech3285_Rec(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_CodingHistory_Rec               ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_CodingHistory_Rec(bool)));
@@ -364,13 +364,15 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_RadioButtons[Group_Encoding_Fallback*options::MaxCount+Option_Encoding_Fallback_8859_2], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_EncodingFallback8859_2(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Encoding_Options*options::MaxCount+Option_Ignore_File_Encoding       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Ignore_File_Encoding(bool)));
     connect(Menu_Fields_CheckBoxes[Group_Encoding_Options*options::MaxCount+Option_Write_CodePage             ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Write_CodePage(bool)));
+
+    Preferences=new GUI_Preferences(this, C);
     for (size_t Group=Group_Tech; Group<=Group_Core; Group++)
-        for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
+        for (size_t Option=0; Option<GUI_Preferences::Group_Options_Count_Get((group)Group, true); Option++)
             connect(Menu_Fields_CheckBoxes[Group*options::MaxCount+Option], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_TechCore(bool)));
 
-    for (size_t Group=0; Group<Preferences->Groups_Count_Get(); Group++)
-        for (size_t Option=0; Option<Preferences->Group_Options_Count_Get((group)Group, true); Option++)
-            switch (Preferences->Group_Option_Type_Get((group)Group, Option))
+    for (size_t Group=0; Group<GUI_Preferences::Groups_Count_Get(); Group++)
+        for (size_t Option=0; Option<GUI_Preferences::Group_Options_Count_Get((group)Group, true); Option++)
+            switch (GUI_Preferences::Group_Option_Type_Get((group)Group, Option))
             {
             case Type_CheckBox:
                 Menu_Fields_CheckBoxes[Group*options::MaxCount+Option]->setChecked(Preferences->Group_Option_Checked_Get((group)Group, Option));
