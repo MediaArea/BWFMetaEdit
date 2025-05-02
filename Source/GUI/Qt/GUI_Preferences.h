@@ -182,14 +182,14 @@ class GUI_Preferences : public QDialog
 public:
     GUI_Preferences (GUI_Main* Parent, Core* C);
 
-    size_t      Groups_Count_Get();
-    std::string Group_Name_Get(group Group);
-    size_t      Group_Options_Count_Get(group Group, bool ForTemporaryPrefs=false);
-    type        Group_Option_Type_Get(group Group, size_t Option);
-    std::string Group_Option_Description_Get(group Group, size_t Option);
-    bool        Group_Option_Checked_Get(group Group, size_t Option);
-    bool        Group_Option_Checked_Set(group Group, size_t Option, bool Value);
-    std::string Group_Option_Default_Get(group Group, size_t Option, bool& Overwrite);
+    static size_t      Groups_Count_Get();
+    static std::string Group_Name_Get(group Group);
+    static size_t      Group_Options_Count_Get(group Group, bool ForTemporaryPrefs=false);
+    static type        Group_Option_Type_Get(group Group, size_t Option);
+    static std::string Group_Option_Description_Get(group Group, size_t Option);
+    bool               Group_Option_Checked_Get(group Group, size_t Option);
+    bool               Group_Option_Checked_Set(group Group, size_t Option, bool Value);
+    std::string        Group_Option_Default_Get(group Group, size_t Option, bool& Overwrite);
 
 private:
     //GUI
