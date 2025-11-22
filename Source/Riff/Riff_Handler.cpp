@@ -3551,10 +3551,18 @@ bool Riff_Handler::IsOriginal(const string &Field, const string &Value, Riff_Bas
     if (Field=="timereference (translated)" && Chunk_Strings && Chunk_Strings->Strings.find("timereference")!=Chunk_Strings->Strings.end())
         return IsOriginal_Internal("timereference", Get_Internal("timereference"));
 
+    string Value2;
     if (Chunk_Strings->Histories[Field].empty())
-        return Value==Chunk_Strings->Strings[Field];
-
-    return Value==Chunk_Strings->Histories[Field][0].To_UTF8();
+    {
+        AdaptEOL(Chunk_Strings->Strings[Field], Value2);
+        Value2=Value2.empty()?Chunk_Strings->Strings[Field]:Value2;
+    }
+    else
+    {
+        AdaptEOL(Chunk_Strings->Histories[Field][0].To_UTF8(), Value2);
+		Value2=Value2.empty()?Chunk_Strings->Histories[Field][0].To_UTF8():Value2;
+    }
+    return Value==Value2;
 }
 
 //---------------------------------------------------------------------------
