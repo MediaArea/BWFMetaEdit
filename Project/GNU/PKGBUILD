@@ -2,7 +2,7 @@
 # Maintainer: MediaArea.net SARL <info@mediaarea.net>
 
 pkgname=('bwfmetaedit' 'bwfmetaedit-gui')
-pkgver=25.04
+pkgver=26.01
 pkgrel=1
 pkgdesc="Supplies technical and tag information about a video or audio file"
 url="http://mediaarea.net"

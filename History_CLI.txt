@@ -4,6 +4,10 @@ Notes:
 - Deleted
 x Correction
 
+Version 26.01, 2026-01-29
+-------------
+Fix --remove-chunk option does not remove XM
+
 Version 25.04, 2025-04-30
 -------------
 + Apply imported core to already opened files
