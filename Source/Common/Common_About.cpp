@@ -33,24 +33,25 @@ const char* NameVersion_Text() {return
 const char* Description_HTML() {return
 "<h3>DESCRIPTION</h3>"
 ""
-"BWF MetaEdit was developed by the Federal Agencies Digital Guidelines Initiative (FADGI) supported by AudioVisual Preservation Solutions.<br />"
-"<br />"
-"This tool permits embedding, editing, and exporting of metadata in Broadcast WAVE Format (BWF) files. This tool can also enforce metadata guidelines developed by the <a href=\"http://www.digitizationguidelines.gov/audio-visual/documents/wave_metadata.html\">Federal Agencies Audio-Visual Working Group</a>, as well as format specifications from the European Broadcasting Union (EBU), Microsoft, and IBM."
+"<strong>BWF MetaEdit</strong> is a tool that supports embedding, validating, and exporting of metadata in Broadcast WAVE Format (BWF) files. It supports the <a href=\"http://www.digitizationguidelines.gov/guidelines/digitize-embedding.html\" target=\"_blank\">FADGI Broadcast WAVE Metadata Embedding Guidelines</a>.<br>"
+"<br>"
+"Initially funded by the <a href=\"https://www.loc.gov/\" target=\"_blank\">Library of Congress</a> and <a href=\"http://www.digitizationguidelines.gov/\" target=\"_blank\">FADGI (Federal Agencies Digital Guidelines Initiative)</a>; previously developed by MediaArea and led by <a href=\"http://avpreserve.com/\" target=\"_blank\">AVPreserve</a>; currently developed and led by MediaArea.<br>"
+"MediaArea provides support and binaries for all platforms."
 ;}
 
 //---------------------------------------------------------------------------
 const char* Description_Text() {return
 "DESCRIPTION\n"
 "\n"
-"BWF MetaEdit was developed by the Federal Agencies Digital\n"
-"Guidelines Initiative (FADGI) supported by AudioVisual Preservation\n"
-"Solutions.\n"
+"BWF MetaEdit is a tool that supports embedding, validating, and\n"
+"exporting of metadata in Broadcast WAVE Format (BWF) files.\n"
+"It supports the FADGI Broadcast WAVE Metadata Embedding Guidelines\n"
 "\n"
-"This tool permits embedding, editing, and exporting of metadata in\n"
-"Broadcast WAVE Format (BWF) files. This tool can also enforce metadata\n"
-"guidelines developed by the Federal Agencies Audio-Visual Working Group,\n"
-"as well as format specifications from the European Broadcasting\n"
-"Union (EBU), Microsoft, and IBM.\n"
+"Initially funded by the Library of Congress and FADGI\n"
+"(Federal Agencies Digital Guidelines Initiative);\n"
+"previously developed by MediaArea and led by AVPreserve;\n"
+"currently developed and led by MediaArea.\n"
+"MediaArea provides support and binaries for all platforms."
 "\n"
 ;}
 

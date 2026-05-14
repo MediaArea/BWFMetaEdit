@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2016-2019 MediaArea.net <info@mediaarea.net> -->
+<!-- Copyright 2016-2026 MediaArea.net <info@mediaarea.net> -->
 <component type="desktop">
   <id type="desktop">bwfmetaedit-gui.desktop</id>
   <launchable type="desktop-id">bwfmetaedit-gui.desktop</launchable>
@@ -8,8 +8,10 @@
   <name>BWF MetaEdit</name>
   <summary>Embed, validate, and export BWF files metadata</summary>
   <description>
-    <p>BWF MetaEdit was developed by the Federal Agencies Digitization Guidelines Initiative (FADGI) supported by AudioVisual Preservation Solutions.</p>
-    <p>This tool permits embedding, editing, and exporting of metadata in Broadcast WAVE Format (BWF) files. This tool can also enforce metadata guidelines developed by the Federal Agencies Audio-Visual Working Group, as well as recommendations and specifications from the European Broadcasting Union (EBU), Microsoft, and IBM.</p>
+    <strong>BWF MetaEdit</strong> is a tool that supports embedding, validating, and exporting of metadata in Broadcast WAVE Format (BWF) files. It supports the <a href=\"http://www.digitizationguidelines.gov/guidelines/digitize-embedding.html\" target=\"_blank\">FADGI Broadcast WAVE Metadata Embedding Guidelines</a>.<br>
+    <br>
+    Initially funded by the <a href=\"https://www.loc.gov/\" target=\"_blank\">Library of Congress</a> and <a href=\"http://www.digitizationguidelines.gov/\" target=\"_blank\">FADGI (Federal Agencies Digital Guidelines Initiative)</a>; previously developed by MediaArea and led by <a href=\"http://avpreserve.com/\" target=\"_blank\">AVPreserve</a>; currently developed and led by MediaArea.<br>
+    MediaArea provides support and binaries for all platforms.
   </description>
   <keywords>
     <keyword>metadata</keyword>
