@@ -13,6 +13,8 @@ win32 {
 }
 
 macx {
+    QMAKE_APPLE_DEVICE_ARCHS = arm64 x86_64
+
     LIBS += -framework CoreFoundation
     QMAKE_INFO_PLIST = ../Mac/Info.plist
     ICON = ../Mac/Logo.icns
