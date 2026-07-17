@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------
 #include "Riff/Riff_Handler.h"
 #include "Riff/Riff_Chunks.h"
+#include "Riff/Riff_C2PA_Helpers.h"
 #include "Common/Codes.h"
 #include <sstream>
 #include <iostream>
@@ -285,6 +286,7 @@ Riff_Handler::Riff_Handler ()
     //Configuration
     riff2rf64_Reject=false;
     Overwrite_Reject=false;
+    C2PA_Reject=false;
     NoPadding_Accept=false;
     NewChunksAtTheEnd=false;
     GenerateMD5=false;
@@ -299,6 +301,8 @@ Riff_Handler::Riff_Handler ()
     Write_Encoding=Encoding_Max;
     Write_CodePage=false;
     Ignore_File_Encoding=false;
+    VerifyC2PA=false;
+    VerifyC2PA_Force=false;
     Bext_DefaultVersion=0;
     Bext_MaxVersion=2;
 
@@ -899,12 +903,27 @@ bool Riff_Handler::Open_Internal(const string &FileName)
                 PerFile_Information.str(string());
                 PerFile_Information<<"MD5, verified"<<endl;
             }
-            }
+        }
         if (EmbedMD5
          && Chunks->Global->MD5Generated && !Chunks->Global->MD5Generated->Strings["md5generated"].empty()
          && (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty())
           || EmbedMD5_AuthorizeOverWritting))
                 Set_Internal("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
+
+        if (Chunks->Global->C2PA)
+            C2PA_Validate(this, Chunks->Global);
+        else if (VerifyC2PA_Force)
+        {
+            Errors<<Chunks->Global->File_Name.To_UTF8()<<": C2PA, no existing C2PA chunk"<<endl;
+            PerFile_Error.str(string());
+            PerFile_Error<<"C2PA, no existing C2PA chunk"<<endl;
+        }
+        else if (VerifyC2PA)
+        {
+            Information<<Chunks->Global->File_Name.To_UTF8()<<": C2PA, no existing C2PA chunk"<<endl;
+            PerFile_Information.str(string());
+            PerFile_Information<<"C2PA, no existing C2PA chunk"<<endl;
+        }
     }
 
     CriticalSectionLocker(Chunks->Global->CS);
@@ -1082,6 +1101,13 @@ bool Riff_Handler::Save()
     if (!IsModified_Get_Internal())
     {
         Information<<Chunks->Global->File_Name.To_UTF8()<<": Nothing to do"<<endl;
+        return false;
+    }
+
+    if (Chunks->Global->C2PA && C2PA_Reject)
+    {
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": C2PA signature is present (and --reject-c2pa option)"<<endl;
+        PerFile_Error<<"C2PA signature is present (and --reject-c2pa option)"<<endl;
         return false;
     }
 
@@ -1282,10 +1308,26 @@ string Riff_Handler::Get_Internal(const string &Field)
             }
         }
     }
+    else if (Field=="C2PA")
+    {
+        if (Chunks->Global->C2PA)
+        {
+            if (VerifyC2PA)
+                return (Chunks->Global->C2PA->valid && Chunks->Global->C2PA->signatureValid)?"Valid":"Invalid";
+            else
+                return "Present";
+        }
+        else
+            return "Absent";
+    }
 
     //Special case - CueXml
     if (Field=="cuexml")
         return Cue_Xml_Get();
+
+    //Special case - C2PAJson
+    if (Field=="c2pajson")
+        return Chunks->Global->C2PA?Chunks->Global->C2PA->manifest:string();
 
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
@@ -3210,6 +3252,7 @@ string Riff_Handler::Technical_Header()
     ToReturn<<"iXML"<<',';
     ToReturn<<"MD5Stored"<<',';
     ToReturn<<"MD5Generated"<<',';
+    ToReturn<<"C2PA"<<',';
     ToReturn<<"Encoding"<<',';
     ToReturn<<"Errors"<<',';
     ToReturn<<"Warnings"<<',';
@@ -3253,6 +3296,7 @@ string Riff_Handler::Technical_Get()
     List.push_back(Get_Internal("iXML").empty()?__T("No"):__T("Yes"));
     List.push_back(Ztring().From_UTF8(Get_Internal("MD5Stored")));
     List.push_back(Ztring().From_UTF8(Get_Internal("MD5Generated")));
+    List.push_back(Ztring().From_UTF8(Get_Internal("C2PA")));
     List.push_back(Ztring().From_UTF8(Get_Internal("Encoding")));
     string Errors_Temp=PerFile_Error.str();
     if (!Errors_Temp.empty())
@@ -3496,6 +3540,13 @@ bool Riff_Handler::Set(const string &Field, const string &Value, Riff_Base::glob
         return false;
     }
 
+    if (C2PA_Reject && Chunks->Global->C2PA)
+    {
+        Errors<<Chunks->Global->File_Name.To_UTF8()<<": C2PA signature is present (and invalidation is not authorized)"<<endl;
+        PerFile_Error<<"C2PA signature is present (and invalidation is not authorized)"<<endl;
+        return false;
+    }
+
     //Log
     Ztring Value_ToDisplay=Ztring().From_UTF8(Value);
     Value_ToDisplay.FindAndReplace(__T("\r"), __T(" "), 0, Ztring_Recursive);
@@ -3646,6 +3697,8 @@ void Riff_Handler::Options_Update_Internal(bool Update)
     Chunks->Global->EmbedMD5=EmbedMD5;
     Chunks->Global->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;
     Chunks->Global->Trace_UseDec=Trace_UseDec;
+    Chunks->Global->VerifyC2PA=VerifyC2PA;
+    Chunks->Global->VerifyC2PA_Force=VerifyC2PA_Force;
 
     //MD5
     if (Update && (Chunks->Global->VerifyMD5 || Chunks->Global->VerifyMD5_Force))
@@ -3693,6 +3746,10 @@ void Riff_Handler::Options_Update_Internal(bool Update)
      && (!(Chunks->Global->MD5Stored && !Chunks->Global->MD5Stored->Strings["md5stored"].empty())
       || EmbedMD5_AuthorizeOverWritting))
             Set_Internal("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
+
+    //C2PA
+    if (Update && Chunks->Global->C2PA && (Chunks->Global->VerifyC2PA || Chunks->Global->VerifyC2PA_Force))
+        C2PA_Validate(this, Chunks->Global);
 }
 
 //***************************************************************************

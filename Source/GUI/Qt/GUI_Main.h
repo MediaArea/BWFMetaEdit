@@ -106,6 +106,7 @@ private:
     QAction*        Menu_Export_aXML_XML_PerFile;
     QAction*        Menu_Export_iXML_XML_PerFile;
     QAction*        Menu_Export_cue__XML_PerFile;
+    QAction*        Menu_Export_C2PA_JSON_PerFile;
     QMenu*          Menu_Options;
     QAction*        Menu_Options_ResetFieldSizes;
     QAction*        Menu_Options_Preferences;
@@ -149,6 +150,7 @@ public Q_SLOTS:
     void OnMenu_Export_aXML_XML_PerFile             ();
     void OnMenu_Export_iXML_XML_PerFile             ();
     void OnMenu_Export_cue__XML_PerFile             ();
+    void OnMenu_Export_C2PA_JSON_PerFile            ();
     void OnMenu_Rules_Tech3285_Req                  (bool);
     void OnMenu_Rules_Tech3285_Rec                  (bool);
     void OnMenu_Rules_CodingHistory_Rec             (bool);
@@ -180,6 +182,8 @@ public Q_SLOTS:
     void OnMenu_Options_TechCore                    (bool);
     void OnMenu_Options_riff2rf64_Reject            (bool);
     void OnMenu_Options_Overwrite_Reject            (bool);
+    void OnMenu_Options_C2PA_Reject                 (bool);
+    void OnMenu_Options_VerifyC2PA                  (bool);
     void OnMenu_Options_NoPadding_Accept            (bool);
     void OnMenu_Options_FileNotValid_Skip           (bool);
     void OnMenu_Options_WrongExtension_Skip         (bool);

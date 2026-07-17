@@ -43,6 +43,7 @@ public:
         Cout_aXML,
         Cout_iXML,
         Cout_cue_,
+        Cout_C2PA,
         Cout_XML, //All
     };
 
@@ -116,6 +117,7 @@ public:
     //Configuration
     bool                                riff2rf64_Reject;
     bool                                Overwrite_Reject;
+    bool                                C2PA_Reject;
     bool                                NoPadding_Accept;
     bool                                Errors_Continue;
     bool                                FileNotValid_Skip;
@@ -174,6 +176,10 @@ public:
     bool                                Write_CodePage;
     bool                                Ignore_File_Encoding;
     bool                                In_CSET_Remove;
+    string                              Out_C2PA_FileName;
+    bool                                Out_C2PA_JSON;
+    bool                                VerifyC2PA;
+    bool                                VerifyC2PA_Force;
     bool                                RevertToRiff;
 
     //Status
@@ -254,6 +260,7 @@ protected:
     void Batch_Launch_aXML              (handlers::iterator &Handler);
     void Batch_Launch_iXML              (handlers::iterator &Handler);
     void Batch_Launch_cue_              (handlers::iterator &Handler);
+    void Batch_Launch_C2PA              (handlers::iterator &Handler);
     void Batch_Launch_Write             (handlers::iterator &Handler);
     void Options_Update                 (handlers::iterator &Handler);
     void Entry();

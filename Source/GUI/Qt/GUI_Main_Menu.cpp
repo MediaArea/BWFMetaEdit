@@ -259,6 +259,13 @@ void GUI_Main::Menu_Create()
     Menu_Export_cue__XML_PerFile->setStatusTip(tr(""));
     connect(Menu_Export_cue__XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_cue__XML_PerFile()));
 
+    Menu_Export_C2PA_JSON_PerFile = new QAction(tr("C2PA crJSON (one JSON file per WAV file)"), this);
+    #ifdef MACSTORE
+    Menu_Export_C2PA_JSON_PerFile->setVisible(false);
+    #endif
+    Menu_Export_C2PA_JSON_PerFile->setStatusTip(tr(""));
+    connect(Menu_Export_C2PA_JSON_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_C2PA_JSON_PerFile()));
+
     Menu_Export = menuBar()->addMenu(tr("E&xport"));
     Menu_Export->addAction(Menu_Export_Unified_XML_Global);
     Menu_Export->addSeparator();
@@ -277,6 +284,8 @@ void GUI_Main::Menu_Create()
     Menu_Export->addAction(Menu_Export_iXML_XML_PerFile);
     Menu_Export->addSeparator();
     Menu_Export->addAction(Menu_Export_cue__XML_PerFile);
+    Menu_Export->addSeparator();
+    Menu_Export->addAction(Menu_Export_C2PA_JSON_PerFile);
 
     //Options (dynamic)
     Menu_Options_Preferences = new QAction(QIcon(":/Image/Menu/Options_Prefs.png"), tr("Preferences..."), this);
@@ -339,6 +348,8 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_EBU_ISRC_Rec                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_EBU_ISRC_Rec(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Riff2Rf64_Reject                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_riff2rf64_Reject(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Overwrite_Reject                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Overwrite_Reject(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Reject                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_C2PA_Reject(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyC2PA(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_NoPadding_Accept                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_NoPadding_Accept(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_FileNotValid_Skip                 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_FileNotValid_Skip(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_WrongExtension_Skip               ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_WrongExtension_Skip(bool)));
@@ -946,6 +957,21 @@ void GUI_Main::OnMenu_Export_cue__XML_PerFile()
 }
 
 //---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Export_C2PA_JSON_PerFile()
+{
+    //Configuring
+    C->Out_C2PA_JSON=true;
+
+    //Running
+    C->Simulation_Enabled=true;
+    C->Batch_Launch();
+    C->Simulation_Enabled=false;
+
+    //Clearing
+    C->Out_C2PA_JSON=false;
+}
+
+//---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Rules_Tech3285_Req(bool)
 {
     C->Rules.Tech3285_Req=Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_Tech3285_Req]->isChecked();
@@ -1314,6 +1340,39 @@ void GUI_Main::OnMenu_Options_Overwrite_Reject(bool)
         C->Overwrite_Reject=Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Overwrite_Reject]->isChecked();
         View_Refresh();
     }
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_C2PA_Reject(bool)
+{
+    C->C2PA_Reject=Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Reject]->isChecked();
+    C->Menu_File_Options_Update();
+
+    if (View==NULL)
+        return;
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_VerifyC2PA(bool)
+{
+    C->VerifyC2PA=Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify]->isChecked();
+    if (C->VerifyC2PA==true)
+    {
+        C->Menu_File_Options_Update();
+
+        //Showing
+        if (C->Text_stderr_Updated_Get())
+        {
+            Menu_View_Output_stderr->setChecked(true);
+            View_Refresh(View_Output_stderr);
+        }
+        else
+            View_Refresh();
+    }
+    else
+        C->Menu_File_Options_Update();
 }
 
 //---------------------------------------------------------------------------

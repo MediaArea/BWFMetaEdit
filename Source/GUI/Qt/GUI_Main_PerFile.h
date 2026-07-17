@@ -77,6 +77,7 @@ public:
     Q_INVOKABLE bool modified(const QString& FileName, const QString& Field) const;
     Q_INVOKABLE bool readOnly(const QString& FileName, const QString& Field) const;
     Q_INVOKABLE bool readOnly(const QString& FileName) const;
+    Q_INVOKABLE bool c2paLocked(const QString& FileName) const;
     Q_INVOKABLE bool isWritable(const QString& FileName) const;
     Q_INVOKABLE bool visible(const QString& FileName, const QString& Field) const;
     Q_INVOKABLE void editField(const QString& FileName, const QString& Field);

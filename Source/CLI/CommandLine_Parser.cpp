@@ -53,6 +53,7 @@ int Parse(Core &C, string &Argument)
 
     OPTION("--reject-riff2rf64",                            riff2rf64_Reject)
     OPTION("--reject-overwrite",                            Overwrite_Reject)
+    OPTION("--reject-c2pa",                                 C2PA_Reject)
     OPTION("--accept-nopadding",                            NoPadding_Accept)
     OPTION("--continue-errors",                             Errors_Continue)
 
@@ -125,6 +126,11 @@ int Parse(Core &C, string &Argument)
 
     OPTION("--remove-chunks=",                              Chunks_Remove)
 
+    OPTION("--out-c2pa-json",                               Out_C2PA_JSON)
+    OPTION("--out-c2pa=",                                   Out_C2PA_File)
+    OPTION("--out-c2pa",                                    Out_C2PA_cout)
+    OPTION("--c2pa-verify",                                 C2PA_Verify)
+
     //Default
     OPTION("--",                                            Default)
     OPTION("-",                                             Default)
@@ -176,6 +182,16 @@ CL_OPTION(Overwrite_Reject)
     UNUSED_PARAMETER(Argument);
 
     C.Overwrite_Reject=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Reject)
+{
+    UNUSED_PARAMETER(Argument);
+
+    C.C2PA_Reject=true;
 
     return -2; //Continue
 }
@@ -911,6 +927,55 @@ CL_OPTION(Chunks_Remove)
     }
 
     return -2;
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_C2PA_cout)
+{
+    if (C.Cout!=Core::Cout_None)
+    {
+        std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+        return 1;
+    }
+
+    C.Cout=Core::Cout_C2PA;
+
+    return -3; //Continue, one file mode
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_C2PA_JSON)
+{
+    UNUSED_PARAMETER(Argument);
+
+    C.Out_C2PA_JSON=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_C2PA_File)
+{
+    //Form : --out-c2pa=(FileName)
+    string FileName=string().assign(Argument, 11, std::string::npos);
+
+    if (FileName=="-")
+        return CL_Out_C2PA_cout(C, Argument);
+    else
+        C.Out_C2PA_FileName.assign(FileName);
+
+    return -3; //Continue, one file mode
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Verify)
+{
+    UNUSED_PARAMETER(Argument);
+
+    C.VerifyC2PA=true;
+    C.VerifyC2PA_Force=true;
+
+    return -2; //Continue
 }
 
 //---------------------------------------------------------------------------

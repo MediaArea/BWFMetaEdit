@@ -207,6 +207,8 @@
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_adtl_note.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_adtl_ltxt.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_CSET.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_Chunks_WAVE_C2PA.cpp" />
+    <ClCompile Include="..\..\..\Source\Riff\Riff_C2PA_Helpers.cpp" />
     <ClCompile Include="..\..\..\Source\Riff\Riff_Handler.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\Conf.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\CriticalSection.cpp" />
@@ -238,6 +240,9 @@
     <ClInclude Include="..\..\..\Source\Riff\Riff_Base.h" />
     <ClInclude Include="..\..\..\Source\Riff\Riff_Chunks.h" />
     <ClInclude Include="..\..\..\Source\Riff\Riff_Handler.h" />
+    <ClInclude Include="..\..\..\Source\Riff\Riff_C2PA_Helpers.h" />
+    <ClInclude Include="..\..\..\Source\ThirdParty\json\json.h" />
+    <ClInclude Include="..\..\..\Source\ThirdParty\c2pa\c2pa.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\BitStream.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\BitStream_Fast.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\BitStream_LE.h" />

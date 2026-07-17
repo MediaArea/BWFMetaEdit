@@ -134,6 +134,7 @@ Core::Core()
     //Configuration
     riff2rf64_Reject=false;
     Overwrite_Reject=false;
+    C2PA_Reject=false;
     NoPadding_Accept=false;
     Errors_Continue=false;
     FileNotValid_Skip=false;
@@ -181,6 +182,10 @@ Core::Core()
     Batch_IsBackuping=false;
 
     Trace_UseDec=false;
+
+    Out_C2PA_JSON=false;
+    VerifyC2PA=false;
+    VerifyC2PA_Force=false;
 
     RevertToRiff=false;
 
@@ -1342,6 +1347,11 @@ const string& Core::Cout_Get ()
             if (Handler->second.Riff)
                 Text+=Handler->second.Riff->Get("cuexml")+Ztring(EOL).To_UTF8();
         break;
+    case Cout_C2PA:
+        for (handlers::iterator Handler=Handlers.begin(); Handler!=Handlers.end(); Handler++)
+            if (Handler->second.Riff)
+                Text+=Handler->second.Riff->Get("c2pajson")+Ztring(EOL).To_UTF8();
+        break;
     case Cout_XML:
         Text=Out_XML_Buf;
         break;
@@ -1918,6 +1928,10 @@ void Core::Batch_Launch(handlers::iterator &Handler)
     if (Out_cue__XML || !Out_cue__FileName.empty() || Out_XML_Doc)
         Batch_Launch_cue_(Handler);
 
+    //C2PA chunk
+    if (Out_C2PA_JSON || !Out_C2PA_FileName.empty() || Out_XML_Doc)
+        Batch_Launch_C2PA(Handler);
+
     //Write
     if (!Simulation_Enabled)
         Batch_Launch_Write(Handler);
@@ -2336,6 +2350,69 @@ void Core::Batch_Launch_cue_(handlers::iterator &Handler)
 }
 
 //---------------------------------------------------------------------------
+void Core::Batch_Launch_C2PA(handlers::iterator &Handler)
+{
+    Ztring Content=Ztring().From_UTF8(Handler->second.Riff->Get("c2pajson"));
+
+    if (!Content.empty())
+    {
+        if (Out_C2PA_JSON)
+        {
+            //Saving file
+            try
+            {
+                File F;
+                if (!F.Create(Ztring().From_UTF8(Handler->second.Riff->FileName_Get())+__T(".C2PA.json")))
+                    throw "--out-C2PA-json: error during file creation";
+                if (!F.Write(Content))
+                    throw "--out-C2PA-json: error during file writing";
+            }
+            catch (const char *Message)
+            {
+                StdErr(Message);
+            }
+            catch (...) {}
+        }
+
+        if (!Out_C2PA_FileName.empty())
+        {
+            try
+            {
+                File F;
+                if (!F.Create(Ztring().From_UTF8(Out_C2PA_FileName.c_str())))
+                    throw "--out-C2PA=: error during file creation";
+                if (!F.Write(Content))
+                    throw "--out-C2PA=: error during file writing";
+            }
+            catch (const char *Message)
+            {
+                StdErr(Message);
+            }
+            catch (...) {}
+        }
+
+        if (Out_XML_Doc)
+        {
+            string Content_UTF8=Content.To_UTF8();
+            for (size_t Pos=Content_UTF8.find("]]>" ); Pos!=string::npos; Pos=Content_UTF8.find("]]>", Pos))
+            {
+                // Escape inner CDATA end token in payload before wrapping in CDATA.
+                Content_UTF8.replace(Pos, 3, "]]]]><![CDATA[>");
+                Pos+=15;
+            }
+
+            tinyxml2::XMLElement* File=Out_XML_Doc->RootElement()->LastChildElement();
+            if (File)
+            {
+                tinyxml2::XMLElement* Parent=File->InsertNewChildElement("C2PA");
+                tinyxml2::XMLText* Text=Parent->InsertNewText(Content_UTF8.c_str());
+                Text->SetCData(true);
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------
 void Core::Batch_Launch_Write(handlers::iterator &Handler)
 {
     //Writing
@@ -2357,6 +2434,7 @@ void Core::Options_Update(handlers::iterator &Handler)
         //Options
         Handler->second.Riff->riff2rf64_Reject=riff2rf64_Reject;
         Handler->second.Riff->Overwrite_Reject=Overwrite_Reject;
+        Handler->second.Riff->C2PA_Reject=C2PA_Reject;
         Handler->second.Riff->NoPadding_Accept=NoPadding_Accept;
         Handler->second.Riff->NewChunksAtTheEnd=NewChunksAtTheEnd;
         Handler->second.Riff->GenerateMD5=GenerateMD5;
@@ -2373,6 +2451,8 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->Write_Encoding=Write_Encoding;
         Handler->second.Riff->Write_CodePage=Write_CodePage;
         Handler->second.Riff->Ignore_File_Encoding=Ignore_File_Encoding;
+        Handler->second.Riff->VerifyC2PA=VerifyC2PA;
+        Handler->second.Riff->VerifyC2PA_Force=VerifyC2PA_Force;
 
         bool IsModified_Old=Handler->second.Riff->IsModified_Get();
 

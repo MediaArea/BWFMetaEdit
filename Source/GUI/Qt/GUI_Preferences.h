@@ -71,6 +71,8 @@ enum option_file
 {
     Option_File_Riff2Rf64_Reject,
     Option_File_Overwrite_Reject,
+    Option_File_C2PA_Reject,
+    Option_File_C2PA_Verify,
     Option_File_NoPadding_Accept,
     Option_File_FileNotValid_Skip,
     Option_File_WrongExtension_Skip,

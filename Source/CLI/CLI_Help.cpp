@@ -38,6 +38,7 @@ std::string Help()
     ToDisplay<<"                        Reject file if:"<<std::endl;
     ToDisplay<<"--reject-riff2rf64      Transformation to RF64 is requested"<<std::endl;
     ToDisplay<<"--reject-overwrite      Prevent overwrite of existing data(only add)"<<std::endl;
+    ToDisplay<<"--reject-c2pa           Prevent invalidation of the C2PA signature if present"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"                        Accept file if:"<<std::endl;
     ToDisplay<<"--accept-nopadding      Padding byte is missing"<<std::endl;
@@ -90,7 +91,6 @@ std::string Help()
     ToDisplay<<"--out-xml               Display (disable others displays)"<<std::endl;
     ToDisplay<<"--out-xml=              specified file ('-' for current display)"<<std::endl;
     ToDisplay<<""<<std::endl;
-    ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"                        Extract Technical Metadata to:"<<std::endl;
@@ -173,6 +173,14 @@ std::string Help()
     ToDisplay<<"--MD5-Verify            Verify MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Embed             Embed MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Embed-Overwrite   Embed MD5 for audio data - Allow overwriting"<<std::endl;
+    ToDisplay<<""<<std::endl;
+    ToDisplay<<"*******************************************************************************"<<std::endl;
+    ToDisplay<<""<<std::endl;
+    ToDisplay<<"--out-C2PA              Display C2PA crJSON manifest and validation status (disable others displays, allows only one input file)"<<std::endl;
+    ToDisplay<<"--out-C2PA=             Save C2PA crJSON manifest in specified file ('-' for current display, allows only one input file)"<<std::endl;
+    ToDisplay<<"--out-C2PA-json         Save C2PA crJSON manifest in filename.C2PA.json"<<std::endl;
+    ToDisplay<<"--C2PA-Verify           Verify C2PA chunk validity and signature"<<std::endl;
+    ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"--remove-chunks=        Remove specified items from the WAVE chunk tree (comma separated list)"<<std::endl;

@@ -160,7 +160,7 @@ Control {
                             visible: (parent.hovered || parent.activeFocus) && Model.valid(file)
                             timeout: 5000
                             delay: 1000
-                            text: Model.readOnly(file) ? "Edit mode disabled, file is read only!" : (editMode ? "Display Mode" : "Edit Mode")
+                            text: Model.c2paLocked(file) ? "Edit mode disabled, editing would invalidate the C2PA signature!" : (Model.readOnly(file) ? "Edit mode disabled, file is read only!" : (editMode ? "Display Mode" : "Edit Mode"))
                         }
                         Image {
                             id: editmode_icon
@@ -326,9 +326,20 @@ Control {
                             Layout.fillWidth: true
                         }
                         Repeater {
-                            model: ["Cue", "XMP", "aXML", "iXML"]
+                            model: ["Cue", "XMP", "aXML", "iXML", "C2PA"]
                             delegate: Button {
                                 function buttonColor(hovered) {
+                                    if (modelData === "C2PA") {
+                                        var status = Model.value(file, "C2PA")
+                                        if (status === "Invalid")
+                                            return root.alternate("red", hovered)
+                                        else if (status === "Valid")
+                                            return root.alternate(root.green, hovered)
+                                        else if (status === "Present")
+                                            return root.alternate("gray", hovered)
+                                        else
+                                            return "lightgray"
+                                    }
                                     var field = modelData==="Cue"?"cuexml":modelData
                                     if (!Model.valid(file, field, Model.value(file, field)))
                                         return root.alternate("red", hovered)

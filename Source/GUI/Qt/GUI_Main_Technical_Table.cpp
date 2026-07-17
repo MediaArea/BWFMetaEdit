@@ -14,6 +14,7 @@
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_CueDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_CodePageDialog.h"
+#include "GUI/Qt/GUI_Main_xxxx_C2PADialog.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
 #include <QLabel>
@@ -413,6 +414,16 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
         string NewValue=C->Get(FileName, Field);
         AdaptEOL(NewValue, adapt_n);
         item(index.row(), index.column())->setText(NewValue.c_str());
+        return false;
+    }
+
+    //C2PA
+    if (Field=="C2PA")
+    {
+        //User interaction
+        GUI_Main_xxxx_C2PADialog* Edit=new GUI_Main_xxxx_C2PADialog(C, FileName);
+        Edit->exec();
+        delete Edit; //Edit=NULL;
         return false;
     }
 

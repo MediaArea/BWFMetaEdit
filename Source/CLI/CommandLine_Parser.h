@@ -43,6 +43,7 @@ CL_OPTION(Version);
 //---------------------------------------------------------------------------
 CL_OPTION(riff2rf64_Reject);
 CL_OPTION(Overwrite_Reject);
+CL_OPTION(C2PA_Reject);
 CL_OPTION(NoPadding_Accept);
 CL_OPTION(Errors_Continue);
 CL_OPTION(Append);
@@ -116,6 +117,12 @@ CL_OPTION(MD5_Generate);
 CL_OPTION(MD5_Verify);
 CL_OPTION(MD5_Embed);
 CL_OPTION(MD5_Embed_Overwrite);
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_C2PA_cout);
+CL_OPTION(Out_C2PA_File);
+CL_OPTION(Out_C2PA_JSON);
+CL_OPTION(C2PA_Verify);
 
 //---------------------------------------------------------------------------
 CL_OPTION(Default);

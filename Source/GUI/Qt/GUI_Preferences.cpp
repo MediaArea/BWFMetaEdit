@@ -53,7 +53,7 @@ options Groups[Group_Max]=
 {
     {
         "Technical Metadata",
-        23,
+        24,
         {
             {"Tech_FileSize", "FileSize", Type_CheckBox, true},
             {"Tech_DateCreated", "DateCreated", Type_CheckBox, true},
@@ -74,6 +74,7 @@ options Groups[Group_Max]=
             {"Tech_iXML", "iXML", Type_CheckBox, true},
             {"Tech_MD5Stored", "MD5Stored", Type_CheckBox, true},
             {"Tech_MD5Generated", "MD5Generated", Type_CheckBox, true},
+            {"Tech_C2PA", "C2PA", Type_CheckBox, true},
             {"Tech_Encoding", "Encoding", Type_CheckBox, true},
             {"Tech_Errors", "Errors", Type_CheckBox, true},
             {"Tech_Warnings", "Warnings", Type_CheckBox, true},
@@ -152,6 +153,8 @@ options Groups[Group_Max]=
         {
             {"File_Riff2Rf64_Reject", "Reject file if transformation to RF64 is requested", Type_CheckBox, false},
             {"File_Overwrite_Reject", "Prevent overwrite of existing data", Type_CheckBox, false},
+            {"File_C2PA_Reject", "Prevent invalidation of the C2PA signature if present", Type_CheckBox, false},
+            {"File_C2PA_Verify", "Verify C2PA signature if present", Type_CheckBox, false},
             {"File_NoPadding_Accept", "Accept file if padding byte is missing", Type_CheckBox, false},
             {"File_FileNotValid_Skip", "Skip non-valid files", Type_CheckBox, false},
             {"File_WrongExtension_Skip", "Skip files with no .wav extension", Type_CheckBox, true},

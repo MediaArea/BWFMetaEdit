@@ -344,6 +344,22 @@ public:
                 dialectCode=0;
             }
         };
+
+        struct chunk_C2PA
+        {
+            bool present;
+            bool valid;
+            bool signatureValid;
+            string manifest;
+
+            chunk_C2PA()
+            {
+                present=false;
+                valid=false;
+                signatureValid=false;
+            }
+        };
+
         struct chunk_strings
         {
             map<string, string> Strings;
@@ -395,6 +411,7 @@ public:
         chunk_strings      *MD5Generated;
         chunk_cue_         *cue_;
         chunk_adtl         *adtl;
+        chunk_C2PA         *C2PA;
         bool                CSET_Present;
         bool                NoPadding_Accept;
         bool                NoPadding_IsCorrected;
@@ -412,6 +429,8 @@ public:
         bool                Read_Only;
         bool                BextDescriptionFromFileName;
         bool                OriginatorReferenceFromFileName;
+        bool                VerifyC2PA;
+        bool                VerifyC2PA_Force;
 
         CriticalSection     CS;
         float               Progress;
@@ -433,6 +452,7 @@ public:
             cue_=NULL;
             adtl=NULL;
             cuexml=NULL;
+            C2PA=NULL;
             MD5Stored=NULL;
             MD5Generated=NULL;
             CSET_Present=false;
@@ -453,6 +473,8 @@ public:
             Read_Only=false;
             BextDescriptionFromFileName=false;
             OriginatorReferenceFromFileName=false;
+            VerifyC2PA=false;
+            VerifyC2PA_Force=false;
             Progress=0;
             Canceling=false;
         }
@@ -470,6 +492,7 @@ public:
             delete cue_; //cue_=NULL;
             delete adtl; //adtl=NULL;
             delete cuexml; //cuexml=NULL;
+            delete C2PA; //C2PA=NULL;
         }
     };
 
