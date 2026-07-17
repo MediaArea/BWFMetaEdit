@@ -3,6 +3,8 @@
 #include "Riff/Riff_C2PA_Helpers.h"
 
 //---------------------------------------------------------------------------
+#define C2PA_DYNAMIC_LOADING 1
+//---------------------------------------------------------------------------
 #include "ThirdParty/c2pa/c2pa.h"
 #include "ThirdParty/json/json.h"
 #include <cstdlib>
@@ -82,19 +84,29 @@ void C2PA_Validate(Riff_Handler* Handler, Riff_Base::global* Global)
     if (!Handler || !Global || !Global->C2PA)
         return;
 
+    if (!c2pa_load())
+        return;
+
     string FileName=Global->File_Name.To_UTF8();
     if (FileName.empty())
+    {
+        c2pa_unload();
         return;
+    }
 
     C2PA_FileStreamContext FileContext;
     FileContext.F=fopen(FileName.c_str(), "rb");
     if (!FileContext.F)
+    {
+        c2pa_unload();
         return;
+    }
 
     C2paContext* Context=c2pa_context_new();
     if (!Context)
     {
         fclose(FileContext.F);
+        c2pa_unload();
         return;
     }
 
@@ -249,4 +261,5 @@ void C2PA_Validate(Riff_Handler* Handler, Riff_Base::global* Global)
 
     c2pa_free(Context);
     fclose(FileContext.F);
+    c2pa_unload();
 }

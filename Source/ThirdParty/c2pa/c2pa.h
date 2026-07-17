@@ -24,7 +24,57 @@
 #include <stdlib.h>
 
 #if defined(C2PA_DYNAMIC_LOADING) && C2PA_DYNAMIC_LOADING
-    #define C2PA_API
+#define C2PA_API
+
+#if defined (_WIN32) || defined (WIN32)
+    #ifndef _UNICODE
+        #define C2PADLL_NAME "c2pa_c.dll"
+    #else //_UNICODE
+        #define C2PADLL_NAME L"c2pa_c.dll"
+    #endif
+#elif defined(__APPLE__) && defined(__MACH__)
+    #define C2PADLL_NAME "libc2pa_c.dylib"
+#else
+    #define C2PADLL_NAME "libc2pa_c.so"
+#endif //!defined(_WIN32) || defined (WIN32)
+
+#if defined (_WIN32) || defined (WIN32)
+    #undef __TEXT
+    #include <windows.h>
+    static HMODULE c2pa_module=NULL;
+#else
+    #include <dlfcn.h>
+    static void* c2pa_module=NULL;
+#endif
+
+#if defined (_WIN32) || defined (WIN32)
+    #define ASSIGN(_Module, _Name) \
+        _Name=(_Module##_##_Name)GetProcAddress(_Module, #_Name); \
+        if (_Name==NULL) Error=true;
+    #define DLOPEN(_Module, _Name) \
+            _Module=LoadLibrary(_Name);
+    #define DLCLOSE(_Module) \
+        FreeLibrary(_Module);
+#else
+    #define ASSIGN(_Module, _Name) \
+        _Name=(_Module##_##_Name)dlsym(_Module, #_Name); \
+        if (_Name==NULL) Error=true;
+    #define DLOPEN(_Module, _Name) \
+        _Module=dlopen(_Name, RTLD_LAZY); \
+        if (!_Module) \
+            _Module=dlopen("./" _Name, RTLD_LAZY); \
+        if (!_Module) \
+            _Module=dlopen("/usr/local/lib/" _Name, RTLD_LAZY); \
+        if (!_Module) \
+            _Module=dlopen("/usr/local/lib64/" _Name, RTLD_LAZY); \
+        if (!_Module) \
+            _Module=dlopen("/usr/lib/" _Name, RTLD_LAZY); \
+        if (!_Module) \
+            _Module=dlopen("/usr/lib64/" _Name, RTLD_LAZY);
+    #define DLCLOSE(_Module) \
+        dlclose(_Module);
+#endif //defined (_WIN32) || defined (WIN32)
+
 #else
     #if defined(_WIN32) || defined(_WIN64)
         #if defined(C2PA_DLL) && C2PA_DLL
@@ -403,6 +453,76 @@ typedef struct C2paSignerInfo {
   const char *ta_url;
 } C2paSignerInfo;
 
+#if defined(C2PA_DYNAMIC_LOADING) && C2PA_DYNAMIC_LOADING
+
+//---------------------------------------------------------------------------
+typedef int (*c2pa_module_c2pa_free)(const void*); static c2pa_module_c2pa_free c2pa_free=NULL;
+typedef struct C2paContext* (*c2pa_module_c2pa_context_new)(void); static c2pa_module_c2pa_context_new c2pa_context_new=NULL;
+typedef struct C2paReader* (*c2pa_module_c2pa_reader_from_context)(C2paContext*); static c2pa_module_c2pa_reader_from_context c2pa_reader_from_context=NULL;
+typedef struct C2paStream* (*c2pa_module_c2pa_create_stream)(struct StreamContext*, ReadCallback, SeekCallback, WriteCallback, FlushCallback); static c2pa_module_c2pa_create_stream c2pa_create_stream=NULL;
+typedef void (*c2pa_module_c2pa_release_stream)(struct C2paStream*); static c2pa_module_c2pa_release_stream c2pa_release_stream=NULL;
+typedef struct C2paReader* (*c2pa_module_c2pa_reader_with_stream)(struct C2paReader*, const char*, struct C2paStream*); static c2pa_module_c2pa_reader_with_stream c2pa_reader_with_stream=NULL;
+typedef char* (*c2pa_module_c2pa_reader_detailed_json)(struct C2paReader*); static c2pa_module_c2pa_reader_detailed_json c2pa_reader_detailed_json=NULL;
+typedef char* (*c2pa_module_c2pa_reader_crjson)(struct C2paReader*); static c2pa_module_c2pa_reader_crjson c2pa_reader_crjson=NULL;
+
+//---------------------------------------------------------------------------
+static inline bool c2pa_load(void)
+{
+    bool Error=false;
+
+    if (c2pa_module)
+        return true;
+
+    DLOPEN(c2pa_module, C2PADLL_NAME);
+    if (!c2pa_module)
+        return false;
+
+    ASSIGN(c2pa_module, c2pa_free);
+    ASSIGN(c2pa_module, c2pa_context_new);
+    ASSIGN(c2pa_module, c2pa_reader_from_context);
+    ASSIGN(c2pa_module, c2pa_create_stream);
+    ASSIGN(c2pa_module, c2pa_release_stream);
+    ASSIGN(c2pa_module, c2pa_reader_with_stream);
+    ASSIGN(c2pa_module, c2pa_reader_detailed_json);
+    ASSIGN(c2pa_module, c2pa_reader_crjson);
+
+    if (Error)
+    {
+        DLCLOSE(c2pa_module);
+        c2pa_module=NULL;
+        c2pa_free=NULL;
+        c2pa_context_new=NULL;
+        c2pa_reader_from_context=NULL;
+        c2pa_create_stream=NULL;
+        c2pa_release_stream=NULL;
+        c2pa_reader_with_stream=NULL;
+        c2pa_reader_detailed_json=NULL;
+        c2pa_reader_crjson=NULL;
+        return false;
+    }
+
+    return true;
+}
+
+//---------------------------------------------------------------------------
+static inline void c2pa_unload(void)
+{
+    if (c2pa_module)
+    {
+        DLCLOSE(c2pa_module);
+        c2pa_module=NULL;
+    }
+
+    c2pa_free=NULL;
+    c2pa_context_new=NULL;
+    c2pa_reader_from_context=NULL;
+    c2pa_create_stream=NULL;
+    c2pa_release_stream=NULL;
+    c2pa_reader_with_stream=NULL;
+    c2pa_reader_detailed_json=NULL;
+    c2pa_reader_crjson=NULL;
+}
+#else
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -2114,7 +2234,7 @@ void c2pa_signature_free(const uint8_t *signature_ptr);
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
+#endif /* C2PA_DYNAMIC_LOADING */
 
 #endif  /* c2pa_bindings_h */
-
 
