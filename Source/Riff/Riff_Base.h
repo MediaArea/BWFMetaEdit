@@ -348,15 +348,21 @@ public:
         struct chunk_C2PA
         {
             bool present;
+            #if defined(ENABLE_C2PA)
             bool valid;
             bool signatureValid;
             string manifest;
+            vector<string> validationErrors;
+            vector<string> validationWarnings;
+            #endif // defined(ENABLE_C2PA)
 
             chunk_C2PA()
             {
                 present=false;
+                #if defined(ENABLE_C2PA)
                 valid=false;
                 signatureValid=false;
+                #endif // defined(ENABLE_C2PA)
             }
         };
 
@@ -429,8 +435,10 @@ public:
         bool                Read_Only;
         bool                BextDescriptionFromFileName;
         bool                OriginatorReferenceFromFileName;
+        #if defined(ENABLE_C2PA)
         bool                VerifyC2PA;
         bool                VerifyC2PA_Force;
+        #endif // defined(ENABLE_C2PA)
 
         CriticalSection     CS;
         float               Progress;
@@ -473,8 +481,10 @@ public:
             Read_Only=false;
             BextDescriptionFromFileName=false;
             OriginatorReferenceFromFileName=false;
+            #if defined(ENABLE_C2PA)
             VerifyC2PA=false;
             VerifyC2PA_Force=false;
+            #endif // defined(ENABLE_C2PA)
             Progress=0;
             Canceling=false;
         }

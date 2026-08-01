@@ -119,10 +119,17 @@ CL_OPTION(MD5_Embed);
 CL_OPTION(MD5_Embed_Overwrite);
 
 //---------------------------------------------------------------------------
+#if defined(ENABLE_C2PA)
 CL_OPTION(Out_C2PA_cout);
 CL_OPTION(Out_C2PA_File);
 CL_OPTION(Out_C2PA_JSON);
 CL_OPTION(C2PA_Verify);
+CL_OPTION(C2PA_Sign_Manifest);
+CL_OPTION(C2PA_Sign_Certificate);
+CL_OPTION(C2PA_Sign_Key);
+CL_OPTION(C2PA_Sign_Algorithm);
+CL_OPTION(C2PA_Sign_TA_URL);
+#endif // defined(ENABLE_C2PA)
 
 //---------------------------------------------------------------------------
 CL_OPTION(Default);

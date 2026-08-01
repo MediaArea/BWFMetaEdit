@@ -10,7 +10,9 @@
 //---------------------------------------------------------------------------
 #include "Riff/Riff_Handler.h"
 #include "Riff/Riff_Chunks.h"
+#if defined(ENABLE_C2PA)
 #include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(ENABLE_C2PA)
 #include "Common/Codes.h"
 #include <sstream>
 #include <iostream>
@@ -301,8 +303,10 @@ Riff_Handler::Riff_Handler ()
     Write_Encoding=Encoding_Max;
     Write_CodePage=false;
     Ignore_File_Encoding=false;
+    #if defined(ENABLE_C2PA)
     VerifyC2PA=false;
     VerifyC2PA_Force=false;
+    #endif // defined(ENABLE_C2PA)
     Bext_DefaultVersion=0;
     Bext_MaxVersion=2;
 
@@ -910,6 +914,7 @@ bool Riff_Handler::Open_Internal(const string &FileName)
           || EmbedMD5_AuthorizeOverWritting))
                 Set_Internal("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
 
+        #if defined(ENABLE_C2PA)
         if (Chunks->Global->C2PA)
             C2PA_Validate(this, Chunks->Global);
         else if (VerifyC2PA_Force)
@@ -924,6 +929,7 @@ bool Riff_Handler::Open_Internal(const string &FileName)
             PerFile_Information.str(string());
             PerFile_Information<<"C2PA, no existing C2PA chunk"<<endl;
         }
+        #endif // defined(ENABLE_C2PA)
     }
 
     CriticalSectionLocker(Chunks->Global->CS);
@@ -1097,8 +1103,13 @@ bool Riff_Handler::Save()
         }
     }
 
-    //Write only if modified
-    if (!IsModified_Get_Internal())
+    //Write only if modified (or if C2PA signing was requested, even without any other change)
+    bool WasModified=IsModified_Get_Internal();
+    if (!WasModified
+        #if defined(ENABLE_C2PA)
+        && C2PA_SignManifestJson.empty()
+        #endif // defined(ENABLE_C2PA)
+    )
     {
         Information<<Chunks->Global->File_Name.To_UTF8()<<": Nothing to do"<<endl;
         return false;
@@ -1205,7 +1216,18 @@ bool Riff_Handler::Save()
     }
 
     //Log
-    Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": Is modified"<<endl;
+    if (WasModified)
+        Information<<(Chunks?Chunks->Global->File_Name.To_UTF8():"")<<": Is modified"<<endl;
+
+    #if defined(ENABLE_C2PA)
+    //C2PA signing (on the just-written file, closed here to ensure no lock remains, before it is reopened below)
+    if (!C2PA_SignManifestJson.empty())
+    {
+        Chunks->Global->In.Close();
+        C2PA_Sign(this, Chunks->Global);
+        C2PA_SignManifestJson.clear(); //One-shot: the manifest is consumed by this Save(), whatever the outcome
+    }
+    #endif // defined(ENABLE_C2PA)
 
     //Loading the new file (we are verifying the integraty of the generated file)
     string FileName=Chunks->Global->File_Name.To_UTF8();
@@ -1238,6 +1260,9 @@ bool Riff_Handler::BackToLastSave()
         }
 
     Chunks->IsModified_Clear();
+    #if defined(ENABLE_C2PA)
+    C2PA_SignManifestJson.clear();
+    #endif // defined(ENABLE_C2PA)
 
     return true;
 }
@@ -1312,22 +1337,29 @@ string Riff_Handler::Get_Internal(const string &Field)
     {
         if (Chunks->Global->C2PA)
         {
+            #if defined(ENABLE_C2PA)
             if (VerifyC2PA)
                 return (Chunks->Global->C2PA->valid && Chunks->Global->C2PA->signatureValid)?"Valid":"Invalid";
-            else
-                return "Present";
+            #endif // defined(ENABLE_C2PA)
+            return "Yes";
         }
         else
-            return "Absent";
+            return "No";
     }
 
     //Special case - CueXml
     if (Field=="cuexml")
         return Cue_Xml_Get();
 
+    #if defined(ENABLE_C2PA)
     //Special case - C2PAJson
     if (Field=="c2pajson")
         return Chunks->Global->C2PA?Chunks->Global->C2PA->manifest:string();
+
+    //Special case - C2PA signing manifest staged for the next Save()
+    if (Field=="C2PASignManifest")
+        return C2PA_SignManifestJson;
+    #endif // defined(ENABLE_C2PA)
 
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
@@ -1366,6 +1398,15 @@ bool Riff_Handler::Set_Internal(const string &Field_, const string &Value_, rule
     }
 
     string Field=Field_Get(Field_);
+
+    #if defined(ENABLE_C2PA)
+    //Special case - C2PA signing manifest, stage it for the next Save()
+    if (Field=="c2pasignmanifest")
+    {
+        C2PA_SignManifestJson=Value_;
+        return true;
+    }
+    #endif // defined(ENABLE_C2PA)
 
     //Testing if useful
     if (Field=="filename"
@@ -1901,6 +1942,12 @@ bool Riff_Handler::IsModified_Internal(const string &Field)
         else
             return false;
     }
+    if (Field_Get(Field)=="C2PA")
+    #if defined(ENABLE_C2PA)
+        return !C2PA_SignManifestJson.empty();
+    #else
+        return false;
+    #endif // defined(ENABLE_C2PA)
 
     Riff_Base::global::chunk_strings** Chunk_Strings=chunk_strings_Get(Field);
     if (!Chunk_Strings || !*Chunk_Strings)
@@ -3125,7 +3172,26 @@ bool Riff_Handler::IsValid_Internal(const string &Field_, const string &Value_, 
                 IsValid_Errors<<"Dialect must be a valid CSET dialect code for the given language (FADGI recommandations)";
         }
     }
-
+    #if defined(ENABLE_C2PA)
+    else if (Field=="C2PA")
+    {
+        if (Chunks && Chunks->Global->C2PA)
+        {
+            for (size_t Pos=0; Pos<Chunks->Global->C2PA->validationErrors.size(); Pos++)
+            {
+                if (Pos)
+                    IsValid_Errors<<"; ";
+                IsValid_Errors<<Chunks->Global->C2PA->validationErrors[Pos];
+            }
+            for (size_t Pos=0; Pos<Chunks->Global->C2PA->validationWarnings.size(); Pos++)
+            {
+                if (Pos)
+                    IsValid_Warnings<<"; ";
+                IsValid_Warnings<<Chunks->Global->C2PA->validationWarnings[Pos];
+            }
+        }
+    }
+    #endif // defined(ENABLE_C2PA)
     else if (Field=="errors")
     {
         return PerFile_Error.str().empty();
@@ -3401,6 +3467,11 @@ bool Riff_Handler::IsModified_Get_Internal()
 
     if (IsModified_Internal("Encoding"))
         ToReturn=true;
+
+    #if defined(ENABLE_C2PA)
+    if (!C2PA_SignManifestJson.empty())
+        ToReturn=true;
+    #endif //defined(ENABLE_C2PA)
 
     if (!ToReturn && Chunks)
         ToReturn=Chunks->IsModified();
@@ -3697,8 +3768,10 @@ void Riff_Handler::Options_Update_Internal(bool Update)
     Chunks->Global->EmbedMD5=EmbedMD5;
     Chunks->Global->EmbedMD5_AuthorizeOverWritting=EmbedMD5_AuthorizeOverWritting;
     Chunks->Global->Trace_UseDec=Trace_UseDec;
+    #if defined(ENABLE_C2PA)
     Chunks->Global->VerifyC2PA=VerifyC2PA;
     Chunks->Global->VerifyC2PA_Force=VerifyC2PA_Force;
+    #endif //defined(ENABLE_C2PA)
 
     //MD5
     if (Update && (Chunks->Global->VerifyMD5 || Chunks->Global->VerifyMD5_Force))
@@ -3748,8 +3821,10 @@ void Riff_Handler::Options_Update_Internal(bool Update)
             Set_Internal("MD5Stored", Chunks->Global->MD5Generated->Strings["md5generated"], rules());
 
     //C2PA
+    #if defined(ENABLE_C2PA)
     if (Update && Chunks->Global->C2PA && (Chunks->Global->VerifyC2PA || Chunks->Global->VerifyC2PA_Force))
         C2PA_Validate(this, Chunks->Global);
+    #endif //defined(ENABLE_C2PA)
 }
 
 //***************************************************************************

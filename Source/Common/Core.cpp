@@ -182,10 +182,11 @@ Core::Core()
     Batch_IsBackuping=false;
 
     Trace_UseDec=false;
-
+    #if defined(ENABLE_C2PA)
     Out_C2PA_JSON=false;
     VerifyC2PA=false;
     VerifyC2PA_Force=false;
+    #endif // defined(ENABLE_C2PA)
 
     RevertToRiff=false;
 
@@ -1347,11 +1348,13 @@ const string& Core::Cout_Get ()
             if (Handler->second.Riff)
                 Text+=Handler->second.Riff->Get("cuexml")+Ztring(EOL).To_UTF8();
         break;
+    #if defined(ENABLE_C2PA)
     case Cout_C2PA:
         for (handlers::iterator Handler=Handlers.begin(); Handler!=Handlers.end(); Handler++)
             if (Handler->second.Riff)
                 Text+=Handler->second.Riff->Get("c2pajson")+Ztring(EOL).To_UTF8();
         break;
+    #endif // defined(ENABLE_C2PA)
     case Cout_XML:
         Text=Out_XML_Buf;
         break;
@@ -1929,8 +1932,10 @@ void Core::Batch_Launch(handlers::iterator &Handler)
         Batch_Launch_cue_(Handler);
 
     //C2PA chunk
+    #if defined(ENABLE_C2PA)
     if (Out_C2PA_JSON || !Out_C2PA_FileName.empty() || Out_XML_Doc)
         Batch_Launch_C2PA(Handler);
+    #endif // defined(ENABLE_C2PA)
 
     //Write
     if (!Simulation_Enabled)
@@ -2349,6 +2354,7 @@ void Core::Batch_Launch_cue_(handlers::iterator &Handler)
     }
 }
 
+#if defined(ENABLE_C2PA)
 //---------------------------------------------------------------------------
 void Core::Batch_Launch_C2PA(handlers::iterator &Handler)
 {
@@ -2411,6 +2417,7 @@ void Core::Batch_Launch_C2PA(handlers::iterator &Handler)
         }
     }
 }
+#endif // defined(ENABLE_C2PA)
 
 //---------------------------------------------------------------------------
 void Core::Batch_Launch_Write(handlers::iterator &Handler)
@@ -2451,8 +2458,16 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->Write_Encoding=Write_Encoding;
         Handler->second.Riff->Write_CodePage=Write_CodePage;
         Handler->second.Riff->Ignore_File_Encoding=Ignore_File_Encoding;
+        #if defined(ENABLE_C2PA)
         Handler->second.Riff->VerifyC2PA=VerifyC2PA;
         Handler->second.Riff->VerifyC2PA_Force=VerifyC2PA_Force;
+        Handler->second.Riff->C2PA_SignCertificate=C2PA_SignCertificate;
+        Handler->second.Riff->C2PA_SignPrivateKey=C2PA_SignPrivateKey;
+        Handler->second.Riff->C2PA_SignAlgorithm=C2PA_SignAlgorithm;
+        Handler->second.Riff->C2PA_SignTA_URL=C2PA_SignTA_URL;
+        if (!C2PA_SignManifestJson.empty())
+            Handler->second.Riff->C2PA_SignManifestJson=C2PA_SignManifestJson;
+        #endif //defined(ENABLE_C2PA)
 
         bool IsModified_Old=Handler->second.Riff->IsModified_Get();
 

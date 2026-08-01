@@ -43,7 +43,9 @@ public:
         Cout_aXML,
         Cout_iXML,
         Cout_cue_,
+        #if defined(ENABLE_C2PA)
         Cout_C2PA,
+        #endif // defined(ENABLE_C2PA)
         Cout_XML, //All
     };
 
@@ -176,10 +178,17 @@ public:
     bool                                Write_CodePage;
     bool                                Ignore_File_Encoding;
     bool                                In_CSET_Remove;
+    #if defined(ENABLE_C2PA)
     string                              Out_C2PA_FileName;
     bool                                Out_C2PA_JSON;
     bool                                VerifyC2PA;
     bool                                VerifyC2PA_Force;
+    string                              C2PA_SignManifestJson;
+    string                              C2PA_SignCertificate;
+    string                              C2PA_SignPrivateKey;
+    string                              C2PA_SignAlgorithm;
+    string                              C2PA_SignTA_URL;
+    #endif // defined(ENABLE_C2PA)
     bool                                RevertToRiff;
 
     //Status
@@ -260,7 +269,9 @@ protected:
     void Batch_Launch_aXML              (handlers::iterator &Handler);
     void Batch_Launch_iXML              (handlers::iterator &Handler);
     void Batch_Launch_cue_              (handlers::iterator &Handler);
+    #if defined(ENABLE_C2PA)
     void Batch_Launch_C2PA              (handlers::iterator &Handler);
+    #endif // defined(ENABLE_C2PA)
     void Batch_Launch_Write             (handlers::iterator &Handler);
     void Options_Update                 (handlers::iterator &Handler);
     void Entry();

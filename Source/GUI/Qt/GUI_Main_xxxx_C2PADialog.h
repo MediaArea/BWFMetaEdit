@@ -35,11 +35,13 @@ class GUI_Main_xxxx_C2PADialog : public QDialog
 
 public:
     //Constructor/Destructor
-    GUI_Main_xxxx_C2PADialog(Core* C, const std::string &FileName_, QWidget* parent=NULL);
+    GUI_Main_xxxx_C2PADialog(Core* C, const std::string &FileName_, QWidget* parent=NULL, bool Writable=false);
 
 private Q_SLOTS:
     //Actions
     void OnMenu_Export              ();
+    void OnMenu_Import              ();
+    void OnMenu_ClearImport         ();
 
 private:
     //Internal
@@ -47,11 +49,16 @@ private:
     std::string     FileName;
     std::string     Status;
     std::string     Manifest;
+    bool            Writable;
+    std::string     SignManifestPath;
 
     //Widgets
     QTabWidget*         Central;
     QDialogButtonBox*   Dialog;
     QPushButton*        Export;
+    QPushButton*        Import;
+    QPushButton*        ClearImport;
+    QLabel*             PendingBanner;
 
     //Helpers
     QWidget* Build_Summary             ();
@@ -59,6 +66,7 @@ private:
     QWidget* Build_Manifest            (json_value_s* ManifestValue, int Index, int Count);
     QWidget* Build_ValidationResults   (json_value_s* ValidationResults);
     QLabel*  Build_ValidationItem      (json_value_s* Item, const QString &Color, const QString &Glyph);
+    void     Update_PendingBanner      ();
 };
 
 #endif

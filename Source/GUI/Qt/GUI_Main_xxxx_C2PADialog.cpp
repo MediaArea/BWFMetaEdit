@@ -24,6 +24,8 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QFileDialog>
+#include <QFileInfo>
+#include <QMessageBox>
 #include <QApplication>
 #include <QScreen>
 #include <QList>
@@ -120,7 +122,7 @@ static QString Json_CommonName (json_value_s* Value)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-GUI_Main_xxxx_C2PADialog::GUI_Main_xxxx_C2PADialog(Core* _C, const std::string &FileName_, QWidget* parent)
+GUI_Main_xxxx_C2PADialog::GUI_Main_xxxx_C2PADialog(Core* _C, const std::string &FileName_, QWidget* parent, bool Writable_)
 : QDialog(parent)
 {
     //Internal
@@ -128,6 +130,10 @@ GUI_Main_xxxx_C2PADialog::GUI_Main_xxxx_C2PADialog(Core* _C, const std::string &
     FileName=FileName_;
     Status=C->Get(FileName, "C2PA");
     Manifest=C->Get(FileName, "c2pajson");
+    Writable=Writable_;
+    //SignManifestPath is only known for the lifetime of the dialog instance that just imported a file (set in
+    //OnMenu_Import); reopening the dialog on an already-staged file still detects the staged state (via
+    //Update_PendingBanner querying Core directly) but can no longer show the original file name
 
     //Configuration
     setWindowFlags(windowFlags()&(~Qt::WindowContextHelpButtonHint));
@@ -136,17 +142,31 @@ GUI_Main_xxxx_C2PADialog::GUI_Main_xxxx_C2PADialog(Core* _C, const std::string &
 
     //Buttons
     Export=new QPushButton("&Export manifest...");
+    Import=new QPushButton("&Import signing manifest...");
+    ClearImport=new QPushButton("&Clear staged manifest");
     Dialog=new QDialogButtonBox(QDialogButtonBox::Close);
     if (!Manifest.empty())
         Dialog->addButton(Export, QDialogButtonBox::ResetRole);
+    if (Writable)
+    {
+        Dialog->addButton(Import, QDialogButtonBox::ActionRole);
+        bool HasSigningCredentials=!C->C2PA_SignCertificate.empty() && !C->C2PA_SignPrivateKey.empty();
+        Import->setEnabled(HasSigningCredentials);
+        if (!HasSigningCredentials)
+            Import->setToolTip(tr("Configure a signing certificate and private key in Preferences → C2PA first."));
+        Dialog->addButton(ClearImport, QDialogButtonBox::ActionRole);
+    }
     connect(Dialog, SIGNAL(rejected()), this, SLOT(reject()));
     connect(Export, SIGNAL(clicked()), this, SLOT(OnMenu_Export()));
+    connect(Import, SIGNAL(clicked()), this, SLOT(OnMenu_Import()));
+    connect(ClearImport, SIGNAL(clicked()), this, SLOT(OnMenu_ClearImport()));
 
     //Central - Summary
     QScrollArea* Scroll=new QScrollArea(this);
     Scroll->setWidgetResizable(true);
     Scroll->setFrameShape(QFrame::NoFrame);
     Scroll->setWidget(Build_Summary());
+    Update_PendingBanner();
 
     //Central - Raw JSON
     QTextEdit* RawText=new QTextEdit(this);
@@ -192,6 +212,62 @@ void GUI_Main_xxxx_C2PADialog::OnMenu_Export ()
         return;
 
     F.Write((const int8u*)Manifest.c_str(), Manifest.size());
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main_xxxx_C2PADialog::OnMenu_Import ()
+{
+    //User interaction
+    QString FileNameQ=QFileDialog::getOpenFileName(this, tr("Import C2PA signing manifest..."), QString::fromUtf8(C->OpenSaveFolder.c_str()), "JSON files (*.json);;All files (*.*)");
+
+    if (FileNameQ.isEmpty())
+        return;
+
+    //The manifest is staged as text (read now), not as a path: the file may not be reachable anymore by the
+    //time Save() actually signs (portal-style file access on Flatpak, macOS sandboxed bookmarks...)
+    File F;
+    string Content;
+    bool Ok=F.Open(ZenLib::Ztring().From_UTF8(FileNameQ.toUtf8().data()));
+    if (Ok)
+    {
+        int64u F_Size=F.Size_Get();
+        if (F_Size && F_Size<=((size_t)-1)-1)
+        {
+            int8u* Buffer=new int8u[(size_t)F_Size];
+            size_t Buffer_Offset=0;
+            while (Buffer_Offset<F_Size)
+            {
+                size_t BytesRead=F.Read(Buffer+Buffer_Offset, (size_t)F_Size-Buffer_Offset);
+                if (BytesRead==0)
+                    break;
+                Buffer_Offset+=BytesRead;
+            }
+            Ok=Buffer_Offset==F_Size;
+            if (Ok)
+                Content.assign((const char*)Buffer, Buffer_Offset);
+            delete[] Buffer;
+        }
+        else
+            Ok=false;
+    }
+
+    if (!Ok)
+    {
+        QMessageBox::warning(this, tr("Import C2PA signing manifest..."), tr("Unable to read the selected manifest file."));
+        return;
+    }
+
+    C->Set(FileName, "C2PASignManifest", Content);
+    SignManifestPath=FileNameQ.toStdString();
+    Update_PendingBanner();
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main_xxxx_C2PADialog::OnMenu_ClearImport ()
+{
+    C->Set(FileName, "C2PASignManifest", string());
+    SignManifestPath.clear();
+    Update_PendingBanner();
 }
 
 //***************************************************************************
@@ -374,6 +450,28 @@ QWidget* GUI_Main_xxxx_C2PADialog::Build_Manifest (json_value_s* ManifestValue, 
 }
 
 //---------------------------------------------------------------------------
+void GUI_Main_xxxx_C2PADialog::Update_PendingBanner ()
+{
+    bool HasStagedManifest=!C->Get(FileName, "C2PASignManifest").empty();
+    ClearImport->setEnabled(HasStagedManifest);
+
+    if (!HasStagedManifest)
+    {
+        PendingBanner->hide();
+        return;
+    }
+
+    if (SignManifestPath.empty())
+        PendingBanner->setText(QString(QChar(0x270D))+" "+tr("A signing manifest is staged and will be applied when this file is saved."));
+    else
+    {
+        QString Base=QFileInfo(QString::fromUtf8(SignManifestPath.c_str())).fileName();
+        PendingBanner->setText(QString(QChar(0x270D))+" "+tr("A signing manifest is staged and will be applied when this file is saved: %1").arg(Base));
+    }
+    PendingBanner->show();
+}
+
+//---------------------------------------------------------------------------
 QWidget* GUI_Main_xxxx_C2PADialog::Build_Summary ()
 {
     QWidget* Widget=new QWidget();
@@ -381,6 +479,12 @@ QWidget* GUI_Main_xxxx_C2PADialog::Build_Summary ()
     Layout->setAlignment(Qt::AlignTop);
 
     Layout->addWidget(Build_StatusBanner());
+
+    PendingBanner=new QLabel();
+    PendingBanner->setWordWrap(true);
+    PendingBanner->setStyleSheet("color: #8e44ad; font-weight: bold;");
+    PendingBanner->hide();
+    Layout->addWidget(PendingBanner);
 
     if (Manifest.empty())
     {

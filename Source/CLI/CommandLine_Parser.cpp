@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 #include <cctype>
-#include <fstream>
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
@@ -22,6 +21,9 @@
 #include "CLI/CommandLine_Parser.h"
 #include "CLI/CLI_Help.h"
 #include "Common/Common_About.h"
+#if defined(ENABLE_C2PA)
+    #include "ZenLib/File.h"
+#endif // defined(ENABLE_C2PA)
 #include "ZenLib/ZtringList.h"
 using namespace ZenLib;
 //---------------------------------------------------------------------------
@@ -39,6 +41,39 @@ ZtringList In_Core_File_List;
 #define OPTION(_TEXT, _TOLAUNCH) \
     else if (Argument.find(_TEXT)==0)        return CL_##_TOLAUNCH(C, Argument); \
 //---------------------------------------------------------------------------
+
+//***************************************************************************
+// Helpers
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+#if defined(ENABLE_C2PA)
+static bool ReadWholeFile(const string &FileName, string &Content)
+{
+    File F;
+    if (!F.Open(Ztring().From_UTF8(FileName)))
+        return false;
+
+    int64u F_Size=F.Size_Get();
+    if (F_Size>((size_t)-1)-1)
+        return false;
+
+    int8u* Buffer=new int8u[(size_t)F_Size];
+    size_t Buffer_Offset=0;
+    while (Buffer_Offset<F_Size)
+    {
+        size_t BytesRead=F.Read(Buffer+Buffer_Offset, (size_t)F_Size-Buffer_Offset);
+        if (BytesRead==0)
+            break;
+        Buffer_Offset+=BytesRead;
+    }
+
+    Content.assign((const char*)Buffer, Buffer_Offset);
+    delete[] Buffer;
+
+    return Buffer_Offset==F_Size;
+}
+#endif // defined(ENABLE_C2PA)
 
 //***************************************************************************
 // Main
@@ -125,12 +160,17 @@ int Parse(Core &C, string &Argument)
     OPTION("--md5-embed",                                   MD5_Embed)
 
     OPTION("--remove-chunks=",                              Chunks_Remove)
-
+    #if defined(ENABLE_C2PA)
     OPTION("--out-c2pa-json",                               Out_C2PA_JSON)
     OPTION("--out-c2pa=",                                   Out_C2PA_File)
     OPTION("--out-c2pa",                                    Out_C2PA_cout)
     OPTION("--c2pa-verify",                                 C2PA_Verify)
-
+    OPTION("--c2pa-sign-manifest=",                         C2PA_Sign_Manifest)
+    OPTION("--c2pa-sign-certificate=",                      C2PA_Sign_Certificate)
+    OPTION("--c2pa-sign-key=",                              C2PA_Sign_Key)
+    OPTION("--c2pa-sign-algorithm=",                        C2PA_Sign_Algorithm)
+    OPTION("--c2pa-sign-ta-url=",                           C2PA_Sign_TA_URL)
+    #endif // defined(ENABLE_C2PA)
     //Default
     OPTION("--",                                            Default)
     OPTION("-",                                             Default)
@@ -929,6 +969,7 @@ CL_OPTION(Chunks_Remove)
     return -2;
 }
 
+#if defined(ENABLE_C2PA)
 //---------------------------------------------------------------------------
 CL_OPTION(Out_C2PA_cout)
 {
@@ -977,6 +1018,76 @@ CL_OPTION(C2PA_Verify)
 
     return -2; //Continue
 }
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Sign_Manifest)
+{
+    //Form : --c2pa-sign-manifest=(FileName)
+    string FileName=string().assign(Argument, 21, std::string::npos);
+
+    string Content;
+    if (!ReadWholeFile(FileName, Content))
+    {
+        std::cerr<<"Unable to read the C2PA signing manifest: "<<FileName<<std::endl;
+        return 1;
+    }
+    C.C2PA_SignManifestJson.assign(Content);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Sign_Certificate)
+{
+    //Form : --c2pa-sign-certificate=(FileName)
+    string FileName=string().assign(Argument, 24, std::string::npos);
+
+    string Content;
+    if (!ReadWholeFile(FileName, Content))
+    {
+        std::cerr<<"Unable to read the C2PA signing certificate: "<<FileName<<std::endl;
+        return 1;
+    }
+    C.C2PA_SignCertificate.assign(Content);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Sign_Key)
+{
+    //Form : --c2pa-sign-key=(FileName)
+    string FileName=string().assign(Argument, 16, std::string::npos);
+
+    string Content;
+    if (!ReadWholeFile(FileName, Content))
+    {
+        std::cerr<<"Unable to read the C2PA signing private key: "<<FileName<<std::endl;
+        return 1;
+    }
+    C.C2PA_SignPrivateKey.assign(Content);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Sign_Algorithm)
+{
+    //Form : --c2pa-sign-algorithm=(Value)
+    C.C2PA_SignAlgorithm.assign(Argument, 22, std::string::npos);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Sign_TA_URL)
+{
+    //Form : --c2pa-sign-ta-url=(Value)
+    C.C2PA_SignTA_URL.assign(Argument, 19, std::string::npos);
+
+    return -2; //Continue
+}
+#endif // defined(ENABLE_C2PA)
 
 //---------------------------------------------------------------------------
 CL_OPTION(RevertToRiff)

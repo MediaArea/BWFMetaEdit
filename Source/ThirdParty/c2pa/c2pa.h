@@ -464,6 +464,11 @@ typedef void (*c2pa_module_c2pa_release_stream)(struct C2paStream*); static c2pa
 typedef struct C2paReader* (*c2pa_module_c2pa_reader_with_stream)(struct C2paReader*, const char*, struct C2paStream*); static c2pa_module_c2pa_reader_with_stream c2pa_reader_with_stream=NULL;
 typedef char* (*c2pa_module_c2pa_reader_detailed_json)(struct C2paReader*); static c2pa_module_c2pa_reader_detailed_json c2pa_reader_detailed_json=NULL;
 typedef char* (*c2pa_module_c2pa_reader_crjson)(struct C2paReader*); static c2pa_module_c2pa_reader_crjson c2pa_reader_crjson=NULL;
+typedef char* (*c2pa_module_c2pa_error)(void); static c2pa_module_c2pa_error c2pa_error=NULL;
+typedef struct C2paBuilder* (*c2pa_module_c2pa_builder_from_context)(struct C2paContext*); static c2pa_module_c2pa_builder_from_context c2pa_builder_from_context=NULL;
+typedef struct C2paBuilder* (*c2pa_module_c2pa_builder_with_definition)(struct C2paBuilder*, const char*); static c2pa_module_c2pa_builder_with_definition c2pa_builder_with_definition=NULL;
+typedef struct C2paSigner* (*c2pa_module_c2pa_signer_from_info)(const struct C2paSignerInfo*); static c2pa_module_c2pa_signer_from_info c2pa_signer_from_info=NULL;
+typedef int64_t (*c2pa_module_c2pa_builder_sign)(struct C2paBuilder*, const char*, struct C2paStream*, struct C2paStream*, struct C2paSigner*, const unsigned char**); static c2pa_module_c2pa_builder_sign c2pa_builder_sign=NULL;
 
 //---------------------------------------------------------------------------
 static inline bool c2pa_load(void)
@@ -485,6 +490,11 @@ static inline bool c2pa_load(void)
     ASSIGN(c2pa_module, c2pa_reader_with_stream);
     ASSIGN(c2pa_module, c2pa_reader_detailed_json);
     ASSIGN(c2pa_module, c2pa_reader_crjson);
+    ASSIGN(c2pa_module, c2pa_error);
+    ASSIGN(c2pa_module, c2pa_builder_from_context);
+    ASSIGN(c2pa_module, c2pa_builder_with_definition);
+    ASSIGN(c2pa_module, c2pa_signer_from_info);
+    ASSIGN(c2pa_module, c2pa_builder_sign);
 
     if (Error)
     {
@@ -498,6 +508,11 @@ static inline bool c2pa_load(void)
         c2pa_reader_with_stream=NULL;
         c2pa_reader_detailed_json=NULL;
         c2pa_reader_crjson=NULL;
+        c2pa_error=NULL;
+        c2pa_builder_from_context=NULL;
+        c2pa_builder_with_definition=NULL;
+        c2pa_signer_from_info=NULL;
+        c2pa_builder_sign=NULL;
         return false;
     }
 
@@ -521,6 +536,11 @@ static inline void c2pa_unload(void)
     c2pa_reader_with_stream=NULL;
     c2pa_reader_detailed_json=NULL;
     c2pa_reader_crjson=NULL;
+    c2pa_error=NULL;
+    c2pa_builder_from_context=NULL;
+    c2pa_builder_with_definition=NULL;
+    c2pa_signer_from_info=NULL;
+    c2pa_builder_sign=NULL;
 }
 #else
 #ifdef __cplusplus

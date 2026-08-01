@@ -259,12 +259,14 @@ void GUI_Main::Menu_Create()
     Menu_Export_cue__XML_PerFile->setStatusTip(tr(""));
     connect(Menu_Export_cue__XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_cue__XML_PerFile()));
 
+    #if defined(ENABLE_C2PA)
     Menu_Export_C2PA_JSON_PerFile = new QAction(tr("C2PA crJSON (one JSON file per WAV file)"), this);
     #ifdef MACSTORE
     Menu_Export_C2PA_JSON_PerFile->setVisible(false);
     #endif
     Menu_Export_C2PA_JSON_PerFile->setStatusTip(tr(""));
     connect(Menu_Export_C2PA_JSON_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_C2PA_JSON_PerFile()));
+    #endif // defined(ENABLE_C2PA)
 
     Menu_Export = menuBar()->addMenu(tr("E&xport"));
     Menu_Export->addAction(Menu_Export_Unified_XML_Global);
@@ -284,8 +286,10 @@ void GUI_Main::Menu_Create()
     Menu_Export->addAction(Menu_Export_iXML_XML_PerFile);
     Menu_Export->addSeparator();
     Menu_Export->addAction(Menu_Export_cue__XML_PerFile);
+    #if defined(ENABLE_C2PA)
     Menu_Export->addSeparator();
     Menu_Export->addAction(Menu_Export_C2PA_JSON_PerFile);
+    #endif // defined(ENABLE_C2PA)
 
     //Options (dynamic)
     Menu_Options_Preferences = new QAction(QIcon(":/Image/Menu/Options_Prefs.png"), tr("Preferences..."), this);
@@ -349,7 +353,9 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Riff2Rf64_Reject                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_riff2rf64_Reject(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Overwrite_Reject                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Overwrite_Reject(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Reject                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_C2PA_Reject(bool)));
+    #if defined(ENABLE_C2PA)
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyC2PA(bool)));
+    #endif // defined(ENABLE_C2PA)
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_NoPadding_Accept                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_NoPadding_Accept(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_FileNotValid_Skip                 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_FileNotValid_Skip(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_WrongExtension_Skip               ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_WrongExtension_Skip(bool)));
@@ -956,6 +962,7 @@ void GUI_Main::OnMenu_Export_cue__XML_PerFile()
     C->Out_cue__XML=false;
 }
 
+#if defined(ENABLE_C2PA)
 //---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Export_C2PA_JSON_PerFile()
 {
@@ -970,6 +977,7 @@ void GUI_Main::OnMenu_Export_C2PA_JSON_PerFile()
     //Clearing
     C->Out_C2PA_JSON=false;
 }
+#endif // defined(ENABLE_C2PA)
 
 //---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Rules_Tech3285_Req(bool)
@@ -1354,6 +1362,7 @@ void GUI_Main::OnMenu_Options_C2PA_Reject(bool)
     QApplication::sendEvent(View, &Event);
 }
 
+#if defined(ENABLE_C2PA)
 //---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Options_VerifyC2PA(bool)
 {
@@ -1374,6 +1383,7 @@ void GUI_Main::OnMenu_Options_VerifyC2PA(bool)
     else
         C->Menu_File_Options_Update();
 }
+#endif // defined(ENABLE_C2PA)
 
 //---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Options_NoPadding_Accept(bool)

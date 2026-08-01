@@ -63,16 +63,12 @@ HEADERS = \
     ../../Source/GUI/Qt/GUI_Main_xxxx_EditMenu.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CueDialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CodePageDialog.h \
-    ../../Source/GUI/Qt/GUI_Main_xxxx_C2PADialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx__Common.h \
     ../../Source/GUI/Qt/GUI_Preferences.h \
     ../../Source/MD5/md5.h \
-    ../../Source/ThirdParty/json/json.h \
-    ../../Source/ThirdParty/c2pa/c2pa.h \
     ../../Source/Riff/Riff_Base.h \
     ../../Source/Riff/Riff_Chunks.h \
     ../../Source/Riff/Riff_Handler.h \
-    ../../Source/Riff/Riff_C2PA_Helpers.h \
     ../../Source/TinyXml2/tinyxml2.h \
     ../../Source/ZenLib/BitStream.h \
     ../../Source/ZenLib/BitStream_Fast.h \
@@ -126,7 +122,6 @@ SOURCES = \
     ../../Source/GUI/Qt/GUI_Main_xxxx_EditMenu.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CueDialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CodePageDialog.cpp \
-    ../../Source/GUI/Qt/GUI_Main_xxxx_C2PADialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx__Common.cpp \
     ../../Source/GUI/Qt/GUI_Preferences.cpp \
     ../../Source/MD5/md5.c \
@@ -152,7 +147,6 @@ SOURCES = \
     ../../Source/Riff/Riff_Chunks_WAVE_adtl_ltxt.cpp \
     ../../Source/Riff/Riff_Chunks_WAVE_CSET.cpp \
     ../../Source/Riff/Riff_Chunks_WAVE_C2PA.cpp \
-    ../../Source/Riff/Riff_C2PA_Helpers.cpp \
     ../../Source/Riff/Riff_Handler.cpp \
     ../../Source/TinyXml2/tinyxml2.cpp \
     ../../Source/ZenLib/Conf.cpp \
@@ -174,6 +168,27 @@ SOURCES = \
     ../../Source/ZenLib/ZtringListList.cpp \
     ../../Source/ZenLib/ZtringListListF.cpp
 
+contains(ENABLE_C2PA, yes|1) {
+    SOURCES += ../../Source/Riff/Riff_C2PA_Helpers.cpp \
+               ../../Source/GUI/Qt/GUI_Main_xxxx_C2PADialog.cpp
+
+    HEADERS += ../../Source/ThirdParty/c2pa-rs/target/release/c2pa.h \
+               ../../Source/ThirdParty/json/json.h \
+               ../../Source/Riff/Riff_C2PA_Helpers.h \
+               ../../Source/GUI/Qt/GUI_Main_xxxx_C2PADialog.h
+
+    DEFINES += ENABLE_C2PA
+
+    win32 {
+        LIBS += ../../Source/ThirdParty/c2pa-rs/target/release/c2pa_c.dll.lib
+    }
+    else:macx {
+        LIBS += ../../Source/ThirdParty/c2pa-rs/target/release/libc2pa_c.dylib
+    }
+    else {
+        LIBS += ../../Source/ThirdParty/c2pa-rs/target/release/libc2pa_c.so
+    }
+}
 
 macx {
     HEADERS           += ../../Source/Common/Mac_Helpers.h

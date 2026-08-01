@@ -326,20 +326,9 @@ Control {
                             Layout.fillWidth: true
                         }
                         Repeater {
-                            model: ["Cue", "XMP", "aXML", "iXML", "C2PA"]
+                            model: Model.c2paEnabled() ? ["Cue", "XMP", "aXML", "iXML", "C2PA"] : ["Cue", "XMP", "aXML", "iXML"]
                             delegate: Button {
                                 function buttonColor(hovered) {
-                                    if (modelData === "C2PA") {
-                                        var status = Model.value(file, "C2PA")
-                                        if (status === "Invalid")
-                                            return root.alternate("red", hovered)
-                                        else if (status === "Valid")
-                                            return root.alternate(root.green, hovered)
-                                        else if (status === "Present")
-                                            return root.alternate("gray", hovered)
-                                        else
-                                            return "lightgray"
-                                    }
                                     var field = modelData==="Cue"?"cuexml":modelData
                                     if (!Model.valid(file, field, Model.value(file, field)))
                                         return root.alternate("red", hovered)

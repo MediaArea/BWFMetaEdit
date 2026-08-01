@@ -14,7 +14,9 @@
 #include "GUI/Qt/GUI_Main_xxxx_TextEditDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_CueDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_CodePageDialog.h"
+#if defined(ENABLE_C2PA)
 #include "GUI/Qt/GUI_Main_xxxx_C2PADialog.h"
+#endif // defined(ENABLE_C2PA)
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
 #include <QLabel>
@@ -420,10 +422,12 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
     //C2PA
     if (Field=="C2PA")
     {
-        //User interaction
-        GUI_Main_xxxx_C2PADialog* Edit=new GUI_Main_xxxx_C2PADialog(C, FileName);
-        Edit->exec();
-        delete Edit; //Edit=NULL;
+        #if defined(ENABLE_C2PA)
+            //User interaction
+            GUI_Main_xxxx_C2PADialog* Edit=new GUI_Main_xxxx_C2PADialog(C, FileName, NULL, !C->IsReadOnly_Get(FileName));
+            Edit->exec();
+            delete Edit; //Edit=NULL;
+        #endif // defined(ENABLE_C2PA)
         return false;
     }
 

@@ -10,6 +10,7 @@
 //---------------------------------------------------------------------------
 #ifndef Riff_C2PA_HelpersH
 #define Riff_C2PA_HelpersH
+#if defined(ENABLE_C2PA)
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
@@ -18,6 +19,8 @@
 
 //---------------------------------------------------------------------------
 void C2PA_Validate(Riff_Handler* Handler, Riff_Base::global* Global);
+void C2PA_Sign(Riff_Handler* Handler, Riff_Base::global* Global);
 
 //---------------------------------------------------------------------------
+#endif // defined(ENABLE_C2PA)
 #endif // Riff_C2PA_HelpersH

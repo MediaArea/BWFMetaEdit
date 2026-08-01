@@ -47,6 +47,35 @@
 #endif //_WIN32
 using namespace std;
 using namespace ZenLib;
+
+//---------------------------------------------------------------------------
+#if defined(ENABLE_C2PA)
+static bool C2PA_ReadWholeFile(const string& FileName, string& Content)
+{
+    File F;
+    if (!F.Open(Ztring().From_UTF8(FileName)))
+        return false;
+
+    int64u F_Size=F.Size_Get();
+    if (F_Size>((size_t)-1)-1)
+        return false;
+
+    int8u* Buffer=new int8u[(size_t)F_Size];
+    size_t Buffer_Offset=0;
+    while (Buffer_Offset<F_Size)
+    {
+        size_t BytesRead=F.Read(Buffer+Buffer_Offset, (size_t)F_Size-Buffer_Offset);
+        if (BytesRead==0)
+            break;
+        Buffer_Offset+=BytesRead;
+    }
+
+    Content.assign((const char*)Buffer, Buffer_Offset);
+    delete[] Buffer;
+
+    return Buffer_Offset==F_Size;
+}
+#endif // defined(ENABLE_C2PA)
 //---------------------------------------------------------------------------
 
 options Groups[Group_Max]=
@@ -154,7 +183,9 @@ options Groups[Group_Max]=
             {"File_Riff2Rf64_Reject", "Reject file if transformation to RF64 is requested", Type_CheckBox, false},
             {"File_Overwrite_Reject", "Prevent overwrite of existing data", Type_CheckBox, false},
             {"File_C2PA_Reject", "Prevent invalidation of the C2PA signature if present", Type_CheckBox, false},
+            #if defined(ENABLE_C2PA)
             {"File_C2PA_Verify", "Verify C2PA signature if present", Type_CheckBox, false},
+            #endif // defined(ENABLE_C2PA)
             {"File_NoPadding_Accept", "Accept file if padding byte is missing", Type_CheckBox, false},
             {"File_FileNotValid_Skip", "Skip non-valid files", Type_CheckBox, false},
             {"File_WrongExtension_Skip", "Skip files with no .wav extension", Type_CheckBox, true},
@@ -562,6 +593,37 @@ void GUI_Preferences::OnLoad()
     Main->Bext_MaxVersion_Set(Extra_Bext_MaxVersion->value());
     Extra_Bext_Toggle->setChecked(Config("Extra_Bext_Toggle").To_int64u()?true:false);
     Main->Bext_Toggle_Set(Extra_Bext_Toggle->isChecked());
+
+    #if defined(ENABLE_C2PA)
+    //C2PA
+    //The certificate/key content itself is persisted (base64-encoded, the config file is line-based text) rather
+    //than only the file path, because the original file may no longer be reachable at next launch (portal-style
+    //file access on Linux, sandbox on macOS...); the path is kept only for on-screen reference.
+    C2PA_SignCertificate_Path->setText(Config("C2PA_SignCertificatePath").To_UTF8().c_str());
+    if (!Config("C2PA_SignCertificateContent").empty())
+    {
+        QByteArray Decoded=QByteArray::fromBase64(Config("C2PA_SignCertificateContent").To_UTF8().c_str());
+        Main->C2PA_SignCertificate_Set(string(Decoded.constData(), (size_t)Decoded.size()));
+    }
+    else
+        Main->C2PA_SignCertificate_Set(string());
+    C2PA_SignPrivateKey_Path->setText(Config("C2PA_SignPrivateKeyPath").To_UTF8().c_str());
+    if (!Config("C2PA_SignPrivateKeyContent").empty())
+    {
+        QByteArray Decoded=QByteArray::fromBase64(Config("C2PA_SignPrivateKeyContent").To_UTF8().c_str());
+        Main->C2PA_SignPrivateKey_Set(string(Decoded.constData(), (size_t)Decoded.size()));
+    }
+    else
+        Main->C2PA_SignPrivateKey_Set(string());
+    {
+        string Algorithm=Config("C2PA_SignAlgorithm").empty()?string("es256"):Config("C2PA_SignAlgorithm").To_UTF8();
+        int Index=C2PA_SignAlgorithm_Combo->findData(QString::fromStdString(Algorithm));
+        C2PA_SignAlgorithm_Combo->setCurrentIndex(Index>=0?Index:0);
+        Main->C2PA_SignAlgorithm_Set(C2PA_SignAlgorithm_Combo->currentData().toString().toStdString());
+    }
+    C2PA_SignTA_URL_Edit->setText(Config("C2PA_SignTA_URL").To_UTF8().c_str());
+    Main->C2PA_SignTA_URL_Set(C2PA_SignTA_URL_Edit->text().toUtf8().data());
+    #endif // defined(ENABLE_C2PA)
 }
 
 //---------------------------------------------------------------------------
@@ -675,6 +737,62 @@ void GUI_Preferences::OnSave()
         Prefs.Write(Content);
         Main->Bext_Toggle_Set(Data.To_int8u()?true:false);
     }
+
+    #if defined(ENABLE_C2PA)
+    //C2PA
+    //The path is saved only for on-screen reference; the content (already pushed live to Core when the file was
+    //selected) is what's actually persisted, base64-encoded since the config file is line-based text.
+    {
+        Ztring Content;
+        Content+=__T("C2PA_SignCertificatePath");
+        Content+=__T(" = ");
+        Content+=Ztring().From_UTF8(C2PA_SignCertificate_Path->text().toUtf8().data());
+        Content+=EOL;
+        Prefs.Write(Content);
+    }
+    {
+        Ztring Content;
+        Content+=__T("C2PA_SignCertificateContent");
+        Content+=__T(" = ");
+        Content+=Ztring().From_UTF8(QString(QByteArray(C->C2PA_SignCertificate.data(), (int)C->C2PA_SignCertificate.size()).toBase64()).toStdString());
+        Content+=EOL;
+        Prefs.Write(Content);
+    }
+    {
+        Ztring Content;
+        Content+=__T("C2PA_SignPrivateKeyPath");
+        Content+=__T(" = ");
+        Content+=Ztring().From_UTF8(C2PA_SignPrivateKey_Path->text().toUtf8().data());
+        Content+=EOL;
+        Prefs.Write(Content);
+    }
+    {
+        Ztring Content;
+        Content+=__T("C2PA_SignPrivateKeyContent");
+        Content+=__T(" = ");
+        Content+=Ztring().From_UTF8(QString(QByteArray(C->C2PA_SignPrivateKey.data(), (int)C->C2PA_SignPrivateKey.size()).toBase64()).toStdString());
+        Content+=EOL;
+        Prefs.Write(Content);
+    }
+    {
+        Ztring Content;
+        Content+=__T("C2PA_SignAlgorithm");
+        Content+=__T(" = ");
+        Content+=Ztring().From_UTF8(C2PA_SignAlgorithm_Combo->currentData().toString().toStdString());
+        Content+=EOL;
+        Prefs.Write(Content);
+        Main->C2PA_SignAlgorithm_Set(C2PA_SignAlgorithm_Combo->currentData().toString().toStdString());
+    }
+    {
+        Ztring Content;
+        Content+=__T("C2PA_SignTA_URL");
+        Content+=__T(" = ");
+        Content+=Ztring().From_UTF8(C2PA_SignTA_URL_Edit->text().toUtf8().data());
+        Content+=EOL;
+        Prefs.Write(Content);
+        Main->C2PA_SignTA_URL_Set(C2PA_SignTA_URL_Edit->text().toUtf8().data());
+    }
+    #endif // defined(ENABLE_C2PA)
 
     //Menu
     Main->Menu_Update();
@@ -914,6 +1032,46 @@ void GUI_Preferences::OnExtra_LogFile_Activated_BrowseClicked (bool)
         Extra_LogFile_Activated->setText(File);
 }
 
+#if defined(ENABLE_C2PA)
+//---------------------------------------------------------------------------
+void GUI_Preferences::OnC2PA_SignCertificate_BrowseClicked (bool)
+{
+    QString FileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Open File..."),
+                                                    C2PA_SignCertificate_Path->text(),
+                                                    "Certificate files (*.pem *.crt *.cer);;All files (*.*)");
+
+    if (FileName.isEmpty())
+        return;
+
+    string Content;
+    if (!C2PA_ReadWholeFile(FileName.toUtf8().data(), Content))
+        return;
+
+    C2PA_SignCertificate_Path->setText(FileName);
+    Main->C2PA_SignCertificate_Set(Content);
+}
+
+//---------------------------------------------------------------------------
+void GUI_Preferences::OnC2PA_SignPrivateKey_BrowseClicked (bool)
+{
+    QString FileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Open File..."),
+                                                    C2PA_SignPrivateKey_Path->text(),
+                                                    "Key files (*.pem *.key);;All files (*.*)");
+
+    if (FileName.isEmpty())
+        return;
+
+    string Content;
+    if (!C2PA_ReadWholeFile(FileName.toUtf8().data(), Content))
+        return;
+
+    C2PA_SignPrivateKey_Path->setText(FileName);
+    Main->C2PA_SignPrivateKey_Set(Content);
+}
+#endif // defined(ENABLE_C2PA)
+
 //---------------------------------------------------------------------------
 void GUI_Preferences::CreateCoreDefaults(QVBoxLayout* Columns)
 {
@@ -1148,6 +1306,54 @@ void GUI_Preferences::Create()
     QWidget* Extra_Widget=new QWidget();
     Extra_Widget->setLayout(Extra);
     Central->addTab(Extra_Widget, "Extra");
+
+    #if defined(ENABLE_C2PA)
+    //C2PA - Signing credentials
+    C2PA_SignCertificate_Path=new QLineEdit();
+    C2PA_SignCertificate_Path->setReadOnly(true);
+    C2PA_SignCertificate_Browse=new QPushButton(QCommonStyle().standardIcon(QStyle::SP_FileIcon), "Browse...");
+    connect(C2PA_SignCertificate_Browse, SIGNAL(clicked(bool)), this, SLOT(OnC2PA_SignCertificate_BrowseClicked(bool)));
+
+    C2PA_SignPrivateKey_Path=new QLineEdit();
+    C2PA_SignPrivateKey_Path->setReadOnly(true);
+    C2PA_SignPrivateKey_Browse=new QPushButton(QCommonStyle().standardIcon(QStyle::SP_FileIcon), "Browse...");
+    connect(C2PA_SignPrivateKey_Browse, SIGNAL(clicked(bool)), this, SLOT(OnC2PA_SignPrivateKey_BrowseClicked(bool)));
+
+    //C2PA - Algorithm and TA-URL
+    C2PA_SignAlgorithm_Combo=new QComboBox();
+    C2PA_SignAlgorithm_Combo->addItem("ES256 (ECDSA P-256 / SHA-256)", "es256");
+    C2PA_SignAlgorithm_Combo->addItem("ES384 (ECDSA P-384 / SHA-384)", "es384");
+    C2PA_SignAlgorithm_Combo->addItem("ES512 (ECDSA P-521 / SHA-512)", "es512");
+    C2PA_SignAlgorithm_Combo->addItem("PS256 (RSA-PSS / SHA-256)", "ps256");
+    C2PA_SignAlgorithm_Combo->addItem("PS384 (RSA-PSS / SHA-384)", "ps384");
+    C2PA_SignAlgorithm_Combo->addItem("PS512 (RSA-PSS / SHA-512)", "ps512");
+    C2PA_SignAlgorithm_Combo->addItem("Ed25519", "ed25519");
+
+    C2PA_SignTA_URL_Edit=new QLineEdit();
+
+    QGridLayout* C2PA_SignCredentials_Layout=new QGridLayout();
+    C2PA_SignCredentials_Layout->addWidget(new QLabel("Certificate file:"), 0, 0);
+    C2PA_SignCredentials_Layout->addWidget(C2PA_SignCertificate_Path, 0, 1);
+    C2PA_SignCredentials_Layout->addWidget(C2PA_SignCertificate_Browse, 0, 2);
+    C2PA_SignCredentials_Layout->addWidget(new QLabel("Private key file:"), 1, 0);
+    C2PA_SignCredentials_Layout->addWidget(C2PA_SignPrivateKey_Path, 1, 1);
+    C2PA_SignCredentials_Layout->addWidget(C2PA_SignPrivateKey_Browse, 1, 2);
+    C2PA_SignCredentials_Layout->addWidget(new QLabel("Algorithm:"), 2, 0);
+    C2PA_SignCredentials_Layout->addWidget(C2PA_SignAlgorithm_Combo, 2, 1);
+    C2PA_SignCredentials_Layout->addWidget(new QLabel("Timestamp authority URL (optional):"), 3, 0);
+    C2PA_SignCredentials_Layout->addWidget(C2PA_SignTA_URL_Edit, 3, 1);
+
+    QGroupBox* C2PA_SignCredentials=new QGroupBox("Signing certificate, private key and options");
+    C2PA_SignCredentials->setLayout(C2PA_SignCredentials_Layout);
+
+    //C2PA Tab
+    QVBoxLayout* C2PA=new QVBoxLayout();
+    C2PA->addWidget(C2PA_SignCredentials);
+    C2PA->addStretch();
+    QWidget* C2PA_Widget=new QWidget();
+    C2PA_Widget->setLayout(C2PA);
+    Central->addTab(C2PA_Widget, "C2PA");
+    #endif // defined(ENABLE_C2PA)
 }
 
 //---------------------------------------------------------------------------
@@ -1187,4 +1393,16 @@ void GUI_Preferences::LoadOriginalConfig()
     Extra_Bext_DefaultVersion->setValue(0);
     Extra_Bext_MaxVersion->setValue(2);
     Extra_Bext_Toggle->setChecked(false);
+
+    #if defined(ENABLE_C2PA)
+    // Reset C2PA
+    C2PA_SignCertificate_Path->setText(QString());
+    Main->C2PA_SignCertificate_Set(string());
+    C2PA_SignPrivateKey_Path->setText(QString());
+    Main->C2PA_SignPrivateKey_Set(string());
+    C2PA_SignAlgorithm_Combo->setCurrentIndex(0);
+    Main->C2PA_SignAlgorithm_Set(C2PA_SignAlgorithm_Combo->currentData().toString().toStdString());
+    C2PA_SignTA_URL_Edit->setText(QString());
+    Main->C2PA_SignTA_URL_Set(string());
+    #endif // defined(ENABLE_C2PA)
 }
