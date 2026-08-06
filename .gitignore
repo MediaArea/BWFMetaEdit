@@ -23,18 +23,6 @@ Project/QtCreator/Win32
 Project/QtCreator/x64
 Project/QtCreator/bwfmetaedit-gui
 Project/QtCreator/BWF MetaEdit.app
-Project/MSVC2015/Win32
-Project/MSVC2015/x64
-Project/MSVC2015/CLI/Win32
-Project/MSVC2015/CLI/x64
-Project/MSVC2015/GUI/Win32
-Project/MSVC2015/GUI/x64
-Project/MSVC2017/Win32
-Project/MSVC2017/x64
-Project/MSVC2017/CLI/Win32
-Project/MSVC2017/CLI/x64
-Project/MSVC2017/GUI/Win32
-Project/MSVC2017/GUI/x64
 Project/MSVC2022/Win32
 Project/MSVC2022/x64
 Project/MSVC2022/CLI/Win32
