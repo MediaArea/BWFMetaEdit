@@ -51,15 +51,15 @@ bwfmetaedit_SOURCES = \
     ../../../Source/ZenLib/ZtringListList.cpp \
     ../../../Source/ZenLib/ZtringListListF.cpp
 
+AM_CPPFLAGS = -I../../../Source
+
 if ENABLE_C2PA
     bwfmetaedit_SOURCES += ../../../Source/Riff/Riff_C2PA_Helpers.cpp
+    AM_CPPFLAGS += -I../../../Source/ThirdParty/c2pa-rs/target/release
 endif
 
-#bwfmetaedit_LDFLAGS     = -no-undefined -version-info 0:0:0
 AM_CXXFLAGS = -std=c++11
 
 AM_TESTS_FD_REDIRECT = 9>&2
 
 TESTS = test/version.sh test/metadata.sh test/overwrite.sh test/null.sh test/gap.sh test/xmloutput.sh
-
-AM_CPPFLAGS = -I../../../Source

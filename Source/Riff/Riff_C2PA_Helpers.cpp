@@ -3,8 +3,8 @@
 #include "Riff/Riff_C2PA_Helpers.h"
 
 //---------------------------------------------------------------------------
-#include "ThirdParty/c2pa-rs/target/release/c2pa.h"
 #include "ThirdParty/json/json.h"
+#include "c2pa.h"
 #include <cstdlib>
 #include <cstdio>
 

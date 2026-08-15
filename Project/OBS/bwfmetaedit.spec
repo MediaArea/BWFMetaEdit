@@ -6,6 +6,13 @@
 
 %global bwfmetaedit_version		26.01
 
+# The rust version packaged with these distributions versions is too old to build the C2PA library
+%if (!0%{?sle_version} || 0%{?sle_version} >= 150700) && (!0%{?mageia} || 0%{?mageia} >= 10) && (!0%{?rhel} || 0%{?rhel} >= 9)
+%global build_c2pa_plugin 1
+%else
+%global build_c2pa_plugin 0
+%endif
+
 Name:			bwfmetaedit
 Version:		%bwfmetaedit_version
 Release:		1
@@ -13,14 +20,18 @@ Summary:		Supplies technical and tag information about a video or audio file (CL
 Group:			Productivity/Multimedia/Other
 License:		0BSD
 URL:			https://mediaarea.net/BWFMetaEdit
-Source0:		bwfmetaedit_%{version}-1.tar.gz
+Source0:		bwfmetaedit_%{version}.tar.xz
+Source1:		bwfmetaedit-vendor_%{version}.tar.xz
 Prefix:		%{_prefix}
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
+Requires:		%{name}-plugin-c2pa = %{version}-%{release}
 BuildRequires:	dos2unix
 BuildRequires:	pkgconfig
 BuildRequires:	automake
 BuildRequires:	autoconf
 BuildRequires:	gcc-c++
+BuildRequires:	cargo
+BuildRequires:	rust
 
 %if 0%{?rhel} >= 8
 BuildRequires:  alternatives
@@ -33,9 +44,18 @@ BWF MetaEdit provides this service:
 
 (To be filled)
 
+%package plugin-c2pa
+Summary:	C2PA (Content Credentials) support library for BWF MetaEdit
+Group:		Productivity/Multimedia/Other
+
+%description plugin-c2pa
+libc2pa_c, built from Source/ThirdParty/c2pa-rs, used by both bwfmetaedit and
+bwfmetaedit-gui to detect, validate and export C2PA (Content Credentials) manifests.
+
 %package gui
 Summary:	Supplies technical and tag information about a video or audio file (GUI)
 Group:		Productivity/Multimedia/Other
+Requires:	%{name}-plugin-c2pa = %{version}-%{release}
 
 BuildRequires:	pkgconfig(Qt5Gui)
 BuildRequires:	pkgconfig(Qt5Svg)
@@ -60,16 +80,35 @@ This package contains the graphical user interface
 dos2unix     *.txt Release/*.txt conformance_point_document.xsd
 %__chmod 644 *.html *.txt Release/*.txt
 
+%__tar -xf %{SOURCE1} -C Source/ThirdParty/c2pa-rs
+mkdir -p Source/ThirdParty/c2pa-rs/.cargo
+cat > Source/ThirdParty/c2pa-rs/.cargo/config.toml <<'EOF'
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "vendor"
+EOF
+
 %build
 export CFLAGS="-g $RPM_OPT_FLAGS"
 export CXXFLAGS="-g $RPM_OPT_FLAGS"
 export QMAKEOPTS="CONFIG+=force_debug_info"
 
+# build c2pa-rs (offline, from the vendored dependencies unpacked during prep)
+export CARGO_NET_OFFLINE=true
+export CARGO_HOME="$(pwd)/.cargo_home"
+pushd Source/ThirdParty/c2pa-rs
+	cargo build --release --offline --locked -p c2pa-c-ffi \
+		--no-default-features --features "rust_native_crypto, http, file_io"
+	strip target/release/libc2pa_c.so
+popd
+
 # build CLI
 pushd Project/GNU/CLI
 	%__chmod +x autogen
 	./autogen
-	%configure
+	LDFLAGS="$LDFLAGS -Wl,-rpath,%{_libdir}/%{name} -Wl,--allow-shlib-undefined" %configure --enable-c2pa
 
 	%__make %{?jobs:-j%{jobs}}
 popd
@@ -77,7 +116,7 @@ popd
 # now build GUI
 pushd Project/QtCreator
 	%__chmod +x prepare
-	./prepare $QMAKEOPTS BINDIR=%{_bindir}
+	./prepare $QMAKEOPTS ENABLE_C2PA=yes QMAKE_RPATHDIR+=%{_libdir}/%{name} QMAKE_LFLAGS+=-Wl,--allow-shlib-undefined BINDIR=%{_bindir}
 
 	%__make %{?jobs:-j%{jobs}}
 popd
@@ -90,6 +129,10 @@ popd
 pushd Project/QtCreator
 	%__make install INSTALL_ROOT=%{buildroot}
 popd
+
+%__install -dm 755 %{buildroot}%{_libdir}/%{name}
+%__install -m 755 Source/ThirdParty/c2pa-rs/target/release/libc2pa_c.so \
+	%{buildroot}%{_libdir}/%{name}/libc2pa_c.so
 
 # icon
 %__install -dm 755 %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
@@ -139,6 +182,11 @@ install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datad
 %doc License.html History_CLI.txt conformance_point_document.xsd
 %{_bindir}/bwfmetaedit
 
+%files plugin-c2pa
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}
+%{_libdir}/%{name}/libc2pa_c.so
+
 %files gui
 %defattr(-,root,root,-)
 %doc Release/ReadMe_GUI_Linux.txt
@@ -170,5 +218,3 @@ install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datad
 %endif
 
 %changelog
-* Tue Jan 01 2010 Jerome Martinez <info@mediaarea.net> - 26.01-0
-- See History.txt for more info and real dates

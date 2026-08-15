@@ -1,28 +1,41 @@
 # $Id$
 # Maintainer: MediaArea.net SARL <info@mediaarea.net>
 
-pkgname=('bwfmetaedit' 'bwfmetaedit-gui')
+pkgname=('bwfmetaedit' 'bwfmetaedit-plugin-c2pa' 'bwfmetaedit-gui')
 pkgver=26.01
 pkgrel=1
 pkgdesc="Supplies technical and tag information about a video or audio file"
-url="http://mediaarea.net"
+arch=('x86_64')
+url="https://mediaarea.net/BWFMetaEdit"
 license=('GPL')
-source=(${pkgname}_${pkgver}-1.tar.gz)
-md5sums=('00000000000000000000000000000000')
-arch=('i686' 'x86_64')
-makedepends=('qt5-base' 'qt5-quickcontrols2' 'qt5-svg' 'qt5-tools' 'ca-certificates')
+
+makedepends=('qt5-base' 'qt5-quickcontrols2' 'qt5-svg' 'qt5-tools' 'ca-certificates' 'rust')
+source=(${pkgname}_${pkgver}.tar.xz bwfmetaedit-vendor_${pkgver}.tar.xz)
+sha256sums=('SKIP' 'SKIP')
 
 prepare() {
+    cd "${srcdir}"/bwfmetaedit/Source/ThirdParty/c2pa-rs
+    rm -rf vendor
+    tar -xf "${srcdir}"/bwfmetaedit-vendor_${pkgver}.tar.xz
+    mkdir .cargo
+    printf '[source.crates-io]\nreplace-with = "vendored-sources"\n\n[source.vendored-sources]\ndirectory = "vendor"\n' > .cargo/config.toml
 
     cd "${srcdir}"/bwfmetaedit/Project/GNU/CLI
     sh ./autogen
-    ./configure --prefix=/usr
+    # libc2pa_c.so's has undefined references to internal ring_core_* symbols,
+    # private implementation details never called from outside, shouldn't be re-validated here.
+    LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/lib/bwfmetaedit -Wl,--allow-shlib-undefined" ./configure --prefix=/usr --enable-c2pa
 
     cd "${srcdir}"/bwfmetaedit/Project/QtCreator
-    sh ./prepare BINDIR=/usr/bin
+    sh ./prepare ENABLE_C2PA=yes QMAKE_RPATHDIR+=/usr/lib/bwfmetaedit QMAKE_LFLAGS+=-Wl,--allow-shlib-undefined BINDIR=/usr/bin
 }
 
 build() {
+    cd "${srcdir}"/bwfmetaedit/Source/ThirdParty/c2pa-rs
+    CARGO_HOME="${srcdir}"/cargo_home CARGO_NET_OFFLINE=true \
+        cargo build --release --offline --locked -p c2pa-c-ffi --no-default-features --features "rust_native_crypto, http, file_io"
+    strip target/release/libc2pa_c.so
+
     cd "${srcdir}"/bwfmetaedit/Project/GNU/CLI
     make
 
@@ -32,6 +45,7 @@ build() {
 
 package_bwfmetaedit() {
     pkgdesc="${pkgdesc} (CLI)"
+    depends=('bwfmetaedit-plugin-c2pa')
 
     cd "${srcdir}"/bwfmetaedit/Project/GNU/CLI
     make DESTDIR="${pkgdir}" install
@@ -42,9 +56,16 @@ package_bwfmetaedit() {
     install -D -m 0644 "${srcdir}"/bwfmetaedit/conformance_point_document.xsd "${pkgdir}"/usr/share/doc/${pkgname}/conformance_point_document.xsd
 }
 
+package_bwfmetaedit-plugin-c2pa() {
+    pkgdesc="C2PA (Content Credentials) support library for BWF MetaEdit"
+
+    install -D -m 0755 "${srcdir}"/bwfmetaedit/Source/ThirdParty/c2pa-rs/target/release/libc2pa_c.so "${pkgdir}/usr/lib/bwfmetaedit/libc2pa_c.so"
+    install -D -m 0644 "${srcdir}"/bwfmetaedit/License.html "${pkgdir}"/usr/share/licenses/${pkgname}/License.html
+}
+
 package_bwfmetaedit-gui() {
     pkgdesc="${pkgdesc} (GUI)"
-    depends=('qt5-base' 'qt5-quickcontrols2' 'qt5-svg')
+    depends=('bwfmetaedit-plugin-c2pa' 'qt5-base' 'qt5-quickcontrols2' 'qt5-svg')
 
     cd "${srcdir}"/bwfmetaedit/Project/QtCreator
     make INSTALL_ROOT="${pkgdir}" install

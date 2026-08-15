@@ -5,6 +5,29 @@
 export DH_VERBOSE=1
 export QT_SELECT=qt5
 
+C2PA_LIBDIR := /usr/lib/bwfmetaedit
+
+# The C2PA plugin is only built when the rustc actually installed is new
+# enough. cargo/rustc are unconditional Build-Depends so
+# we check the actual version rather than just presence.
+C2PA_MIN_RUSTC_VERSION := 1.88.0
+
+RUSTC_VERSION := $(shell rustc --version 2>/dev/null | sed -n 's/^rustc \([0-9][0-9.]*\).*/\1/p')
+
+HAVE_C2PA := $(shell [ -n "$(RUSTC_VERSION)" ] && dpkg --compare-versions "$(RUSTC_VERSION)" ge "$(C2PA_MIN_RUSTC_VERSION)" && echo yes)
+
+ifeq ($(HAVE_C2PA),yes)
+CONFIGURE_C2PA_FLAGS := --enable-c2pa=dynamic
+PREPARE_C2PA_FLAGS := ENABLE_C2PA=dynamic
+C2PA_EXCLUDE :=
+else
+CONFIGURE_C2PA_FLAGS :=
+PREPARE_C2PA_FLAGS :=
+C2PA_EXCLUDE := -N bwfmetaedit-plugin-c2pa -N bwfmetaedit-plugin-c2pa-dbg
+endif
+
+VENDOR_TARBALL := $(firstword $(wildcard $(CURDIR)/../bwfmetaedit-vendor_*.tar.xz) $(wildcard $(CURDIR)/bwfmetaedit-vendor_*.tar.xz))
+
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
@@ -12,11 +35,26 @@ configure-stamp:
 
 	fromdos      *.txt
 	chmod 644    *.txt
+
+ifeq ($(HAVE_C2PA),yes)
+	test -n "$(VENDOR_TARBALL)" # bwfmetaedit-vendor_*.tar.xz not found next to the source tree
+	rm -rf Source/ThirdParty/c2pa-rs/vendor
+	tar -xf $(VENDOR_TARBALL) -C Source/ThirdParty/c2pa-rs
+	mkdir -p Source/ThirdParty/c2pa-rs/.cargo
+	printf '[source.crates-io]\nreplace-with = "vendored-sources"\n\n[source.vendored-sources]\ndirectory = "vendor"\n' \
+		> Source/ThirdParty/c2pa-rs/.cargo/config.toml
+	cd Source/ThirdParty/c2pa-rs && \
+		CARGO_HOME=$(CURDIR)/debian/cargo_home CARGO_NET_OFFLINE=true \
+		cargo build --release --offline --locked -p c2pa-c-ffi \
+			--no-default-features --features "rust_native_crypto, http, file_io"
+	strip Source/ThirdParty/c2pa-rs/target/release/libc2pa_c.so
+endif
+
 	cd Project/GNU/CLI && chmod u+x autogen
 	cd Project/GNU/CLI && ./autogen
-	cd Project/GNU/CLI && ./configure --prefix=/usr
+	cd Project/GNU/CLI && LDFLAGS="$(LDFLAGS) -Wl,-rpath,$(C2PA_LIBDIR) -Wl,--allow-shlib-undefined" ./configure --prefix=/usr $(CONFIGURE_C2PA_FLAGS)
 
-	cd Project/QtCreator && ./prepare BINDIR=/usr/bin
+	cd Project/QtCreator && ./prepare $(PREPARE_C2PA_FLAGS) QMAKE_RPATHDIR+=$(C2PA_LIBDIR) QMAKE_LFLAGS+=-Wl,--allow-shlib-undefined BINDIR=/usr/bin
 
 	touch $@
 
@@ -44,12 +82,17 @@ clean:
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_prep
 	dh_installdirs
 
 	# Add here commands to install the package into debian/tmp
 	cd Project/GNU/CLI && $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 	cd Project/QtCreator && $(MAKE) install INSTALL_ROOT=$(CURDIR)/debian/tmp
+
+ifeq ($(HAVE_C2PA),yes)
+	install -dm 755 $(CURDIR)/debian/tmp$(C2PA_LIBDIR)
+	install -m 755 Source/ThirdParty/c2pa-rs/target/release/libc2pa_c.so $(CURDIR)/debian/tmp$(C2PA_LIBDIR)/libc2pa_c.so
+endif
 
 	install -dm 755 $(CURDIR)/debian/tmp/usr/share/doc/bwfmetaedit
 	install -m 644 Release/ReadMe_CLI_Linux.txt $(CURDIR)/debian/tmp/usr/share/doc/bwfmetaedit/ReadMe.txt
@@ -87,10 +130,10 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_install --sourcedir=debian/tmp
-	dh_installchangelogs
-	dh_installdocs
-	dh_installexamples
+	dh_install --sourcedir=debian/tmp $(C2PA_EXCLUDE)
+	dh_installchangelogs $(C2PA_EXCLUDE)
+	dh_installdocs $(C2PA_EXCLUDE)
+	dh_installexamples $(C2PA_EXCLUDE)
 #	dh_install
 #	dh_installmenu
 #	dh_installdebconf
@@ -101,20 +144,30 @@ binary-arch: build install
 #	dh_installinit
 #	dh_installcron
 #	dh_installinfo
-	dh_installman
-	dh_link
+	dh_installman $(C2PA_EXCLUDE)
+	dh_link $(C2PA_EXCLUDE)
 	dh_strip -p bwfmetaedit --dbg-package=bwfmetaedit-dbg
 	dh_strip -p bwfmetaedit-gui --dbg-package=bwfmetaedit-gui-dbg
-	dh_compress
-	dh_fixperms
+ifeq ($(HAVE_C2PA),yes)
+	dh_strip -p bwfmetaedit-plugin-c2pa --dbg-package=bwfmetaedit-plugin-c2pa-dbg
+endif
+	dh_compress $(C2PA_EXCLUDE)
+	dh_fixperms $(C2PA_EXCLUDE)
 #	dh_perl
 #	dh_python
-	dh_makeshlibs
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
+	dh_makeshlibs -X$(C2PA_LIBDIR) $(C2PA_EXCLUDE)
+	dh_installdeb $(C2PA_EXCLUDE)
+ifeq ($(HAVE_C2PA),yes)
+	# libc2pa_c.so carries no SONAME (typical for a Rust cdylib) and is a private,
+	# package-internal dependency, so dpkg-shlibdeps can't compute real dependency
+	# information for it; point it at the lib and tell it not to fail on that.
+	dh_shlibdeps -- -l$(CURDIR)/debian/bwfmetaedit-plugin-c2pa$(C2PA_LIBDIR) --ignore-missing-info
+else
+	dh_shlibdeps $(C2PA_EXCLUDE)
+endif
+	dh_gencontrol $(C2PA_EXCLUDE)
+	dh_md5sums $(C2PA_EXCLUDE)
+	dh_builddeb $(C2PA_EXCLUDE)
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install configure

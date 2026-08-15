@@ -65,9 +65,9 @@ if [ "$KIND" = "CLI" ]; then
     cp "../GNU/CLI/${APPNAME_lower}" "${FILES}-Root/usr/local/bin"
     codesign -f --deep --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}-Root/usr/local/bin/${APPNAME_lower}"
 
-    mkdir -p "${FILES}-Root/usr/local/lib"
-    cp "../../Source/ThirdParty/c2pa/c2pa-rs/target/release/libc2pa_c.dylib" "${FILES}-Root/usr/local/lib"
-    codesign -f --deep --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}-Root/usr/local/lib/libc2pa_c.dylib"
+    mkdir -p "${FILES}-Root/usr/local/lib/${APPNAME_lower}/lib"
+    cp "../../Source/ThirdParty/c2pa-rs/target/release/libc2pa_c.dylib" "${FILES}-Root/usr/local/lib/${APPNAME_lower}/lib"
+    codesign -f --deep --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}-Root/usr/local/lib/${APPNAME_lower}/lib/libc2pa_c.dylib"
 
     pkgbuild --root "${FILES}-Root" --identifier "net.mediaarea.${APPNAME_lower}.mac-${KIND_lower}" --sign "Developer ID Installer: ${SIGNATURE}" --version "${VERSION}" "${FILES}/${APPNAME_lower}.pkg"
     codesign -f --deep --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}/${APPNAME_lower}.pkg"
@@ -88,6 +88,10 @@ if [ "$KIND" = "GUI" ]; then
     cp -r "../QtCreator/${APPNAME}.app" "${FILES}"
 
     macdeployqt "${FILES}/${APPNAME}.app"
+
+    mkdir -p "${FILES}/${APPNAME}.app/Contents/Frameworks"
+    cp "../../Source/ThirdParty/c2pa-rs/target/release/libc2pa_c.dylib" "${FILES}/${APPNAME}.app/Contents/Frameworks"
+    codesign -f --options=runtime -s "Developer ID Application: ${SIGNATURE}" --verbose "${FILES}/${APPNAME}.app/Contents/Frameworks/libc2pa_c.dylib"
 
     # Qt 5.3 doesn’t handle the new version of Apple
     # signatures (Mac 10.9+), so we must determin which Qt
