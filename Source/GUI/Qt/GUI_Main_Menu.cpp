@@ -364,14 +364,14 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_EBU_ISRC_Rec                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_EBU_ISRC_Rec(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Riff2Rf64_Reject                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_riff2rf64_Reject(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Overwrite_Reject                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Overwrite_Reject(bool)));
-    connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Reject                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_C2PA_Reject(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Reject                            ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_C2PA_Reject(bool)));
     #if defined(ENABLE_C2PA)
-    connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyC2PA(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Verify                            ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyC2PA(bool)));
     #if defined(C2PA_DYNAMIC_LOADING)
     if (!C2PA_Available())
     {
-        Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify]->setEnabled(false);
-        Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify]->setToolTip(tr("C2PA support is not available, please install the plugin."));
+        Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Verify]->setEnabled(false);
+        Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Verify]->setToolTip(tr("C2PA support is not available, please install the plugin."));
     }
     #endif // defined(C2PA_DYNAMIC_LOADING)
     #endif // defined(ENABLE_C2PA)
@@ -1372,7 +1372,7 @@ void GUI_Main::OnMenu_Options_Overwrite_Reject(bool)
 //---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Options_C2PA_Reject(bool)
 {
-    C->C2PA_Reject=Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Reject]->isChecked();
+    C->C2PA_Reject=Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Reject]->isChecked();
     C->Menu_File_Options_Update();
 
     if (View==NULL)
@@ -1385,7 +1385,7 @@ void GUI_Main::OnMenu_Options_C2PA_Reject(bool)
 //---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Options_VerifyC2PA(bool)
 {
-    C->VerifyC2PA=Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify]->isChecked();
+    C->VerifyC2PA=Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Verify]->isChecked();
     if (C->VerifyC2PA==true)
     {
         C->Menu_File_Options_Update();

@@ -40,6 +40,7 @@ enum group
     Group_Core,
     Group_Rules,
     Group_File,
+    Group_C2PA,
     Group_MD5,
     Group_Encoding,
     Group_Encoding_Fallback,
@@ -71,15 +72,20 @@ enum option_file
 {
     Option_File_Riff2Rf64_Reject,
     Option_File_Overwrite_Reject,
-    Option_File_C2PA_Reject,
-    #if defined(ENABLE_C2PA)
-    Option_File_C2PA_Verify,
-    #endif // defined(ENABLE_C2PA)
     Option_File_NoPadding_Accept,
     Option_File_FileNotValid_Skip,
     Option_File_WrongExtension_Skip,
     Option_File_NewChunksAtTheEnd,
     Option_File_Max
+};
+
+enum option_c2pa
+{
+    Option_C2PA_Reject,
+    #if defined(ENABLE_C2PA)
+    Option_C2PA_Verify,
+    #endif // defined(ENABLE_C2PA)
+    Option_C2PA_Max
 };
 
 enum option_md5

@@ -186,14 +186,23 @@ options Groups[Group_Max]=
         {
             {"File_Riff2Rf64_Reject", "Reject file if transformation to RF64 is requested", Type_CheckBox, false},
             {"File_Overwrite_Reject", "Prevent overwrite of existing data", Type_CheckBox, false},
-            {"File_C2PA_Reject", "Prevent invalidation of the C2PA signature if present", Type_CheckBox, false},
-            #if defined(ENABLE_C2PA)
-            {"File_C2PA_Verify", "Verify C2PA signature if present", Type_CheckBox, false},
-            #endif // defined(ENABLE_C2PA)
             {"File_NoPadding_Accept", "Accept file if padding byte is missing", Type_CheckBox, false},
             {"File_FileNotValid_Skip", "Skip non-valid files", Type_CheckBox, false},
             {"File_WrongExtension_Skip", "Skip files with no .wav extension", Type_CheckBox, true},
             {"File_NewChunksAtTheEnd", "Place new or expanded BEXT and LIST-INFO chunks at the end of the file", Type_CheckBox, true},
+        },
+        true,
+        false,
+        false,
+    },
+    {
+        "C2PA",
+        Option_C2PA_Max,
+        {
+            {"File_C2PA_Reject", "Prevent invalidation of the C2PA signature if present", Type_CheckBox, false},
+            #if defined(ENABLE_C2PA)
+            {"File_C2PA_Verify", "Verify C2PA signature if present", Type_CheckBox, false},
+            #endif // defined(ENABLE_C2PA)
         },
         true,
         false,
@@ -1131,6 +1140,7 @@ void GUI_Preferences::Create()
     ViewsOptions->addStretch();
     QVBoxLayout* EncodingOptions=new QVBoxLayout();
     EncodingOptions->addStretch();
+    QGroupBox* C2PA_PreferencesBox=NULL;
 
     for (size_t Kind=0; Kind<Group_Max; Kind++)
     {
@@ -1190,6 +1200,13 @@ void GUI_Preferences::Create()
             QGroupBox* Box=new QGroupBox();
             Box->setLayout(Columns);
             EncodingOptions->addWidget(Box);
+        }
+        else if (Kind==Group_C2PA)
+        {
+            //Merged into the hand-built "C2PA" tab below instead of getting its own tab
+            QGroupBox* Box=new QGroupBox();
+            Box->setLayout(Columns);
+            C2PA_PreferencesBox=Box;
         }
         else
         {
@@ -1354,8 +1371,8 @@ void GUI_Preferences::Create()
     if (!C2PA_Available())
     {
         QString Tip=tr("C2PA support is not available, please install the plugin.");
-        CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify]->setEnabled(false);
-        CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify]->setToolTip(Tip);
+        CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Verify]->setEnabled(false);
+        CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Verify]->setToolTip(Tip);
         C2PA_SignCredentials->setEnabled(false);
         C2PA_SignCredentials->setToolTip(Tip);
         //Also set directly on the children: a disabled child under the cursor does not necessarily forward to the group box's own tooltip
@@ -1365,10 +1382,13 @@ void GUI_Preferences::Create()
         C2PA_SignTA_URL_Edit->setToolTip(Tip);
     }
     #endif // defined(C2PA_DYNAMIC_LOADING)
+    #endif // defined(ENABLE_C2PA)
 
     //C2PA Tab
+    //Note: the checkbox preferences (C2PA_PreferencesBox) are always available, even without ENABLE_C2PA,
+    //because "prevent invalidation of the C2PA signature" does not require the C2PA library.
     QVBoxLayout* C2PA=new QVBoxLayout();
-    #if defined(C2PA_DYNAMIC_LOADING)
+    #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
     if (!C2PA_Available())
     {
         QLabel* C2PA_UnavailableBanner=new QLabel(tr("C2PA support is not available, please install the plugin."));
@@ -1376,13 +1396,16 @@ void GUI_Preferences::Create()
         C2PA_UnavailableBanner->setStyleSheet("color: "+GUI_Colors::Error()+"; font-weight: bold;");
         C2PA->addWidget(C2PA_UnavailableBanner);
     }
-    #endif // defined(C2PA_DYNAMIC_LOADING)
+    #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    if (C2PA_PreferencesBox)
+        C2PA->addWidget(C2PA_PreferencesBox);
+    #if defined(ENABLE_C2PA)
     C2PA->addWidget(C2PA_SignCredentials);
+    #endif // defined(ENABLE_C2PA)
     C2PA->addStretch();
     QWidget* C2PA_Widget=new QWidget();
     C2PA_Widget->setLayout(C2PA);
     Central->addTab(C2PA_Widget, "C2PA");
-    #endif // defined(ENABLE_C2PA)
 }
 
 //---------------------------------------------------------------------------
