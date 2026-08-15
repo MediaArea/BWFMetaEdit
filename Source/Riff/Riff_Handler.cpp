@@ -1338,7 +1338,7 @@ string Riff_Handler::Get_Internal(const string &Field)
         if (Chunks->Global->C2PA)
         {
             #if defined(ENABLE_C2PA)
-            if (VerifyC2PA)
+            if (VerifyC2PA && C2PA_Available())
                 return (Chunks->Global->C2PA->valid && Chunks->Global->C2PA->signatureValid)?"Valid":"Invalid";
             #endif // defined(ENABLE_C2PA)
             return "Yes";

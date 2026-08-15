@@ -23,6 +23,153 @@ struct C2PA_FileStreamContext
 };
 
 //***************************************************************************
+// Library loading/unloading
+//***************************************************************************
+
+#if defined(C2PA_DYNAMIC_LOADING)
+#if defined(_WIN32) || defined(WIN32)
+    #undef __TEXT
+    #include <windows.h>
+    static HMODULE C2PA_Module=NULL;
+    #if !defined(_UNICODE)
+        #define C2PA_DLL_NAME "c2pa_c.dll"
+    #else
+        #define C2PA_DLL_NAME L"c2pa_c.dll"
+    #endif
+    #define C2PA_GETPROC(_Module, _Name) GetProcAddress(_Module, _Name)
+#elif defined(__APPLE__) && defined(__MACH__)
+    #include <dlfcn.h>
+    static void* C2PA_Module=NULL;
+    #define C2PA_DLL_NAME "libc2pa_c.dylib"
+    #define C2PA_GETPROC(_Module, _Name) dlsym(_Module, _Name)
+#else
+    #include <dlfcn.h>
+    static void* C2PA_Module=NULL;
+    #define C2PA_DLL_NAME "libc2pa_c.so"
+    #define C2PA_GETPROC(_Module, _Name) dlsym(_Module, _Name)
+#endif
+
+static decltype(&c2pa_free)                     p_c2pa_free=NULL;
+static decltype(&c2pa_context_new)              p_c2pa_context_new=NULL;
+static decltype(&c2pa_reader_from_context)      p_c2pa_reader_from_context=NULL;
+static decltype(&c2pa_create_stream)            p_c2pa_create_stream=NULL;
+static decltype(&c2pa_release_stream)           p_c2pa_release_stream=NULL;
+static decltype(&c2pa_reader_with_stream)       p_c2pa_reader_with_stream=NULL;
+static decltype(&c2pa_reader_detailed_json)     p_c2pa_reader_detailed_json=NULL;
+static decltype(&c2pa_reader_crjson)            p_c2pa_reader_crjson=NULL;
+static decltype(&c2pa_error)                    p_c2pa_error=NULL;
+static decltype(&c2pa_builder_from_context)     p_c2pa_builder_from_context=NULL;
+static decltype(&c2pa_builder_with_definition)  p_c2pa_builder_with_definition=NULL;
+static decltype(&c2pa_signer_from_info)         p_c2pa_signer_from_info=NULL;
+static decltype(&c2pa_builder_sign)             p_c2pa_builder_sign=NULL;
+
+#define c2pa_free                               p_c2pa_free
+#define c2pa_context_new                        p_c2pa_context_new
+#define c2pa_reader_from_context                p_c2pa_reader_from_context
+#define c2pa_create_stream                      p_c2pa_create_stream
+#define c2pa_release_stream                     p_c2pa_release_stream
+#define c2pa_reader_with_stream                 p_c2pa_reader_with_stream
+#define c2pa_reader_detailed_json               p_c2pa_reader_detailed_json
+#define c2pa_reader_crjson                      p_c2pa_reader_crjson
+#define c2pa_error                              p_c2pa_error
+#define c2pa_builder_from_context               p_c2pa_builder_from_context
+#define c2pa_builder_with_definition            p_c2pa_builder_with_definition
+#define c2pa_signer_from_info                   p_c2pa_signer_from_info
+#define c2pa_builder_sign                       p_c2pa_builder_sign
+
+#define C2PA_SYM(_Name) \
+    p_##_Name=reinterpret_cast<decltype(p_##_Name)>(C2PA_GETPROC(C2PA_Module, #_Name)); \
+    if (!p_##_Name) \
+        Error=true;
+
+//---------------------------------------------------------------------------
+bool C2PA_Load()
+{
+    if (C2PA_Module)
+        return true;
+
+#if defined(_WIN32) || defined(WIN32)
+    C2PA_Module=LoadLibrary(C2PA_DLL_NAME);
+#else
+    C2PA_Module=dlopen(C2PA_DLL_NAME, RTLD_LAZY);
+    if (!C2PA_Module)
+        C2PA_Module=dlopen("./" C2PA_DLL_NAME, RTLD_LAZY);
+    if (!C2PA_Module)
+        C2PA_Module=dlopen("/usr/local/lib/" C2PA_DLL_NAME, RTLD_LAZY);
+    if (!C2PA_Module)
+        C2PA_Module=dlopen("/usr/local/lib64/" C2PA_DLL_NAME, RTLD_LAZY);
+    if (!C2PA_Module)
+        C2PA_Module=dlopen("/usr/lib/" C2PA_DLL_NAME, RTLD_LAZY);
+    if (!C2PA_Module)
+        C2PA_Module=dlopen("/usr/lib64/" C2PA_DLL_NAME, RTLD_LAZY);
+#endif
+    if (!C2PA_Module)
+        return false;
+
+    bool Error=false;
+    C2PA_SYM(c2pa_free)
+    C2PA_SYM(c2pa_context_new)
+    C2PA_SYM(c2pa_reader_from_context)
+    C2PA_SYM(c2pa_create_stream)
+    C2PA_SYM(c2pa_release_stream)
+    C2PA_SYM(c2pa_reader_with_stream)
+    C2PA_SYM(c2pa_reader_detailed_json)
+    C2PA_SYM(c2pa_reader_crjson)
+    C2PA_SYM(c2pa_error)
+    C2PA_SYM(c2pa_builder_from_context)
+    C2PA_SYM(c2pa_builder_with_definition)
+    C2PA_SYM(c2pa_signer_from_info)
+    C2PA_SYM(c2pa_builder_sign)
+
+    if (Error)
+    {
+        C2PA_Unload();
+        return false;
+    }
+
+    return true;
+}
+
+//---------------------------------------------------------------------------
+void C2PA_Unload()
+{
+    if (!C2PA_Module)
+        return;
+
+#if defined(_WIN32) || defined(WIN32)
+    FreeLibrary(C2PA_Module);
+#else
+    dlclose(C2PA_Module);
+#endif
+    C2PA_Module=NULL;
+
+    p_c2pa_free=NULL;
+    p_c2pa_context_new=NULL;
+    p_c2pa_reader_from_context=NULL;
+    p_c2pa_create_stream=NULL;
+    p_c2pa_release_stream=NULL;
+    p_c2pa_reader_with_stream=NULL;
+    p_c2pa_reader_detailed_json=NULL;
+    p_c2pa_reader_crjson=NULL;
+    p_c2pa_error=NULL;
+    p_c2pa_builder_from_context=NULL;
+    p_c2pa_builder_with_definition=NULL;
+    p_c2pa_signer_from_info=NULL;
+    p_c2pa_builder_sign=NULL;
+}
+
+//---------------------------------------------------------------------------
+bool C2PA_Available()
+{
+    return C2PA_Module!=NULL;
+}
+#else //c2pa_c is linked directly; nothing to do
+bool C2PA_Load()   { return true; }
+void C2PA_Unload() {}
+bool C2PA_Available() { return true; }
+#endif // defined(ENABLE_C2PA)
+
+//***************************************************************************
 // Callbacks
 //***************************************************************************
 
@@ -200,32 +347,22 @@ static void C2PA_ParseStatusArray(json_array_s* StatusArray, vector<string>& Mes
 //---------------------------------------------------------------------------
 void C2PA_Validate(Riff_Handler* Handler, Riff_Base::global* Global)
 {
-    if (!Handler || !Global || !Global->C2PA)
+    if (!C2PA_Available() || !Handler || !Global || !Global->C2PA)
         return;
-
-    //if (!c2pa_load())
-    //    return;
 
     string FileName=Global->File_Name.To_UTF8();
     if (FileName.empty())
-    {
-        //c2pa_unload();
         return;
-    }
 
     C2PA_FileStreamContext FileContext;
     FileContext.F=fopen(FileName.c_str(), "rb");
     if (!FileContext.F)
-    {
-        //c2pa_unload();
         return;
-    }
 
     C2paContext* Context=c2pa_context_new();
     if (!Context)
     {
         fclose(FileContext.F);
-        //c2pa_unload();
         return;
     }
 
@@ -259,7 +396,6 @@ void C2PA_Validate(Riff_Handler* Handler, Riff_Base::global* Global)
             c2pa_free(Reader);
             c2pa_free(Context);
             fclose(FileContext.F);
-            //c2pa_unload();
             return;
         }
 
@@ -355,13 +491,12 @@ void C2PA_Validate(Riff_Handler* Handler, Riff_Base::global* Global)
 
     c2pa_free(Context);
     fclose(FileContext.F);
-    //c2pa_unload();
 }
 
 //---------------------------------------------------------------------------
 void C2PA_Sign(Riff_Handler* Handler, Riff_Base::global* Global)
 {
-    if (!Handler || !Global || Handler->C2PA_SignManifestJson.empty())
+    if (!C2PA_Available() ||!Handler || !Global || Handler->C2PA_SignManifestJson.empty())
         return;
 
     string FileName=Global->File_Name.To_UTF8();
@@ -418,13 +553,6 @@ void C2PA_Sign(Riff_Handler* Handler, Riff_Base::global* Global)
         ManifestJson.insert(ManifestJson.find('{')+1, Defaults);
     }
 
-//    if (!c2pa_load())
- //   {
- //       Handler->Errors<<FileName<<": C2PA signing, unable to load the C2PA library"<<endl;
- //       Handler->PerFile_Error<<"C2PA signing, unable to load the C2PA library"<<endl;
- //       return;
- //   }
-
     //Signer
     C2paSignerInfo SignerInfo;
     SignerInfo.alg=Handler->C2PA_SignAlgorithm.c_str();
@@ -440,7 +568,7 @@ void C2PA_Sign(Riff_Handler* Handler, Riff_Base::global* Global)
         Handler->PerFile_Error<<"C2PA signing, unable to create the signer: "<<(Error?Error:"")<<endl;
         if (Error)
             c2pa_free(Error);
-        //c2pa_unload();
+
         return;
     }
 
@@ -460,7 +588,7 @@ void C2PA_Sign(Riff_Handler* Handler, Riff_Base::global* Global)
         c2pa_free(Signer);
         if (Context)
             c2pa_free(Context);
-        //c2pa_unload();
+
         return;
     }
 
@@ -482,7 +610,6 @@ void C2PA_Sign(Riff_Handler* Handler, Riff_Base::global* Global)
         c2pa_free(Builder);
         c2pa_free(Signer);
         c2pa_free(Context);
-        //c2pa_unload();
         return;
     }
 
@@ -513,11 +640,9 @@ void C2PA_Sign(Riff_Handler* Handler, Riff_Base::global* Global)
         if (Error)
             c2pa_free(Error);
         File::Delete(Ztring().From_UTF8(TempFileName));
-        //c2pa_unload();
+
         return;
     }
-
-    //c2pa_unload();
 
     //Replacing the original file with the signed one, mirroring Riff_Base::Write's temp-file rename
     if (!File::Delete(Global->File_Name) || !File::Move(Ztring().From_UTF8(TempFileName), Global->File_Name))

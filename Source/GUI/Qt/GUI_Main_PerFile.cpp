@@ -22,6 +22,9 @@
 #include "GUI/Qt/GUI_Main_xxxx_CueDialog.h"
 #if defined(ENABLE_C2PA)
 #include "GUI/Qt/GUI_Main_xxxx_C2PADialog.h"
+#if defined(C2PA_DYNAMIC_LOADING)
+#include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(C2PA_DYNAMIC_LOADING)
 #endif // defined(ENABLE_C2PA)
 #include "GUI/Qt/GUI_Main_xxxx_EditMenu.h"
 #include "Common/Core.h"
@@ -331,6 +334,18 @@ Q_INVOKABLE bool PerFileModel::c2paEnabled() const {
 }
 
 //---------------------------------------------------------------------------
+Q_INVOKABLE bool PerFileModel::c2paAvailable() const {
+    #if defined(ENABLE_C2PA)
+        #if defined(C2PA_DYNAMIC_LOADING)
+        return C2PA_Available();
+        #else
+        return true;
+        #endif
+    #endif
+    return false;
+}
+
+//---------------------------------------------------------------------------
 Q_INVOKABLE bool PerFileModel::isWritable(const QString& FileName) const {
     return valid(FileName) && !readOnly(FileName);
 }
@@ -344,6 +359,11 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
     if (Field=="C2PA")
     {
         #if defined(ENABLE_C2PA)
+            #if defined(C2PA_DYNAMIC_LOADING)
+            if (!C2PA_Available())
+                return;
+            #endif // defined(C2PA_DYNAMIC_LOADING)
+
             bool Writable=!readOnly(FileName, Field);
             GUI_Main_xxxx_C2PADialog* Edit=new GUI_Main_xxxx_C2PADialog(C, FileName.toStdString(), NULL, Writable);
             Edit->exec();

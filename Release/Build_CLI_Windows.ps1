@@ -27,7 +27,7 @@ elseif ("${arch}" -eq "x64" ) {
 if (-Not (Test-Path -Path "${release_directory}\..\Source\ThirdParty\c2pa-rs\target\${arch_c2pa}-pc-windows-msvc\release")) {
     $Env:CARGO_TARGET_DIR = Join-Path "${Env:TEMP}" "c2pa-build-cli-${arch_c2pa}"
     Push-Location -Path "${release_directory}\..\Source\ThirdParty\c2pa-rs"
-        cargo build --release -p c2pa -p c2pa-c-ffi --target "${arch_c2pa}-pc-windows-msvc"
+        cargo build --release -p c2pa-c-ffi --no-default-features --features "rust_native_crypto, http, file_io" --target "${arch_c2pa}-pc-windows-msvc"
     Pop-Location
 
     $c2pa_target_dir = "${release_directory}\..\Source\ThirdParty\c2pa-rs\target\${arch_c2pa}-pc-windows-msvc"

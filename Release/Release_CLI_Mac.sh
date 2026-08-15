@@ -25,7 +25,7 @@ rm -f "${release_directory}/BWFMetaEdit_CLI_${version}_Mac.dmg"
 # Build c2pa-rs
 pushd "${release_directory}/../Source/ThirdParty/c2pa-rs"
     for arch in x86_64 aarch64 ; do
-        MACOSX_DEPLOYMENT_TARGET="${macosx_version_min}" cargo build --release -p c2pa -p c2pa-c-ffi --target "${arch}-apple-darwin"
+        MACOSX_DEPLOYMENT_TARGET="${macosx_version_min}" cargo build --release -p c2pa-c-ffi --no-default-features --features "rust_native_crypto, http, file_io" --target "${arch}-apple-darwin"
     done
 
     mkdir -p target/release
@@ -39,7 +39,7 @@ popd
 # Build bwfmetaedit
 pushd "${release_directory}/../Project/GNU/CLI"
     ./autogen.sh
-    ./configure --enable-arch-x86_64 --enable-arch-arm64 --enable-c2pa --with-macosx-version-min="${macosx_version_min}"
+    ./configure --enable-arch-x86_64 --enable-arch-arm64 --enable-c2pa=dynamic --with-macosx-version-min="${macosx_version_min}"
     make
 
     install_name_tool -add_rpath /usr/local/lib/bwfmetaedit/lib bwfmetaedit

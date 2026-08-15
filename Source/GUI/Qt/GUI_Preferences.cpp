@@ -15,7 +15,11 @@
 #include "GUI/Qt/GUI_Main_xxxx_UmidDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_CodingHistoryDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_Loudness.h"
+#include "GUI/Qt/GUI_Colors.h"
 #include "Common/Core.h"
+#if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    #include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
 #include <QTextBrowser>
 #include <QGridLayout>
 #include <QVBoxLayout>
@@ -1346,8 +1350,33 @@ void GUI_Preferences::Create()
     QGroupBox* C2PA_SignCredentials=new QGroupBox("Signing certificate, private key and options");
     C2PA_SignCredentials->setLayout(C2PA_SignCredentials_Layout);
 
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        QString Tip=tr("C2PA support is not available, please install the plugin.");
+        CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify]->setEnabled(false);
+        CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify]->setToolTip(Tip);
+        C2PA_SignCredentials->setEnabled(false);
+        C2PA_SignCredentials->setToolTip(Tip);
+        //Also set directly on the children: a disabled child under the cursor does not necessarily forward to the group box's own tooltip
+        C2PA_SignCertificate_Browse->setToolTip(Tip);
+        C2PA_SignPrivateKey_Browse->setToolTip(Tip);
+        C2PA_SignAlgorithm_Combo->setToolTip(Tip);
+        C2PA_SignTA_URL_Edit->setToolTip(Tip);
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
     //C2PA Tab
     QVBoxLayout* C2PA=new QVBoxLayout();
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        QLabel* C2PA_UnavailableBanner=new QLabel(tr("C2PA support is not available, please install the plugin."));
+        C2PA_UnavailableBanner->setWordWrap(true);
+        C2PA_UnavailableBanner->setStyleSheet("color: "+GUI_Colors::Error()+"; font-weight: bold;");
+        C2PA->addWidget(C2PA_UnavailableBanner);
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
     C2PA->addWidget(C2PA_SignCredentials);
     C2PA->addStretch();
     QWidget* C2PA_Widget=new QWidget();

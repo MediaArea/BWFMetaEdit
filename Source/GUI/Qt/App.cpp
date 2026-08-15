@@ -16,6 +16,11 @@
 #include "Common/Core.h"
 #include <vector>
 #include <iostream>
+
+#if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+#include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+
 using namespace std;
 
 #if defined(_WIN32) && !defined(_DLL)
@@ -39,6 +44,10 @@ int main (int argc, char** argv)
 
     setlocale(LC_ALL, "");
 
+    #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    C2PA_Load();
+    #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+
     QApplication App(argc, argv);
     Core C;
     C.Errors_Continue=true; //Always for the GUI
@@ -52,6 +61,10 @@ int main (int argc, char** argv)
     GUI_Main Window(&C);
     Window.show();
     int ToReturn=App.exec();
+
+    #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    C2PA_Unload();
+    #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
 
     return ToReturn;
 }

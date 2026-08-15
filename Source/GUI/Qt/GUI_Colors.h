@@ -1,4 +1,4 @@
-// BWF MetaEdit Riff - RIFF stuff for BWF MetaEdit
+// BWF MetaEdit GUI - A GUI for BWF MetaEdit
 //
 // This code was created in 2010 for the Library of Congress and the
 // other federal government agencies participating in the Federal Agencies
@@ -8,22 +8,28 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------
-#ifndef Riff_C2PA_HelpersH
-#define Riff_C2PA_HelpersH
-#if defined(ENABLE_C2PA)
+#ifndef GUI_ColorsH
+#define GUI_ColorsH
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#include "Riff/Riff_Base.h"
-#include "Riff/Riff_Handler.h"
+#include <QString>
+//---------------------------------------------------------------------------
+
+//***************************************************************************
+// GUI_Colors
+//***************************************************************************
+namespace GUI_Colors
+{
+    bool    IsDarkTheme();
+
+    QString Error();
+    QString Success();
+    QString Warning();
+    QString Info();
+    QString Neutral();
+    QString Notice();
+}
 
 //---------------------------------------------------------------------------
-bool C2PA_Load();
-void C2PA_Unload();
-bool C2PA_Available();
-void C2PA_Validate(Riff_Handler* Handler, Riff_Base::global* Global);
-void C2PA_Sign(Riff_Handler* Handler, Riff_Base::global* Global);
-
-//---------------------------------------------------------------------------
-#endif // defined(ENABLE_C2PA)
-#endif // Riff_C2PA_HelpersH
+#endif

@@ -26,6 +26,9 @@
 #include "GUI/Qt/GUI_Help.h"
 #include "GUI/Qt/GUI_About.h"
 #include "ZenLib/ZtringList.h"
+#if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    #include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -266,9 +269,17 @@ void GUI_Main::Menu_Create()
     #endif
     Menu_Export_C2PA_JSON_PerFile->setStatusTip(tr(""));
     connect(Menu_Export_C2PA_JSON_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_C2PA_JSON_PerFile()));
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        Menu_Export_C2PA_JSON_PerFile->setEnabled(false);
+        Menu_Export_C2PA_JSON_PerFile->setToolTip(tr("C2PA support is not available, please install the plugin."));
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
     #endif // defined(ENABLE_C2PA)
 
     Menu_Export = menuBar()->addMenu(tr("E&xport"));
+    Menu_Export->setToolTipsVisible(true);
     Menu_Export->addAction(Menu_Export_Unified_XML_Global);
     Menu_Export->addSeparator();
     Menu_Export->addAction(Menu_Export_Technical_CSV_Global);
@@ -317,6 +328,7 @@ void GUI_Main::Menu_Create()
         {
             Menu_Fields_ActionGroups[Group]=new QActionGroup(this);
             Menu_Fields_Menus[Group]=Menu_Fields_Main->addMenu(QString::fromUtf8(GUI_Preferences::Group_Name_Get((group)Group).c_str()));
+            Menu_Fields_Menus[Group]->setToolTipsVisible(true);
         }
         for (size_t Option=0; Option<GUI_Preferences::Group_Options_Count_Get((group)Group, true); Option++)
         {
@@ -355,6 +367,13 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Reject                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_C2PA_Reject(bool)));
     #if defined(ENABLE_C2PA)
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify                       ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyC2PA(bool)));
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify]->setEnabled(false);
+        Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_C2PA_Verify]->setToolTip(tr("C2PA support is not available, please install the plugin."));
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
     #endif // defined(ENABLE_C2PA)
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_NoPadding_Accept                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_NoPadding_Accept(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_FileNotValid_Skip                 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_FileNotValid_Skip(bool)));

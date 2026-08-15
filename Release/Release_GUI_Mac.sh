@@ -26,7 +26,7 @@ rm -f "${release_directory}/../Project/Mac/BWFMetaEdit_GUI_${version}_Mac.dmg"
 # Build c2pa-rs
 pushd "${release_directory}/../Source/ThirdParty/c2pa-rs"
     for arch in x86_64 aarch64 ; do
-        MACOSX_DEPLOYMENT_TARGET="${macosx_version_min}" cargo build --release -p c2pa -p c2pa-c-ffi --target "${arch}-apple-darwin"
+        MACOSX_DEPLOYMENT_TARGET="${macosx_version_min}" cargo build --release -p c2pa-c-ffi --no-default-features --features "rust_native_crypto, http, file_io" --target "${arch}-apple-darwin"
     done
 
     mkdir -p target/release
@@ -38,7 +38,7 @@ popd
 #-----------------------------------------------------------------------
 # Build BWF MetaEdit
 pushd "${release_directory}/../Project/QtCreator"
-    qmake ENABLE_C2PA=yes
+    qmake ENABLE_C2PA=dynamic
     make
     if ! otool -l "BWF MetaEdit.app/Contents/MacOS/BWF MetaEdit" | grep -q "@executable_path/../Frameworks" ; then
         install_name_tool -add_rpath "@executable_path/../Frameworks" "BWF MetaEdit.app/Contents/MacOS/BWF MetaEdit"

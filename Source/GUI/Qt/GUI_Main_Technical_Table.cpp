@@ -16,6 +16,9 @@
 #include "GUI/Qt/GUI_Main_xxxx_CodePageDialog.h"
 #if defined(ENABLE_C2PA)
 #include "GUI/Qt/GUI_Main_xxxx_C2PADialog.h"
+#if defined(C2PA_DYNAMIC_LOADING)
+#include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(C2PA_DYNAMIC_LOADING)
 #endif // defined(ENABLE_C2PA)
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
@@ -423,6 +426,11 @@ bool GUI_Main_Technical_Table::edit (const QModelIndex &index, EditTrigger trigg
     if (Field=="C2PA")
     {
         #if defined(ENABLE_C2PA)
+            #if defined(C2PA_DYNAMIC_LOADING)
+            if (!C2PA_Available())
+                return false;
+            #endif // defined(C2PA_DYNAMIC_LOADING)
+
             //User interaction
             GUI_Main_xxxx_C2PADialog* Edit=new GUI_Main_xxxx_C2PADialog(C, FileName, NULL, !C->IsReadOnly_Get(FileName));
             Edit->exec();

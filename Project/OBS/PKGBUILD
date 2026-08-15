@@ -22,12 +22,10 @@ prepare() {
 
     cd "${srcdir}"/bwfmetaedit/Project/GNU/CLI
     sh ./autogen
-    # libc2pa_c.so's has undefined references to internal ring_core_* symbols,
-    # private implementation details never called from outside, shouldn't be re-validated here.
-    LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/lib/bwfmetaedit -Wl,--allow-shlib-undefined" ./configure --prefix=/usr --enable-c2pa
+    LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/lib/bwfmetaedit" ./configure --prefix=/usr --enable-c2pa=dynamic
 
     cd "${srcdir}"/bwfmetaedit/Project/QtCreator
-    sh ./prepare ENABLE_C2PA=yes QMAKE_RPATHDIR+=/usr/lib/bwfmetaedit QMAKE_LFLAGS+=-Wl,--allow-shlib-undefined BINDIR=/usr/bin
+    sh ./prepare ENABLE_C2PA=dynamic QMAKE_RPATHDIR+=/usr/lib/bwfmetaedit BINDIR=/usr/bin
 }
 
 build() {
@@ -45,7 +43,6 @@ build() {
 
 package_bwfmetaedit() {
     pkgdesc="${pkgdesc} (CLI)"
-    depends=('bwfmetaedit-plugin-c2pa')
 
     cd "${srcdir}"/bwfmetaedit/Project/GNU/CLI
     make DESTDIR="${pkgdir}" install
@@ -65,7 +62,7 @@ package_bwfmetaedit-plugin-c2pa() {
 
 package_bwfmetaedit-gui() {
     pkgdesc="${pkgdesc} (GUI)"
-    depends=('bwfmetaedit-plugin-c2pa' 'qt5-base' 'qt5-quickcontrols2' 'qt5-svg')
+    depends=('qt5-base' 'qt5-quickcontrols2' 'qt5-svg')
 
     cd "${srcdir}"/bwfmetaedit/Project/QtCreator
     make INSTALL_ROOT="${pkgdir}" install

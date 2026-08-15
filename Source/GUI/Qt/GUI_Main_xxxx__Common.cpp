@@ -17,6 +17,9 @@
 #include "GUI/Qt/GUI_Preferences.h"
 #include "Common/Core.h"
 #include "Common/Common_About.h"
+#if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    #include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
 #include "ZenLib/ZtringListList.h"
 #include <QLabel>
 #include <QEvent>
@@ -369,6 +372,17 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
         Message+=C2PALocked?"Edit mode disabled, editing would invalidate the C2PA signature!":"Edit mode disabled, file is read only!";
         Item->setToolTip(Message);
     }
+
+    #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    if (Field=="C2PA" && !C2PA_Available())
+    {
+        QString Message=Item->toolTip();
+        if (!Message.isEmpty())
+            Message+="\n\n";
+        Message+="C2PA support is not available, please install the plugin.";
+        Item->setToolTip(Message);
+    }
+    #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
 }
 
 //---------------------------------------------------------------------------

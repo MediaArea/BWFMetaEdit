@@ -24,14 +24,15 @@ Source0:		bwfmetaedit_%{version}.tar.xz
 Source1:		bwfmetaedit-vendor_%{version}.tar.xz
 Prefix:		%{_prefix}
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
-Requires:		%{name}-plugin-c2pa = %{version}-%{release}
 BuildRequires:	dos2unix
 BuildRequires:	pkgconfig
 BuildRequires:	automake
 BuildRequires:	autoconf
 BuildRequires:	gcc-c++
+%if %{build_c2pa_plugin}
 BuildRequires:	cargo
 BuildRequires:	rust
+%endif
 
 %if 0%{?rhel} >= 8
 BuildRequires:  alternatives
@@ -44,18 +45,18 @@ BWF MetaEdit provides this service:
 
 (To be filled)
 
+%if %{build_c2pa_plugin}
 %package plugin-c2pa
 Summary:	C2PA (Content Credentials) support library for BWF MetaEdit
 Group:		Productivity/Multimedia/Other
 
 %description plugin-c2pa
-libc2pa_c, built from Source/ThirdParty/c2pa-rs, used by both bwfmetaedit and
-bwfmetaedit-gui to detect, validate and export C2PA (Content Credentials) manifests.
+C2PA Signature, validation and export support.
+%endif
 
 %package gui
 Summary:	Supplies technical and tag information about a video or audio file (GUI)
 Group:		Productivity/Multimedia/Other
-Requires:	%{name}-plugin-c2pa = %{version}-%{release}
 
 BuildRequires:	pkgconfig(Qt5Gui)
 BuildRequires:	pkgconfig(Qt5Svg)
@@ -95,6 +96,7 @@ export CFLAGS="-g $RPM_OPT_FLAGS"
 export CXXFLAGS="-g $RPM_OPT_FLAGS"
 export QMAKEOPTS="CONFIG+=force_debug_info"
 
+%if %{build_c2pa_plugin}
 # build c2pa-rs (offline, from the vendored dependencies unpacked during prep)
 export CARGO_NET_OFFLINE=true
 export CARGO_HOME="$(pwd)/.cargo_home"
@@ -103,21 +105,29 @@ pushd Source/ThirdParty/c2pa-rs
 		--no-default-features --features "rust_native_crypto, http, file_io"
 	strip target/release/libc2pa_c.so
 popd
+%endif
 
 # build CLI
 pushd Project/GNU/CLI
 	%__chmod +x autogen
 	./autogen
-	LDFLAGS="$LDFLAGS -Wl,-rpath,%{_libdir}/%{name} -Wl,--allow-shlib-undefined" %configure --enable-c2pa
-
+	%if %{build_c2pa_plugin}
+	LDFLAGS="$LDFLAGS -Wl,-rpath,%{_libdir}/%{name}" %configure --enable-c2pa=dynamic
+	%else
+	%configure
+	%endif
 	%__make %{?jobs:-j%{jobs}}
 popd
 
 # now build GUI
 pushd Project/QtCreator
 	%__chmod +x prepare
-	./prepare $QMAKEOPTS ENABLE_C2PA=yes QMAKE_RPATHDIR+=%{_libdir}/%{name} QMAKE_LFLAGS+=-Wl,--allow-shlib-undefined BINDIR=%{_bindir}
-
+	%if %{build_c2pa_plugin}
+	./prepare $QMAKEOPTS ENABLE_C2PA=dynamic QMAKE_RPATHDIR+=%{_libdir}/%{name} BINDIR=%{_bindir}
+	%else
+	./prepare BINDIR=%{_bindir}
+	%endif
+	./prepare $QMAKEOPTS BINDIR=%{_bindir}
 	%__make %{?jobs:-j%{jobs}}
 popd
 
@@ -130,9 +140,11 @@ pushd Project/QtCreator
 	%__make install INSTALL_ROOT=%{buildroot}
 popd
 
+%if %{build_c2pa_plugin}
 %__install -dm 755 %{buildroot}%{_libdir}/%{name}
 %__install -m 755 Source/ThirdParty/c2pa-rs/target/release/libc2pa_c.so \
 	%{buildroot}%{_libdir}/%{name}/libc2pa_c.so
+%endif
 
 # icon
 %__install -dm 755 %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
@@ -182,10 +194,12 @@ install -m 644 Project/GNU/GUI/bwfmetaedit-gui.metainfo.xml %{buildroot}%{_datad
 %doc License.html History_CLI.txt conformance_point_document.xsd
 %{_bindir}/bwfmetaedit
 
+%if %{build_c2pa_plugin}
 %files plugin-c2pa
 %defattr(-,root,root,-)
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/libc2pa_c.so
+%endif
 
 %files gui
 %defattr(-,root,root,-)

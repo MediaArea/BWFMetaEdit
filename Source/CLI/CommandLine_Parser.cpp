@@ -23,6 +23,9 @@
 #include "Common/Common_About.h"
 #if defined(ENABLE_C2PA)
     #include "ZenLib/File.h"
+    #if defined(C2PA_DYNAMIC_LOADING)
+        #include "Riff/Riff_C2PA_Helpers.h"
+    #endif // defined(ENABLE_C2PA)
 #endif // defined(ENABLE_C2PA)
 #include "ZenLib/ZtringList.h"
 using namespace ZenLib;
@@ -989,6 +992,14 @@ CL_OPTION(Out_C2PA_JSON)
 {
     UNUSED_PARAMETER(Argument);
 
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
     C.Out_C2PA_JSON=true;
 
     return -2; //Continue
@@ -997,6 +1008,14 @@ CL_OPTION(Out_C2PA_JSON)
 //---------------------------------------------------------------------------
 CL_OPTION(Out_C2PA_File)
 {
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
     //Form : --out-c2pa=(FileName)
     string FileName=string().assign(Argument, 11, std::string::npos);
 
@@ -1013,6 +1032,14 @@ CL_OPTION(C2PA_Verify)
 {
     UNUSED_PARAMETER(Argument);
 
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
     C.VerifyC2PA=true;
     C.VerifyC2PA_Force=true;
 
@@ -1022,6 +1049,14 @@ CL_OPTION(C2PA_Verify)
 //---------------------------------------------------------------------------
 CL_OPTION(C2PA_Sign_Manifest)
 {
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
     //Form : --c2pa-sign-manifest=(FileName)
     string FileName=string().assign(Argument, 21, std::string::npos);
 
@@ -1039,6 +1074,14 @@ CL_OPTION(C2PA_Sign_Manifest)
 //---------------------------------------------------------------------------
 CL_OPTION(C2PA_Sign_Certificate)
 {
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
     //Form : --c2pa-sign-certificate=(FileName)
     string FileName=string().assign(Argument, 24, std::string::npos);
 
@@ -1056,6 +1099,14 @@ CL_OPTION(C2PA_Sign_Certificate)
 //---------------------------------------------------------------------------
 CL_OPTION(C2PA_Sign_Key)
 {
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
     //Form : --c2pa-sign-key=(FileName)
     string FileName=string().assign(Argument, 16, std::string::npos);
 
@@ -1073,6 +1124,15 @@ CL_OPTION(C2PA_Sign_Key)
 //---------------------------------------------------------------------------
 CL_OPTION(C2PA_Sign_Algorithm)
 {
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+    C.C2PA_SignAlgorithm.assign(Argument, 22, std::string::npos);
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
     //Form : --c2pa-sign-algorithm=(Value)
     C.C2PA_SignAlgorithm.assign(Argument, 22, std::string::npos);
 
@@ -1082,6 +1142,14 @@ CL_OPTION(C2PA_Sign_Algorithm)
 //---------------------------------------------------------------------------
 CL_OPTION(C2PA_Sign_TA_URL)
 {
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
     //Form : --c2pa-sign-ta-url=(Value)
     C.C2PA_SignTA_URL.assign(Argument, 19, std::string::npos);
 

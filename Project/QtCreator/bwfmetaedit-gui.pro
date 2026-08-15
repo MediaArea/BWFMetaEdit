@@ -64,6 +64,7 @@ HEADERS = \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CueDialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CodePageDialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx__Common.h \
+    ../../Source/GUI/Qt/GUI_Colors.h \
     ../../Source/GUI/Qt/GUI_Preferences.h \
     ../../Source/MD5/md5.h \
     ../../Source/Riff/Riff_Base.h \
@@ -123,6 +124,7 @@ SOURCES = \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CueDialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CodePageDialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx__Common.cpp \
+    ../../Source/GUI/Qt/GUI_Colors.cpp \
     ../../Source/GUI/Qt/GUI_Preferences.cpp \
     ../../Source/MD5/md5.c \
     ../../Source/Riff/Riff_Base.cpp \
