@@ -19,12 +19,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "MediaArea.net"
             VALUE "FileDescription", "BWF MetaEdit"
-            VALUE "FileVersion", "26.01.0"
+            VALUE "FileVersion", "26.01.0.0"
             VALUE "InternalName", "BWF MetaEdit - GUI"
             VALUE "LegalCopyright", "MediaArea.net"
             VALUE "OriginalFilename", "BWF MetaEdit.exe"
             VALUE "ProductName", "BWF MetaEdit"
-            VALUE "ProductVersion", "26.01.0"
+            VALUE "ProductVersion", "26.01.0.0"
         END
     END
     BLOCK "VarFileInfo"

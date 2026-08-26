@@ -128,6 +128,7 @@ public:
     //Configuration
     bool            riff2rf64_Reject;
     bool            Overwrite_Reject;
+    bool            C2PA_Reject;
     bool            NoPadding_Accept;
     bool            NewChunksAtTheEnd;
     bool            GenerateMD5;
@@ -142,6 +143,15 @@ public:
     Riff_Encoding   Write_Encoding;
     bool            Write_CodePage;
     bool            Ignore_File_Encoding;
+    #if defined(ENABLE_C2PA)
+    bool            VerifyC2PA;
+    bool            VerifyC2PA_Force;
+    string          C2PA_SignManifestJson;
+    string          C2PA_SignCertificate;
+    string          C2PA_SignPrivateKey;
+    string          C2PA_SignAlgorithm;
+    string          C2PA_SignTA_URL;
+    #endif // defined(ENABLE_C2PA)
     unsigned short  Bext_DefaultVersion;
     unsigned short  Bext_MaxVersion;
     void            Options_Update();

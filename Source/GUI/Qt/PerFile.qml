@@ -160,7 +160,7 @@ Control {
                             visible: (parent.hovered || parent.activeFocus) && Model.valid(file)
                             timeout: 5000
                             delay: 1000
-                            text: Model.readOnly(file) ? "Edit mode disabled, file is read only!" : (editMode ? "Display Mode" : "Edit Mode")
+                            text: Model.c2paLocked(file) ? "Edit mode disabled, editing would invalidate the C2PA signature!" : (Model.readOnly(file) ? "Edit mode disabled, file is read only!" : (editMode ? "Display Mode" : "Edit Mode"))
                         }
                         Image {
                             id: editmode_icon
@@ -326,11 +326,14 @@ Control {
                             Layout.fillWidth: true
                         }
                         Repeater {
-                            model: ["Cue", "XMP", "aXML", "iXML"]
+                            model: Model.c2paEnabled() ? ["Cue", "XMP", "aXML", "iXML", "C2PA"] : ["Cue", "XMP", "aXML", "iXML"]
                             delegate: Button {
+                                readonly property bool c2paUnavailable: modelData === "C2PA" && !Model.c2paAvailable()
                                 function buttonColor(hovered) {
                                     var field = modelData==="Cue"?"cuexml":modelData
-                                    if (!Model.valid(file, field, Model.value(file, field)))
+                                    if (c2paUnavailable)
+                                        return "lightgray"
+                                    else if (!Model.valid(file, field, Model.value(file, field)))
                                         return root.alternate("red", hovered)
                                     else if (Model.lastValidationWarning(file).length > 0)
                                         return root.alternate("orangered", hovered)
@@ -348,20 +351,20 @@ Control {
                                 flat: true
                                 hoverEnabled: true
                                 onClicked: {
-                                    if(Model.visible(file, modelData)) {
+                                    if(!c2paUnavailable && Model.visible(file, modelData)) {
                                         Model.editField(file, modelData)
                                     }
                                 }
                                 ToolTip {
                                     property var valid: Model.valid(file, modelData=="Cue"?"cuexml":modelData, Model.value(file, modelData=="Cue"?"cuexml":modelData))
-                                    property var message: valid ? Model.lastValidationWarning(file) : Model.lastValidationError(file)
+                                    property var message: parent.c2paUnavailable ? qsTr("C2PA support is not available, please install the plugin.") : (valid ? Model.lastValidationWarning(file) : Model.lastValidationError(file))
                                     visible: message.length > 0 && (parent.hovered || parent.activeFocus)
                                     delay: 500
                                     // Basic wrapping of text since QML ToolTip Doesn't have option for that
                                     text: message.replace(/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n')
                                     background: Rectangle {
                                         color: root.Material.background
-                                        border.color: parent.valid ? "orangered" : root.red
+                                        border.color: parent.c2paUnavailable ? "gray" : (parent.valid ? "orangered" : root.red)
                                     }
                                 }
                                 Label {

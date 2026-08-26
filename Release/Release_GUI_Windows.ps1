@@ -13,8 +13,13 @@ $ErrorActionPreference = "Stop"
 $release_directory = $PSScriptRoot
 $version = (Get-Content "${release_directory}\..\Project\version.txt" -Raw).Trim()
 $arch_alt="${arch}"
+$arch_c2pa="${arch}"
 if ("${arch}" -eq "Win32" ) {
     $arch_alt="i386"
+    $arch_c2pa="i686"
+}
+elseif ("${arch}" -eq "x64" ) {
+    $arch_c2pa="x86_64"
 }
 
 #-----------------------------------------------------------------------
@@ -41,6 +46,8 @@ Push-Location "${release_directory}"
     Push-Location "BWFMetaEdit_GUI_${version}_Windows_${arch_alt}"
         ### Copying: Exe ###
         Copy-Item -Force "..\..\Project\QtCreator\${arch}\BWF MetaEdit.exe" bwfmetaedit-gui.exe
+        ### Copying: DLLs ###
+        Copy-Item -Force "..\..\Source\ThirdParty\c2pa-rs\target\${arch_c2pa}-pc-windows-msvc\release\c2pa_c.dll" .
         ### Copying: Information files ###
         Copy-Item -Force "..\..\License.html" .
         Copy-Item -Force "..\..\History_GUI.txt" "History.txt"

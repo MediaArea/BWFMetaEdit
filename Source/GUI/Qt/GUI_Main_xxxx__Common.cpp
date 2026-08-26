@@ -17,6 +17,9 @@
 #include "GUI/Qt/GUI_Preferences.h"
 #include "Common/Core.h"
 #include "Common/Common_About.h"
+#if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    #include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
 #include "ZenLib/ZtringListList.h"
 #include <QLabel>
 #include <QEvent>
@@ -321,7 +324,10 @@ void GUI_Main_xxxx__Common::Colors_Update ()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string &FileName, const string &Field)
 {
-    if (!C->IsValid_Get(FileName) || C->IsReadOnly_Get(FileName) || !Fill_Enabled(FileName, Field, C->Get(FileName, Field=="Cue"?"cuexml":Field)))
+    bool C2PALocked=C->C2PA_Reject && C->Get(FileName, "C2PA")!="Absent";
+    bool ReadOnly=C->IsReadOnly_Get(FileName) || C2PALocked;
+
+    if (!C->IsValid_Get(FileName) || ReadOnly || !Fill_Enabled(FileName, Field, C->Get(FileName, Field=="Cue"?"cuexml":Field)))
     {
         const QPalette DefaultPalette;
         bool DarkMode=DefaultPalette.color(QPalette::WindowText).lightness()>DefaultPalette.color(QPalette::Window).lightness();
@@ -352,7 +358,7 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
         }
     }
 
-    if (C->IsReadOnly_Get(FileName))
+    if (ReadOnly)
     {
         if(Field=="FileName" && Item->icon().isNull())
             Item->setIcon(QIcon(":/Image/Menu/Warning.svg"));
@@ -363,9 +369,20 @@ void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string 
             Message+=Item->toolTip();
             Message+="\n\n";
         }
-        Message+="Edit mode disabled, file is read only!";
+        Message+=C2PALocked?"Edit mode disabled, editing would invalidate the C2PA signature!":"Edit mode disabled, file is read only!";
         Item->setToolTip(Message);
     }
+
+    #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    if (Field=="C2PA" && !C2PA_Available())
+    {
+        QString Message=Item->toolTip();
+        if (!Message.isEmpty())
+            Message+="\n\n";
+        Message+="C2PA support is not available, please install the plugin.";
+        Item->setToolTip(Message);
+    }
+    #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
 }
 
 //---------------------------------------------------------------------------

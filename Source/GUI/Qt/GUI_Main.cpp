@@ -551,6 +551,36 @@ void GUI_Main::LogFile_Set(const string &Value)
     C->LogFile=Ztring().From_UTF8(Value);
 }
 
+#if defined(ENABLE_C2PA)
+//---------------------------------------------------------------------------
+void GUI_Main::C2PA_SignCertificate_Set(const string &Value)
+{
+    C->C2PA_SignCertificate=Value;
+    C->Menu_File_Options_Update();
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::C2PA_SignPrivateKey_Set(const string &Value)
+{
+    C->C2PA_SignPrivateKey=Value;
+    C->Menu_File_Options_Update();
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::C2PA_SignAlgorithm_Set(const string &Value)
+{
+    C->C2PA_SignAlgorithm=Value;
+    C->Menu_File_Options_Update();
+}
+
+//---------------------------------------------------------------------------
+void GUI_Main::C2PA_SignTA_URL_Set(const string &Value)
+{
+    C->C2PA_SignTA_URL=Value;
+    C->Menu_File_Options_Update();
+}
+#endif // defined(ENABLE_C2PA)
+
 //---------------------------------------------------------------------------
 void GUI_Main::OnOpen_Timer ()
 {

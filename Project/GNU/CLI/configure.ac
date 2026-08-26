@@ -33,8 +33,8 @@ dnl #########################################################################
 dnl -------------------------------------------------------------------------
 dnl Arguments - Enable
 dnl
-AC_ARG_ENABLE(debug,        AC_HELP_STRING([--enable-debug],        [Enable full debug]),                       , enable_debug=no)
-AC_ARG_ENABLE(gprof,        AC_HELP_STRING([--enable-gprof],        [Enable gprof log]),                        , enable_gprof=no)
+AC_ARG_ENABLE(debug,            AC_HELP_STRING([--enable-debug],            [Enable full debug]),                         , enable_debug=no)
+AC_ARG_ENABLE(gprof,            AC_HELP_STRING([--enable-gprof],            [Enable gprof log]),                          , enable_gprof=no)
 AC_ARG_ENABLE(universal_binary, AC_HELP_STRING([--enable-universal_binary], [Create Mac x84_64/arm64 Universal binary]),  , enable_universal_binary=no)
 AC_ARG_ENABLE(unicode,          AS_HELP_STRING([--disable-unicode],         [Disable unicode]),                           , enable_unicode=yes)
 AC_ARG_ENABLE(arch-ppc,         AC_HELP_STRING([--with-arch-ppc],           [Create Mac PPC Universal binary]),           , enable_arch_ppc=no)
@@ -42,6 +42,9 @@ AC_ARG_ENABLE(arch-i386,        AC_HELP_STRING([--with-arch-i386],          [Cre
 AC_ARG_ENABLE(arch-x86_64,      AC_HELP_STRING([--enable-arch-x86_64],      [Create Mac x86_64 architecture]),            , enable_arch_x86_64=no)
 AC_ARG_ENABLE(arch-arm64,       AC_HELP_STRING([--enable-arch-arm64],       [Create Mac arm64 architecture]),             , enable_arch_arm64=no)
 AC_ARG_ENABLE(large_files,      AC_HELP_STRING([--disable-large_files],     [Disable large files support]),               , enable_large_files=yes)
+AC_ARG_ENABLE(c2pa,             AC_HELP_STRING([--enable-c2pa],             [Enable C2PA validation and signing (yes, dynamic, no)]), , enable_c2pa=no)
+
+AM_CONDITIONAL([ENABLE_C2PA], [test "$enable_c2pa" != "no"])
 
 dnl -------------------------------------------------------------------------
 dnl Arguments - With
@@ -153,6 +156,24 @@ if test "x$with_macosx_version_min" != xno ; then
 	CXXFLAGS="-mmacosx-version-min=$with_macosx_version_min $CXXFLAGS"
 	CFLAGS="-mmacosx-version-min=$with_macosx_version_min $CFLAGS"
 	LDFLAGS="-mmacosx-version-min=$with_macosx_version_min $LDFLAGS"
+fi
+
+dnl #########################################################################
+dnl ### Libraries
+dnl #########################################################################
+
+dnl -------------------------------------------------------------------------
+dnl c2pa
+dnl
+if test "$enable_c2pa" != "no"; then
+    CXXFLAGS="-DENABLE_C2PA $CXXFLAGS"
+    if test "$enable_c2pa" = "dynamic"; then
+        dnl libc2pa_c is dlopen()'d at runtime, not linked at build time
+        CXXFLAGS="-DC2PA_DYNAMIC_LOADING $CXXFLAGS"
+        AC_SEARCH_LIBS([dlopen], [dl])
+    else
+        LIBS="-L$srcdir/../../../Source/ThirdParty/c2pa-rs/target/release -lc2pa_c $LIBS"
+    fi
 fi
 
 dnl #########################################################################

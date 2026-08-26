@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 #include <cctype>
-#include <fstream>
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
@@ -22,6 +21,12 @@
 #include "CLI/CommandLine_Parser.h"
 #include "CLI/CLI_Help.h"
 #include "Common/Common_About.h"
+#if defined(ENABLE_C2PA)
+    #include "ZenLib/File.h"
+    #if defined(C2PA_DYNAMIC_LOADING)
+        #include "Riff/Riff_C2PA_Helpers.h"
+    #endif // defined(ENABLE_C2PA)
+#endif // defined(ENABLE_C2PA)
 #include "ZenLib/ZtringList.h"
 using namespace ZenLib;
 //---------------------------------------------------------------------------
@@ -41,6 +46,39 @@ ZtringList In_Core_File_List;
 //---------------------------------------------------------------------------
 
 //***************************************************************************
+// Helpers
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+#if defined(ENABLE_C2PA)
+static bool ReadWholeFile(const string &FileName, string &Content)
+{
+    File F;
+    if (!F.Open(Ztring().From_UTF8(FileName)))
+        return false;
+
+    int64u F_Size=F.Size_Get();
+    if (F_Size>((size_t)-1)-1)
+        return false;
+
+    int8u* Buffer=new int8u[(size_t)F_Size];
+    size_t Buffer_Offset=0;
+    while (Buffer_Offset<F_Size)
+    {
+        size_t BytesRead=F.Read(Buffer+Buffer_Offset, (size_t)F_Size-Buffer_Offset);
+        if (BytesRead==0)
+            break;
+        Buffer_Offset+=BytesRead;
+    }
+
+    Content.assign((const char*)Buffer, Buffer_Offset);
+    delete[] Buffer;
+
+    return Buffer_Offset==F_Size;
+}
+#endif // defined(ENABLE_C2PA)
+
+//***************************************************************************
 // Main
 //***************************************************************************
 
@@ -53,6 +91,7 @@ int Parse(Core &C, string &Argument)
 
     OPTION("--reject-riff2rf64",                            riff2rf64_Reject)
     OPTION("--reject-overwrite",                            Overwrite_Reject)
+    OPTION("--reject-c2pa",                                 C2PA_Reject)
     OPTION("--accept-nopadding",                            NoPadding_Accept)
     OPTION("--continue-errors",                             Errors_Continue)
 
@@ -124,7 +163,17 @@ int Parse(Core &C, string &Argument)
     OPTION("--md5-embed",                                   MD5_Embed)
 
     OPTION("--remove-chunks=",                              Chunks_Remove)
-
+    #if defined(ENABLE_C2PA)
+    OPTION("--out-c2pa-json",                               Out_C2PA_JSON)
+    OPTION("--out-c2pa=",                                   Out_C2PA_File)
+    OPTION("--out-c2pa",                                    Out_C2PA_cout)
+    OPTION("--c2pa-verify",                                 C2PA_Verify)
+    OPTION("--c2pa-sign-manifest=",                         C2PA_Sign_Manifest)
+    OPTION("--c2pa-sign-certificate=",                      C2PA_Sign_Certificate)
+    OPTION("--c2pa-sign-key=",                              C2PA_Sign_Key)
+    OPTION("--c2pa-sign-algorithm=",                        C2PA_Sign_Algorithm)
+    OPTION("--c2pa-sign-ta-url=",                           C2PA_Sign_TA_URL)
+    #endif // defined(ENABLE_C2PA)
     //Default
     OPTION("--",                                            Default)
     OPTION("-",                                             Default)
@@ -176,6 +225,16 @@ CL_OPTION(Overwrite_Reject)
     UNUSED_PARAMETER(Argument);
 
     C.Overwrite_Reject=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Reject)
+{
+    UNUSED_PARAMETER(Argument);
+
+    C.C2PA_Reject=true;
 
     return -2; //Continue
 }
@@ -912,6 +971,191 @@ CL_OPTION(Chunks_Remove)
 
     return -2;
 }
+
+#if defined(ENABLE_C2PA)
+//---------------------------------------------------------------------------
+CL_OPTION(Out_C2PA_cout)
+{
+    if (C.Cout!=Core::Cout_None)
+    {
+        std::cerr<<"Cannot combine "<<Argument<<" with others display output"<<std::endl;
+        return 1;
+    }
+
+    C.Cout=Core::Cout_C2PA;
+
+    return -3; //Continue, one file mode
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_C2PA_JSON)
+{
+    UNUSED_PARAMETER(Argument);
+
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
+    C.Out_C2PA_JSON=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(Out_C2PA_File)
+{
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
+    //Form : --out-c2pa=(FileName)
+    string FileName=string().assign(Argument, 11, std::string::npos);
+
+    if (FileName=="-")
+        return CL_Out_C2PA_cout(C, Argument);
+    else
+        C.Out_C2PA_FileName.assign(FileName);
+
+    return -3; //Continue, one file mode
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Verify)
+{
+    UNUSED_PARAMETER(Argument);
+
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
+    C.VerifyC2PA=true;
+    C.VerifyC2PA_Force=true;
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Sign_Manifest)
+{
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
+    //Form : --c2pa-sign-manifest=(FileName)
+    string FileName=string().assign(Argument, 21, std::string::npos);
+
+    string Content;
+    if (!ReadWholeFile(FileName, Content))
+    {
+        std::cerr<<"Unable to read the C2PA signing manifest: "<<FileName<<std::endl;
+        return 1;
+    }
+    C.C2PA_SignManifestJson.assign(Content);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Sign_Certificate)
+{
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
+    //Form : --c2pa-sign-certificate=(FileName)
+    string FileName=string().assign(Argument, 24, std::string::npos);
+
+    string Content;
+    if (!ReadWholeFile(FileName, Content))
+    {
+        std::cerr<<"Unable to read the C2PA signing certificate: "<<FileName<<std::endl;
+        return 1;
+    }
+    C.C2PA_SignCertificate.assign(Content);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Sign_Key)
+{
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
+    //Form : --c2pa-sign-key=(FileName)
+    string FileName=string().assign(Argument, 16, std::string::npos);
+
+    string Content;
+    if (!ReadWholeFile(FileName, Content))
+    {
+        std::cerr<<"Unable to read the C2PA signing private key: "<<FileName<<std::endl;
+        return 1;
+    }
+    C.C2PA_SignPrivateKey.assign(Content);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Sign_Algorithm)
+{
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+    C.C2PA_SignAlgorithm.assign(Argument, 22, std::string::npos);
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
+    //Form : --c2pa-sign-algorithm=(Value)
+    C.C2PA_SignAlgorithm.assign(Argument, 22, std::string::npos);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_Sign_TA_URL)
+{
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
+    //Form : --c2pa-sign-ta-url=(Value)
+    C.C2PA_SignTA_URL.assign(Argument, 19, std::string::npos);
+
+    return -2; //Continue
+}
+#endif // defined(ENABLE_C2PA)
 
 //---------------------------------------------------------------------------
 CL_OPTION(RevertToRiff)

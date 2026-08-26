@@ -26,6 +26,9 @@
 #include "GUI/Qt/GUI_Help.h"
 #include "GUI/Qt/GUI_About.h"
 #include "ZenLib/ZtringList.h"
+#if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    #include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -259,7 +262,24 @@ void GUI_Main::Menu_Create()
     Menu_Export_cue__XML_PerFile->setStatusTip(tr(""));
     connect(Menu_Export_cue__XML_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_cue__XML_PerFile()));
 
+    #if defined(ENABLE_C2PA)
+    Menu_Export_C2PA_JSON_PerFile = new QAction(tr("C2PA crJSON (one JSON file per WAV file)"), this);
+    #ifdef MACSTORE
+    Menu_Export_C2PA_JSON_PerFile->setVisible(false);
+    #endif
+    Menu_Export_C2PA_JSON_PerFile->setStatusTip(tr(""));
+    connect(Menu_Export_C2PA_JSON_PerFile, SIGNAL(triggered()), this, SLOT(OnMenu_Export_C2PA_JSON_PerFile()));
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        Menu_Export_C2PA_JSON_PerFile->setEnabled(false);
+        Menu_Export_C2PA_JSON_PerFile->setToolTip(tr("C2PA support is not available, please install the plugin."));
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+    #endif // defined(ENABLE_C2PA)
+
     Menu_Export = menuBar()->addMenu(tr("E&xport"));
+    Menu_Export->setToolTipsVisible(true);
     Menu_Export->addAction(Menu_Export_Unified_XML_Global);
     Menu_Export->addSeparator();
     Menu_Export->addAction(Menu_Export_Technical_CSV_Global);
@@ -277,6 +297,10 @@ void GUI_Main::Menu_Create()
     Menu_Export->addAction(Menu_Export_iXML_XML_PerFile);
     Menu_Export->addSeparator();
     Menu_Export->addAction(Menu_Export_cue__XML_PerFile);
+    #if defined(ENABLE_C2PA)
+    Menu_Export->addSeparator();
+    Menu_Export->addAction(Menu_Export_C2PA_JSON_PerFile);
+    #endif // defined(ENABLE_C2PA)
 
     //Options (dynamic)
     Menu_Options_Preferences = new QAction(QIcon(":/Image/Menu/Options_Prefs.png"), tr("Preferences..."), this);
@@ -304,6 +328,7 @@ void GUI_Main::Menu_Create()
         {
             Menu_Fields_ActionGroups[Group]=new QActionGroup(this);
             Menu_Fields_Menus[Group]=Menu_Fields_Main->addMenu(QString::fromUtf8(GUI_Preferences::Group_Name_Get((group)Group).c_str()));
+            Menu_Fields_Menus[Group]->setToolTipsVisible(true);
         }
         for (size_t Option=0; Option<GUI_Preferences::Group_Options_Count_Get((group)Group, true); Option++)
         {
@@ -339,6 +364,17 @@ void GUI_Main::Menu_Create()
     connect(Menu_Fields_CheckBoxes[Group_Rules*options::MaxCount+Option_Rules_EBU_ISRC_Rec                    ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Rules_EBU_ISRC_Rec(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Riff2Rf64_Reject                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_riff2rf64_Reject(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_Overwrite_Reject                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_Overwrite_Reject(bool)));
+    connect(Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Reject                            ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_C2PA_Reject(bool)));
+    #if defined(ENABLE_C2PA)
+    connect(Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Verify                            ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_VerifyC2PA(bool)));
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Verify]->setEnabled(false);
+        Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Verify]->setToolTip(tr("C2PA support is not available, please install the plugin."));
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+    #endif // defined(ENABLE_C2PA)
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_NoPadding_Accept                  ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_NoPadding_Accept(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_FileNotValid_Skip                 ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_FileNotValid_Skip(bool)));
     connect(Menu_Fields_CheckBoxes[Group_File*options::MaxCount+Option_File_WrongExtension_Skip               ], SIGNAL(toggled(bool)), this, SLOT(OnMenu_Options_WrongExtension_Skip(bool)));
@@ -945,6 +981,23 @@ void GUI_Main::OnMenu_Export_cue__XML_PerFile()
     C->Out_cue__XML=false;
 }
 
+#if defined(ENABLE_C2PA)
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Export_C2PA_JSON_PerFile()
+{
+    //Configuring
+    C->Out_C2PA_JSON=true;
+
+    //Running
+    C->Simulation_Enabled=true;
+    C->Batch_Launch();
+    C->Simulation_Enabled=false;
+
+    //Clearing
+    C->Out_C2PA_JSON=false;
+}
+#endif // defined(ENABLE_C2PA)
+
 //---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Rules_Tech3285_Req(bool)
 {
@@ -1315,6 +1368,41 @@ void GUI_Main::OnMenu_Options_Overwrite_Reject(bool)
         View_Refresh();
     }
 }
+
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_C2PA_Reject(bool)
+{
+    C->C2PA_Reject=Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Reject]->isChecked();
+    C->Menu_File_Options_Update();
+
+    if (View==NULL)
+        return;
+    QEvent Event((QEvent::Type)(QEvent::User+2));
+    QApplication::sendEvent(View, &Event);
+}
+
+#if defined(ENABLE_C2PA)
+//---------------------------------------------------------------------------
+void GUI_Main::OnMenu_Options_VerifyC2PA(bool)
+{
+    C->VerifyC2PA=Menu_Fields_CheckBoxes[Group_C2PA*options::MaxCount+Option_C2PA_Verify]->isChecked();
+    if (C->VerifyC2PA==true)
+    {
+        C->Menu_File_Options_Update();
+
+        //Showing
+        if (C->Text_stderr_Updated_Get())
+        {
+            Menu_View_Output_stderr->setChecked(true);
+            View_Refresh(View_Output_stderr);
+        }
+        else
+            View_Refresh();
+    }
+    else
+        C->Menu_File_Options_Update();
+}
+#endif // defined(ENABLE_C2PA)
 
 //---------------------------------------------------------------------------
 void GUI_Main::OnMenu_Options_NoPadding_Accept(bool)

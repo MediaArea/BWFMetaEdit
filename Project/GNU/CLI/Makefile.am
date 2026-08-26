@@ -30,6 +30,7 @@ bwfmetaedit_SOURCES = \
     ../../../Source/Riff/Riff_Chunks_WAVE_adtl_note.cpp \
     ../../../Source/Riff/Riff_Chunks_WAVE_adtl_ltxt.cpp \
     ../../../Source/Riff/Riff_Chunks_WAVE_CSET.cpp \
+    ../../../Source/Riff/Riff_Chunks_WAVE_C2PA.cpp \
     ../../../Source/Riff/Riff_Handler.cpp \
     ../../../Source/TinyXml2/tinyxml2.cpp \
     ../../../Source/ZenLib/Conf.cpp \
@@ -50,11 +51,15 @@ bwfmetaedit_SOURCES = \
     ../../../Source/ZenLib/ZtringListList.cpp \
     ../../../Source/ZenLib/ZtringListListF.cpp
 
-#bwfmetaedit_LDFLAGS     = -no-undefined -version-info 0:0:0
+AM_CPPFLAGS = -I../../../Source
+
+if ENABLE_C2PA
+    bwfmetaedit_SOURCES += ../../../Source/Riff/Riff_C2PA_Helpers.cpp
+    AM_CPPFLAGS += -I../../../Source/ThirdParty/c2pa-rs/target/release
+endif
+
 AM_CXXFLAGS = -std=c++11
 
 AM_TESTS_FD_REDIRECT = 9>&2
 
 TESTS = test/version.sh test/metadata.sh test/overwrite.sh test/null.sh test/gap.sh test/xmloutput.sh
-
-AM_CPPFLAGS = -I../../../Source

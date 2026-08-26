@@ -40,6 +40,7 @@ enum group
     Group_Core,
     Group_Rules,
     Group_File,
+    Group_C2PA,
     Group_MD5,
     Group_Encoding,
     Group_Encoding_Fallback,
@@ -76,6 +77,15 @@ enum option_file
     Option_File_WrongExtension_Skip,
     Option_File_NewChunksAtTheEnd,
     Option_File_Max
+};
+
+enum option_c2pa
+{
+    Option_C2PA_Reject,
+    #if defined(ENABLE_C2PA)
+    Option_C2PA_Verify,
+    #endif // defined(ENABLE_C2PA)
+    Option_C2PA_Max
 };
 
 enum option_md5
@@ -212,6 +222,10 @@ private:
     void OnExtra_BackupDirectory_Specific_BrowseClicked(bool Checked);
     void OnExtra_LogFile_Activated_RadioToggled(bool Checked);
     void OnExtra_LogFile_Activated_BrowseClicked(bool Checked);
+    #if defined(ENABLE_C2PA)
+    void OnC2PA_SignCertificate_BrowseClicked(bool Checked);
+    void OnC2PA_SignPrivateKey_BrowseClicked(bool Checked);
+    #endif // defined(ENABLE_C2PA)
 
 private:
     void CreateCoreDefaults(QVBoxLayout *Columns);
@@ -244,6 +258,15 @@ private:
     QDoubleSpinBox* Extra_Bext_DefaultVersion;
     QDoubleSpinBox* Extra_Bext_MaxVersion;
     QCheckBox*      Extra_Bext_Toggle;
+
+    #if defined(ENABLE_C2PA)
+    QLineEdit*      C2PA_SignCertificate_Path;
+    QPushButton*    C2PA_SignCertificate_Browse;
+    QLineEdit*      C2PA_SignPrivateKey_Path;
+    QPushButton*    C2PA_SignPrivateKey_Browse;
+    QComboBox*      C2PA_SignAlgorithm_Combo;
+    QLineEdit*      C2PA_SignTA_URL_Edit;
+    #endif // defined(ENABLE_C2PA)
 };
 
 #endif

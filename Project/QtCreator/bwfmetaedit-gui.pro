@@ -64,6 +64,7 @@ HEADERS = \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CueDialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CodePageDialog.h \
     ../../Source/GUI/Qt/GUI_Main_xxxx__Common.h \
+    ../../Source/GUI/Qt/GUI_Colors.h \
     ../../Source/GUI/Qt/GUI_Preferences.h \
     ../../Source/MD5/md5.h \
     ../../Source/Riff/Riff_Base.h \
@@ -123,6 +124,7 @@ SOURCES = \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CueDialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx_CodePageDialog.cpp \
     ../../Source/GUI/Qt/GUI_Main_xxxx__Common.cpp \
+    ../../Source/GUI/Qt/GUI_Colors.cpp \
     ../../Source/GUI/Qt/GUI_Preferences.cpp \
     ../../Source/MD5/md5.c \
     ../../Source/Riff/Riff_Base.cpp \
@@ -146,6 +148,7 @@ SOURCES = \
     ../../Source/Riff/Riff_Chunks_WAVE_adtl_note.cpp \
     ../../Source/Riff/Riff_Chunks_WAVE_adtl_ltxt.cpp \
     ../../Source/Riff/Riff_Chunks_WAVE_CSET.cpp \
+    ../../Source/Riff/Riff_Chunks_WAVE_C2PA.cpp \
     ../../Source/Riff/Riff_Handler.cpp \
     ../../Source/TinyXml2/tinyxml2.cpp \
     ../../Source/ZenLib/Conf.cpp \
@@ -167,6 +170,57 @@ SOURCES = \
     ../../Source/ZenLib/ZtringListList.cpp \
     ../../Source/ZenLib/ZtringListListF.cpp
 
+contains(ENABLE_C2PA, yes|1|dynamic) {
+    SOURCES += ../../Source/Riff/Riff_C2PA_Helpers.cpp \
+               ../../Source/GUI/Qt/GUI_Main_xxxx_C2PADialog.cpp
+
+    HEADERS += ../../Source/ThirdParty/json/json.h \
+               ../../Source/Riff/Riff_C2PA_Helpers.h \
+               ../../Source/GUI/Qt/GUI_Main_xxxx_C2PADialog.h
+
+    DEFINES += ENABLE_C2PA
+
+    win32 {
+        contains(QT_ARCH, i386) {
+            INCLUDEPATH += ../../Source/ThirdParty/c2pa-rs/target/i686-pc-windows-msvc/release
+        }
+        else:contains(QT_ARCH, x86_64) {
+            INCLUDEPATH += ../../Source/ThirdParty/c2pa-rs/target/x86_64-pc-windows-msvc/release
+        }
+        else {
+            INCLUDEPATH += ../../Source/ThirdParty/c2pa-rs/target/release
+        }
+    }
+    else:macx {
+        INCLUDEPATH += ../../Source/ThirdParty/c2pa-rs/target/release
+    }
+    else {
+        INCLUDEPATH += ../../Source/ThirdParty/c2pa-rs/target/release
+    }
+
+    contains(ENABLE_C2PA, dynamic) {
+        DEFINES += C2PA_DYNAMIC_LOADING
+    }
+    else {
+        win32 {
+            contains(QT_ARCH, i386) {
+                LIBS += -L$$absolute_path(../../Source/ThirdParty/c2pa-rs/target/i686-pc-windows-msvc/release) -lc2pa_c.dll
+            }
+            else:contains(QT_ARCH, x86_64) {
+                LIBS += -L$$absolute_path(../../Source/ThirdParty/c2pa-rs/target/x86_64-pc-windows-msvc/release) -lc2pa_c.dll
+            }
+            else {
+                LIBS += -L../../Source/ThirdParty/c2pa-rs/target/release -lc2pa_c.dll.lib
+            }
+        }
+        else:macx {
+            LIBS += -L../../Source/ThirdParty/c2pa-rs/target/release -lc2pa_c
+        }
+        else {
+            LIBS += -L../../Source/ThirdParty/c2pa-rs/target/release -lc2pa_c
+        }
+    }
+}
 
 macx {
     HEADERS           += ../../Source/Common/Mac_Helpers.h

@@ -21,6 +21,10 @@
 #include "CLI/CLI_Help.h"
 #include "Common/Core.h"
 
+#if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+#include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+
 #ifdef _WIN32
 #include <windows.h>
 #include <shellapi.h>
@@ -51,6 +55,11 @@ int main(int argc, char* argv[])
     setlocale(LC_ALL, """""");
     #endif
 
+    // Try to load C2PA plugin if available
+    #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    C2PA_Load();
+    #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+
     //Configure core
     Core C;
 
@@ -79,6 +88,9 @@ int main(int argc, char* argv[])
             #ifdef _WIN32
             LocalFree(ArgvW);
             #endif
+            #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+            C2PA_Unload();
+            #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
             return Return; //no more tasks to do
         }
         if (Return==-1 || Return==-3)
@@ -107,8 +119,15 @@ int main(int argc, char* argv[])
                 }
                 if (!C.Out_cue__FileName.empty() || C.Cout==Core::Cout_cue_)
                     std::cerr<<(Comma?",":"")<<" --out-cue=";
+                #if defined(ENABLE_C2PA)
+                if (!C.Out_C2PA_FileName.empty() || C.Cout==Core::Cout_C2PA)
+                    std::cerr<<(Comma?",":"")<<" --out-c2pa=";
+                #endif // defined(ENABLE_C2PA)
                 std::cerr<<std::endl;
 
+                #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+                C2PA_Unload();
+                #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
                 return 1;
             }
 
@@ -135,6 +154,9 @@ int main(int argc, char* argv[])
             //Errors
             std::cerr<<C.Text_stderr.str()<<std::endl;
             std::cerr<<"Correct errors before trying again"<<std::endl;
+            #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+            C2PA_Unload();
+            #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
             return 0; //Stopping on error is requested
         }
     for (size_t Pos=0; Pos<Files.size(); Pos++)
@@ -144,6 +166,9 @@ int main(int argc, char* argv[])
     if (C.Menu_File_Open_Files_Open_Get()==0)
     {
         std::cout<<Help_Nothing();
+        #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+        C2PA_Unload();
+        #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
         return 0;
     }
 
@@ -154,6 +179,9 @@ int main(int argc, char* argv[])
         //Errors
         std::cerr<<C.Text_stderr.str()<<std::endl;
         std::cerr<<"Correct errors before trying again"<<std::endl;
+        #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+        C2PA_Unload();
+        #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
         return 0;
     }
 
@@ -168,8 +196,16 @@ int main(int argc, char* argv[])
         std::cerr<<C.Text_stderr.str();
 
     if (C.Text_stderr_Updated_Get())
+    {
+        #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+        C2PA_Unload();
+        #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
         return 1;
+    }
 
+    #if defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
+    C2PA_Unload();
+    #endif // defined(ENABLE_C2PA) && defined(C2PA_DYNAMIC_LOADING)
     return 0;
 }
 //---------------------------------------------------------------------------

@@ -19,12 +19,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "http://www.digitizationguidelines.gov"
             VALUE "FileDescription", "BWF MetaEdit"
-            VALUE "FileVersion", "26,01,0,0"
+            VALUE "FileVersion", "26.01.0.0"
             VALUE "InternalName", "BWF_MetaEdit - CLI - MSVC 2022"
             VALUE "LegalCopyright", "BSD License"
             VALUE "OriginalFilename", "bwfmetaedit.exe"
             VALUE "ProductName", "BWF MetaEdit CLI"
-            VALUE "ProductVersion", "26,01,0,0"
+            VALUE "ProductVersion", "26.01.0.0"
         END
     END
     BLOCK "VarFileInfo"

@@ -38,6 +38,7 @@ std::string Help()
     ToDisplay<<"                        Reject file if:"<<std::endl;
     ToDisplay<<"--reject-riff2rf64      Transformation to RF64 is requested"<<std::endl;
     ToDisplay<<"--reject-overwrite      Prevent overwrite of existing data(only add)"<<std::endl;
+    ToDisplay<<"--reject-c2pa           Prevent invalidation of the C2PA signature if present"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"                        Accept file if:"<<std::endl;
     ToDisplay<<"--accept-nopadding      Padding byte is missing"<<std::endl;
@@ -90,7 +91,6 @@ std::string Help()
     ToDisplay<<"--out-xml               Display (disable others displays)"<<std::endl;
     ToDisplay<<"--out-xml=              specified file ('-' for current display)"<<std::endl;
     ToDisplay<<""<<std::endl;
-    ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"                        Extract Technical Metadata to:"<<std::endl;
@@ -173,7 +173,26 @@ std::string Help()
     ToDisplay<<"--MD5-Verify            Verify MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Embed             Embed MD5 for audio data"<<std::endl;
     ToDisplay<<"--MD5-Embed-Overwrite   Embed MD5 for audio data - Allow overwriting"<<std::endl;
+    ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
+    #if defined(ENABLE_C2PA)
+    ToDisplay<<""<<std::endl;
+    ToDisplay<<"--out-C2PA              Display C2PA crJSON manifest and validation status (disable others displays, allows only one input file)"<<std::endl;
+    ToDisplay<<"--out-C2PA=             Save C2PA crJSON manifest in specified file ('-' for current display, allows only one input file)"<<std::endl;
+    ToDisplay<<"--out-C2PA-json         Save C2PA crJSON manifest in filename.C2PA.json"<<std::endl;
+    ToDisplay<<"--C2PA-Verify           Verify C2PA chunk validity and signature"<<std::endl;
+    ToDisplay<<"--C2PA-Sign-Manifest=   Sign the file with C2PA, applied after all other modifications are written"<<std::endl;
+    ToDisplay<<"                        Argument is the path to a JSON C2PA manifest definition (claim_generator_info,"<<std::endl;
+    ToDisplay<<"                        title, assertions...); claim_generator_info, title and format default to"<<std::endl;
+    ToDisplay<<"                        BWFMetaEdit/<version>, the file name and 'audio/x-wav' if not provided"<<std::endl;
+    ToDisplay<<"                        Requires --C2PA-Sign-Certificate= and --C2PA-Sign-Key="<<std::endl;
+    ToDisplay<<"--C2PA-Sign-Certificate= Path to the PEM signing certificate (chain)"<<std::endl;
+    ToDisplay<<"--C2PA-Sign-Key=        Path to the PEM private key"<<std::endl;
+    ToDisplay<<"--C2PA-Sign-Algorithm=  Signing algorithm (e.g. es256)"<<std::endl;
+    ToDisplay<<"--C2PA-Sign-TA-URL=     Optional RFC3161 timestamp authority URL"<<std::endl;
+    ToDisplay<<""<<std::endl;
+    ToDisplay<<"*******************************************************************************"<<std::endl;
+    #endif // defined(ENABLE_C2PA)
     ToDisplay<<""<<std::endl;
     ToDisplay<<"--remove-chunks=        Remove specified items from the WAVE chunk tree (comma separated list)"<<std::endl;
     ToDisplay<<"                        Chunk identifier must be 4 characters long and is case sensitive"<<std::endl;

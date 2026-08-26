@@ -20,6 +20,12 @@
 #include "GUI/Qt/GUI_Main_xxxx_TimeReferenceDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_UmidDialog.h"
 #include "GUI/Qt/GUI_Main_xxxx_CueDialog.h"
+#if defined(ENABLE_C2PA)
+#include "GUI/Qt/GUI_Main_xxxx_C2PADialog.h"
+#if defined(C2PA_DYNAMIC_LOADING)
+#include "Riff/Riff_C2PA_Helpers.h"
+#endif // defined(C2PA_DYNAMIC_LOADING)
+#endif // defined(ENABLE_C2PA)
 #include "GUI/Qt/GUI_Main_xxxx_EditMenu.h"
 #include "Common/Core.h"
 #include "ZenLib/ZtringListList.h"
@@ -277,6 +283,10 @@ Q_INVOKABLE bool PerFileModel::visible(const QString& FileName, const QString& F
    // if (Field=="MD5Stored" && (!C->Get(FileName.toStdString(), Field.toStdString()).empty() &&))
    //     toReturn=true;
 
+    //C2PA's Get() never returns an empty string (it returns "No"/"Yes"/"Valid"/"Invalid"), so treat "No" as the empty case here
+    if (Field=="C2PA" && !EditMode.value(FileName, false) && C->Get(FileName.toStdString(), Field.toStdString())=="No")
+        toReturn=false;
+
     if (!EditMode.value(FileName, false) &&
         C->Get(FileName.toStdString(), Field.toStdString()).empty() &&
         C->IsValid(FileName.toStdString(), Field.toStdString(), "", true))
@@ -307,7 +317,32 @@ Q_INVOKABLE bool PerFileModel::readOnly(const QString& FileName, const QString& 
 
 //---------------------------------------------------------------------------
 Q_INVOKABLE bool PerFileModel::readOnly(const QString& FileName) const {
-    return C->IsReadOnly_Get(FileName.toStdString());
+    return C->IsReadOnly_Get(FileName.toStdString()) || c2paLocked(FileName);
+}
+
+//---------------------------------------------------------------------------
+Q_INVOKABLE bool PerFileModel::c2paLocked(const QString& FileName) const {
+    return C->C2PA_Reject && C->Get(FileName.toStdString(), "C2PA")!="Absent";
+}
+
+//---------------------------------------------------------------------------
+Q_INVOKABLE bool PerFileModel::c2paEnabled() const {
+    #if defined(ENABLE_C2PA)
+    return true;
+    #endif
+    return false;
+}
+
+//---------------------------------------------------------------------------
+Q_INVOKABLE bool PerFileModel::c2paAvailable() const {
+    #if defined(ENABLE_C2PA)
+        #if defined(C2PA_DYNAMIC_LOADING)
+        return C2PA_Available();
+        #else
+        return true;
+        #endif
+    #endif
+    return false;
 }
 
 //---------------------------------------------------------------------------
@@ -320,6 +355,25 @@ Q_INVOKABLE void PerFileModel::editField(const QString& FileName, const QString&
 {
     string ModifiedContent=C->Get(FileName.toStdString(), Field.toStdString());
     AdaptEOL(ModifiedContent, adapt_n);
+
+    if (Field=="C2PA")
+    {
+        #if defined(ENABLE_C2PA)
+            #if defined(C2PA_DYNAMIC_LOADING)
+            if (!C2PA_Available())
+                return;
+            #endif // defined(C2PA_DYNAMIC_LOADING)
+
+            bool Writable=!readOnly(FileName, Field);
+            GUI_Main_xxxx_C2PADialog* Edit=new GUI_Main_xxxx_C2PADialog(C, FileName.toStdString(), NULL, Writable);
+            Edit->exec();
+            delete Edit; //Edit=NULL;
+
+            Q_EMIT dataChanged(index(FileNames.indexOf(FileName)), index(FileNames.indexOf(FileName)));
+            Main->Menu_Update();
+        #endif // defined(ENABLE_C2PA)
+        return;
+    }
 
     if (readOnly(FileName, Field)) {
         if ((Field=="MD5Generated" || Field=="MD5Stored") && Main->Preferences->Group_Option_Checked_Get(Group_MD5, Option_MD5_SwapEndian) && !ModifiedContent.empty())
@@ -494,7 +548,7 @@ void PerFileModel::Fill()
         QString FileName = QString::fromUtf8(List[Pos][0].To_UTF8().c_str());
         FileNames.append(FileName);
         Expanded.insert(FileName, Expanded_Old.value(FileName, true));
-        EditMode.insert(FileName, EditMode_Old.value(FileName, false));
+        EditMode.insert(FileName, !readOnly(FileName) && EditMode_Old.value(FileName, false));
     }
 
     C->Menu_File_Close_File_FileName_Clear();
@@ -540,6 +594,7 @@ QString PerFileModel::Technical_Info(const QString FileName) const
     QString SampleRate=Get_Technical_Field(FileName, "SampleRate");
     QString BitRate=Get_Technical_Field(FileName, "BitRate");
     QString BitPerSample=Get_Technical_Field(FileName, "BitPerSample");
+    QString C2PA=Get_Technical_Field(FileName, "C2PA");
     QString Encoding=Get_Technical_Field(FileName, "Encoding");
 
     if (!FileSize.isEmpty())
@@ -592,6 +647,13 @@ QString PerFileModel::Technical_Info(const QString FileName) const
         toReturn+=toReturn.isEmpty()?"":" ";
         toReturn+=BitPerSample;
         toReturn+=" bit";
+    }
+
+    if (!C2PA.isEmpty())
+    {
+        toReturn+=toReturn.isEmpty()?"":" ";
+        toReturn+="C2PA: ";
+        toReturn+=C2PA;
     }
 
     if (!Encoding.isEmpty())

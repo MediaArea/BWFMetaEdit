@@ -39,6 +39,7 @@ void Riff_WAVE::Read_Internal ()
         SUB_ELEMENT(WAVE_cue_);
         SUB_ELEMENT(WAVE_adtl);
         SUB_ELEMENT(WAVE_CSET);
+        SUB_ELEMENT(WAVE_C2PA);
     SUBS_END();
 
     //Integrity
