@@ -4,6 +4,11 @@ Notes:
 - Deleted
 x Correction
 
+Version 26.08, 2026-08-27
+-------------
++ C2PA read and write
++ Apple Silicon native support
+
 Version 25.04, 2025-04-30
 -------------
 + Apply imported core to already opened files

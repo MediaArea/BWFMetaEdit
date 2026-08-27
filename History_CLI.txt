@@ -4,6 +4,11 @@ Notes:
 - Deleted
 x Correction
 
+Version 26.08, 2026-08-27
+-------------
++ C2PA read and write
++ Apple Silicon native support
+
 Version 26.01, 2026-01-29
 -------------
 Fix --remove-chunk option does not remove XM

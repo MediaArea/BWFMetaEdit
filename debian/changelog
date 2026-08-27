@@ -1,3 +1,10 @@
+bwfmetaedit (26.08-1) stable; urgency=medium
+
+  * Update to version 26.08
+  * See History.txt for more info
+
+ -- MediaArea CI <info@mediaarea.net>  Thu, 27 Aug 2026 07:24:26 +0000
+
 bwfmetaedit (26.01-1) unstable; urgency=low
 
   * See History.txt for more info and real dates

@@ -4,7 +4,7 @@
 
 # norootforbuild
 
-%global bwfmetaedit_version		26.01
+%global bwfmetaedit_version		26.08
 
 # The rust version packaged with these distributions versions is too old to build the C2PA library
 %if (!0%{?sle_version} || 0%{?sle_version} >= 150700) && (!0%{?mageia} || 0%{?mageia} >= 10) && (!0%{?rhel} || 0%{?rhel} >= 9)
