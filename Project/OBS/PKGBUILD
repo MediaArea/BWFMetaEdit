@@ -2,7 +2,7 @@
 # Maintainer: MediaArea.net SARL <info@mediaarea.net>
 
 pkgname=('bwfmetaedit' 'bwfmetaedit-plugin-c2pa' 'bwfmetaedit-gui')
-pkgver=26.01
+pkgver=26.08
 pkgrel=1
 pkgdesc="Supplies technical and tag information about a video or audio file"
 arch=('x86_64')
