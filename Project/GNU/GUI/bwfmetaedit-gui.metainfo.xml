@@ -8,10 +8,8 @@
   <name>BWF MetaEdit</name>
   <summary>Embed, validate, and export BWF files metadata</summary>
   <description>
-    <strong>BWF MetaEdit</strong> is a tool that supports embedding, validating, and exporting of metadata in Broadcast WAVE Format (BWF) files. It supports the <a href=\"http://www.digitizationguidelines.gov/guidelines/digitize-embedding.html\" target=\"_blank\">FADGI Broadcast WAVE Metadata Embedding Guidelines</a>.<br>
-    <br>
-    Initially funded by the <a href=\"https://www.loc.gov/\" target=\"_blank\">Library of Congress</a> and <a href=\"http://www.digitizationguidelines.gov/\" target=\"_blank\">FADGI (Federal Agencies Digital Guidelines Initiative)</a>; previously developed by MediaArea and led by <a href=\"http://avpreserve.com/\" target=\"_blank\">AVPreserve</a>; currently developed and led by MediaArea.<br>
-    MediaArea provides support and binaries for all platforms.
+    <p>BWF MetaEdit is a tool that supports embedding, validating, and exporting of metadata in Broadcast WAVE Format (BWF) files. It supports the FADGI Broadcast WAVE Metadata Embedding Guidelines.</p>
+    <p>Initially funded by the Library of Congress and FADGI (Federal Agencies Digital Guidelines Initiative); previously developed by MediaArea and led by AVPreserve; currently developed and led by MediaArea. MediaArea provides support and binaries for all platforms.</p>
   </description>
   <keywords>
     <keyword>metadata</keyword>
@@ -60,5 +58,5 @@
   <developer_name>MediaArea.net SARL</developer_name>
   <releases>
     <release version="26.08" date="2026-08-27" />
-  ​</releases>
+  </releases>
 </component>
