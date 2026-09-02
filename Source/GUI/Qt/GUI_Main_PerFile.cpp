@@ -322,7 +322,7 @@ Q_INVOKABLE bool PerFileModel::readOnly(const QString& FileName) const {
 
 //---------------------------------------------------------------------------
 Q_INVOKABLE bool PerFileModel::c2paLocked(const QString& FileName) const {
-    return C->C2PA_Reject && C->Get(FileName.toStdString(), "C2PA")!="Absent";
+    return C->C2PA_Reject && C->Get(FileName.toStdString(), "C2PA")!="No";
 }
 
 //---------------------------------------------------------------------------

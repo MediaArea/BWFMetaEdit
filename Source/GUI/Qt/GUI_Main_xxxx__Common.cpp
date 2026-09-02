@@ -324,7 +324,7 @@ void GUI_Main_xxxx__Common::Colors_Update ()
 //---------------------------------------------------------------------------
 void GUI_Main_xxxx__Common::Colors_Update (QTableWidgetItem* Item, const string &FileName, const string &Field)
 {
-    bool C2PALocked=C->C2PA_Reject && C->Get(FileName, "C2PA")!="Absent";
+    bool C2PALocked=C->C2PA_Reject && C->Get(FileName, "C2PA")!="No";
     bool ReadOnly=C->IsReadOnly_Get(FileName) || C2PALocked;
 
     if (!C->IsValid_Get(FileName) || ReadOnly || !Fill_Enabled(FileName, Field, C->Get(FileName, Field=="Cue"?"cuexml":Field)))
