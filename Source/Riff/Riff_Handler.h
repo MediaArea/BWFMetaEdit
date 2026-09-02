@@ -151,6 +151,7 @@ public:
     string          C2PA_SignPrivateKey;
     string          C2PA_SignAlgorithm;
     string          C2PA_SignTA_URL;
+    string          C2PA_UserAnchors;
     #endif // defined(ENABLE_C2PA)
     unsigned short  Bext_DefaultVersion;
     unsigned short  Bext_MaxVersion;

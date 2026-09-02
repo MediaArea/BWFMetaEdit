@@ -579,6 +579,13 @@ void GUI_Main::C2PA_SignTA_URL_Set(const string &Value)
     C->C2PA_SignTA_URL=Value;
     C->Menu_File_Options_Update();
 }
+
+//---------------------------------------------------------------------------
+void GUI_Main::C2PA_UserAnchors_Set(const string &Value)
+{
+    C->C2PA_UserAnchors=Value;
+    C->Menu_File_Options_Update();
+}
 #endif // defined(ENABLE_C2PA)
 
 //---------------------------------------------------------------------------

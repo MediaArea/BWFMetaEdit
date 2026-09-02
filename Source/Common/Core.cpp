@@ -2465,6 +2465,7 @@ void Core::Options_Update(handlers::iterator &Handler)
         Handler->second.Riff->C2PA_SignPrivateKey=C2PA_SignPrivateKey;
         Handler->second.Riff->C2PA_SignAlgorithm=C2PA_SignAlgorithm;
         Handler->second.Riff->C2PA_SignTA_URL=C2PA_SignTA_URL;
+        Handler->second.Riff->C2PA_UserAnchors=C2PA_UserAnchors;
         if (!C2PA_SignManifestJson.empty())
             Handler->second.Riff->C2PA_SignManifestJson=C2PA_SignManifestJson;
         #endif //defined(ENABLE_C2PA)

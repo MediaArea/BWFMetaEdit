@@ -63,6 +63,7 @@ public:
     void C2PA_SignPrivateKey_Set(const string &Value);
     void C2PA_SignAlgorithm_Set(const string &Value);
     void C2PA_SignTA_URL_Set(const string &Value);
+    void C2PA_UserAnchors_Set(const string &Value);
     #endif // defined(ENABLE_C2PA)
 
     //Preferences

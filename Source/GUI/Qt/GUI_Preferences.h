@@ -225,6 +225,7 @@ private:
     #if defined(ENABLE_C2PA)
     void OnC2PA_SignCertificate_BrowseClicked(bool Checked);
     void OnC2PA_SignPrivateKey_BrowseClicked(bool Checked);
+    void OnC2PA_UserAnchors_BrowseClicked(bool Checked);
     #endif // defined(ENABLE_C2PA)
 
 private:
@@ -266,6 +267,8 @@ private:
     QPushButton*    C2PA_SignPrivateKey_Browse;
     QComboBox*      C2PA_SignAlgorithm_Combo;
     QLineEdit*      C2PA_SignTA_URL_Edit;
+    QLineEdit*      C2PA_UserAnchors_Path;
+    QPushButton*    C2PA_UserAnchors_Browse;
     #endif // defined(ENABLE_C2PA)
 };
 

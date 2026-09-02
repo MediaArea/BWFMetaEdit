@@ -51,6 +51,11 @@ struct C2PA_FileStreamContext
 
 static decltype(&c2pa_free)                     p_c2pa_free=NULL;
 static decltype(&c2pa_context_new)              p_c2pa_context_new=NULL;
+static decltype(&c2pa_settings_new)             p_c2pa_settings_new=NULL;
+static decltype(&c2pa_settings_update_from_string) p_c2pa_settings_update_from_string=NULL;
+static decltype(&c2pa_context_builder_new)      p_c2pa_context_builder_new=NULL;
+static decltype(&c2pa_context_builder_set_settings) p_c2pa_context_builder_set_settings=NULL;
+static decltype(&c2pa_context_builder_build)    p_c2pa_context_builder_build=NULL;
 static decltype(&c2pa_reader_from_context)      p_c2pa_reader_from_context=NULL;
 static decltype(&c2pa_create_stream)            p_c2pa_create_stream=NULL;
 static decltype(&c2pa_release_stream)           p_c2pa_release_stream=NULL;
@@ -65,6 +70,11 @@ static decltype(&c2pa_builder_sign)             p_c2pa_builder_sign=NULL;
 
 #define c2pa_free                               p_c2pa_free
 #define c2pa_context_new                        p_c2pa_context_new
+#define c2pa_settings_new                       p_c2pa_settings_new
+#define c2pa_settings_update_from_string        p_c2pa_settings_update_from_string
+#define c2pa_context_builder_new                p_c2pa_context_builder_new
+#define c2pa_context_builder_set_settings       p_c2pa_context_builder_set_settings
+#define c2pa_context_builder_build              p_c2pa_context_builder_build
 #define c2pa_reader_from_context                p_c2pa_reader_from_context
 #define c2pa_create_stream                      p_c2pa_create_stream
 #define c2pa_release_stream                     p_c2pa_release_stream
@@ -109,6 +119,11 @@ bool C2PA_Load()
     bool Error=false;
     C2PA_SYM(c2pa_free)
     C2PA_SYM(c2pa_context_new)
+    C2PA_SYM(c2pa_settings_new)
+    C2PA_SYM(c2pa_settings_update_from_string)
+    C2PA_SYM(c2pa_context_builder_new)
+    C2PA_SYM(c2pa_context_builder_set_settings)
+    C2PA_SYM(c2pa_context_builder_build)
     C2PA_SYM(c2pa_reader_from_context)
     C2PA_SYM(c2pa_create_stream)
     C2PA_SYM(c2pa_release_stream)
@@ -145,6 +160,11 @@ void C2PA_Unload()
 
     p_c2pa_free=NULL;
     p_c2pa_context_new=NULL;
+    p_c2pa_settings_new=NULL;
+    p_c2pa_settings_update_from_string=NULL;
+    p_c2pa_context_builder_new=NULL;
+    p_c2pa_context_builder_set_settings=NULL;
+    p_c2pa_context_builder_build=NULL;
     p_c2pa_reader_from_context=NULL;
     p_c2pa_create_stream=NULL;
     p_c2pa_release_stream=NULL;
@@ -345,6 +365,34 @@ static void C2PA_ParseStatusArray(json_array_s* StatusArray, vector<string>& Mes
 }
 
 //---------------------------------------------------------------------------
+static C2paContext* C2PA_ContextNew(const string& UserAnchorsPem, const string& TrustAnchorsPem)
+{
+    if (UserAnchorsPem.empty() && TrustAnchorsPem.empty())
+        return c2pa_context_new();
+
+    C2paContextBuilder* Builder=c2pa_context_builder_new();
+    if (!Builder)
+        return NULL;
+
+    C2paSettings* Settings=c2pa_settings_new();
+    if (Settings)
+    {
+        string SettingsJson;
+        if (!UserAnchorsPem.empty())
+            SettingsJson+="{\"trust\":{\"user_anchors\":\""+Json_EscapeString(UserAnchorsPem)+"\"";
+        if (!TrustAnchorsPem.empty())
+            SettingsJson+=",\"trust_anchors\":\""+Json_EscapeString(TrustAnchorsPem)+"\"";
+        SettingsJson+="}}";
+
+        if (c2pa_settings_update_from_string(Settings, SettingsJson.c_str(), "json")==0)
+            c2pa_context_builder_set_settings(Builder, Settings);
+        c2pa_free(Settings);
+    }
+
+    return c2pa_context_builder_build(Builder);
+}
+
+//---------------------------------------------------------------------------
 void C2PA_Validate(Riff_Handler* Handler, Riff_Base::global* Global)
 {
     if (!C2PA_Available() || !Handler || !Global || !Global->C2PA)
@@ -359,7 +407,7 @@ void C2PA_Validate(Riff_Handler* Handler, Riff_Base::global* Global)
     if (!FileContext.F)
         return;
 
-    C2paContext* Context=c2pa_context_new();
+    C2paContext* Context=C2PA_ContextNew(Handler->C2PA_UserAnchors, "");
     if (!Context)
     {
         fclose(FileContext.F);
@@ -573,7 +621,7 @@ void C2PA_Sign(Riff_Handler* Handler, Riff_Base::global* Global)
     }
 
     //Builder, configured with the manifest definition
-    C2paContext* Context=c2pa_context_new();
+    C2paContext* Context=C2PA_ContextNew(Handler->C2PA_UserAnchors, "");
     C2paBuilder* Builder=Context?c2pa_builder_from_context(Context):NULL;
     if (Builder)
         Builder=c2pa_builder_with_definition(Builder, ManifestJson.c_str());
