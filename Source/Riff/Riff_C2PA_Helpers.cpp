@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #include "Riff/Riff_Base.h"
 #include "Riff/Riff_C2PA_Helpers.h"
+#include "Riff/Riff_C2PA_Helpers_CA.h"
 
 //---------------------------------------------------------------------------
 #include "ThirdParty/json/json.h"
@@ -377,12 +378,15 @@ static C2paContext* C2PA_ContextNew(const string& UserAnchorsPem, const string& 
     C2paSettings* Settings=c2pa_settings_new();
     if (Settings)
     {
-        string SettingsJson;
+        string TrustFields;
         if (!UserAnchorsPem.empty())
-            SettingsJson+="{\"trust\":{\"user_anchors\":\""+Json_EscapeString(UserAnchorsPem)+"\"";
+            TrustFields+="\"user_anchors\":\""+Json_EscapeString(UserAnchorsPem)+"\",";
         if (!TrustAnchorsPem.empty())
-            SettingsJson+=",\"trust_anchors\":\""+Json_EscapeString(TrustAnchorsPem)+"\"";
-        SettingsJson+="}}";
+            TrustFields+="\"trust_anchors\":\""+Json_EscapeString(TrustAnchorsPem)+"\",";
+        if (!TrustFields.empty())
+            TrustFields.resize(TrustFields.size()-1); //Remove the trailing comma
+
+        string SettingsJson="{\"trust\":{"+TrustFields+"}}";
 
         if (c2pa_settings_update_from_string(Settings, SettingsJson.c_str(), "json")==0)
             c2pa_context_builder_set_settings(Builder, Settings);
@@ -407,7 +411,7 @@ void C2PA_Validate(Riff_Handler* Handler, Riff_Base::global* Global)
     if (!FileContext.F)
         return;
 
-    C2paContext* Context=C2PA_ContextNew(Handler->C2PA_UserAnchors, "");
+    C2paContext* Context=C2PA_ContextNew(Handler->C2PA_UserAnchors, C2PA_TrustAnchors_Default);
     if (!Context)
     {
         fclose(FileContext.F);
@@ -621,7 +625,7 @@ void C2PA_Sign(Riff_Handler* Handler, Riff_Base::global* Global)
     }
 
     //Builder, configured with the manifest definition
-    C2paContext* Context=C2PA_ContextNew(Handler->C2PA_UserAnchors, "");
+    C2paContext* Context=C2PA_ContextNew(Handler->C2PA_UserAnchors, C2PA_TrustAnchors_Default);
     C2paBuilder* Builder=Context?c2pa_builder_from_context(Context):NULL;
     if (Builder)
         Builder=c2pa_builder_with_definition(Builder, ManifestJson.c_str());
