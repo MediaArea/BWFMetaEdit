@@ -103,6 +103,10 @@ bool C2PA_Load()
     C2PA_Module=LoadLibrary(C2PA_DLL_NAME);
 #else
     C2PA_Module=dlopen(C2PA_DLL_NAME, RTLD_LAZY);
+#if defined(__APPLE__) && defined(__MACH__)
+    if (!C2PA_Module)
+        C2PA_Module=dlopen("@rpath/" C2PA_DLL_NAME, RTLD_LAZY);
+#endif // defined(__APPLE__) && defined(__MACH__)
     if (!C2PA_Module)
         C2PA_Module=dlopen("./" C2PA_DLL_NAME, RTLD_LAZY);
     if (!C2PA_Module)
@@ -113,7 +117,7 @@ bool C2PA_Load()
         C2PA_Module=dlopen("/usr/lib/" C2PA_DLL_NAME, RTLD_LAZY);
     if (!C2PA_Module)
         C2PA_Module=dlopen("/usr/lib64/" C2PA_DLL_NAME, RTLD_LAZY);
-#endif
+#endif // defined(_WIN32) || defined(WIN32)
     if (!C2PA_Module)
         return false;
 
