@@ -636,6 +636,14 @@ void GUI_Preferences::OnLoad()
     }
     C2PA_SignTA_URL_Edit->setText(Config("C2PA_SignTA_URL").To_UTF8().c_str());
     Main->C2PA_SignTA_URL_Set(C2PA_SignTA_URL_Edit->text().toUtf8().data());
+    C2PA_UserAnchors_Path->setText(Config("C2PA_UserAnchorsPath").To_UTF8().c_str());
+    if (!Config("C2PA_UserAnchorsContent").empty())
+    {
+        QByteArray Decoded=QByteArray::fromBase64(Config("C2PA_UserAnchorsContent").To_UTF8().c_str());
+        Main->C2PA_UserAnchors_Set(string(Decoded.constData(), (size_t)Decoded.size()));
+    }
+    else
+        Main->C2PA_UserAnchors_Set(string());
     #endif // defined(ENABLE_C2PA)
 }
 
@@ -804,6 +812,22 @@ void GUI_Preferences::OnSave()
         Content+=EOL;
         Prefs.Write(Content);
         Main->C2PA_SignTA_URL_Set(C2PA_SignTA_URL_Edit->text().toUtf8().data());
+    }
+    {
+        Ztring Content;
+        Content+=__T("C2PA_UserAnchorsPath");
+        Content+=__T(" = ");
+        Content+=Ztring().From_UTF8(C2PA_UserAnchors_Path->text().toUtf8().data());
+        Content+=EOL;
+        Prefs.Write(Content);
+    }
+    {
+        Ztring Content;
+        Content+=__T("C2PA_UserAnchorsContent");
+        Content+=__T(" = ");
+        Content+=Ztring().From_UTF8(QString(QByteArray(C->C2PA_UserAnchors.data(), (int)C->C2PA_UserAnchors.size()).toBase64()).toStdString());
+        Content+=EOL;
+        Prefs.Write(Content);
     }
     #endif // defined(ENABLE_C2PA)
 
@@ -1083,6 +1107,25 @@ void GUI_Preferences::OnC2PA_SignPrivateKey_BrowseClicked (bool)
     C2PA_SignPrivateKey_Path->setText(FileName);
     Main->C2PA_SignPrivateKey_Set(Content);
 }
+
+//---------------------------------------------------------------------------
+void GUI_Preferences::OnC2PA_UserAnchors_BrowseClicked (bool)
+{
+    QString FileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Open File..."),
+                                                    C2PA_UserAnchors_Path->text(),
+                                                    "Certificate files (*.pem *.crt *.cer);;All files (*.*)");
+
+    if (FileName.isEmpty())
+        return;
+
+    string Content;
+    if (!C2PA_ReadWholeFile(FileName.toUtf8().data(), Content))
+        return;
+
+    C2PA_UserAnchors_Path->setText(FileName);
+    Main->C2PA_UserAnchors_Set(Content);
+}
 #endif // defined(ENABLE_C2PA)
 
 //---------------------------------------------------------------------------
@@ -1352,6 +1395,12 @@ void GUI_Preferences::Create()
 
     C2PA_SignTA_URL_Edit=new QLineEdit();
 
+    //C2PA - User anchors (additional root certificates trusted when verifying signatures, e.g. a private/test CA)
+    C2PA_UserAnchors_Path=new QLineEdit();
+    C2PA_UserAnchors_Path->setReadOnly(true);
+    C2PA_UserAnchors_Browse=new QPushButton(QCommonStyle().standardIcon(QStyle::SP_FileIcon), "Browse...");
+    connect(C2PA_UserAnchors_Browse, SIGNAL(clicked(bool)), this, SLOT(OnC2PA_UserAnchors_BrowseClicked(bool)));
+
     QGridLayout* C2PA_SignCredentials_Layout=new QGridLayout();
     C2PA_SignCredentials_Layout->addWidget(new QLabel("Certificate file:"), 0, 0);
     C2PA_SignCredentials_Layout->addWidget(C2PA_SignCertificate_Path, 0, 1);
@@ -1363,6 +1412,9 @@ void GUI_Preferences::Create()
     C2PA_SignCredentials_Layout->addWidget(C2PA_SignAlgorithm_Combo, 2, 1);
     C2PA_SignCredentials_Layout->addWidget(new QLabel("Timestamp authority URL (optional):"), 3, 0);
     C2PA_SignCredentials_Layout->addWidget(C2PA_SignTA_URL_Edit, 3, 1);
+    C2PA_SignCredentials_Layout->addWidget(new QLabel("User anchors file (optional, for verification):"), 4, 0);
+    C2PA_SignCredentials_Layout->addWidget(C2PA_UserAnchors_Path, 4, 1);
+    C2PA_SignCredentials_Layout->addWidget(C2PA_UserAnchors_Browse, 4, 2);
 
     QGroupBox* C2PA_SignCredentials=new QGroupBox("Signing certificate, private key and options");
     C2PA_SignCredentials->setLayout(C2PA_SignCredentials_Layout);
@@ -1380,6 +1432,7 @@ void GUI_Preferences::Create()
         C2PA_SignPrivateKey_Browse->setToolTip(Tip);
         C2PA_SignAlgorithm_Combo->setToolTip(Tip);
         C2PA_SignTA_URL_Edit->setToolTip(Tip);
+        C2PA_UserAnchors_Browse->setToolTip(Tip);
     }
     #endif // defined(C2PA_DYNAMIC_LOADING)
     #endif // defined(ENABLE_C2PA)
@@ -1456,5 +1509,7 @@ void GUI_Preferences::LoadOriginalConfig()
     Main->C2PA_SignAlgorithm_Set(C2PA_SignAlgorithm_Combo->currentData().toString().toStdString());
     C2PA_SignTA_URL_Edit->setText(QString());
     Main->C2PA_SignTA_URL_Set(string());
+    C2PA_UserAnchors_Path->setText(QString());
+    Main->C2PA_UserAnchors_Set(string());
     #endif // defined(ENABLE_C2PA)
 }

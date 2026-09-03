@@ -129,6 +129,7 @@ CL_OPTION(C2PA_Sign_Certificate);
 CL_OPTION(C2PA_Sign_Key);
 CL_OPTION(C2PA_Sign_Algorithm);
 CL_OPTION(C2PA_Sign_TA_URL);
+CL_OPTION(C2PA_UserAnchors);
 #endif // defined(ENABLE_C2PA)
 
 //---------------------------------------------------------------------------

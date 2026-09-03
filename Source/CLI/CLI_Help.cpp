@@ -190,6 +190,8 @@ std::string Help()
     ToDisplay<<"--C2PA-Sign-Key=        Path to the PEM private key"<<std::endl;
     ToDisplay<<"--C2PA-Sign-Algorithm=  Signing algorithm (e.g. es256)"<<std::endl;
     ToDisplay<<"--C2PA-Sign-TA-URL=     Optional RFC3161 timestamp authority URL"<<std::endl;
+    ToDisplay<<"--C2PA-User-Anchors=    Path to a PEM bundle of additional trust anchor root certificates,"<<std::endl;
+    ToDisplay<<"                        used when verifying signatures (e.g. for a private/test CA)"<<std::endl;
     ToDisplay<<""<<std::endl;
     ToDisplay<<"*******************************************************************************"<<std::endl;
     #endif // defined(ENABLE_C2PA)

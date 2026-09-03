@@ -173,6 +173,7 @@ int Parse(Core &C, string &Argument)
     OPTION("--c2pa-sign-key=",                              C2PA_Sign_Key)
     OPTION("--c2pa-sign-algorithm=",                        C2PA_Sign_Algorithm)
     OPTION("--c2pa-sign-ta-url=",                           C2PA_Sign_TA_URL)
+    OPTION("--c2pa-user-anchors=",                          C2PA_UserAnchors)
     #endif // defined(ENABLE_C2PA)
     //Default
     OPTION("--",                                            Default)
@@ -1152,6 +1153,31 @@ CL_OPTION(C2PA_Sign_TA_URL)
 
     //Form : --c2pa-sign-ta-url=(Value)
     C.C2PA_SignTA_URL.assign(Argument, 19, std::string::npos);
+
+    return -2; //Continue
+}
+
+//---------------------------------------------------------------------------
+CL_OPTION(C2PA_UserAnchors)
+{
+    #if defined(C2PA_DYNAMIC_LOADING)
+    if (!C2PA_Available())
+    {
+        std::cerr<<"C2PA support is not available, please install the plugin."<<std::endl;
+        return 1;
+    }
+    #endif // defined(C2PA_DYNAMIC_LOADING)
+
+    //Form : --c2pa-user-anchors=(FileName)
+    string FileName=string().assign(Argument, 20, std::string::npos);
+
+    string Content;
+    if (!ReadWholeFile(FileName, Content))
+    {
+        std::cerr<<"Unable to read the C2PA user anchors: "<<FileName<<std::endl;
+        return 1;
+    }
+    C.C2PA_UserAnchors.assign(Content);
 
     return -2; //Continue
 }

@@ -174,7 +174,7 @@ GUI_Main_xxxx_C2PADialog::GUI_Main_xxxx_C2PADialog(Core* _C, const std::string &
     RawText->setReadOnly(true);
     static const int MaxSize=0x100000;
     if (Manifest.empty())
-        RawText->setPlainText(Status=="Absent"?tr("No C2PA manifest present in this file."):tr("A C2PA chunk is present, but its manifest could not be read."));
+        RawText->setPlainText(Status=="No"?tr("No C2PA manifest present in this file."):tr("A C2PA chunk is present, but its manifest could not be read."));
     else if (Manifest.size()<MaxSize)
         RawText->setPlainText(QString::fromUtf8(Manifest.c_str()));
     else
@@ -280,7 +280,7 @@ QLabel* GUI_Main_xxxx_C2PADialog::Build_StatusBanner ()
 {
     QString Text;
     QString Color;
-    if (Status=="Absent")
+    if (Status=="No")
     {
         Text=tr("No C2PA manifest found in this file.");
         Color=GUI_Colors::Neutral();
@@ -489,7 +489,7 @@ QWidget* GUI_Main_xxxx_C2PADialog::Build_Summary ()
 
     if (Manifest.empty())
     {
-        if (Status!="Absent")
+        if (Status!="No")
         {
             QLabel* Hint=new QLabel(tr("Verify that the C2PA library (libc2pa_c) is installed and reachable by this application."));
             Hint->setWordWrap(true);
