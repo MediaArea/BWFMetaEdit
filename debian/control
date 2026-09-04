@@ -5,7 +5,7 @@ Maintainer: Jerome Martinez <info@mediaarea.net>
 Rules-Requires-Root: no
 # The rustc shipped by some Debian/Ubuntu releases is too old to build plugin-c2pa.
 # The actual rustc version will be checked at build time id debian/rules and the package skipped when it's too old.
-Build-Depends: debhelper (>= 12), tofrodos, qtbase5-dev, qtdeclarative5-dev, qtquickcontrols2-5-dev, libqt5svg5-dev, qtchooser, qt5-qmake, qtbase5-dev-tools, pkg-config, automake, autoconf, libtool, cargo, rustc
+Build-Depends: debhelper (>= 12), tofrodos, qt6-base-dev | qtbase5-dev, qt6-declarative-dev | qtdeclarative5-dev, qt6-declarative-dev | qtquickcontrols2-5-dev, qt6-svg-dev | libqt6svg6-dev | libqt5svg5-dev, libqt6opengl6-dev | libqt5opengl5-dev, libgl-dev, qt6-base-dev-tools | qtbase5-dev-tools, qmake6 | qt5-qmake, qtchooser, zlib1g-dev, pkg-config, automake, autoconf, libtool, cargo, rustc
 Standards-Version: 4.6.2
 Homepage: https://mediaarea.net/BWFMetaEdit
 
@@ -52,7 +52,7 @@ Description: C2PA (Content Credentials) support library for BWF MetaEdit
 Package: bwfmetaedit-gui
 Section: utils
 Architecture: any
-Depends: ${shlibs:Depends}, qml-module-qtquick2, qml-module-qtquick-layouts, qml-module-qtquick-controls2
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${qml:Depends}
 Description: BWF MetaEdit provides:
  .
  (To be filled)

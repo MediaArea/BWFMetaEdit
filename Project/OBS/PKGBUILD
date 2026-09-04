@@ -9,7 +9,7 @@ arch=('x86_64')
 url="https://mediaarea.net/BWFMetaEdit"
 license=('GPL')
 
-makedepends=('qt5-base' 'qt5-quickcontrols2' 'qt5-svg' 'qt5-tools' 'ca-certificates' 'rust')
+makedepends=('qt6-base' 'qt6-declarative' 'qt6-svg' 'qt6-tools' 'ca-certificates' 'rust')
 source=(${pkgname}_${pkgver}.tar.xz bwfmetaedit-vendor_${pkgver}.tar.xz)
 sha256sums=('SKIP' 'SKIP')
 
@@ -25,7 +25,7 @@ prepare() {
     LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/lib/bwfmetaedit" ./configure --prefix=/usr --enable-c2pa=dynamic
 
     cd "${srcdir}"/bwfmetaedit/Project/QtCreator
-    sh ./prepare ENABLE_C2PA=dynamic QMAKE_RPATHDIR+=/usr/lib/bwfmetaedit BINDIR=/usr/bin
+    qmake6 ENABLE_C2PA=dynamic QMAKE_RPATHDIR+=/usr/lib/bwfmetaedit BINDIR=/usr/bin
 }
 
 build() {
@@ -62,7 +62,7 @@ package_bwfmetaedit-plugin-c2pa() {
 
 package_bwfmetaedit-gui() {
     pkgdesc="${pkgdesc} (GUI)"
-    depends=('qt5-base' 'qt5-quickcontrols2' 'qt5-svg')
+    depends=('qt6-base' 'qt6-declarative' 'qt6-svg')
 
     cd "${srcdir}"/bwfmetaedit/Project/QtCreator
     make INSTALL_ROOT="${pkgdir}" install
