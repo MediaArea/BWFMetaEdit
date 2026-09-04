@@ -13,6 +13,12 @@
 %global build_c2pa_plugin 0
 %endif
 
+%if 0%{?suse_version} || 0%{?mageia} || (0%{?rhel} > 9) || 0%{?fedora_version}
+%global qt6_gui 1
+%else
+%global qt6_gui 0
+%endif
+
 Name:			bwfmetaedit
 Version:		%bwfmetaedit_version
 Release:		1
@@ -58,10 +64,32 @@ C2PA Signature, validation and export support.
 Summary:	Supplies technical and tag information about a video or audio file (GUI)
 Group:		Productivity/Multimedia/Other
 
-BuildRequires:	pkgconfig(Qt5Gui)
-BuildRequires:	pkgconfig(Qt5Svg)
-BuildRequires:	pkgconfig(Qt5QuickWidgets)
-BuildRequires:	pkgconfig(Qt5QuickControls2)
+%if %{qt6_gui}
+BuildRequires:        pkgconfig(Qt6Gui)
+BuildRequires:        pkgconfig(Qt6Svg)
+BuildRequires:        pkgconfig(Qt6QuickWidgets)
+BuildRequires:        pkgconfig(Qt6QuickControls2)
+%else
+BuildRequires:        pkgconfig(Qt5Gui)
+BuildRequires:        pkgconfig(Qt5Svg)
+BuildRequires:        pkgconfig(Qt5QuickWidgets)
+BuildRequires:        pkgconfig(Qt5QuickControls2)
+%endif
+
+%if 0%{?suse_version}
+Requires:	qt6-declarative-imports
+%else
+%if 0%{?mageia}
+Requires:	qtdeclarative6
+%else
+%if %{qt6_gui}
+Requires:	qt6-qtdeclarative
+%else
+Requires:	qt5-qtdeclarative
+Requires:	qt5-qtquickcontrols2
+%endif
+%endif
+%endif
 
 %if 0%{?suse_version}
 BuildRequires:	update-desktop-files
@@ -121,13 +149,16 @@ popd
 
 # now build GUI
 pushd Project/QtCreator
-	%__chmod +x prepare
 	%if %{build_c2pa_plugin}
-	./prepare $QMAKEOPTS ENABLE_C2PA=dynamic QMAKE_RPATHDIR+=%{_libdir}/%{name} BINDIR=%{_bindir}
+	QMAKE_ARGS="$QMAKEOPTS ENABLE_C2PA=dynamic QMAKE_RPATHDIR+=%{_libdir}/%{name} BINDIR=%{_bindir}"
 	%else
-	./prepare BINDIR=%{_bindir}
+	QMAKE_ARGS="$QMAKEOPTS BINDIR=%{_bindir}"
 	%endif
-	./prepare $QMAKEOPTS BINDIR=%{_bindir}
+	%if %{qt6_gui}
+	qmake6 $QMAKE_ARGS
+	%else
+	qmake-qt5 $QMAKE_ARGS
+	%endif
 	%__make %{?jobs:-j%{jobs}}
 popd
 

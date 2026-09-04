@@ -3,9 +3,22 @@
 
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
-export QT_SELECT=qt5
 
 C2PA_LIBDIR := /usr/lib/bwfmetaedit
+
+# Qt6 dev packages only exist from Debian 12 (bookworm) onward (debian/control
+# build-depends on them with a Qt5 fallback for Debian 11/bullseye), so detect
+# at build time which flavour actually got installed.
+HAVE_QT6 := $(shell command -v qmake6 >/dev/null 2>&1 && echo yes)
+
+ifeq ($(HAVE_QT6),yes)
+QMAKE := qmake6
+QML_DEPENDS := qml6-module-qtquick, qml6-module-qtquick-window, qml6-module-qtquick-controls, qml6-module-qtquick-templates, qml6-module-qtquick-layouts, qml6-module-qtqml, qml6-module-qtqml-models, qml6-module-qtqml-workerscript
+else
+QMAKE := qmake
+QML_DEPENDS := qml-module-qtquick2, qml-module-qtquick-window2, qml-module-qtquick-layouts, qml-module-qtquick-controls2, qml-module-qtquick-templates2, qml-module-qtqml, qml-module-qtqml-models2, qml-module-qtqml-workerscript2
+export QT_SELECT=qt5
+endif
 
 # The C2PA plugin is only built when the rustc actually installed is new
 # enough. cargo/rustc are unconditional Build-Depends so
@@ -54,7 +67,7 @@ endif
 	cd Project/GNU/CLI && ./autogen
 	cd Project/GNU/CLI && LDFLAGS="$(LDFLAGS) -Wl,-rpath,$(C2PA_LIBDIR) -Wl,--allow-shlib-undefined" ./configure --prefix=/usr $(CONFIGURE_C2PA_FLAGS)
 
-	cd Project/QtCreator && ./prepare $(PREPARE_C2PA_FLAGS) QMAKE_RPATHDIR+=$(C2PA_LIBDIR) QMAKE_LFLAGS+=-Wl,--allow-shlib-undefined BINDIR=/usr/bin
+	cd Project/QtCreator && $(QMAKE) $(PREPARE_C2PA_FLAGS) QMAKE_RPATHDIR+=$(C2PA_LIBDIR) QMAKE_LFLAGS+=-Wl,--allow-shlib-undefined BINDIR=/usr/bin
 
 	touch $@
 
@@ -165,7 +178,7 @@ ifeq ($(HAVE_C2PA),yes)
 else
 	dh_shlibdeps $(C2PA_EXCLUDE)
 endif
-	dh_gencontrol $(C2PA_EXCLUDE)
+	dh_gencontrol $(C2PA_EXCLUDE) -- -Vqml:Depends="$(QML_DEPENDS)"
 	dh_md5sums $(C2PA_EXCLUDE)
 	dh_builddeb $(C2PA_EXCLUDE)
 
